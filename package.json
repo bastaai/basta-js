@@ -2,7 +2,10 @@
   "name": "@bastaai/basta-js",
   "version": "0.1.0-beta.1",
   "description": "A lightweight package for client-side apps to easily access and manage data from Basta's online auctions, providing a seamless integration for creating engaging auction experiences.",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "types/index.d.ts",
+  "author": "Basta (https://www.basta.ai)",
+  "homepage": "https://docs.basta.ai",
   "license": "UNLICENSED",
   "keywords": [
     "Basta.ai",
