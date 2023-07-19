@@ -1,4 +1,4 @@
-export const account = `query account($accountId: String!) {
+export const GET_ACCOUNT_BY_ID = `query GET_ACCOUNT_BY_ID($accountId: String!) {
   account(id: $accountId) {
     id
     name

@@ -526,11 +526,11 @@ export type UserBidsEdge = {
   node: UserBid;
 };
 
-export type AccountQueryVariables = Exact<{
+export type Get_Account_By_IdQueryVariables = Exact<{
   accountId: string;
 }>;
 
-export type AccountQuery = {
+export type Get_Account_By_IdQuery = {
   __typename?: 'Query';
   account: {
     __typename: 'Account';
