@@ -1,0 +1,11 @@
+.DS_Store
+.cache
+*.log
+.vim
+
+.env
+.env.*
+node_modules
+dist
+
+*.tgz
