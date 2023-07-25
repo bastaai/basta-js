@@ -20,3 +20,10 @@ export interface ISaleService {
   /** Gets a Basta sale. */
   get(saleId: string): Promise<Sale>;
 }
+
+export interface ISubscriptionService {
+  subscribe(query: string): void; // T could be ItemChanged, SaleChanged, ServerTimeChanged
+  onData<T>(data: T): void;
+  onError(errors: string[]): void;
+  onComplete(): void;
+}
