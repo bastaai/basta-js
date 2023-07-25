@@ -24,7 +24,12 @@ export class SubscriptionService implements ISubscriptionService {
     this._bastaReq = bastaReq;
   }
 
-  subscribe(query: string): void {
+  subscribe<T>(
+    query: string,
+    onData: (data: T) => void,
+    onError: (errors: string[]) => void,
+    onComplete: () => void
+  ): void {
     this._webSocket = new WebSocket(this._bastaReq.socketUrl);
 
     const ws = this._webSocket;
@@ -36,22 +41,18 @@ export class SubscriptionService implements ISubscriptionService {
       const data = JSON.parse(event.data);
 
       if (data.type === 'data') {
-        this.onData(data.payload.data);
+        onData(data.payload.data);
       } else if (data.type === 'error') {
-        this.onError(data.payload.errors);
+        onError(data.payload.errors);
       }
     };
-  }
 
-  onData<T>(data: T): void {
-    throw new Error('Method not implemented.');
-  }
+    ws.onclose = () => {
+      onComplete();
+    };
 
-  onError(errors: string[]): void {
-    throw new Error('Method not implemented.');
-  }
-
-  onComplete(): void {
-    throw new Error('Method not implemented.');
+    ws.onerror = () => {
+      onError(['Error has occurred!']);
+    };
   }
 }

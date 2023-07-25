@@ -22,8 +22,10 @@ export interface ISaleService {
 }
 
 export interface ISubscriptionService {
-  subscribe(query: string): void; // T could be ItemChanged, SaleChanged, ServerTimeChanged
-  onData<T>(data: T): void;
-  onError(errors: string[]): void;
-  onComplete(): void;
+  subscribe<T>(
+    query: string,
+    onData: (data: T) => void,
+    onError: (errors: string[]) => void,
+    onComplete: () => void
+  ): void; // T could be ItemChanged, SaleChanged, ServerTimeChanged
 }
