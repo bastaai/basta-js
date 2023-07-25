@@ -1,0 +1,90 @@
+query GET_SALE($id: String!) {
+  sale(id: $id) {
+    __typename
+    id
+    accountId
+    title
+    description
+    currency
+    status
+    sequenceNumber
+    closingMethod
+    images {
+      __typename
+      id
+      url
+      order
+    }
+    items {
+      __typename
+      edges {
+        __typename
+        cursor
+        node {
+          __typename
+          id
+          saleId
+          title
+          description
+          status
+          startingBid
+          currentBid
+          bidStatus
+          totalBids
+          nextAsks
+          reserveMet
+          images {
+            __typename
+            id
+            url
+            order
+          }
+          bids {
+            __typename
+            saleId
+            itemId
+            amount
+            maxAmount
+            date
+            bidStatus
+            bidderIdentifier
+          }
+          userBids {
+            __typename
+            saleId
+            itemId
+            amount
+            maxAmount
+            date
+            bidStatus
+            bidderIdentifier
+          }
+          itemDates {
+            __typename
+            closingStart
+            closingEnd
+          }
+        }
+      }
+      pageInfo {
+        __typename
+        startCursor
+        endCursor
+        hasNextPage
+      }
+    }
+    incrementTable {
+      rangeRules {
+        __typename
+        highRange
+        lowRange
+        step
+      }
+    }
+    dates {
+      __typename
+      openDate
+      closingDate
+    }
+  }
+}

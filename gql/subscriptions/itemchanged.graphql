@@ -1,0 +1,39 @@
+subscription ITEM_CHANGED_SUBSCRIPTION($saleId: ID!, $itemIds: [ID!]!) {
+  itemChanged(saleId: $saleId, itemIds: $itemIds) {
+    ... on Item {
+      id
+      saleId
+      currentBid
+      bidStatus
+      totalBids
+      status
+      nextAsks
+      reserveMet
+      itemDates {
+        closingStart
+        closingEnd
+      }
+      bids {
+        amount
+        maxAmount
+        date
+        bidStatus
+        saleId
+        itemId
+        bidderIdentifier
+      }
+      userBids {
+        amount
+        maxAmount
+        date
+        bidStatus
+        saleId
+        itemId
+        bidderIdentifier
+      }
+    }
+    ... on ServerTime {
+      currentTime
+    }
+  }
+}

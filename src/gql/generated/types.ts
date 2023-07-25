@@ -279,6 +279,8 @@ export type MaxBidPlacedSuccess = {
 /** Me object keeps information about the logged in user. */
 export type Me = {
   __typename?: 'Me';
+  /** Accounts for logged in user */
+  accounts: Array<Account>;
   /** Get all bids that a user has placed on sales */
   bids: UserBidsConnection;
   /** Unique user id of the logged in user. */
@@ -526,6 +528,23 @@ export type UserBidsEdge = {
   node: UserBid;
 };
 
+export type Get_Account_By_HandleQueryVariables = Exact<{
+  handle: string;
+}>;
+
+export type Get_Account_By_HandleQuery = {
+  __typename?: 'Query';
+  accountByHandle: {
+    __typename: 'Account';
+    id: string;
+    name: string;
+    handle?: string | null;
+    description?: string | null;
+    imageUrl?: string | null;
+    links: Array<{ __typename: 'Link'; type: LinkType; url: string }>;
+  };
+};
+
 export type Get_Account_By_IdQueryVariables = Exact<{
   accountId: string;
 }>;
@@ -541,4 +560,190 @@ export type Get_Account_By_IdQuery = {
     imageUrl?: string | null;
     links: Array<{ __typename: 'Link'; type: LinkType; url: string }>;
   };
+};
+
+export type Get_MeQueryVariables = Exact<{ [key: string]: never }>;
+
+export type Get_MeQuery = {
+  __typename?: 'Query';
+  me: {
+    __typename: 'Me';
+    userId: string;
+    bids: {
+      __typename: 'UserBidsConnection';
+      edges: Array<{
+        __typename: 'UserBidsEdge';
+        cursor: string;
+        node: {
+          __typename: 'UserBid';
+          id: string;
+          userId: string;
+          saleId: string;
+          itemId: string;
+          amount: number;
+          maxAmount: number;
+          bidDate: string;
+        };
+      }>;
+      pageInfo: {
+        __typename: 'PageInfo';
+        startCursor: string;
+        endCursor: string;
+        hasNextPage: boolean;
+      };
+    };
+    accounts: Array<{
+      __typename: 'Account';
+      id: string;
+      name: string;
+      handle?: string | null;
+      description?: string | null;
+      imageUrl?: string | null;
+      links: Array<{ __typename: 'Link'; type: LinkType; url: string }>;
+    }>;
+  };
+};
+
+export type Get_SaleQueryVariables = Exact<{
+  id: string;
+}>;
+
+export type Get_SaleQuery = {
+  __typename?: 'Query';
+  sale: {
+    __typename: 'Sale';
+    id: string;
+    accountId: string;
+    title?: string | null;
+    description?: string | null;
+    currency?: string | null;
+    status: SaleStatus;
+    sequenceNumber: number;
+    closingMethod: ClosingMethod;
+    images: Array<{
+      __typename: 'Image';
+      id: string;
+      url: string;
+      order: number;
+    }>;
+    items: {
+      __typename: 'ItemsConnection';
+      edges: Array<{
+        __typename: 'ItemsEdge';
+        cursor: string;
+        node: {
+          __typename: 'Item';
+          id: string;
+          saleId: string;
+          title?: string | null;
+          description?: string | null;
+          status: ItemStatus;
+          startingBid?: number | null;
+          currentBid?: number | null;
+          bidStatus?: BidStatus | null;
+          totalBids: number;
+          nextAsks: Array<number>;
+          reserveMet: boolean;
+          images: Array<{
+            __typename: 'Image';
+            id: string;
+            url: string;
+            order: number;
+          }>;
+          bids: Array<{
+            __typename: 'Bid';
+            saleId: string;
+            itemId: string;
+            amount: number;
+            maxAmount?: number | null;
+            date: string;
+            bidStatus?: BidStatus | null;
+            bidderIdentifier?: string | null;
+          }>;
+          userBids: Array<{
+            __typename: 'Bid';
+            saleId: string;
+            itemId: string;
+            amount: number;
+            maxAmount?: number | null;
+            date: string;
+            bidStatus?: BidStatus | null;
+            bidderIdentifier?: string | null;
+          }>;
+          itemDates?: {
+            __typename: 'ItemDates';
+            closingStart?: string | null;
+            closingEnd?: string | null;
+          } | null;
+        };
+      }>;
+      pageInfo: {
+        __typename: 'PageInfo';
+        startCursor: string;
+        endCursor: string;
+        hasNextPage: boolean;
+      };
+    };
+    incrementTable?: {
+      __typename?: 'BidIncrementTable';
+      rangeRules: Array<{
+        __typename: 'RangeRule';
+        highRange: number;
+        lowRange: number;
+        step: number;
+      }>;
+    } | null;
+    dates: {
+      __typename: 'SaleDates';
+      openDate?: string | null;
+      closingDate?: string | null;
+    };
+  };
+};
+
+export type Item_Changed_SubscriptionSubscriptionVariables = Exact<{
+  saleId: string;
+  itemIds: Array<string> | string;
+}>;
+
+export type Item_Changed_SubscriptionSubscription = {
+  __typename?: 'Subscription';
+  itemChanged:
+    | {
+        __typename?: 'Item';
+        id: string;
+        saleId: string;
+        currentBid?: number | null;
+        bidStatus?: BidStatus | null;
+        totalBids: number;
+        status: ItemStatus;
+        nextAsks: Array<number>;
+        reserveMet: boolean;
+        itemDates?: {
+          __typename?: 'ItemDates';
+          closingStart?: string | null;
+          closingEnd?: string | null;
+        } | null;
+        bids: Array<{
+          __typename?: 'Bid';
+          amount: number;
+          maxAmount?: number | null;
+          date: string;
+          bidStatus?: BidStatus | null;
+          saleId: string;
+          itemId: string;
+          bidderIdentifier?: string | null;
+        }>;
+        userBids: Array<{
+          __typename?: 'Bid';
+          amount: number;
+          maxAmount?: number | null;
+          date: string;
+          bidStatus?: BidStatus | null;
+          saleId: string;
+          itemId: string;
+          bidderIdentifier?: string | null;
+        }>;
+      }
+    | { __typename?: 'ServerTime'; currentTime: number };
 };

@@ -1,0 +1,42 @@
+query GET_ME {
+  me {
+    userId
+    bids(first: 0) {
+      edges {
+        cursor
+        node {
+          id
+          userId
+          saleId
+          itemId
+          amount
+          maxAmount
+          bidDate
+          __typename
+        }
+        __typename
+      }
+      pageInfo {
+        startCursor
+        endCursor
+        hasNextPage
+        __typename
+      }
+      __typename
+    }
+    accounts {
+      id
+      name
+      handle
+      description
+      imageUrl
+      links {
+        type
+        url
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+}
