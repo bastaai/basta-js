@@ -52,8 +52,4 @@ export interface ISubscriptionService {
     variables: string,
     callbacks: SubscriptionCallbacksType<Sale>
   ): void;
-  serverTimeChanged(
-    variables: string,
-    callbacks: SubscriptionCallbacksType<ServerTime>
-  ): void;
 }

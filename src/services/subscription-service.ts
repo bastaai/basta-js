@@ -10,6 +10,7 @@ import { ITEM_CHANGED_SUBSCRIPTION } from '../gql/generated/operations';
 import {
   Item,
   Item_Changed_SubscriptionSubscriptionVariables,
+  Sale,
 } from '../gql/generated/types';
 
 const GQL = {
@@ -37,7 +38,12 @@ export class SubscriptionService implements ISubscriptionService {
     variables: Item_Changed_SubscriptionSubscriptionVariables,
     callbacks: SubscriptionCallbacksType<Item>
   ): void {
-    this.subscribe<Item>(ITEM_CHANGED_SUBSCRIPTION, variables, callbacks);
+    this.subscribe<Item>(
+      'item',
+      ITEM_CHANGED_SUBSCRIPTION,
+      variables,
+      callbacks
+    );
   }
 
   saleChanged(): void {
@@ -49,6 +55,7 @@ export class SubscriptionService implements ISubscriptionService {
   }
 
   private subscribe<T>(
+    type: 'item' | 'sale' | 'serverTime',
     query: string,
     variables: SubscriptionVariablesMapped<T>,
     callbacks: SubscriptionCallbacksType<T>
@@ -66,12 +73,31 @@ export class SubscriptionService implements ISubscriptionService {
     };
 
     ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
+      const eventParsed = JSON.parse(event.data);
 
-      if (data.type === 'data') {
-        callbacks.onData(data.payload.data);
-      } else if (data.type === 'error') {
-        callbacks.onError(data.payload.errors);
+      if (eventParsed.type === 'data') {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let data: any;
+
+        if (type === 'item') {
+          data = (
+            eventParsed.payload.data as {
+              itemChanged: Item;
+            }
+          ).itemChanged;
+        } else if (type === 'sale') {
+          data = (
+            eventParsed.payload.data as {
+              saleChanged: Sale;
+            }
+          ).saleChanged;
+        } else {
+          throw new Error('Type not available.');
+        }
+
+        callbacks.onData(data);
+      } else if (eventParsed.type === 'error') {
+        callbacks.onError(eventParsed.payload.errors);
       }
     };
 
