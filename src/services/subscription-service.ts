@@ -1,7 +1,8 @@
 // https://rob-blackbourn.medium.com/writing-a-graphql-websocket-subscriber-in-javascript-4451abb9cd60
 
 import { BastaRequest } from '../../types/request';
-import { ISubscriptionService } from '../../types/sdk';
+import { BastaSubscriptionType, ISubscriptionService } from '../../types/sdk';
+import { ITEM_CHANGED_SUBSCRIPTION } from '../gql/generated/operations';
 
 const GQL = {
   CONNECTION_INIT: 'connection_init',
@@ -25,12 +26,22 @@ export class SubscriptionService implements ISubscriptionService {
   }
 
   subscribe<T>(
-    query: string,
-    onData: (data: T) => void,
-    onError: (errors: string[]) => void,
-    onComplete: () => void
+    type: BastaSubscriptionType,
+    callbacks: {
+      onData: (data: T) => void;
+      onError: (errors: string[]) => void;
+      onComplete: () => void;
+    }
   ): void {
     this._webSocket = new WebSocket(this._bastaReq.socketUrl);
+
+    let query = '';
+
+    if (type === 'ITEM_CHANGED') {
+      query = ITEM_CHANGED_SUBSCRIPTION;
+    } else {
+      throw new Error('not implemented');
+    }
 
     const ws = this._webSocket;
     ws.onopen = () => {
@@ -41,18 +52,18 @@ export class SubscriptionService implements ISubscriptionService {
       const data = JSON.parse(event.data);
 
       if (data.type === 'data') {
-        onData(data.payload.data);
+        callbacks.onData(data.payload.data);
       } else if (data.type === 'error') {
-        onError(data.payload.errors);
+        callbacks.onError(data.payload.errors);
       }
     };
 
     ws.onclose = () => {
-      onComplete();
+      callbacks.onComplete();
     };
 
     ws.onerror = () => {
-      onError(['Error has occurred!']);
+      callbacks.onError(['Error has occurred!']);
     };
   }
 }

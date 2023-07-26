@@ -4,9 +4,15 @@ export type BastaResponse<T> = {
   data: T;
 };
 
+export type BastaSubscriptionType =
+  | 'ITEM_CHANGED'
+  | 'SALE_CHANGED'
+  | 'SERVER_TIME_CHANGED';
+
 export interface IBasta {
   account: IAccountService;
   sale: ISaleService;
+  subscription: ISubscriptionService;
 }
 
 export interface IAccountService {
@@ -23,9 +29,11 @@ export interface ISaleService {
 
 export interface ISubscriptionService {
   subscribe<T>(
-    query: string,
-    onData: (data: T) => void,
-    onError: (errors: string[]) => void,
-    onComplete: () => void
+    query: BastaSubscriptionType,
+    callbacks: {
+      onData: (data: T) => void;
+      onError: (errors: string[]) => void;
+      onComplete: () => void;
+    }
   ): void; // T could be ItemChanged, SaleChanged, ServerTimeChanged
 }
