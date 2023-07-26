@@ -16,7 +16,7 @@ export const initBasta = (staging = false) => {
 class Basta implements IBasta {
   readonly account: IAccountService;
   readonly sale: ISaleService;
-  readonly subscription: ISubscriptionService;
+  readonly subscribeTo: ISubscriptionService;
 
   private readonly _bastaReq: BastaRequest;
 
@@ -33,6 +33,6 @@ class Basta implements IBasta {
 
     this.account = new AccountService(this._bastaReq);
     this.sale = new SaleService(this._bastaReq);
-    this.subscription = new SubscriptionService(this._bastaReq);
+    this.subscribeTo = new SubscriptionService(this._bastaReq);
   }
 }

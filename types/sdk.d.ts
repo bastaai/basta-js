@@ -14,7 +14,7 @@ export type BastaResponse<T> = {
 export interface IBasta {
   account: IAccountService;
   sale: ISaleService;
-  subscription: ISubscriptionService;
+  subscribeTo: ISubscriptionService;
 }
 
 export interface IAccountService {
