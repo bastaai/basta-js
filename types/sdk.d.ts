@@ -4,7 +4,6 @@ import {
   Item_Changed_SubscriptionSubscriptionVariables,
   Me,
   Sale,
-  ServerTime,
 } from '../src/gql/generated/types';
 
 export type BastaResponse<T> = {
@@ -38,8 +37,6 @@ type SubscriptionCallbacksType<T> = {
 type SubscriptionVariablesMapped<T> = T extends Item
   ? Item_Changed_SubscriptionSubscriptionVariables
   : T extends Sale
-  ? object // TODO
-  : T extends ServerTime
   ? object // TODO
   : never;
 

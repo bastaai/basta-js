@@ -50,12 +50,8 @@ export class SubscriptionService implements ISubscriptionService {
     throw new Error('Method not implemented.');
   }
 
-  serverTimeChanged(): void {
-    throw new Error('Method not implemented.');
-  }
-
   private subscribe<T>(
-    type: 'item' | 'sale' | 'serverTime',
+    type: 'item' | 'sale',
     query: string,
     variables: SubscriptionVariablesMapped<T>,
     callbacks: SubscriptionCallbacksType<T>
