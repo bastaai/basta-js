@@ -22,8 +22,8 @@ class Basta implements IBasta {
 
   constructor() {
     this._bastaReq = {
-      url: 'https://client.api.stage.basta.ai/graphql',
-      socketUrl: 'wss://client.api.stage.basta.ai/graphql',
+      url: 'https://client.api.basta.wtf/graphql',
+      socketUrl: 'wss://client.api.basta.wtf/graphql',
       headers: {
         'Content-Type': 'application/json',
       },
