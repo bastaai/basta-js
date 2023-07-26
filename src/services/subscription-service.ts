@@ -1,8 +1,16 @@
 // https://rob-blackbourn.medium.com/writing-a-graphql-websocket-subscriber-in-javascript-4451abb9cd60
 
 import { BastaRequest } from '../../types/request';
-import { BastaSubscriptionType, ISubscriptionService } from '../../types/sdk';
+import {
+  ISubscriptionService,
+  SubscriptionCallbacksType,
+  SubscriptionVariablesMapped,
+} from '../../types/sdk';
 import { ITEM_CHANGED_SUBSCRIPTION } from '../gql/generated/operations';
+import {
+  Item,
+  Item_Changed_SubscriptionSubscriptionVariables,
+} from '../gql/generated/types';
 
 const GQL = {
   CONNECTION_INIT: 'connection_init',
@@ -25,27 +33,36 @@ export class SubscriptionService implements ISubscriptionService {
     this._bastaReq = bastaReq;
   }
 
-  subscribe<T>(
-    type: BastaSubscriptionType,
-    callbacks: {
-      onData: (data: T) => void;
-      onError: (errors: string[]) => void;
-      onComplete: () => void;
-    }
+  itemChanged(
+    variables: Item_Changed_SubscriptionSubscriptionVariables,
+    callbacks: SubscriptionCallbacksType<Item>
+  ): void {
+    this.subscribe<Item>(ITEM_CHANGED_SUBSCRIPTION, variables, callbacks);
+  }
+
+  saleChanged(): void {
+    throw new Error('Method not implemented.');
+  }
+
+  serverTimeChanged(): void {
+    throw new Error('Method not implemented.');
+  }
+
+  private subscribe<T>(
+    query: string,
+    variables: SubscriptionVariablesMapped<T>,
+    callbacks: SubscriptionCallbacksType<T>
   ): void {
     this._webSocket = new WebSocket(this._bastaReq.socketUrl);
 
-    let query = '';
-
-    if (type === 'ITEM_CHANGED') {
-      query = ITEM_CHANGED_SUBSCRIPTION;
-    } else {
-      throw new Error('not implemented');
-    }
-
     const ws = this._webSocket;
     ws.onopen = () => {
-      ws.send(JSON.stringify({ type: GQL.START, payload: { query: query } }));
+      ws.send(
+        JSON.stringify({
+          type: GQL.START,
+          payload: { query: query, variables: variables },
+        })
+      );
     };
 
     ws.onmessage = (event) => {

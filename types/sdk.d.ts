@@ -1,13 +1,15 @@
-import { Account, Me, Sale } from '../src/gql/generated/types';
+import {
+  Account,
+  Item,
+  Item_Changed_SubscriptionSubscriptionVariables,
+  Me,
+  Sale,
+  ServerTime,
+} from '../src/gql/generated/types';
 
 export type BastaResponse<T> = {
   data: T;
 };
-
-export type BastaSubscriptionType =
-  | 'ITEM_CHANGED'
-  | 'SALE_CHANGED'
-  | 'SERVER_TIME_CHANGED';
 
 export interface IBasta {
   account: IAccountService;
@@ -27,13 +29,31 @@ export interface ISaleService {
   get(saleId: string): Promise<Sale>;
 }
 
+type SubscriptionCallbacksType<T> = {
+  onData: (data: T) => void;
+  onError: (errors: string[]) => void;
+  onComplete: () => void;
+};
+
+type SubscriptionVariablesMapped<T> = T extends Item
+  ? Item_Changed_SubscriptionSubscriptionVariables
+  : T extends Sale
+  ? object // TODO
+  : T extends ServerTime
+  ? object // TODO
+  : never;
+
 export interface ISubscriptionService {
-  subscribe<T>(
-    query: BastaSubscriptionType,
-    callbacks: {
-      onData: (data: T) => void;
-      onError: (errors: string[]) => void;
-      onComplete: () => void;
-    }
-  ): void; // T could be ItemChanged, SaleChanged, ServerTimeChanged
+  itemChanged(
+    variables: SubscriptionVariablesMapped<Item>,
+    callbacks: SubscriptionCallbacksType<Item>
+  ): void;
+  saleChanged(
+    variables: string,
+    callbacks: SubscriptionCallbacksType<Sale>
+  ): void;
+  serverTimeChanged(
+    variables: string,
+    callbacks: SubscriptionCallbacksType<ServerTime>
+  ): void;
 }
