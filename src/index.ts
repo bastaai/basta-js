@@ -9,8 +9,8 @@ import { AccountService } from './services/account-service';
 import { SaleService } from './services/sale-service';
 import { SubscriptionService } from './services/subscription-service';
 
-export const initBasta = () => {
-  return new Basta();
+export const initBasta = (staging = false) => {
+  return new Basta(staging);
 };
 
 class Basta implements IBasta {
@@ -20,10 +20,12 @@ class Basta implements IBasta {
 
   private readonly _bastaReq: BastaRequest;
 
-  constructor() {
+  constructor(staging = false) {
+    const baseUrl = staging ? 'client.api.basta.wtf' : 'client.api.basta.ai';
+
     this._bastaReq = {
-      url: 'https://client.api.basta.wtf/graphql',
-      socketUrl: 'wss://client.api.basta.wtf/graphql',
+      url: `https://${baseUrl}/graphql`,
+      socketUrl: `wss://${baseUrl}/graphql`,
       headers: {
         'Content-Type': 'application/json',
       },
