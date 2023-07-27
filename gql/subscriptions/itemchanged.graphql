@@ -1,4 +1,4 @@
-subscription ITEM_CHANGED($saleId: ID!, $itemIds: [ID!]!) {
+subscription ITEM_CHANGED_SUBSCRIPTION($saleId: ID!, $itemIds: [ID!]!) {
   itemChanged(saleId: $saleId, itemIds: $itemIds) {
     ... on Item {
       id
