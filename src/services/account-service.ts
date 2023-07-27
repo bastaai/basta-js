@@ -29,7 +29,7 @@ export class AccountService implements IAccountService {
     };
 
     const res = await fetch(this._bastaReq.url, {
-      method: 'GET',
+      method: 'POST',
       headers: this._bastaReq.headers,
       body: JSON.stringify({
         query: GET_ACCOUNT_BY_ID,
@@ -52,7 +52,7 @@ export class AccountService implements IAccountService {
     };
 
     const res = await fetch(this._bastaReq.url, {
-      method: 'GET',
+      method: 'POST',
       headers: this._bastaReq.headers,
       body: JSON.stringify({
         query: GET_ACCOUNT_BY_HANDLE,
@@ -73,7 +73,7 @@ export class AccountService implements IAccountService {
     const variables: Get_MeQueryVariables = {};
 
     const res = await fetch(this._bastaReq.url, {
-      method: 'GET',
+      method: 'POST',
       headers: this._bastaReq.headers,
       body: JSON.stringify({
         query: GET_ME,
