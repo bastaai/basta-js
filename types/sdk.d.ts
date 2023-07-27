@@ -4,7 +4,6 @@ import {
   Item_Changed_SubscriptionSubscriptionVariables,
   Me,
   Sale,
-  ServerTime,
 } from '../src/gql/generated/types';
 
 export type BastaResponse<T> = {
@@ -39,17 +38,12 @@ type SubscriptionVariablesMapped<T> = T extends Item
   ? Item_Changed_SubscriptionSubscriptionVariables
   : T extends Sale
   ? object // TODO
-  : T extends ServerTime
-  ? object // TODO
   : never;
 
 export interface ISubscriptionService {
-  itemChanged(
+  item(
     variables: SubscriptionVariablesMapped<Item>,
     callbacks: SubscriptionCallbacksType<Item>
   ): void;
-  saleChanged(
-    variables: string,
-    callbacks: SubscriptionCallbacksType<Sale>
-  ): void;
+  sale(variables: string, callbacks: SubscriptionCallbacksType<Sale>): void;
 }
