@@ -1,7 +1,7 @@
 import {
   Account,
   Item,
-  Item_Changed_SubscriptionSubscriptionVariables,
+  Item_ChangedSubscriptionVariables,
   Me,
   Sale,
 } from '../src/gql/generated/types';
@@ -35,7 +35,7 @@ type SubscriptionCallbacksType<T> = {
 };
 
 type SubscriptionVariablesMapped<T> = T extends Item
-  ? Item_Changed_SubscriptionSubscriptionVariables
+  ? Item_ChangedSubscriptionVariables
   : T extends Sale
   ? object // TODO
   : never;

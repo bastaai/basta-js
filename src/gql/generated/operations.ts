@@ -164,7 +164,7 @@ export const GET_SALE = `query GET_SALE($id: String!) {
   }
 }`;
 
-export const ITEM_CHANGED_SUBSCRIPTION = `subscription ITEM_CHANGED_SUBSCRIPTION($saleId: ID!, $itemIds: [ID!]!) {
+export const ITEM_CHANGED = `subscription ITEM_CHANGED($saleId: ID!, $itemIds: [ID!]!) {
   itemChanged(saleId: $saleId, itemIds: $itemIds) {
     ... on Item {
       id

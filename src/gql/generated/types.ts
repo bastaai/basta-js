@@ -701,12 +701,12 @@ export type Get_SaleQuery = {
   };
 };
 
-export type Item_Changed_SubscriptionSubscriptionVariables = Exact<{
+export type Item_ChangedSubscriptionVariables = Exact<{
   saleId: string;
   itemIds: Array<string> | string;
 }>;
 
-export type Item_Changed_SubscriptionSubscription = {
+export type Item_ChangedSubscription = {
   __typename?: 'Subscription';
   itemChanged:
     | {

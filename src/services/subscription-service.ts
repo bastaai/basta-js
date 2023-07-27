@@ -6,10 +6,10 @@ import {
   SubscriptionCallbacksType,
   SubscriptionVariablesMapped,
 } from '../../types/sdk';
-import { ITEM_CHANGED_SUBSCRIPTION } from '../gql/generated/operations';
+import { ITEM_CHANGED } from '../gql/generated/operations';
 import {
   Item,
-  Item_Changed_SubscriptionSubscriptionVariables,
+  Item_ChangedSubscriptionVariables,
 } from '../gql/generated/types';
 
 const GQL = {
@@ -34,10 +34,10 @@ export class SubscriptionService implements ISubscriptionService {
   }
 
   item(
-    variables: Item_Changed_SubscriptionSubscriptionVariables,
+    variables: Item_ChangedSubscriptionVariables,
     callbacks: SubscriptionCallbacksType<Item>
   ): void {
-    this.subscribe<Item>(ITEM_CHANGED_SUBSCRIPTION, variables, callbacks);
+    this.subscribe<Item>(ITEM_CHANGED, variables, callbacks);
   }
 
   sale(): void {
