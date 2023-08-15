@@ -1,3 +1,3 @@
-import { Sale, SaleStatus, ClosingMethod } from '../src/gql/generated/types';
+import { Sale } from '../src/gql/generated/types';
 
-export { Sale, SaleStatus, ClosingMethod };
+export { Sale };

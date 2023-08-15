@@ -1,3 +1,3 @@
-import { BidStatus, BidType } from '../src/gql/generated/types';
+import { Bid } from '../src/gql/generated/types';
 
-export { BidStatus, BidType };
+export { Bid };

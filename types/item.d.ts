@@ -1,3 +1,3 @@
-import { ItemStatus, Item } from '../src/gql/generated/types';
+import { Item } from '../src/gql/generated/types';
 
-export { ItemStatus, Item };
+export { Item };
