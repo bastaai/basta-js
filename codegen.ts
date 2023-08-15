@@ -2,7 +2,7 @@ import type { CodegenConfig } from '@graphql-codegen/cli';
 
 const config: CodegenConfig = {
   overwrite: true,
-  schema: 'https://client.api.basta.ai/graphql',
+  schema: 'https://client.api.basta.wtf/graphql',
   generates: {
     // Generate types for schema and operations
     './src/gql/generated/types.ts': {
