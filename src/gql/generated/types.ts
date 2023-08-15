@@ -562,48 +562,6 @@ export type Get_Account_By_IdQuery = {
   };
 };
 
-export type Get_MeQueryVariables = Exact<{ [key: string]: never }>;
-
-export type Get_MeQuery = {
-  __typename?: 'Query';
-  me: {
-    __typename: 'Me';
-    userId: string;
-    bids: {
-      __typename: 'UserBidsConnection';
-      edges: Array<{
-        __typename: 'UserBidsEdge';
-        cursor: string;
-        node: {
-          __typename: 'UserBid';
-          id: string;
-          userId: string;
-          saleId: string;
-          itemId: string;
-          amount: number;
-          maxAmount: number;
-          bidDate: string;
-        };
-      }>;
-      pageInfo: {
-        __typename: 'PageInfo';
-        startCursor: string;
-        endCursor: string;
-        hasNextPage: boolean;
-      };
-    };
-    accounts: Array<{
-      __typename: 'Account';
-      id: string;
-      name: string;
-      handle?: string | null;
-      description?: string | null;
-      imageUrl?: string | null;
-      links: Array<{ __typename: 'Link'; type: LinkType; url: string }>;
-    }>;
-  };
-};
-
 export type Get_SaleQueryVariables = Exact<{
   id: string;
 }>;

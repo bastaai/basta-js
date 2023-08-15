@@ -2,7 +2,6 @@ import {
   Account,
   Item,
   Item_ChangedSubscriptionVariables,
-  Me,
   Sale,
 } from '../src/gql/generated/types';
 
@@ -20,7 +19,6 @@ export interface IAccountService {
   /** Fetches an account by id */
   get(id: string): Promise<Account>;
   getByHandle(handle: string): Promise<Account>;
-  getMe(): Promise<Me>;
 }
 
 export interface ISaleService {

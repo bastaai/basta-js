@@ -30,49 +30,6 @@ export const GET_ACCOUNT_BY_ID = `query GET_ACCOUNT_BY_ID($accountId: String!) {
   }
 }`;
 
-export const GET_ME = `query GET_ME {
-  me {
-    userId
-    bids(first: 0) {
-      edges {
-        cursor
-        node {
-          id
-          userId
-          saleId
-          itemId
-          amount
-          maxAmount
-          bidDate
-          __typename
-        }
-        __typename
-      }
-      pageInfo {
-        startCursor
-        endCursor
-        hasNextPage
-        __typename
-      }
-      __typename
-    }
-    accounts {
-      id
-      name
-      handle
-      description
-      imageUrl
-      links {
-        type
-        url
-        __typename
-      }
-      __typename
-    }
-    __typename
-  }
-}`;
-
 export const GET_SALE = `query GET_SALE($id: String!) {
   sale(id: $id) {
     __typename

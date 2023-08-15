@@ -1,3 +1,3 @@
-import { Account, Me } from '../src/gql/generated/types';
+import { Account } from '../src/gql/generated/types';
 
-export { Account, Me };
+export { Account };
