@@ -2,7 +2,6 @@
   "name": "@bastaai/basta-js",
   "version": "0.1.0-beta.69",
   "description": "A lightweight package for client-side apps to easily access and manage data from Basta's online auctions, providing a seamless integration for creating engaging auction experiences.",
-
   "main": "dist/cjs/index.js",
   "types": "types/cjs/index.d.ts",
   "exports": {
@@ -17,7 +16,6 @@
       }
     }
   },
-
   "author": "Basta (https://www.basta.ai)",
   "homepage": "https://docs.basta.ai",
   "license": "UNLICENSED",
@@ -31,6 +29,7 @@
     "types"
   ],
   "scripts": {
+    "debug": "nodemon -e ts --watch src --exec \"npm run build\"",
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "build:esm": "tsc -p ./tsconfig.esm.json && move-file dist/esm/index.js dist/esm/index.mjs",
     "build:cjs": "tsc -p ./tsconfig.cjs.json",
@@ -58,11 +57,12 @@
     "eslint-plugin-prettier": "^4.2.1",
     "graphql": "^16.6.0",
     "jest": "^29.5.0",
+    "move-file-cli": "^3.0.0",
     "prettier": "^2.8.8",
     "rimraf": "^5.0.0",
     "ts-jest": "^29.1.0",
-    "typescript": "^5.0.4",
     "ts-node": "^10.9.1",
-    "move-file-cli": "^3.0.0"
+    "typescript": "^5.0.4",
+    "nodemon": "^3.0.1"
   }
 }
