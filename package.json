@@ -2,9 +2,22 @@
   "name": "@bastaai/basta-js",
   "version": "0.1.0-beta.69",
   "description": "A lightweight package for client-side apps to easily access and manage data from Basta's online auctions, providing a seamless integration for creating engaging auction experiences.",
-  "main": "dist/index.js",
-  "types": "types/index.d.ts",
-  "type": "commonjs",
+
+  "main": "dist/cjs/index.js",
+  "types": "types/cjs/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/types/index.d.ts",
+        "default": "./dist/esm/index.mjs"
+      },
+      "require": {
+        "types": "./dist/cjs/types/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
+    }
+  },
+
   "author": "Basta (https://www.basta.ai)",
   "homepage": "https://docs.basta.ai",
   "license": "UNLICENSED",
@@ -18,7 +31,9 @@
     "types"
   ],
   "scripts": {
-    "build": "npm run clean && tsc",
+    "build": "npm run clean && npm run build:esm && npm run build:cjs",
+    "build:esm": "tsc -p ./tsconfig.esm.json && move-file dist/esm/index.js dist/esm/index.mjs",
+    "build:cjs": "tsc -p ./tsconfig.cjs.json",
     "clean": "rimraf dist",
     "test": "npm lint && npm test:unit && npm typecheck",
     "test:unit": "jest",
@@ -47,6 +62,7 @@
     "rimraf": "^5.0.0",
     "ts-jest": "^29.1.0",
     "typescript": "^5.0.4",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "move-file-cli": "^3.0.0"
   }
 }
