@@ -1,11 +1,11 @@
 // https://rob-blackbourn.medium.com/writing-a-graphql-websocket-subscriber-in-javascript-4451abb9cd60
 
-import { BastaRequest } from '../../types/request';
+import { BastaRequest } from '../types/request';
 import {
   ISubscriptionService,
   SubscriptionCallbacksType,
   SubscriptionVariablesMapped,
-} from '../../types/sdk';
+} from '../types/sdk';
 import { ITEM_CHANGED } from '../gql/generated/operations';
 import {
   Item,

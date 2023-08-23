@@ -1,5 +1,5 @@
-import { BastaRequest } from '../../types/request';
-import { BastaResponse, ISaleService } from '../../types/sdk';
+import { BastaRequest } from '../types/request';
+import { BastaResponse, ISaleService } from '../types/sdk';
 import { GET_SALE } from '../gql/generated/operations';
 import {
   Get_SaleQuery,
