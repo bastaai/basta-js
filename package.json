@@ -1,9 +1,9 @@
 {
   "name": "@bastaai/basta-js",
-  "version": "0.1.0-beta.70",
+  "version": "0.1.0-beta.71",
   "description": "A lightweight package for client-side apps to easily access and manage data from Basta's online auctions, providing a seamless integration for creating engaging auction experiences.",
   "main": "dist/cjs/index.js",
-  "types": "types/index.d.ts",
+  "types": "index.d.ts",
   "exports": {
     ".": {
       "import": {
@@ -25,8 +25,7 @@
   ],
   "files": [
     "dist",
-    "src",
-    "types"
+    "src"
   ],
   "scripts": {
     "debug": "nodemon -e ts --watch src --exec \"npm run build\"",
