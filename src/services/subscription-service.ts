@@ -74,7 +74,7 @@ export class SubscriptionService implements ISubscriptionService {
           // This may occur:
           // 1. In response to GQL.CONNECTION_INIT
           // 2. In case of parsing errors in the client which will not disconnect.
-          console.error('Connection error');
+          console.error('Connection error...');
           break;
         }
         case GQL.CONNECTION_KEEP_ALIVE: {
