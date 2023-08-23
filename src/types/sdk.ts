@@ -3,7 +3,7 @@ import {
   Item,
   Item_ChangedSubscriptionVariables,
   Sale,
-} from '../src/gql/generated/types';
+} from '../gql/generated/types';
 
 export type BastaResponse<T> = {
   data: T;
@@ -26,13 +26,13 @@ export interface ISaleService {
   get(saleId: string): Promise<Sale>;
 }
 
-type SubscriptionCallbacksType<T> = {
+export type SubscriptionCallbacksType<T> = {
   onData: (data: T) => void;
   onError: (errors: string[]) => void;
   onComplete: () => void;
 };
 
-type SubscriptionVariablesMapped<T> = T extends Item
+export type SubscriptionVariablesMapped<T> = T extends Item
   ? Item_ChangedSubscriptionVariables
   : T extends Sale
   ? object // TODO

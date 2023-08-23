@@ -1,11 +1,11 @@
 // https://rob-blackbourn.medium.com/writing-a-graphql-websocket-subscriber-in-javascript-4451abb9cd60
 
-import { BastaRequest } from '../../types/request';
+import { BastaRequest } from '../types/request';
 import {
   ISubscriptionService,
   SubscriptionCallbacksType,
   SubscriptionVariablesMapped,
-} from '../../types/sdk';
+} from '../types/sdk';
 import { ITEM_CHANGED } from '../gql/generated/operations';
 import {
   Item,
@@ -74,7 +74,7 @@ export class SubscriptionService implements ISubscriptionService {
           // This may occur:
           // 1. In response to GQL.CONNECTION_INIT
           // 2. In case of parsing errors in the client which will not disconnect.
-          console.error('Connection error');
+          console.error('Connection error...');
           break;
         }
         case GQL.CONNECTION_KEEP_ALIVE: {
