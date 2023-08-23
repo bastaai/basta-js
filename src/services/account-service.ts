@@ -1,5 +1,5 @@
-import { BastaRequest } from '../types/request';
-import { BastaResponse, IAccountService } from '../types/sdk';
+import { BastaRequest } from '../../types/request';
+import { BastaResponse, IAccountService } from '../../types/sdk';
 import {
   GET_ACCOUNT_BY_HANDLE,
   GET_ACCOUNT_BY_ID,

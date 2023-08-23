@@ -1,10 +1,10 @@
-import type { BastaRequest } from './types/request';
+import type { BastaRequest } from '../types/request';
 import {
   IBasta,
   IAccountService,
   ISaleService,
   ISubscriptionService,
-} from './types/sdk';
+} from '../types/sdk';
 import {
   SaleStatus,
   ItemStatus,

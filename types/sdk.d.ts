@@ -3,7 +3,7 @@ import {
   Item,
   Item_ChangedSubscriptionVariables,
   Sale,
-} from '../gql/generated/types';
+} from '../src/gql/generated/types';
 
 export type BastaResponse<T> = {
   data: T;
