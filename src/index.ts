@@ -1,21 +1,32 @@
-import type { BastaRequest } from './types/request';
+import type { BastaRequest } from '../types/request';
 import {
   IBasta,
   IAccountService,
   ISaleService,
   ISubscriptionService,
-} from './types/sdk';
+} from '../types/sdk';
 import {
   SaleStatus,
   ItemStatus,
   BidStatus,
   ClosingMethod,
+  Item,
+  Account,
+  Sale,
 } from './gql/generated/types';
 import { AccountService } from './services/account-service';
 import { SaleService } from './services/sale-service';
 import { SubscriptionService } from './services/subscription-service';
 
-export { SaleStatus, ItemStatus, BidStatus, ClosingMethod };
+export {
+  SaleStatus,
+  ItemStatus,
+  BidStatus,
+  ClosingMethod,
+  Item,
+  Sale,
+  Account,
+};
 
 export const initBasta = (staging = false) => {
   return new Basta(staging);

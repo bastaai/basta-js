@@ -1,9 +1,7 @@
-import {
-  Account,
-  Item,
-  Item_ChangedSubscriptionVariables,
-  Sale,
-} from '../gql/generated/types';
+import { Item_ChangedSubscriptionVariables } from '../src/gql/generated/types';
+import { Account } from './account';
+import { Item } from './item';
+import { Sale } from './sale';
 
 export type BastaResponse<T> = {
   data: T;

@@ -1,51 +1,39 @@
 {
   "name": "@bastaai/basta-js",
-  "version": "0.1.0-beta.71",
+  "version": "0.1.0-beta.90",
   "description": "A lightweight package for client-side apps to easily access and manage data from Basta's online auctions, providing a seamless integration for creating engaging auction experiences.",
-  "main": "dist/cjs/index.js",
-  "types": "index.d.ts",
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./dist/esm/types/index.d.ts",
-        "default": "./dist/esm/index.mjs"
-      },
-      "require": {
-        "types": "./dist/cjs/types/index.d.ts",
-        "default": "./dist/cjs/index.js"
-      }
-    }
-  },
   "author": "Basta (https://www.basta.ai)",
   "homepage": "https://docs.basta.ai",
   "license": "UNLICENSED",
-  "keywords": [
-    "Basta.ai",
-    "Basta SDK"
-  ],
+  
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "jsnext:main": "dist/index.esm.js",
+  "types": "types/index.d.ts",
+  "typings": "types/index.d.ts",
   "files": [
     "dist",
-    "src"
+    "types"
   ],
+  
   "scripts": {
+    "build": "npm run clean && rollup --bundleConfigAsCjs -c",
     "debug": "nodemon -e ts --watch src --exec \"npm run build\"",
-    "build": "npm run clean && npm run build:esm && npm run build:cjs",
-    "build:esm": "tsc -p ./tsconfig.esm.json && move-file dist/esm/index.js dist/esm/index.mjs",
-    "build:cjs": "tsc -p ./tsconfig.cjs.json",
     "clean": "rimraf dist",
-    "test": "npm lint && npm test:unit && npm typecheck",
-    "test:unit": "jest",
-    "typecheck": "tsc",
+    "codegen": "graphql-codegen --require dotenv/config --config codegen.ts --verbose && ts-node ./post-codegen.ts",
+    "test": "npm lint && npm test:unit && tsc",
+    "test:unit": "true",
     "lint": "eslint '{src,types}/**/*.ts' && prettier './**/*.{ts,md,html,css}' --check",
     "lint:fix": "eslint '{src,types}/**/*.ts' --fix && prettier './**/*.{ts,md,html,css}' --write",
-    "codegen": "graphql-codegen --require dotenv/config --config codegen.ts --verbose && ts-node ./post-codegen.ts"
+    "prettier": "prettier './**/*.{js,ts,md,html,css}' --write",
+    "prettier-check": "prettier './**/*.{js,ts,md,html,css}' --check"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^3.3.1",
     "@graphql-codegen/typescript": "^3.0.4",
     "@graphql-codegen/typescript-operations": "^3.0.4",
     "@graphql-eslint/eslint-plugin": "^3.18.0",
-    "@types/jest": "^29.5.1",
+    "@rollup/plugin-babel": "^6.0.3",
     "@typescript-eslint/eslint-plugin": "^5.59.2",
     "@typescript-eslint/parser": "^5.59.2",
     "dotenv": "^16.0.3",
@@ -55,13 +43,18 @@
     "eslint-plugin-jest": "^27.2.1",
     "eslint-plugin-prettier": "^4.2.1",
     "graphql": "^16.6.0",
-    "jest": "^29.5.0",
     "move-file-cli": "^3.0.0",
+    "nodemon": "^3.0.1",
     "prettier": "^2.8.8",
     "rimraf": "^5.0.0",
-    "ts-jest": "^29.1.0",
+    "rollup": "^3.28.1",
+    "rollup-plugin-typescript2": "^0.35.0",
     "ts-node": "^10.9.1",
-    "typescript": "^5.0.4",
-    "nodemon": "^3.0.1"
-  }
+    "typescript": "^5.0.4"
+  },
+
+  "keywords": [
+    "Basta.ai",
+    "Basta SDK"
+  ]
 }

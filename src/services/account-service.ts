@@ -1,11 +1,11 @@
-import { BastaRequest } from '../types/request';
-import { BastaResponse, IAccountService } from '../types/sdk';
+import { Account } from '../../types/account';
+import { BastaRequest } from '../../types/request';
+import { BastaResponse, IAccountService } from '../../types/sdk';
 import {
   GET_ACCOUNT_BY_HANDLE,
   GET_ACCOUNT_BY_ID,
 } from '../gql/generated/operations';
 import {
-  Account,
   Get_Account_By_HandleQuery,
   Get_Account_By_HandleQueryVariables,
   Get_Account_By_IdQuery,
@@ -33,13 +33,9 @@ export class AccountService implements IAccountService {
       }),
     });
 
-    const json: BastaResponse<{
-      account: Get_Account_By_IdQuery;
-    }> = await res.json();
+    const json: BastaResponse<Get_Account_By_IdQuery> = await res.json();
 
-    const sanitized: Account = JSON.parse(JSON.stringify(json.data.account));
-
-    return sanitized;
+    return json.data.account;
   }
 
   async getByHandle(handle: string): Promise<Account> {
@@ -56,12 +52,8 @@ export class AccountService implements IAccountService {
       }),
     });
 
-    const json: BastaResponse<{
-      account: Get_Account_By_HandleQuery;
-    }> = await res.json();
+    const json: BastaResponse<Get_Account_By_HandleQuery> = await res.json();
 
-    const sanitized: Account = JSON.parse(JSON.stringify(json.data.account));
-
-    return sanitized;
+    return json.data.accountByHandle;
   }
 }
