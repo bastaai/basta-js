@@ -1,5 +1,6 @@
 // https://rob-blackbourn.medium.com/writing-a-graphql-websocket-subscriber-in-javascript-4451abb9cd60
 
+import { Item } from '../../types/item';
 import { BastaRequest } from '../../types/request';
 import {
   ISubscriptionService,
@@ -7,10 +8,7 @@ import {
   SubscriptionVariablesMapped,
 } from '../../types/sdk';
 import { ITEM_CHANGED } from '../gql/generated/operations';
-import {
-  Item,
-  Item_ChangedSubscriptionVariables,
-} from '../gql/generated/types';
+import { Item_ChangedSubscriptionVariables } from '../gql/generated/types';
 
 const GQL = {
   CONNECTION_INIT: 'connection_init',
