@@ -49,14 +49,18 @@ export class SubscriptionService implements ISubscriptionService {
   ): void {
     this._webSocket = new WebSocket(this._bastaReq.socketUrl);
 
+    const sendGqlMessage = (
+      type: string,
+      payload: { query: string; variables: SubscriptionVariablesMapped<T> }
+    ) => {
+      ws.send(JSON.stringify({ type, payload }));
+    };
+
     const ws = this._webSocket;
     ws.onopen = () => {
-      ws.send(
-        JSON.stringify({
-          type: GQL.START,
-          payload: { query: query, variables: variables },
-        })
-      );
+      const payload = { query: query, variables: variables };
+      sendGqlMessage(GQL.CONNECTION_INIT, payload);
+      sendGqlMessage(GQL.START, payload);
     };
 
     ws.onmessage = (e) => {
@@ -96,7 +100,7 @@ export class SubscriptionService implements ISubscriptionService {
         }
         case GQL.DATA: {
           // This message is sent after GQL.START to transfer the result of the GraphQL subscription.
-          console.log('Juicy data', event.data);
+          console.log('Juicy data', event);
 
           if (event.errors) {
             callbacks.onError(event.errors);
