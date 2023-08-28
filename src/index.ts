@@ -10,26 +10,15 @@ import {
   ItemStatus,
   BidStatus,
   ClosingMethod,
-  Item,
-  Account,
-  Sale,
 } from './gql/generated/types';
 import { AccountService } from './services/account-service';
 import { SaleService } from './services/sale-service';
 import { SubscriptionService } from './services/subscription-service';
 
-export {
-  SaleStatus,
-  ItemStatus,
-  BidStatus,
-  ClosingMethod,
-  Item,
-  Sale,
-  Account,
-};
+export { SaleStatus, ItemStatus, BidStatus, ClosingMethod };
 
-export const initBasta = (staging = false) => {
-  return new Basta(staging);
+export const initBasta = (isStaging: boolean) => {
+  return new Basta(isStaging);
 };
 
 class Basta implements IBasta {
@@ -39,8 +28,8 @@ class Basta implements IBasta {
 
   private readonly _bastaReq: BastaRequest;
 
-  constructor(staging = false) {
-    const baseUrl = staging ? 'client.api.basta.wtf' : 'client.api.basta.ai';
+  constructor(isStaging: boolean) {
+    const baseUrl = isStaging ? 'client.api.basta.wtf' : 'client.api.basta.ai';
 
     this._bastaReq = {
       url: `https://${baseUrl}/graphql`,

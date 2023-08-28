@@ -1,3 +1,3 @@
-import { Bid } from '../gql/generated/types';
+import { Bid } from '../src/gql/generated/types';
 
 export type { Bid };

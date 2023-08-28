@@ -33,9 +33,10 @@ export class SubscriptionService implements ISubscriptionService {
 
   item(
     variables: Item_ChangedSubscriptionVariables,
-    callbacks: SubscriptionCallbacksType<Item>
+    callbacks: SubscriptionCallbacksType<Item>,
+    userToken?: string | undefined
   ): void {
-    this.subscribe<Item>(ITEM_CHANGED, variables, callbacks);
+    this.subscribe<Item>(ITEM_CHANGED, variables, callbacks, userToken);
   }
 
   sale(): void {
@@ -45,7 +46,8 @@ export class SubscriptionService implements ISubscriptionService {
   private subscribe<T>(
     query: string,
     variables: SubscriptionVariablesMapped<T>,
-    callbacks: SubscriptionCallbacksType<T>
+    callbacks: SubscriptionCallbacksType<T>,
+    userToken: string | undefined
   ): void {
     this._webSocket = new WebSocket(this._bastaReq.socketUrl);
     const ws = this._webSocket;
@@ -63,7 +65,7 @@ export class SubscriptionService implements ISubscriptionService {
         JSON.stringify({
           type: GQL.CONNECTION_INIT,
           payload: {
-            token: 'eitthvað',
+            token: userToken,
           },
         })
       );
