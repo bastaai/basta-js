@@ -48,6 +48,7 @@ export class SubscriptionService implements ISubscriptionService {
     callbacks: SubscriptionCallbacksType<T>
   ): void {
     this._webSocket = new WebSocket(this._bastaReq.socketUrl);
+    const ws = this._webSocket;
 
     const sendGqlMessage = (
       type: string,
@@ -56,10 +57,17 @@ export class SubscriptionService implements ISubscriptionService {
       ws.send(JSON.stringify({ type, payload }));
     };
 
-    const ws = this._webSocket;
     ws.onopen = () => {
       const payload = { query: query, variables: variables };
-      sendGqlMessage(GQL.CONNECTION_INIT, payload);
+      ws.send(
+        JSON.stringify({
+          type: GQL.CONNECTION_INIT,
+          payload: {
+            token: 'eitthvað',
+          },
+        })
+      );
+
       sendGqlMessage(GQL.START, payload);
     };
 
