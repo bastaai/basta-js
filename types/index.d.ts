@@ -13,4 +13,4 @@ export { Bid } from './bid';
 
 export { SaleStatus, ItemStatus, BidStatus, ClosingMethod };
 
-export const initBasta: (staging: boolean) => IBasta;
+export const initBasta: (isStaging: boolean) => IBasta;

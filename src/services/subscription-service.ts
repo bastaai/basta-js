@@ -33,9 +33,10 @@ export class SubscriptionService implements ISubscriptionService {
 
   item(
     variables: Item_ChangedSubscriptionVariables,
-    callbacks: SubscriptionCallbacksType<Item>
+    callbacks: SubscriptionCallbacksType<Item>,
+    userToken?: string | undefined
   ): void {
-    this.subscribe<Item>(ITEM_CHANGED, variables, callbacks);
+    this.subscribe<Item>(ITEM_CHANGED, variables, callbacks, userToken);
   }
 
   sale(): void {
@@ -45,18 +46,31 @@ export class SubscriptionService implements ISubscriptionService {
   private subscribe<T>(
     query: string,
     variables: SubscriptionVariablesMapped<T>,
-    callbacks: SubscriptionCallbacksType<T>
+    callbacks: SubscriptionCallbacksType<T>,
+    userToken: string | undefined
   ): void {
     this._webSocket = new WebSocket(this._bastaReq.socketUrl);
-
     const ws = this._webSocket;
+
+    const sendGqlMessage = (
+      type: string,
+      payload: { query: string; variables: SubscriptionVariablesMapped<T> }
+    ) => {
+      ws.send(JSON.stringify({ type, payload }));
+    };
+
     ws.onopen = () => {
+      const payload = { query: query, variables: variables };
       ws.send(
         JSON.stringify({
-          type: GQL.START,
-          payload: { query: query, variables: variables },
+          type: GQL.CONNECTION_INIT,
+          payload: {
+            token: userToken,
+          },
         })
       );
+
+      sendGqlMessage(GQL.START, payload);
     };
 
     ws.onmessage = (e) => {
@@ -96,7 +110,7 @@ export class SubscriptionService implements ISubscriptionService {
         }
         case GQL.DATA: {
           // This message is sent after GQL.START to transfer the result of the GraphQL subscription.
-          console.log('Juicy data', event.data);
+          console.log('Juicy data', event);
 
           if (event.errors) {
             callbacks.onError(event.errors);

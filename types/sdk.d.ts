@@ -39,7 +39,8 @@ export type SubscriptionVariablesMapped<T> = T extends Item
 export interface ISubscriptionService {
   item(
     variables: SubscriptionVariablesMapped<Item>,
-    callbacks: SubscriptionCallbacksType<Item>
+    callbacks: SubscriptionCallbacksType<Item>,
+    userToken?: string | undefined
   ): void;
   sale(variables: string, callbacks: SubscriptionCallbacksType<Sale>): void;
 }
