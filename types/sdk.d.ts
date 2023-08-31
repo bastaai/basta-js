@@ -1,4 +1,3 @@
-import { GraphQLError } from 'graphql';
 import { Item_ChangedSubscriptionVariables } from '../src/gql/generated/types';
 import { Account } from './account';
 import { Item } from './item';
@@ -25,23 +24,27 @@ export interface ISaleService {
   get(saleId: string): Promise<Sale>;
 }
 
-export type SubscriptionCallbacksType<T> = {
-  onData: (data: T) => void;
-  onError: (errors: readonly GraphQLError[]) => void;
-  onComplete: () => void;
-};
-
 export type SubscriptionVariablesMapped<T> = T extends Item
   ? Item_ChangedSubscriptionVariables
   : T extends Sale
   ? object
   : never;
 
+export type SubscriptionStatus = 'CONNECTING' | 'CONNECTED' | 'DISCONNECTED';
+
+export type OnUpdateType<T> = (
+  data: T | null,
+  status: SubscriptionStatus,
+  errors?: string[]
+) => void;
+
+export type SubscriptionProps<T> = {
+  onUpdate: OnUpdateType<T>;
+  userToken?: string | undefined | null;
+  variables: SubscriptionVariablesMapped<T>;
+};
+
 export interface ISubscriptionService {
-  item(
-    variables: SubscriptionVariablesMapped<Item>,
-    callbacks: SubscriptionCallbacksType<Item>,
-    userToken?: string | undefined
-  ): void;
-  sale(variables: string, callbacks: SubscriptionCallbacksType<Sale>): void;
+  item(props: SubscriptionProps<Item>): () => void;
+  sale(props: SubscriptionProps<Sale>): () => void;
 }

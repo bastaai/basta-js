@@ -4,7 +4,7 @@ import {
   ItemStatus,
   SaleStatus,
 } from '../src/gql/generated/types';
-import { IBasta } from './sdk';
+import { IBasta, SubscriptionStatus } from './sdk';
 
 export { Account } from './account';
 export { Sale } from './sale';
@@ -14,3 +14,5 @@ export { Bid } from './bid';
 export { SaleStatus, ItemStatus, BidStatus, ClosingMethod };
 
 export const initBasta: (isStaging: boolean) => IBasta;
+
+export { SubscriptionStatus };

@@ -1,11 +1,12 @@
-// https://rob-blackbourn.medium.com/writing-a-graphql-websocket-subscriber-in-javascript-4451abb9cd60
 import { createClient } from 'graphql-ws';
 
 import { Item } from '../../types';
 import { BastaRequest } from '../../types/request';
 import {
   ISubscriptionService,
-  SubscriptionCallbacksType,
+  OnUpdateType,
+  SubscriptionStatus,
+  SubscriptionProps,
   SubscriptionVariablesMapped,
 } from '../../types/sdk';
 import { ITEM_CHANGED } from '../gql/generated/operations';
@@ -13,61 +14,78 @@ import { ItemChanged, SaleChanged } from '../gql/generated/types';
 
 export class SubscriptionService implements ISubscriptionService {
   protected readonly _bastaReq: BastaRequest;
+  protected _currentStatus: SubscriptionStatus = 'DISCONNECTED';
 
   constructor(bastaReq: BastaRequest) {
     this._bastaReq = bastaReq;
   }
 
-  item(
-    variables: SubscriptionVariablesMapped<Item>,
-    callbacks: SubscriptionCallbacksType<Item>,
-    userToken?: string | undefined
-  ): void {
-    this.subscribe<Item>(ITEM_CHANGED, variables, callbacks, userToken);
+  item(props: SubscriptionProps<Item>): () => void {
+    return this.subscribe<Item>(
+      ITEM_CHANGED,
+      props.variables,
+      props.onUpdate,
+      props.userToken
+    );
   }
 
-  sale(): void {
+  sale(): () => void {
     throw new Error('Method not implemented.');
   }
 
   private subscribe<T>(
     query: string,
     variables: SubscriptionVariablesMapped<T>,
-    callbacks: SubscriptionCallbacksType<T>,
-    userToken: string | undefined
-  ): void {
+    onUpdate: OnUpdateType<T>,
+    userToken: string | undefined | null
+  ): () => void {
+    const notifyStatus = (status: SubscriptionStatus) => {
+      this._currentStatus = status;
+      onUpdate(null, status);
+    };
+
     const client = createClient({
       url: this._bastaReq.socketUrl,
       connectionParams: {
         token: userToken,
       },
+      on: {
+        error: () => notifyStatus('DISCONNECTED'),
+        closed: () => notifyStatus('DISCONNECTED'),
+        connected: () => notifyStatus('CONNECTED'),
+        connecting: () => notifyStatus('CONNECTING'),
+      },
     });
 
-    const start = async () => {
-      const subscription = client.iterate({
-        query: query,
-        variables: {
-          ...variables,
-        },
-      });
+    const subscription = client.iterate({
+      query: query,
+      variables: {
+        ...variables,
+      },
+    });
 
+    (async () => {
       for await (const event of subscription) {
-        console.log('HEHEHEEH', event);
-
         if (event.errors) {
-          callbacks.onError(event.errors);
-        } else if (event.data) {
+          // We're already notifying errors in the `createClient` (above), so we do nothing.
+          return;
+        }
+
+        if (event.data) {
+          // Here comes the juice!
           if ('itemChanged' in event.data) {
+            // Item has changed
             const data = event.data.itemChanged as ItemChanged;
-            callbacks.onData(data as T);
+            onUpdate(data as T, this._currentStatus);
           } else if ('saleChanged' in event.data) {
+            // Sale has changed
             const data = event.data.saleChanged as SaleChanged;
-            callbacks.onData(data as T);
+            onUpdate(data as T, this._currentStatus);
           }
         }
       }
-    };
+    })();
 
-    start();
+    return () => client.dispose();
   }
 }
