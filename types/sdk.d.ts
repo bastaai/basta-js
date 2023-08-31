@@ -1,3 +1,4 @@
+import { GraphQLError } from 'graphql';
 import { Item_ChangedSubscriptionVariables } from '../src/gql/generated/types';
 import { Account } from './account';
 import { Item } from './item';
@@ -26,14 +27,14 @@ export interface ISaleService {
 
 export type SubscriptionCallbacksType<T> = {
   onData: (data: T) => void;
-  onError: (errors: string[]) => void;
+  onError: (errors: readonly GraphQLError[]) => void;
   onComplete: () => void;
 };
 
 export type SubscriptionVariablesMapped<T> = T extends Item
   ? Item_ChangedSubscriptionVariables
   : T extends Sale
-  ? object // TODO
+  ? object
   : never;
 
 export interface ISubscriptionService {

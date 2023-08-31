@@ -5,7 +5,6 @@
   "author": "Basta (https://www.basta.ai)",
   "homepage": "https://docs.basta.ai",
   "license": "UNLICENSED",
-  
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "jsnext:main": "dist/index.esm.js",
@@ -15,7 +14,6 @@
     "dist",
     "types"
   ],
-  
   "scripts": {
     "build": "npm run clean && rollup --bundleConfigAsCjs -c",
     "debug": "nodemon -e ts --watch src --exec \"npm run build\"",
@@ -51,9 +49,11 @@
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
   },
-
   "keywords": [
     "Basta.ai",
     "Basta SDK"
-  ]
+  ],
+  "dependencies": {
+    "graphql-ws": "^5.14.0"
+  }
 }
