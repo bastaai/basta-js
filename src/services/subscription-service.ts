@@ -1,140 +1,91 @@
-// https://rob-blackbourn.medium.com/writing-a-graphql-websocket-subscriber-in-javascript-4451abb9cd60
+import { createClient } from 'graphql-ws';
 
-import { Item } from '../../types/item';
+import { Item } from '../../types';
 import { BastaRequest } from '../../types/request';
 import {
   ISubscriptionService,
-  SubscriptionCallbacksType,
+  OnUpdateType,
+  SubscriptionStatus,
+  SubscriptionProps,
   SubscriptionVariablesMapped,
 } from '../../types/sdk';
 import { ITEM_CHANGED } from '../gql/generated/operations';
-import { Item_ChangedSubscriptionVariables } from '../gql/generated/types';
-
-const GQL = {
-  CONNECTION_INIT: 'connection_init',
-  CONNECTION_ACK: 'connection_ack',
-  CONNECTION_ERROR: 'connection_error',
-  CONNECTION_KEEP_ALIVE: 'ka',
-  START: 'start',
-  STOP: 'stop',
-  CONNECTION_TERMINATE: 'connection_terminate',
-  DATA: 'data',
-  ERROR: 'error',
-  COMPLETE: 'complete',
-};
+import { ItemChanged, SaleChanged } from '../gql/generated/types';
 
 export class SubscriptionService implements ISubscriptionService {
   protected readonly _bastaReq: BastaRequest;
-  private _webSocket: WebSocket | undefined;
+  protected _currentStatus: SubscriptionStatus = 'DISCONNECTED';
 
   constructor(bastaReq: BastaRequest) {
     this._bastaReq = bastaReq;
   }
 
-  item(
-    variables: Item_ChangedSubscriptionVariables,
-    callbacks: SubscriptionCallbacksType<Item>,
-    userToken?: string | undefined
-  ): void {
-    this.subscribe<Item>(ITEM_CHANGED, variables, callbacks, userToken);
+  item(props: SubscriptionProps<Item>): () => void {
+    return this.subscribe<Item>(
+      ITEM_CHANGED,
+      props.variables,
+      props.onUpdate,
+      props.userToken
+    );
   }
 
-  sale(): void {
+  sale(): () => void {
     throw new Error('Method not implemented.');
   }
 
   private subscribe<T>(
     query: string,
     variables: SubscriptionVariablesMapped<T>,
-    callbacks: SubscriptionCallbacksType<T>,
-    userToken: string | undefined
-  ): void {
-    this._webSocket = new WebSocket(this._bastaReq.socketUrl);
-    const ws = this._webSocket;
-
-    const sendGqlMessage = (
-      type: string,
-      payload: { query: string; variables: SubscriptionVariablesMapped<T> }
-    ) => {
-      ws.send(JSON.stringify({ type, payload }));
+    onUpdate: OnUpdateType<T>,
+    userToken: string | undefined | null
+  ): () => void {
+    const notifyStatus = (status: SubscriptionStatus) => {
+      this._currentStatus = status;
+      onUpdate(null, status);
     };
 
-    ws.onopen = () => {
-      const payload = { query: query, variables: variables };
-      ws.send(
-        JSON.stringify({
-          type: GQL.CONNECTION_INIT,
-          payload: {
-            token: userToken,
-          },
-        })
-      );
+    const client = createClient({
+      url: this._bastaReq.socketUrl,
+      connectionParams: {
+        token: userToken,
+      },
+      on: {
+        error: () => notifyStatus('DISCONNECTED'),
+        closed: () => notifyStatus('DISCONNECTED'),
+        connected: () => notifyStatus('CONNECTED'),
+        connecting: () => notifyStatus('CONNECTING'),
+      },
+    });
 
-      sendGqlMessage(GQL.START, payload);
-    };
+    const subscription = client.iterate({
+      query: query,
+      variables: {
+        ...variables,
+      },
+    });
 
-    ws.onmessage = (e) => {
-      const event = JSON.parse(e.data);
+    (async () => {
+      for await (const event of subscription) {
+        if (event.errors) {
+          // We're already notifying errors in the `createClient` (above), so we do nothing.
+          return;
+        }
 
-      switch (event.type) {
-        case GQL.CONNECTION_ACK: {
-          // This is the successful response to GQL.CONNECTION_INIT
-          console.log('Acknowledged the connection');
-          break;
-        }
-        case GQL.CONNECTION_ERROR: {
-          // This may occur:
-          // 1. In response to GQL.CONNECTION_INIT
-          // 2. In case of parsing errors in the client which will not disconnect.
-          console.error('Connection error...');
-          break;
-        }
-        case GQL.CONNECTION_KEEP_ALIVE: {
-          // This may occur:
-          // 1. After GQL.CONNECTION_ACK,
-          // 2. Periodically to keep the connection alive.
-          console.log('Keeping alive');
-          break;
-        }
-        case GQL.ERROR: {
-          // This method is sent when a subscription fails. This is usually dues to validation errors
-          // as resolver errors are returned in GQL.DATA messages.
-          console.error('Error happened');
-          callbacks.onError(['An error occurred.']);
-          break;
-        }
-        case GQL.COMPLETE: {
-          // This is sent when the operation is done and no more dta will be sent.
-          console.log('Completed connection');
-          break;
-        }
-        case GQL.DATA: {
-          // This message is sent after GQL.START to transfer the result of the GraphQL subscription.
-          console.log('Juicy data', event);
-
-          if (event.errors) {
-            callbacks.onError(event.errors);
-          } else if ('itemChanged' in event.payload.data) {
-            callbacks.onData(event.payload.data.itemChanged);
-          } else if ('saleChanged' in event.payload.data) {
-            callbacks.onData(event.payload.data.saleChanged);
+        if (event.data) {
+          // Here comes the juice!
+          if ('itemChanged' in event.data) {
+            // Item has changed
+            const data = event.data.itemChanged as ItemChanged;
+            onUpdate(data as T, this._currentStatus);
+          } else if ('saleChanged' in event.data) {
+            // Sale has changed
+            const data = event.data.saleChanged as SaleChanged;
+            onUpdate(data as T, this._currentStatus);
           }
-
-          break;
-        }
-        default: {
-          console.log('default some other type');
-          break;
         }
       }
-    };
+    })();
 
-    ws.onclose = () => {
-      callbacks.onComplete();
-    };
-
-    ws.onerror = () => {
-      callbacks.onError(['Error has occurred!']);
-    };
+    return () => client.dispose();
   }
 }

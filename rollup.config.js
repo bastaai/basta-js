@@ -17,6 +17,7 @@ const config = {
       extensions: ['.ts', '.js', '.tsx', '.jsx'],
     }),
   ],
+  external: ['graphql-ws'],
 };
 
 export default config;
