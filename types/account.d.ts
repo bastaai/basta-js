@@ -1,16 +1,26 @@
-import { Link, Maybe } from '../src/gql/generated/types';
+export type Link = {
+  type: LinkType;
+  url: string;
+};
+
+export enum LinkType {
+  Instagram = 'INSTAGRAM',
+  Tiktok = 'TIKTOK',
+  Website = 'WEBSITE',
+  Youtube = 'YOUTUBE',
+}
 
 export type Account = {
   /** Description for account */
-  description?: Maybe<string>;
+  description?: string | null | undefined;
   /** Account handle, identifier for the account */
-  handle?: Maybe<string>;
+  handle?: string | null | undefined;
   /** ID of the account */
   id: string;
   /** Url for the profile image */
-  imageUrl?: Maybe<string>;
+  imageUrl?: string | null | undefined;
   /** Links associated with account */
-  links: Array<Link>;
+  links: Link[];
   /** Name associated with account */
   name: string;
 };
