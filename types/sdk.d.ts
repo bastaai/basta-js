@@ -1,5 +1,10 @@
-import { Item_ChangedSubscriptionVariables } from '../src/gql/generated/types';
+import {
+  Bid,
+  BidType,
+  Item_ChangedSubscriptionVariables,
+} from '../src/gql/generated/types';
 import { Account } from './account';
+import { BidResponse } from './bid';
 import { Item } from './item';
 import { Sale } from './sale';
 
@@ -22,6 +27,29 @@ export interface IAccountService {
 export interface ISaleService {
   /** Gets a Basta sale. */
   get(saleId: string): Promise<Sale>;
+}
+
+export interface IBidService {
+  /** Places a bid on a Basta item. */
+  placeBid(
+    params: {
+      saleId: string;
+      itemId: string;
+      amount: number;
+      type: BidType;
+    },
+    userToken: string
+  ): Promise<BidResponse>;
+  /** Places a max bid on a Basta item. */
+  placeMaxBid(
+    params: {
+      saleId: string;
+      itemId: string;
+      amount: number;
+      type: BidType;
+    },
+    userToken: string
+  ): Promise<BidResponse>;
 }
 
 export type SubscriptionVariablesMapped<T> = T extends Item

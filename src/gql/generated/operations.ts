@@ -1,3 +1,20 @@
+export const BID_ON_ITEM = `mutation BID_ON_ITEM($saleId: String!, $itemId: String!, $amount: Int!, $type: BidType!) {
+  bidOnItem(saleId: $saleId, itemId: $itemId, amount: $amount, type: $type) {
+    __typename
+    ... on BidPlacedSuccess {
+      __typename
+      bidStatus
+      date
+      amount
+    }
+    ... on BidPlacedError {
+      __typename
+      errorCode
+      error
+    }
+  }
+}`;
+
 export const GET_ACCOUNT_BY_HANDLE = `query GET_ACCOUNT_BY_HANDLE($handle: String!) {
   accountByHandle(handle: $handle) {
     id

@@ -4,6 +4,7 @@ import {
   IAccountService,
   ISaleService,
   ISubscriptionService,
+  IBidService,
 } from '../types/sdk';
 import {
   SaleStatus,
@@ -12,24 +13,26 @@ import {
   ClosingMethod,
 } from './gql/generated/types';
 import { AccountService } from './services/account-service';
+import { BidService } from './services/bid-service';
 import { SaleService } from './services/sale-service';
 import { SubscriptionService } from './services/subscription-service';
 
 export { SaleStatus, ItemStatus, BidStatus, ClosingMethod };
 
-export const initBasta = (isStaging: boolean) => {
-  return new Basta(isStaging);
+export const initBasta = () => {
+  return new Basta();
 };
 
 class Basta implements IBasta {
   readonly account: IAccountService;
   readonly sale: ISaleService;
   readonly subscribeTo: ISubscriptionService;
+  readonly bid: IBidService;
 
   private readonly _bastaReq: BastaRequest;
 
-  constructor(isStaging: boolean) {
-    const baseUrl = isStaging ? 'client.api.basta.wtf' : 'client.api.basta.ai';
+  constructor() {
+    const baseUrl = 'client.api.basta.ai';
 
     this._bastaReq = {
       url: `https://${baseUrl}/graphql`,
@@ -42,5 +45,6 @@ class Basta implements IBasta {
     this.account = new AccountService(this._bastaReq);
     this.sale = new SaleService(this._bastaReq);
     this.subscribeTo = new SubscriptionService(this._bastaReq);
+    this.bid = new BidService(this._bastaReq);
   }
 }
