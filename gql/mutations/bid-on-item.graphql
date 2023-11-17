@@ -1,0 +1,21 @@
+mutation BID_ON_ITEM(
+  $saleId: String!
+  $itemId: String!
+  $amount: Int!
+  $type: BidType!
+) {
+  bidOnItem(saleId: $saleId, itemId: $itemId, amount: $amount, type: $type) {
+    __typename
+    ... on BidPlacedSuccess {
+      __typename
+      bidStatus
+      date
+      amount
+    }
+    ... on BidPlacedError {
+      __typename
+      errorCode
+      error
+    }
+  }
+}

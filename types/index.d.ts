@@ -13,6 +13,6 @@ export { Bid } from './bid';
 
 export { SaleStatus, ItemStatus, BidStatus, ClosingMethod };
 
-export const initBasta: (isStaging: boolean) => IBasta;
+export const initBasta: () => IBasta;
 
 export { SubscriptionStatus };

@@ -131,6 +131,19 @@ export enum BidType {
   Offer = 'OFFER',
 }
 
+export type BidderVerificationInput = {
+  /** failed verification or if session is left wil send user to the cancelUrl */
+  cancelUrl: string;
+  /** successful verification is redirected to this url */
+  successUrl: string;
+};
+
+export type BidderVerificationLink = {
+  __typename?: 'BidderVerificationLink';
+  /** Redirection link to verification url */
+  url: string;
+};
+
 /** ClosingMethod represents how SaleItems are moved into CLOSING status and when they are CLOSED */
 export enum ClosingMethod {
   /**
@@ -178,6 +191,8 @@ export type Item = {
   bids: Array<Bid>;
   /** Current bid amount for the item in minor currency unit. */
   currentBid?: Maybe<number>;
+  /** Closing start and end timestamps if the item is closing */
+  dates?: Maybe<ItemDates>;
   /** Item Description */
   description?: Maybe<string>;
   /** Id of an item. */
@@ -186,7 +201,11 @@ export type Item = {
   images: Array<Image>;
   /** Overridden increment table for the item. */
   incrementTable?: Maybe<BidIncrementTable>;
-  /** Closing timestamp if the item is closing */
+  /**
+   * DEPRECATED.
+   * Closing timestamp if the item is closing
+   * @deprecated itemDates is deprecated. Use dates instead.
+   */
   itemDates?: Maybe<ItemDates>;
   /** Next 10 asks for the item in minor currency unit. */
   nextAsks: Array<number>;
@@ -285,6 +304,8 @@ export type Me = {
   bids: UserBidsConnection;
   /** Unique user id of the logged in user. */
   userId: string;
+  /** True if logged in user is a verified Basta bidder */
+  verifiedAsBidder: boolean;
 };
 
 /** Me object keeps information about the logged in user. */
@@ -296,14 +317,26 @@ export type MeBidsArgs = {
 export type Mutation = {
   __typename?: 'Mutation';
   /**
+   * AcceptBidderTerms.
+   * This method is only available to basta users and front ends written by Basta.
+   * Returns a RFC3339 timestamp of when bidder terms were accepted.
+   */
+  acceptBidderTerms: string;
+  /**
    * Place bid on a item for some amount. Can be of type NORMAL, MAX and OFFER.
    * Amount will be the max amount when bid is of type MAX.
    */
   bidOnItem: BidPlaced;
   /**
+   * CreateBidderVerification.
+   * This method is only available to basta users and front ends written by Basta.
+   */
+  createBidderVerification: BidderVerificationLink;
+  /**
    * DEPRECATED.
    * Use BidOnItem with type input = MAX.
    * Place max bid on a item for some amount.
+   * @deprecated maxBidOnItem is deprecated. Use bidOnItem with type as MAX instead.
    */
   maxBidOnItem: MaxBidPlaced;
 };
@@ -313,6 +346,10 @@ export type MutationBidOnItemArgs = {
   itemId: string;
   saleId: string;
   type: BidType;
+};
+
+export type MutationCreateBidderVerificationArgs = {
+  input?: InputMaybe<BidderVerificationInput>;
 };
 
 export type MutationMaxBidOnItemArgs = {
@@ -337,6 +374,31 @@ export type PageInfo = {
   startCursor: string;
 };
 
+export type PaymentSession = {
+  __typename?: 'PaymentSession';
+  /** PaymentSession status */
+  status: PaymentSessionStatus;
+  /** Redirection link to payment session url */
+  url: string;
+};
+
+export type PaymentSessionInput = {
+  /** accountId */
+  accountId: string;
+  /** Item identifier. */
+  itemId: string;
+  /** Sale identifier. */
+  saleId: string;
+};
+
+export enum PaymentSessionStatus {
+  Completed = 'COMPLETED',
+  Failed = 'FAILED',
+  NotSet = 'NOT_SET',
+  Processing = 'PROCESSING',
+  Started = 'STARTED',
+}
+
 export enum Permission {
   AccessPrivate = 'ACCESS_PRIVATE',
   BidOnItem = 'BID_ON_ITEM',
@@ -352,6 +414,8 @@ export type Query = {
   bids: UserBidsConnection;
   /** Get information about the logged in user. */
   me: Me;
+  /** This method is only available to basta users and front ends written by Basta */
+  paymentSession: PaymentSession;
   /** Get information about an sale. */
   sale: Sale;
   /** Get current server time. */
@@ -370,6 +434,10 @@ export type QueryBidsArgs = {
   after?: InputMaybe<string>;
   first: number;
   userId: string;
+};
+
+export type QueryPaymentSessionArgs = {
+  input?: InputMaybe<PaymentSessionInput>;
 };
 
 export type QuerySaleArgs = {
@@ -425,6 +493,11 @@ export type Sale = {
   sequenceNumber: number;
   /** Sale status. */
   status: SaleStatus;
+  /**
+   * Sale theme type.
+   * Only used for sales owned by basta.
+   */
+  themeType?: Maybe<number>;
   /** Sale Title */
   title?: Maybe<string>;
 };
@@ -526,6 +599,26 @@ export type UserBidsEdge = {
   cursor: string;
   /** UserBid node */
   node: UserBid;
+};
+
+export type Bid_On_ItemMutationVariables = Exact<{
+  saleId: string;
+  itemId: string;
+  amount: number;
+  type: BidType;
+}>;
+
+export type Bid_On_ItemMutation = {
+  __typename?: 'Mutation';
+  bidOnItem:
+    | { __typename: 'BidPlacedError'; errorCode: BidErrorCode; error: string }
+    | {
+        __typename: 'BidPlacedSuccess';
+        bidStatus: BidStatus;
+        date: string;
+        amount: number;
+      }
+    | { __typename: 'MaxBidPlacedSuccess' };
 };
 
 export type Get_Account_By_HandleQueryVariables = Exact<{
