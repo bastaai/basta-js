@@ -15,51 +15,66 @@ export class BidService implements IBidService {
     this._bastaReq = bastaReq;
   }
 
-  async placeBid({
-    saleId,
-    itemId,
-    amount,
-  }: {
-    saleId: string;
-    itemId: string;
-    amount: number;
-  }): Promise<BidResponse> {
-    return await this._doBid({
-      type: BidType.Normal,
-      amount: amount,
-      itemId: itemId,
-      saleId: saleId,
-    });
+  async placeBid(
+    {
+      saleId,
+      itemId,
+      amount,
+    }: {
+      saleId: string;
+      itemId: string;
+      amount: number;
+    },
+    userToken: string
+  ): Promise<BidResponse> {
+    return await this._doBid(
+      {
+        type: BidType.Normal,
+        amount: amount,
+        itemId: itemId,
+        saleId: saleId,
+      },
+      userToken
+    );
   }
 
-  async placeMaxBid({
-    saleId,
-    itemId,
-    amount,
-  }: {
-    saleId: string;
-    itemId: string;
-    amount: number;
-  }): Promise<BidResponse> {
-    return await this._doBid({
-      type: BidType.Max,
-      amount: amount,
-      itemId: itemId,
-      saleId: saleId,
-    });
+  async placeMaxBid(
+    {
+      saleId,
+      itemId,
+      amount,
+    }: {
+      saleId: string;
+      itemId: string;
+      amount: number;
+    },
+    userToken: string
+  ): Promise<BidResponse> {
+    return await this._doBid(
+      {
+        type: BidType.Max,
+        amount: amount,
+        itemId: itemId,
+        saleId: saleId,
+      },
+      userToken
+    );
   }
 
-  private async _doBid({
-    amount,
-    itemId,
-    saleId,
-    type,
-  }: {
-    amount: number;
-    itemId: string;
-    saleId: string;
-    type: BidType;
-  }): Promise<BidResponse> {
+  private async _doBid(
+    {
+      amount,
+      itemId,
+      saleId,
+      type,
+    }: {
+      amount: number;
+      itemId: string;
+      saleId: string;
+      type: BidType;
+    },
+    userToken: string
+  ): Promise<BidResponse> {
     const variables: Bid_On_ItemMutationVariables = {
       amount: amount,
       type: type,
@@ -69,7 +84,10 @@ export class BidService implements IBidService {
 
     const res = await fetch(this._bastaReq.url, {
       method: 'POST',
-      headers: this._bastaReq.headers,
+      headers: {
+        ...this._bastaReq.headers,
+        bidderToken: userToken,
+      },
       body: JSON.stringify({
         variables: variables,
         query: BID_ON_ITEM,

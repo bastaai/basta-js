@@ -31,19 +31,25 @@ export interface ISaleService {
 
 export interface IBidService {
   /** Places a bid on a Basta item. */
-  placeBid(params: {
-    saleId: string;
-    itemId: string;
-    amount: number;
-    type: BidType;
-  }): Promise<BidResponse>;
+  placeBid(
+    params: {
+      saleId: string;
+      itemId: string;
+      amount: number;
+      type: BidType;
+    },
+    userToken: string
+  ): Promise<BidResponse>;
   /** Places a max bid on a Basta item. */
-  placeMaxBid(params: {
-    saleId: string;
-    itemId: string;
-    amount: number;
-    type: BidType;
-  }): Promise<BidResponse>;
+  placeMaxBid(
+    params: {
+      saleId: string;
+      itemId: string;
+      amount: number;
+      type: BidType;
+    },
+    userToken: string
+  ): Promise<BidResponse>;
 }
 
 export type SubscriptionVariablesMapped<T> = T extends Item
