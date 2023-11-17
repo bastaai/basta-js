@@ -86,7 +86,7 @@ export class BidService implements IBidService {
       method: 'POST',
       headers: {
         ...this._bastaReq.headers,
-        bidderToken: userToken,
+        Authorization: `Bearer ${userToken}`,
       },
       body: JSON.stringify({
         variables: variables,
