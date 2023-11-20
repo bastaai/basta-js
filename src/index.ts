@@ -32,7 +32,8 @@ class Basta implements IBasta {
   private readonly _bastaReq: BastaRequest;
 
   constructor() {
-    const baseUrl = 'client.api.basta.ai';
+    const baseUrl =
+      process.env.NEXT_PUBLIC_BASTA_SDK_GRAPHQL || 'client.api.basta.ai';
 
     this._bastaReq = {
       url: `https://${baseUrl}/graphql`,
