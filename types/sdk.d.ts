@@ -15,6 +15,7 @@ export interface IBasta {
   account: IAccountService;
   sale: ISaleService;
   subscribeTo: ISubscriptionService;
+  bid: IBidService;
 }
 
 export interface IAccountService {
