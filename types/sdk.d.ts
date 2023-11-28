@@ -36,7 +36,6 @@ export interface IBidService {
       saleId: string;
       itemId: string;
       amount: number;
-      type: BidType;
     },
     userToken: string
   ): Promise<BidResponse>;
@@ -46,7 +45,6 @@ export interface IBidService {
       saleId: string;
       itemId: string;
       amount: number;
-      type: BidType;
     },
     userToken: string
   ): Promise<BidResponse>;
