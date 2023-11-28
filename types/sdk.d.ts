@@ -1,5 +1,4 @@
 import {
-  Bid,
   BidType,
   Item_ChangedSubscriptionVariables,
 } from '../src/gql/generated/types';

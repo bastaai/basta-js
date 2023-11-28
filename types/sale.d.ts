@@ -1,12 +1,7 @@
-import {
-  BidIncrementTable,
-  ClosingMethod,
-  Maybe,
-  SaleDates,
-  SaleStatus,
-  Image,
-} from '../src/gql/generated/types';
+import { ClosingMethod, SaleStatus } from '../src/gql/generated/types';
 import { Item } from './item';
+import { Image } from './image';
+import { BidIncrementTable } from './bid';
 
 /** Sale */
 export type Sale = {
@@ -19,21 +14,21 @@ export type Sale = {
    * This is the default currency.
    * Item currency overrides sale currency, at least one of them needs to be defined.
    */
-  currency?: Maybe<string>;
+  currency?: string | null | undefined;
   /** Sale Dates */
   dates: SaleDates;
   /** Sale Description */
-  description?: Maybe<string>;
+  description?: string | null | undefined;
   /** Sale ID */
   id: string;
   /** Images attached to sale */
-  images: Array<Image>;
+  images: Image[];
   /**
    * Default increment table for the sale.
    * If an increment table is associated with any items in the sale
    * this will be overidden.
    */
-  incrementTable?: Maybe<BidIncrementTable>;
+  incrementTable?: BidIncrementTable | null | undefined;
   /** Items that have been associated with this sale. */
   items: Item[];
   /** Sequence number of this sale. */
@@ -41,5 +36,13 @@ export type Sale = {
   /** Sale status. */
   status: SaleStatus;
   /** Sale Title */
-  title?: Maybe<string>;
+  title?: string | null | undefined;
+};
+
+/** Sale Dates */
+export type SaleDates = {
+  /** Date of when the sale is supposed to be automatically closed. */
+  closingDate?: string | null | undefined;
+  /** Date of when the sale is supposed to be automatically opened. */
+  openDate?: string | null | undefined;
 };

@@ -10,6 +10,7 @@ export { Account } from './account';
 export { Sale } from './sale';
 export { Item } from './item';
 export { Bid } from './bid';
+export { Image } from './image';
 
 export { SaleStatus, ItemStatus, BidStatus, ClosingMethod };
 

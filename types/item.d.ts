@@ -1,45 +1,44 @@
-import {
-  Bid,
-  BidIncrementTable,
-  BidStatus,
-  ItemDates,
-  ItemStatus,
-  Maybe,
-  Image,
-} from '../src/gql/generated/types';
+import { BidStatus, ItemStatus } from '../src/gql/generated/types';
+import { Bid, BidIncrementTable } from './bid';
+import { Image } from './image';
 
 /** An item (can be associcated with a sale or not) */
 export type Item = {
   /** Bid status of currently logged in user for this item */
-  bidStatus?: Maybe<BidStatus>;
+  bidStatus?: BidStatus | null | undefined;
   /** Get list of bids for this item */
-  bids: Array<Bid>;
+  bids: Bid[];
   /** Current bid amount for the item in minor currency unit. */
-  currentBid?: Maybe<number>;
+  currentBid?: number | null | undefined;
   /** Item Description */
-  description?: Maybe<string>;
+  description?: string | null | undefined;
   /** Id of an item. */
   id: string;
   /** Images attached to sale */
-  images: Array<Image>;
+  images: Image[];
   /** Overridden increment table for the item. */
-  incrementTable?: Maybe<BidIncrementTable>;
+  incrementTable?: BidIncrementTable | null | undefined;
   /** Closing timestamp if the item is closing */
-  itemDates?: Maybe<ItemDates>;
+  itemDates?: ItemDates | null | undefined;
   /** Next 10 asks for the item in minor currency unit. */
-  nextAsks: Array<number>;
+  nextAsks: number[];
   /** Was there an accepted bid that met the reserve price */
   reserveMet: boolean;
   /** The id of the sale that this item is associated to. */
   saleId: string;
   /** Starting bid of the item in minor currency unit. */
-  startingBid?: Maybe<number>;
+  startingBid?: number | null | undefined;
   /** Status of the item */
   status: ItemStatus;
   /** Item title */
-  title?: Maybe<string>;
+  title?: string | null | undefined;
   /** Number of bids that have been placed on the item */
   totalBids: number;
   /** Get list of bids for this item that is placed by the logged in user. */
-  userBids: Array<Bid>;
+  userBids: Bid[];
+};
+
+export type ItemDates = {
+  closingEnd?: string | null | undefined;
+  closingStart?: string | null | undefined;
 };
