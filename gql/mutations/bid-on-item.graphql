@@ -12,6 +12,12 @@ mutation BID_ON_ITEM(
       date
       amount
     }
+    ... on MaxBidPlacedSuccess {
+      __typename
+      bidStatus
+      date
+      amount
+    }
     ... on BidPlacedError {
       __typename
       errorCode

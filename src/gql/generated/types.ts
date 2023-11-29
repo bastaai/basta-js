@@ -618,7 +618,12 @@ export type Bid_On_ItemMutation = {
         date: string;
         amount: number;
       }
-    | { __typename: 'MaxBidPlacedSuccess' };
+    | {
+        __typename: 'MaxBidPlacedSuccess';
+        bidStatus: BidStatus;
+        date: string;
+        amount: number;
+      };
 };
 
 export type Get_Account_By_HandleQueryVariables = Exact<{

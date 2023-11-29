@@ -97,7 +97,10 @@ export class BidService implements IBidService {
     const json: BastaResponse<Bid_On_ItemMutation> = await res.json();
     const bid = json.data.bidOnItem;
 
-    if (bid.__typename === 'BidPlacedSuccess') {
+    if (
+      bid.__typename === 'BidPlacedSuccess' ||
+      bid.__typename === 'MaxBidPlacedSuccess'
+    ) {
       return {
         bid: {
           amount: bid.amount,

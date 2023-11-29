@@ -7,6 +7,12 @@ export const BID_ON_ITEM = `mutation BID_ON_ITEM($saleId: String!, $itemId: Stri
       date
       amount
     }
+    ... on MaxBidPlacedSuccess {
+      __typename
+      bidStatus
+      date
+      amount
+    }
     ... on BidPlacedError {
       __typename
       errorCode
