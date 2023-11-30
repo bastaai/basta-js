@@ -1,4 +1,6 @@
-import { BidStatus, ClosingMethod, ItemStatus, SaleStatus } from '../src/enums';
+import { BidStatus } from './bid';
+import { ItemStatus } from './item';
+import { ClosingMethod, SaleStatus } from './sale';
 import { IBasta, SubscriptionStatus } from './sdk';
 
 export { Account } from './account';

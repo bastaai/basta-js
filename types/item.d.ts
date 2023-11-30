@@ -1,5 +1,4 @@
-import { BidStatus, ItemStatus } from '../src/enums';
-import { Bid, BidIncrementTable } from './bid';
+import { Bid, BidIncrementTable, BidStatus } from './bid';
 import { Image } from './image';
 
 /** An item (can be associcated with a sale or not) */
@@ -47,3 +46,13 @@ export type Item_ChangedSubscriptionVariables = {
   saleId: string;
   itemIds: Array<string> | string;
 };
+
+/** Item statuses for items in a sale */
+export enum ItemStatus {
+  ItemClosed = 'ITEM_CLOSED',
+  ItemClosing = 'ITEM_CLOSING',
+  ItemNotOpen = 'ITEM_NOT_OPEN',
+  ItemOpen = 'ITEM_OPEN',
+  ItemPaused = 'ITEM_PAUSED',
+  ItemProcessing = 'ITEM_PROCESSING',
+}

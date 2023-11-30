@@ -1,5 +1,3 @@
-import { BidStatus } from '../src/enums';
-
 /**
  * Range rule explains increments in the table.
  * Each amount should be in its minor currency unit.
@@ -56,3 +54,21 @@ export type BidResponse =
       bid: undefined;
       success: false;
     };
+
+/** Bid statuses that calculates in what status the bid is. */
+export enum BidStatus {
+  /** User is losing the item. */
+  Losing = 'LOSING',
+  /** User has lost the item. */
+  Lost = 'LOST',
+  /** User is not bidding on the item. */
+  NotBidding = 'NOT_BIDDING',
+  /** User has submitted an offer for the item. */
+  Submitted = 'SUBMITTED',
+  /** User is winning the item. */
+  Winning = 'WINNING',
+  /** User has withdrawn an offer for the item. */
+  Withdrawn = 'WITHDRAWN',
+  /** User has won the item. */
+  Won = 'WON',
+}
