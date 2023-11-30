@@ -1,3 +1,4 @@
+import { BidStatus, ClosingMethod, ItemStatus, SaleStatus } from './enums';
 import type { BastaRequest } from '../types/request';
 import {
   IBasta,
@@ -6,12 +7,6 @@ import {
   ISubscriptionService,
   IBidService,
 } from '../types/sdk';
-import {
-  SaleStatus,
-  ItemStatus,
-  BidStatus,
-  ClosingMethod,
-} from './gql/generated/types';
 import { AccountService } from './services/account-service';
 import { BidService } from './services/bid-service';
 import { SaleService } from './services/sale-service';

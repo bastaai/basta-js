@@ -1,14 +1,9 @@
+import { LinkType } from '../src/enums';
+
 export type Link = {
   type: LinkType;
   url: string;
 };
-
-export enum LinkType {
-  Instagram = 'INSTAGRAM',
-  Tiktok = 'TIKTOK',
-  Website = 'WEBSITE',
-  Youtube = 'YOUTUBE',
-}
 
 export type Account = {
   /** Description for account */

@@ -1,4 +1,4 @@
-import { BidStatus } from '../src/gql/generated/types';
+import { BidStatus } from '../src/enums';
 
 /**
  * Range rule explains increments in the table.

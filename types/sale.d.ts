@@ -1,7 +1,7 @@
-import { ClosingMethod, SaleStatus } from '../src/gql/generated/types';
 import { Item } from './item';
 import { Image } from './image';
 import { BidIncrementTable } from './bid';
+import { ClosingMethod, SaleStatus } from '../src/enums';
 
 /** Sale */
 export type Sale = {
