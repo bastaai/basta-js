@@ -1,10 +1,6 @@
-import {
-  BidType,
-  Item_ChangedSubscriptionVariables,
-} from '../src/gql/generated/types';
 import { Account } from './account';
 import { BidResponse } from './bid';
-import { Item } from './item';
+import { Item, Item_ChangedSubscriptionVariables } from './item';
 import { Sale } from './sale';
 
 export type BastaResponse<T> = {

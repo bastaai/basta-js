@@ -1,4 +1,4 @@
-import { BidStatus, ItemStatus } from '../src/gql/generated/types';
+import { BidStatus, ItemStatus } from '../src/enums';
 import { Bid, BidIncrementTable } from './bid';
 import { Image } from './image';
 
@@ -41,4 +41,9 @@ export type Item = {
 export type ItemDates = {
   closingEnd?: string | null | undefined;
   closingStart?: string | null | undefined;
+};
+
+export type Item_ChangedSubscriptionVariables = {
+  saleId: string;
+  itemIds: Array<string> | string;
 };
