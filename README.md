@@ -7,3 +7,8 @@ height="120" />
 A lightweight package for client-side apps to easily access and manage data from
 Basta's online auctions, providing a seamless integration for creating engaging
 auction experiences.
+
+# Currencies
+
+All currency amounts follow the ISO 4217 standard. See here
+https://en.wikipedia.org/wiki/ISO_4217#:~:text=ISO%204217%20is%20a%20standard,currencies%20and%20their%20minor%20units.
