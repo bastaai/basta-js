@@ -1,4 +1,8 @@
-subscription ITEM_CHANGED($saleId: ID!, $itemIds: [ID!]!) {
+subscription ITEM_CHANGED(
+  $saleId: ID!
+  $itemIds: [ID!]!
+  $nextAsksIterations: Int
+) {
   itemChanged(saleId: $saleId, itemIds: $itemIds) {
     ... on Item {
       id
@@ -7,8 +11,12 @@ subscription ITEM_CHANGED($saleId: ID!, $itemIds: [ID!]!) {
       bidStatus
       totalBids
       status
-      nextAsks
+      nextAsks(iterations: $nextAsksIterations)
       reserveMet
+      dates {
+        closingStart
+        closingEnd
+      }
       itemDates {
         closingStart
         closingEnd

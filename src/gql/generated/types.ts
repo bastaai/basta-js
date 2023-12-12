@@ -418,6 +418,8 @@ export type Query = {
   paymentSession: PaymentSession;
   /** Get information about an sale. */
   sale: Sale;
+  /** Get all sales that have been created. */
+  sales: SaleConnection;
   /** Get current server time. */
   serverTime: ServerTime;
 };
@@ -442,6 +444,13 @@ export type QueryPaymentSessionArgs = {
 
 export type QuerySaleArgs = {
   id: string;
+};
+
+export type QuerySalesArgs = {
+  accountId: string;
+  after?: InputMaybe<string>;
+  filter?: InputMaybe<SaleFilter>;
+  first?: InputMaybe<number>;
 };
 
 /**
@@ -510,6 +519,14 @@ export type SaleItemsArgs = {
 
 export type SaleChanged = Sale | ServerTime;
 
+export type SaleConnection = {
+  __typename?: 'SaleConnection';
+  /** Sale edges */
+  edges: Array<SalesEdge>;
+  /** Current page information */
+  pageInfo: PageInfo;
+};
+
 /** Sale Dates */
 export type SaleDates = {
   __typename?: 'SaleDates';
@@ -517,6 +534,12 @@ export type SaleDates = {
   closingDate?: Maybe<string>;
   /** Date of when the sale is supposed to be automatically opened. */
   openDate?: Maybe<string>;
+};
+
+/** Sale filter for sales. */
+export type SaleFilter = {
+  /** Filter by sale status */
+  statuses: Array<SaleStatus>;
 };
 
 /** Sale Status represent what status an sale is currently running in. */
@@ -536,6 +559,14 @@ export enum SaleStatus {
   /** Sale has not been published. This status will never appear in the API expcept when you are previewing the sale. */
   Unpublished = 'UNPUBLISHED',
 }
+
+export type SalesEdge = {
+  __typename?: 'SalesEdge';
+  /** Current sale cursor */
+  cursor: string;
+  /** Sale node */
+  node: Sale;
+};
 
 export type ServerTime = {
   __typename?: 'ServerTime';
@@ -760,6 +791,7 @@ export type Get_SaleQuery = {
 export type Item_ChangedSubscriptionVariables = Exact<{
   saleId: string;
   itemIds: Array<string> | string;
+  nextAsksIterations?: InputMaybe<number>;
 }>;
 
 export type Item_ChangedSubscription = {
@@ -775,6 +807,11 @@ export type Item_ChangedSubscription = {
         status: ItemStatus;
         nextAsks: Array<number>;
         reserveMet: boolean;
+        dates?: {
+          __typename?: 'ItemDates';
+          closingStart?: string | null;
+          closingEnd?: string | null;
+        } | null;
         itemDates?: {
           __typename?: 'ItemDates';
           closingStart?: string | null;
