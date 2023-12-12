@@ -45,6 +45,7 @@ export type ItemDates = {
 export type Item_ChangedSubscriptionVariables = {
   saleId: string;
   itemIds: Array<string> | string;
+  nextAsksIterations?: number | null | undefined;
 };
 
 /** Item statuses for items in a sale */

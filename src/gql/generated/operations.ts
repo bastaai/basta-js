@@ -144,7 +144,7 @@ export const GET_SALE = `query GET_SALE($id: String!) {
   }
 }`;
 
-export const ITEM_CHANGED = `subscription ITEM_CHANGED($saleId: ID!, $itemIds: [ID!]!) {
+export const ITEM_CHANGED = `subscription ITEM_CHANGED($saleId: ID!, $itemIds: [ID!]!, $nextAsksIterations: Int) {
   itemChanged(saleId: $saleId, itemIds: $itemIds) {
     ... on Item {
       id
@@ -153,8 +153,12 @@ export const ITEM_CHANGED = `subscription ITEM_CHANGED($saleId: ID!, $itemIds: [
       bidStatus
       totalBids
       status
-      nextAsks
+      nextAsks(iterations: $nextAsksIterations)
       reserveMet
+      dates {
+        closingStart
+        closingEnd
+      }
       itemDates {
         closingStart
         closingEnd
