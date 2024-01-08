@@ -11,13 +11,14 @@ import {
   ClosingMethod,
   ItemStatus,
   SaleStatus,
+  LinkType,
 } from './gql/generated/types';
 import { AccountService } from './services/account-service';
 import { BidService } from './services/bid-service';
 import { SaleService } from './services/sale-service';
 import { SubscriptionService } from './services/subscription-service';
 
-export { SaleStatus, ItemStatus, BidStatus, ClosingMethod };
+export { SaleStatus, ItemStatus, BidStatus, ClosingMethod, LinkType };
 
 export const initBasta = () => {
   return new Basta();
