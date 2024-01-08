@@ -1,4 +1,4 @@
-import { LinkType } from '../src/enums';
+import { LinkType } from './sale';
 
 export type Link = {
   type: LinkType;
