@@ -12,6 +12,8 @@ export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
 
 export type Account = {
   __typename?: 'Account';
+  /** Indicates whether account is using basta's bid client */
+  bastaBidClient: boolean;
   /** Description for account */
   description?: Maybe<string>;
   /** Account handle, identifier for the account */
@@ -154,6 +156,7 @@ export enum ClosingMethod {
   /**
    * Only one item is in status CLOSING at a time.
    * Other items wait in status OPEN.
+   * @deprecated use OVERLAPPING, will be removed in the near future
    */
   OneByOne = 'ONE_BY_ONE',
   /**
@@ -170,6 +173,11 @@ export type GetUserBidsInput = {
   first: number;
   userId: string;
 };
+
+export enum IdType {
+  Id = 'ID',
+  Uri = 'URI',
+}
 
 /** Image object */
 export type Image = {
@@ -213,6 +221,11 @@ export type Item = {
   reserveMet: boolean;
   /** The id of the sale that this item is associated to. */
   saleId: string;
+  /**
+   * Slug identifier for item.
+   * Null/empty for integrating applications.
+   */
+  slug?: Maybe<string>;
   /** Starting bid of the item in minor currency unit. */
   startingBid?: Maybe<number>;
   /** Status of the item */
@@ -236,6 +249,7 @@ export type ItemDates = {
   __typename?: 'ItemDates';
   closingEnd?: Maybe<string>;
   closingStart?: Maybe<string>;
+  openDate?: Maybe<string>;
 };
 
 /** Item statuses for items in a sale */
@@ -271,9 +285,11 @@ export type Link = {
 };
 
 export enum LinkType {
+  Facebook = 'FACEBOOK',
   Instagram = 'INSTAGRAM',
   Tiktok = 'TIKTOK',
   Website = 'WEBSITE',
+  X = 'X',
   Youtube = 'YOUTUBE',
 }
 
@@ -408,8 +424,6 @@ export type Query = {
   __typename?: 'Query';
   /** Get account information given an accountId */
   account: Account;
-  /** Get account information given an account handle. */
-  accountByHandle: Account;
   /** Get all bids that a user has placed on sales */
   bids: UserBidsConnection;
   /** Get information about the logged in user. */
@@ -426,10 +440,7 @@ export type Query = {
 
 export type QueryAccountArgs = {
   id: string;
-};
-
-export type QueryAccountByHandleArgs = {
-  handle: string;
+  idType?: InputMaybe<IdType>;
 };
 
 export type QueryBidsArgs = {
@@ -444,6 +455,7 @@ export type QueryPaymentSessionArgs = {
 
 export type QuerySaleArgs = {
   id: string;
+  idType?: InputMaybe<IdType>;
 };
 
 export type QuerySalesArgs = {
@@ -451,6 +463,7 @@ export type QuerySalesArgs = {
   after?: InputMaybe<string>;
   filter?: InputMaybe<SaleFilter>;
   first?: InputMaybe<number>;
+  idType?: InputMaybe<IdType>;
 };
 
 /**
@@ -500,11 +513,16 @@ export type Sale = {
   items: ItemsConnection;
   /** Sequence number of this sale. */
   sequenceNumber: number;
+  /**
+   * Slug identifier for sale.
+   * Null/empty for integrating applications.
+   */
+  slug?: Maybe<string>;
   /** Sale status. */
   status: SaleStatus;
   /**
    * Sale theme type.
-   * Only used for sales owned by basta.
+   * Null/empty for integrating applications.
    */
   themeType?: Maybe<number>;
   /** Sale Title */
@@ -655,23 +673,6 @@ export type Bid_On_ItemMutation = {
         date: string;
         amount: number;
       };
-};
-
-export type Get_Account_By_HandleQueryVariables = Exact<{
-  handle: string;
-}>;
-
-export type Get_Account_By_HandleQuery = {
-  __typename?: 'Query';
-  accountByHandle: {
-    __typename: 'Account';
-    id: string;
-    name: string;
-    handle?: string | null;
-    description?: string | null;
-    imageUrl?: string | null;
-    links: Array<{ __typename: 'Link'; type: LinkType; url: string }>;
-  };
 };
 
 export type Get_Account_By_IdQueryVariables = Exact<{

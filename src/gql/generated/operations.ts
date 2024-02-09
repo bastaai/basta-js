@@ -21,22 +21,6 @@ export const BID_ON_ITEM = `mutation BID_ON_ITEM($saleId: String!, $itemId: Stri
   }
 }`;
 
-export const GET_ACCOUNT_BY_HANDLE = `query GET_ACCOUNT_BY_HANDLE($handle: String!) {
-  accountByHandle(handle: $handle) {
-    id
-    name
-    handle
-    description
-    imageUrl
-    links {
-      type
-      url
-      __typename
-    }
-    __typename
-  }
-}`;
-
 export const GET_ACCOUNT_BY_ID = `query GET_ACCOUNT_BY_ID($accountId: String!) {
   account(id: $accountId) {
     id
