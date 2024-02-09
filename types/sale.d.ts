@@ -84,8 +84,10 @@ export enum ClosingMethod {
 }
 
 export enum LinkType {
+  Facebook = 'FACEBOOK',
   Instagram = 'INSTAGRAM',
   Tiktok = 'TIKTOK',
   Website = 'WEBSITE',
+  X = 'X',
   Youtube = 'YOUTUBE',
 }
