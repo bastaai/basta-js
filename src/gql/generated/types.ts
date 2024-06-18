@@ -12,6 +12,8 @@ export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
 
 export type Account = {
   __typename?: 'Account';
+  /** Indicates whether account is using basta's bid client */
+  bastaBidClient: boolean;
   /** Description for account */
   description?: Maybe<string>;
   /** Account handle, identifier for the account */
@@ -154,6 +156,7 @@ export enum ClosingMethod {
   /**
    * Only one item is in status CLOSING at a time.
    * Other items wait in status OPEN.
+   * @deprecated use OVERLAPPING, will be removed in the near future
    */
   OneByOne = 'ONE_BY_ONE',
   /**
@@ -163,6 +166,14 @@ export enum ClosingMethod {
   Overlapping = 'OVERLAPPING',
 }
 
+export type Estimate = {
+  __typename?: 'Estimate';
+  /** Item high estimate */
+  high?: Maybe<number>;
+  /** Item low estimate */
+  low?: Maybe<number>;
+};
+
 /** Input parameters to get all bids for userId */
 export type GetUserBidsInput = {
   __typename?: 'GetUserBidsInput';
@@ -170,6 +181,11 @@ export type GetUserBidsInput = {
   first: number;
   userId: string;
 };
+
+export enum IdType {
+  Id = 'ID',
+  Uri = 'URI',
+}
 
 /** Image object */
 export type Image = {
@@ -195,6 +211,8 @@ export type Item = {
   dates?: Maybe<ItemDates>;
   /** Item Description */
   description?: Maybe<string>;
+  /** Item estimate in minor currency unit. */
+  estimates: Estimate;
   /** Id of an item. */
   id: string;
   /** Images attached to sale */
@@ -207,12 +225,19 @@ export type Item = {
    * @deprecated itemDates is deprecated. Use dates instead.
    */
   itemDates?: Maybe<ItemDates>;
+  /** Item number */
+  itemNumber: number;
   /** Next 10 asks for the item in minor currency unit. */
   nextAsks: Array<number>;
   /** Was there an accepted bid that met the reserve price */
   reserveMet: boolean;
   /** The id of the sale that this item is associated to. */
   saleId: string;
+  /**
+   * Slug identifier for item.
+   * Null/empty for integrating applications.
+   */
+  slug?: Maybe<string>;
   /** Starting bid of the item in minor currency unit. */
   startingBid?: Maybe<number>;
   /** Status of the item */
@@ -236,12 +261,14 @@ export type ItemDates = {
   __typename?: 'ItemDates';
   closingEnd?: Maybe<string>;
   closingStart?: Maybe<string>;
+  openDate?: Maybe<string>;
 };
 
 /** Item statuses for items in a sale */
 export enum ItemStatus {
   ItemClosed = 'ITEM_CLOSED',
   ItemClosing = 'ITEM_CLOSING',
+  ItemLive = 'ITEM_LIVE',
   ItemNotOpen = 'ITEM_NOT_OPEN',
   ItemOpen = 'ITEM_OPEN',
   ItemPaused = 'ITEM_PAUSED',
@@ -271,9 +298,11 @@ export type Link = {
 };
 
 export enum LinkType {
+  Facebook = 'FACEBOOK',
   Instagram = 'INSTAGRAM',
   Tiktok = 'TIKTOK',
   Website = 'WEBSITE',
+  X = 'X',
   Youtube = 'YOUTUBE',
 }
 
@@ -383,8 +412,6 @@ export type PaymentSession = {
 };
 
 export type PaymentSessionInput = {
-  /** accountId */
-  accountId: string;
   /** Item identifier. */
   itemId: string;
   /** Sale identifier. */
@@ -392,11 +419,12 @@ export type PaymentSessionInput = {
 };
 
 export enum PaymentSessionStatus {
-  Completed = 'COMPLETED',
-  Failed = 'FAILED',
-  NotSet = 'NOT_SET',
-  Processing = 'PROCESSING',
-  Started = 'STARTED',
+  /** Invoice has been paid. */
+  Done = 'DONE',
+  /** Invoice is ready to be paid. */
+  Ready = 'READY',
+  /** Invoice is being generated. */
+  Waiting = 'WAITING',
 }
 
 export enum Permission {
@@ -408,8 +436,6 @@ export type Query = {
   __typename?: 'Query';
   /** Get account information given an accountId */
   account: Account;
-  /** Get account information given an account handle. */
-  accountByHandle: Account;
   /** Get all bids that a user has placed on sales */
   bids: UserBidsConnection;
   /** Get information about the logged in user. */
@@ -418,6 +444,10 @@ export type Query = {
   paymentSession: PaymentSession;
   /** Get information about an sale. */
   sale: Sale;
+  /** Get item information. */
+  saleItem: Item;
+  /** Get item information by URI. */
+  saleItemByURI: Item;
   /** Get all sales that have been created. */
   sales: SaleConnection;
   /** Get current server time. */
@@ -426,10 +456,7 @@ export type Query = {
 
 export type QueryAccountArgs = {
   id: string;
-};
-
-export type QueryAccountByHandleArgs = {
-  handle: string;
+  idType?: InputMaybe<IdType>;
 };
 
 export type QueryBidsArgs = {
@@ -444,6 +471,16 @@ export type QueryPaymentSessionArgs = {
 
 export type QuerySaleArgs = {
   id: string;
+  idType?: InputMaybe<IdType>;
+};
+
+export type QuerySaleItemArgs = {
+  itemId: string;
+  saleId: string;
+};
+
+export type QuerySaleItemByUriArgs = {
+  uri: string;
 };
 
 export type QuerySalesArgs = {
@@ -451,6 +488,7 @@ export type QuerySalesArgs = {
   after?: InputMaybe<string>;
   filter?: InputMaybe<SaleFilter>;
   first?: InputMaybe<number>;
+  idType?: InputMaybe<IdType>;
 };
 
 /**
@@ -500,15 +538,22 @@ export type Sale = {
   items: ItemsConnection;
   /** Sequence number of this sale. */
   sequenceNumber: number;
+  /**
+   * Slug identifier for sale.
+   * Null/empty for integrating applications.
+   */
+  slug?: Maybe<string>;
   /** Sale status. */
   status: SaleStatus;
   /**
    * Sale theme type.
-   * Only used for sales owned by basta.
+   * Null/empty for integrating applications.
    */
   themeType?: Maybe<number>;
   /** Sale Title */
   title?: Maybe<string>;
+  /** Sale type. */
+  type: SaleType;
 };
 
 /** Sale */
@@ -516,6 +561,8 @@ export type SaleItemsArgs = {
   after?: InputMaybe<string>;
   first?: InputMaybe<number>;
 };
+
+export type SaleActivity = Item | Sale;
 
 export type SaleChanged = Sale | ServerTime;
 
@@ -532,6 +579,8 @@ export type SaleDates = {
   __typename?: 'SaleDates';
   /** Date of when the sale is supposed to be automatically closed. */
   closingDate?: Maybe<string>;
+  /** Date of when the sale is supposed to be live. */
+  liveDate?: Maybe<string>;
   /** Date of when the sale is supposed to be automatically opened. */
   openDate?: Maybe<string>;
 };
@@ -548,6 +597,8 @@ export enum SaleStatus {
   Closed = 'CLOSED',
   /** Sale is closing. */
   Closing = 'CLOSING',
+  /** Sale is now live. */
+  Live = 'LIVE',
   /** Sale is opened for bidding. */
   Opened = 'OPENED',
   /** Sale is paused. */
@@ -558,6 +609,14 @@ export enum SaleStatus {
   Published = 'PUBLISHED',
   /** Sale has not been published. This status will never appear in the API expcept when you are previewing the sale. */
   Unpublished = 'UNPUBLISHED',
+}
+
+/** SaleType represents the type of sale */
+export enum SaleType {
+  /** Sale is a live auction */
+  Live = 'LIVE',
+  /** Sale is a online timed auction */
+  OnlineTimed = 'ONLINE_TIMED',
 }
 
 export type SalesEdge = {
@@ -581,8 +640,11 @@ export type Subscription = {
    * that happen to a item:
    * * When a bid is placed on a item
    * Server time will be sent also for syncronizing clocks with clients and server.
+   * @deprecated use saleActivity instead
    */
   itemChanged: ItemChanged;
+  /** Subscription for Sale and Item updates. */
+  saleActivity?: Maybe<SaleActivity>;
   /**
    * Sale changed subscription send real-time information about changes
    * that happen on a sale:
@@ -597,6 +659,10 @@ export type Subscription = {
 
 export type SubscriptionItemChangedArgs = {
   itemIds: Array<string>;
+  saleId: string;
+};
+
+export type SubscriptionSaleActivityArgs = {
   saleId: string;
 };
 
@@ -655,23 +721,6 @@ export type Bid_On_ItemMutation = {
         date: string;
         amount: number;
       };
-};
-
-export type Get_Account_By_HandleQueryVariables = Exact<{
-  handle: string;
-}>;
-
-export type Get_Account_By_HandleQuery = {
-  __typename?: 'Query';
-  accountByHandle: {
-    __typename: 'Account';
-    id: string;
-    name: string;
-    handle?: string | null;
-    description?: string | null;
-    imageUrl?: string | null;
-    links: Array<{ __typename: 'Link'; type: LinkType; url: string }>;
-  };
 };
 
 export type Get_Account_By_IdQueryVariables = Exact<{
@@ -757,8 +806,9 @@ export type Get_SaleQuery = {
             bidStatus?: BidStatus | null;
             bidderIdentifier?: string | null;
           }>;
-          itemDates?: {
+          dates?: {
             __typename: 'ItemDates';
+            openDate?: string | null;
             closingStart?: string | null;
             closingEnd?: string | null;
           } | null;
@@ -809,11 +859,7 @@ export type Item_ChangedSubscription = {
         reserveMet: boolean;
         dates?: {
           __typename?: 'ItemDates';
-          closingStart?: string | null;
-          closingEnd?: string | null;
-        } | null;
-        itemDates?: {
-          __typename?: 'ItemDates';
+          openDate?: string | null;
           closingStart?: string | null;
           closingEnd?: string | null;
         } | null;

@@ -17,7 +17,6 @@ export interface IBasta {
 export interface IAccountService {
   /** Fetches an account by id */
   get(id: string): Promise<Account>;
-  getByHandle(handle: string): Promise<Account>;
 }
 
 export interface ISaleService {

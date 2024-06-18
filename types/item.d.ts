@@ -56,4 +56,5 @@ export enum ItemStatus {
   ItemOpen = 'ITEM_OPEN',
   ItemPaused = 'ITEM_PAUSED',
   ItemProcessing = 'ITEM_PROCESSING',
+  ItemLive = "ITEM_LIVE"
 }

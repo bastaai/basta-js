@@ -62,6 +62,7 @@ export enum SaleStatus {
   Published = 'PUBLISHED',
   /** Sale has not been published. This status will never appear in the API expcept when you are previewing the sale. */
   Unpublished = 'UNPUBLISHED',
+  Live = "LIVE"
 }
 
 /** ClosingMethod represents how SaleItems are moved into CLOSING status and when they are CLOSED */
@@ -88,4 +89,6 @@ export enum LinkType {
   Tiktok = 'TIKTOK',
   Website = 'WEBSITE',
   Youtube = 'YOUTUBE',
+  Facebook = 'FACEBOOK',
+  X = "X"
 }

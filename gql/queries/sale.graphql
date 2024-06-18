@@ -59,8 +59,9 @@ query GET_SALE($id: String!) {
             bidStatus
             bidderIdentifier
           }
-          itemDates {
+          dates {
             __typename
+            openDate
             closingStart
             closingEnd
           }

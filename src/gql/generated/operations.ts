@@ -21,35 +21,19 @@ export const BID_ON_ITEM = `mutation BID_ON_ITEM($saleId: String!, $itemId: Stri
   }
 }`;
 
-export const GET_ACCOUNT_BY_HANDLE = `query GET_ACCOUNT_BY_HANDLE($handle: String!) {
-  accountByHandle(handle: $handle) {
-    id
-    name
-    handle
-    description
-    imageUrl
-    links {
-      type
-      url
-      __typename
-    }
-    __typename
-  }
-}`;
-
 export const GET_ACCOUNT_BY_ID = `query GET_ACCOUNT_BY_ID($accountId: String!) {
   account(id: $accountId) {
+    __typename
     id
     name
     handle
     description
     imageUrl
     links {
+      __typename
       type
       url
-      __typename
     }
-    __typename
   }
 }`;
 
@@ -114,8 +98,9 @@ export const GET_SALE = `query GET_SALE($id: String!) {
             bidStatus
             bidderIdentifier
           }
-          itemDates {
+          dates {
             __typename
+            openDate
             closingStart
             closingEnd
           }
@@ -156,10 +141,7 @@ export const ITEM_CHANGED = `subscription ITEM_CHANGED($saleId: ID!, $itemIds: [
       nextAsks(iterations: $nextAsksIterations)
       reserveMet
       dates {
-        closingStart
-        closingEnd
-      }
-      itemDates {
+        openDate
         closingStart
         closingEnd
       }

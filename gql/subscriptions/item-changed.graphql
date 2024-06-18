@@ -14,10 +14,7 @@ subscription ITEM_CHANGED(
       nextAsks(iterations: $nextAsksIterations)
       reserveMet
       dates {
-        closingStart
-        closingEnd
-      }
-      itemDates {
+        openDate
         closingStart
         closingEnd
       }
@@ -40,6 +37,7 @@ subscription ITEM_CHANGED(
         bidderIdentifier
       }
     }
+    
     ... on ServerTime {
       currentTime
     }
