@@ -9,6 +9,8 @@ export type Item = {
   bids: Bid[];
   /** Current bid amount for the item in minor currency unit. */
   currentBid?: number | null | undefined;
+  /** Closing start and end timestamps if the item is closing */
+  dates?: ItemDates | null | undefined;
   /** Item Description */
   description?: string | null | undefined;
   /** Id of an item. */
@@ -17,7 +19,11 @@ export type Item = {
   images: Image[];
   /** Overridden increment table for the item. */
   incrementTable?: BidIncrementTable | null | undefined;
-  /** Closing timestamp if the item is closing */
+  /**
+   * DEPRECATED.
+   * Closing timestamp if the item is closing
+   * @deprecated itemDates is deprecated. Use dates instead.
+   */
   itemDates?: ItemDates | null | undefined;
   /** Next 10 asks for the item in minor currency unit. */
   nextAsks: number[];
