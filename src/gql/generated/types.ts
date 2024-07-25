@@ -44,6 +44,8 @@ export type Bid = {
   bidderIdentifier?: Maybe<string>;
   /** Date of when the bid was placed. */
   date: string;
+  /** Bid ID */
+  id: string;
   /** Id of the item */
   itemId: string;
   /** Max amount placed with the bid in minor currency unit. */
@@ -229,6 +231,8 @@ export type Item = {
   itemNumber: number;
   /** Next 10 asks for the item in minor currency unit. */
   nextAsks: Array<number>;
+  /** Item notifications if item is part of a live sale */
+  notifications: Array<ItemNotification>;
   /** Was there an accepted bid that met the reserve price */
   reserveMet: boolean;
   /** The id of the sale that this item is associated to. */
@@ -263,6 +267,34 @@ export type ItemDates = {
   closingStart?: Maybe<string>;
   openDate?: Maybe<string>;
 };
+
+export type ItemFairWarningNotification = {
+  __typename?: 'ItemFairWarningNotification';
+  /**
+   * Date timestamp when message was created.
+   * RFC3339 formatted string
+   */
+  date: string;
+  /** Id of the notification */
+  id: string;
+};
+
+export type ItemMessageNotification = {
+  __typename?: 'ItemMessageNotification';
+  /**
+   * Date timestamp when message was created.
+   * RFC3339 formatted string
+   */
+  date: string;
+  /** Id of the notification */
+  id: string;
+  /** Message */
+  message: string;
+};
+
+export type ItemNotification =
+  | ItemFairWarningNotification
+  | ItemMessageNotification;
 
 /** Item statuses for items in a sale */
 export enum ItemStatus {
