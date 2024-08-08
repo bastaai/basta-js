@@ -22,6 +22,11 @@ export type Account = {
   id: string;
   /** Url for the profile image */
   imageUrl?: Maybe<string>;
+  /**
+   * Is logged-in user subscribed to account ?
+   * Only applies to sales running on basta.app (false for all api clients)
+   */
+  isUserSubscribed: boolean;
   /** Links associated with account */
   links: Array<Link>;
   /** Name associated with account */
@@ -222,6 +227,11 @@ export type Item = {
   /** Overridden increment table for the item. */
   incrementTable?: Maybe<BidIncrementTable>;
   /**
+   * Is logged-in user subscribed to item ?
+   * Only applies to sales running on basta.app (false for all api clients)
+   */
+  isUserSubscribed: boolean;
+  /**
    * DEPRECATED.
    * Closing timestamp if the item is closing
    * @deprecated itemDates is deprecated. Use dates instead.
@@ -400,6 +410,14 @@ export type Mutation = {
    * @deprecated maxBidOnItem is deprecated. Use bidOnItem with type as MAX instead.
    */
   maxBidOnItem: MaxBidPlaced;
+  /** Users with basta session can subscribe to creators running sales on basta.app. */
+  subscribeToAccount: UserAccountSubscription;
+  /** Users with basta session can subscribe to individual sale items running on basta.app. */
+  subsribeToItem: UserItemSubscription;
+  /** Unsusbscribe from an account */
+  unsubscribeFromAccount: string;
+  /** Unsubscribe from item */
+  unsubscribeFromItem: string;
 };
 
 export type MutationBidOnItemArgs = {
@@ -416,6 +434,24 @@ export type MutationCreateBidderVerificationArgs = {
 export type MutationMaxBidOnItemArgs = {
   itemId: string;
   maxAmount: number;
+  saleId: string;
+};
+
+export type MutationSubscribeToAccountArgs = {
+  accountId: string;
+};
+
+export type MutationSubsribeToItemArgs = {
+  itemId: string;
+  saleId: string;
+};
+
+export type MutationUnsubscribeFromAccountArgs = {
+  accountId: string;
+};
+
+export type MutationUnsubscribeFromItemArgs = {
+  itemId: string;
   saleId: string;
 };
 
@@ -702,6 +738,12 @@ export type SubscriptionSaleChangedArgs = {
   saleId: string;
 };
 
+export type UserAccountSubscription = {
+  __typename?: 'UserAccountSubscription';
+  accountId: string;
+  userId: string;
+};
+
 /** A UserBid represents a single bid */
 export type UserBid = {
   __typename?: 'UserBid';
@@ -728,6 +770,13 @@ export type UserBidsEdge = {
   cursor: string;
   /** UserBid node */
   node: UserBid;
+};
+
+export type UserItemSubscription = {
+  __typename?: 'UserItemSubscription';
+  itemId: string;
+  saleId: string;
+  userId: string;
 };
 
 export type Bid_On_ItemMutationVariables = Exact<{
