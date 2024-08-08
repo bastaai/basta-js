@@ -46,6 +46,7 @@ export type Item = {
 export type ItemDates = {
   closingEnd?: string | null | undefined;
   closingStart?: string | null | undefined;
+  openDate?: string | null | undefined;
 };
 
 export type Item_ChangedSubscriptionVariables = {
