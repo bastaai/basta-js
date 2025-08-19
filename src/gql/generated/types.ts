@@ -31,6 +31,25 @@ export type Account = {
   links: Array<Link>;
   /** Name associated with account */
   name: string;
+  /** PaymentDetails set by account */
+  paymentDetails?: Maybe<PaymentDetails>;
+};
+
+export type BastaLiveStream = {
+  __typename?: 'BastaLiveStream';
+  /** LiveStream channel ID */
+  channelId?: Maybe<string>;
+  /** Current viewers */
+  currentViewers?: Maybe<number>;
+  /** Is live stream enabled */
+  enabled: boolean;
+  /**
+   * Is stream live
+   * @deprecated use our partner sdk instead, currently always true
+   */
+  isLive: boolean;
+  /** LiveStream URL */
+  publicUrl?: Maybe<string>;
 };
 
 /** Bid represents a bid that has been placed. */
@@ -55,6 +74,8 @@ export type Bid = {
   itemId: string;
   /** Max amount placed with the bid in minor currency unit. */
   maxAmount?: Maybe<number>;
+  /** Optional paddle if bid is associated with a paddle. */
+  paddle?: Maybe<Paddle>;
   /** Id of the sale */
   saleId: string;
 };
@@ -66,6 +87,7 @@ export enum BidErrorCode {
   BidLowerThanCurrentBid = 'BID_LOWER_THAN_CURRENT_BID',
   BidLowerThanCurrentMax = 'BID_LOWER_THAN_CURRENT_MAX',
   InternalError = 'INTERNAL_ERROR',
+  ItemAlreadyClosed = 'ITEM_ALREADY_CLOSED',
   ItemClosingPeriodPassed = 'ITEM_CLOSING_PERIOD_PASSED',
   MaxBidLowerThanCurrentMax = 'MAX_BID_LOWER_THAN_CURRENT_MAX',
   NotOpenForBidding = 'NOT_OPEN_FOR_BIDDING',
@@ -106,6 +128,8 @@ export type BidPlacedSuccess = {
   bidStatus: BidStatus;
   /** Server time of when the bid was placed. */
   date: string;
+  /** bidId */
+  id: string;
 };
 
 /** Bid statuses that calculates in what status the bid is. */
@@ -143,12 +167,16 @@ export enum BidType {
 export type BidderVerificationInput = {
   /** failed verification or if session is left wil send user to the cancelUrl */
   cancelUrl: string;
+  /** Verification mode. Defaults to 'REDIRECT' to maintain backwards compatability. */
+  renderMode?: InputMaybe<RenderMode>;
   /** successful verification is redirected to this url */
   successUrl: string;
 };
 
 export type BidderVerificationLink = {
   __typename?: 'BidderVerificationLink';
+  /** Client secret for embaddable ui */
+  clientSecret: string;
   /** Redirection link to verification url */
   url: string;
 };
@@ -173,12 +201,30 @@ export enum ClosingMethod {
   Overlapping = 'OVERLAPPING',
 }
 
+export type CurrentItem = {
+  __typename?: 'CurrentItem';
+  cursor: string;
+  item: Item;
+};
+
 export type Estimate = {
   __typename?: 'Estimate';
   /** Item high estimate */
   high?: Maybe<number>;
   /** Item low estimate */
   low?: Maybe<number>;
+};
+
+export type ExternalLiveStream = {
+  __typename?: 'ExternalLiveStream';
+  /** LiveStream Created */
+  created: string;
+  /** LiveStream Title */
+  type: LiveStreamType;
+  /** LiveStream Updated */
+  updated: string;
+  /** LiveStream URL */
+  url: string;
 };
 
 /** Input parameters to get all bids for userId */
@@ -208,12 +254,22 @@ export type Image = {
 /** An item (can be associcated with a sale or not) */
 export type Item = {
   __typename?: 'Item';
+  /** The id of the account that this item is associated to. */
+  accountId: string;
   /** Bid status of currently logged in user for this item */
   bidStatus?: Maybe<BidStatus>;
-  /** Get list of bids for this item */
+  /**
+   * Get list of bids for this item.
+   * Filters:
+   *   - collapseSequentialUserBids: Collapses multiple sequential bids from same user to a single bid (only the newest one is then returned).
+   */
   bids: Array<Bid>;
+  /** Currency. Capitalized string */
+  currency?: Maybe<string>;
   /** Current bid amount for the item in minor currency unit. */
   currentBid?: Maybe<number>;
+  /** Item cursor is used in pagination. */
+  cursor: string;
   /** Closing start and end timestamps if the item is closing */
   dates?: Maybe<ItemDates>;
   /** Item Description */
@@ -243,8 +299,13 @@ export type Item = {
   nextAsks: Array<number>;
   /** Item notifications if item is part of a live sale */
   notifications: Array<ItemNotification>;
-  /** Was there an accepted bid that met the reserve price */
+  /**
+   * Was there an accepted bid that met the reserve price
+   * @deprecated use reserveStatus instead
+   */
   reserveMet: boolean;
+  /** Reserve status. */
+  reserveStatus: ReserveStatus;
   /** The id of the sale that this item is associated to. */
   saleId: string;
   /**
@@ -252,6 +313,11 @@ export type Item = {
    * Null/empty for integrating applications.
    */
   slug?: Maybe<string>;
+  /**
+   * Full path for slug.
+   * Null/emtpy for integrating applications.
+   */
+  slugFullPath?: Maybe<string>;
   /** Starting bid of the item in minor currency unit. */
   startingBid?: Maybe<number>;
   /** Status of the item */
@@ -262,6 +328,11 @@ export type Item = {
   totalBids: number;
   /** Get list of bids for this item that is placed by the logged in user. */
   userBids: Array<Bid>;
+};
+
+/** An item (can be associcated with a sale or not) */
+export type ItemBidsArgs = {
+  collapseSequentialUserBids?: InputMaybe<boolean>;
 };
 
 /** An item (can be associcated with a sale or not) */
@@ -289,6 +360,10 @@ export type ItemFairWarningNotification = {
   id: string;
 };
 
+export type ItemIdsFilter = {
+  itemIds?: InputMaybe<Array<string>>;
+};
+
 export type ItemMessageNotification = {
   __typename?: 'ItemMessageNotification';
   /**
@@ -305,6 +380,20 @@ export type ItemMessageNotification = {
 export type ItemNotification =
   | ItemFairWarningNotification
   | ItemMessageNotification;
+
+export enum ItemOrderField {
+  /** Created date */
+  Created = 'CREATED',
+  /** Item Number */
+  ItemNumber = 'ITEM_NUMBER',
+}
+
+export type ItemOrderInput = {
+  /** Order direction */
+  direction?: PaginationDirection;
+  /** Field to order by */
+  field?: ItemOrderField;
+};
 
 /** Item statuses for items in a sale */
 export enum ItemStatus {
@@ -348,6 +437,43 @@ export enum LinkType {
   Youtube = 'YOUTUBE',
 }
 
+/** Live Item represents an item that is currently being auctioned in a live sale. */
+export type LiveItem = {
+  __typename?: 'LiveItem';
+  cursor: string;
+  item: Item;
+};
+
+/** deprecated type remove when everything is migrated to LiveVideoStream */
+export type LiveStream = {
+  __typename?: 'LiveStream';
+  /** LiveStream Created */
+  created: string;
+  /** LiveStream Title */
+  type: LiveStreamType;
+  /** LiveStream Updated */
+  updated: string;
+  /** LiveStream URL */
+  url: string;
+};
+
+/** LiveStreamType represents the type of live stream */
+export enum LiveStreamType {
+  /** Amazon IVS live stream */
+  AmazonIvs = 'AMAZON_IVS',
+  /**
+   * Basta live stream
+   * Built-in live stream for Basta
+   */
+  BastaLive = 'BASTA_LIVE',
+  /** Generic live stream */
+  Generic = 'GENERIC',
+  /** YouTube live stream */
+  YouTubeLive = 'YouTubeLive',
+}
+
+export type LiveVideoStream = BastaLiveStream | ExternalLiveStream;
+
 export type MaxBidPlaced = BidPlacedError | MaxBidPlacedSuccess;
 
 /**
@@ -362,6 +488,8 @@ export type MaxBidPlacedSuccess = {
   bidStatus: BidStatus;
   /** Server time of when the bid was placed. */
   date: string;
+  /** bidId */
+  id: string;
   /** Max amount of placed bid in minor currency unit. */
   maxAmount: number;
 };
@@ -373,6 +501,18 @@ export type Me = {
   accounts: Array<Account>;
   /** Get all bids that a user has placed on sales */
   bids: UserBidsConnection;
+  /** Latest items that user has placed a bid on. */
+  latestItemBids: ItemsConnection;
+  /**
+   * SaleItems that user has added to their watchlist.
+   * Only works for users with Basta cookie and applications running on basta.app domain.
+   */
+  saleItemSubscriptions?: Maybe<ItemsConnection>;
+  /**
+   * Sale that user has added to their watchlist.
+   * Only works for users with Basta cookie and applications running on basta.app domain.
+   */
+  saleSubscriptions?: Maybe<SaleConnection>;
   /** Unique user id of the logged in user. */
   userId: string;
   /** True if logged in user is a verified Basta bidder */
@@ -383,6 +523,11 @@ export type Me = {
 export type MeBidsArgs = {
   after?: InputMaybe<string>;
   first: number;
+};
+
+/** Me object keeps information about the logged in user. */
+export type MeLatestItemBidsArgs = {
+  first?: InputMaybe<number>;
 };
 
 export type Mutation = {
@@ -413,7 +558,7 @@ export type Mutation = {
   /** Users with basta session can subscribe to creators running sales on basta.app. */
   subscribeToAccount: UserAccountSubscription;
   /** Users with basta session can subscribe to individual sale items running on basta.app. */
-  subsribeToItem: UserItemSubscription;
+  subsribeToItem: UserSaleItemSubscription;
   /** Unsusbscribe from an account */
   unsubscribeFromAccount: string;
   /** Unsubscribe from item */
@@ -460,6 +605,26 @@ export type Node = {
   id: string;
 };
 
+/** Paddle represent a paddle in a sale */
+export type Paddle = {
+  __typename?: 'Paddle';
+  /** Paddle created date */
+  created: string;
+  /** Paddle identifier */
+  identifier: string;
+  /** Paddle type */
+  type: PaddleType;
+};
+
+/** PaddleType represents the type of paddle */
+export enum PaddleType {
+  InRoom = 'IN_ROOM',
+  NotSet = 'NOT_SET',
+  Online = 'ONLINE',
+  Other = 'OTHER',
+  Phone = 'PHONE',
+}
+
 /** Page info for pagination */
 export type PageInfo = {
   __typename?: 'PageInfo';
@@ -469,6 +634,21 @@ export type PageInfo = {
   hasNextPage: boolean;
   /** Starting cursor */
   startCursor: string;
+  /** Total records */
+  totalRecords: number;
+};
+
+/** Direction of pagination */
+export enum PaginationDirection {
+  /** Descending order */
+  Backwards = 'BACKWARDS',
+  /** Ascending order */
+  Forward = 'FORWARD',
+}
+
+export type PaymentDetails = {
+  __typename?: 'PaymentDetails';
+  bidderPremium: number;
 };
 
 export type PaymentSession = {
@@ -504,7 +684,16 @@ export type Query = {
   __typename?: 'Query';
   /** Get account information given an accountId */
   account: Account;
-  /** Get all bids that a user has placed on sales */
+  /**
+   * SaleItems for an account.
+   * Defaults to 20 items if not specified.
+   * Max allowed batch size is 50. Anything above that will be downgraded to 20 items.
+   */
+  accountSaleItems: ItemsConnection;
+  /**
+   * Get all bids that a user has placed on sales
+   * @deprecated use me query
+   */
   bids: UserBidsConnection;
   /** Get information about the logged in user. */
   me: Me;
@@ -525,6 +714,13 @@ export type Query = {
 export type QueryAccountArgs = {
   id: string;
   idType?: InputMaybe<IdType>;
+};
+
+export type QueryAccountSaleItemsArgs = {
+  accountId: string;
+  after?: InputMaybe<string>;
+  filter?: InputMaybe<SaleItemFilter>;
+  first?: InputMaybe<number>;
 };
 
 export type QueryBidsArgs = {
@@ -575,6 +771,22 @@ export type RangeRule = {
   step: number;
 };
 
+export enum RenderMode {
+  /** When client wants a secret for embedded render */
+  Embed = 'EMBED',
+  /** When client wants a url to redirect to */
+  Redirect = 'REDIRECT',
+}
+
+export enum ReserveStatus {
+  /** Reserve has been met */
+  Met = 'MET',
+  /** Reserve has not been met */
+  NotMet = 'NOT_MET',
+  /** The item has no reserve */
+  NoReserve = 'NO_RESERVE',
+}
+
 /** Sale */
 export type Sale = {
   __typename?: 'Sale';
@@ -583,11 +795,15 @@ export type Sale = {
   /** Closing method. */
   closingMethod: ClosingMethod;
   /**
-   * Currency of the sale (capital letters: EUR, USD, etc.)
-   * This is the default currency.
-   * Item currency overrides sale currency, at least one of them needs to be defined.
+   * Currency of the sale as capitalized string
+   * Currently supported currencies:
+   *   - "USD"
+   *   - "ISK"
+   *   - "EUR"
    */
   currency?: Maybe<string>;
+  /** Sale cursor is used in pagination. */
+  cursor: string;
   /** Sale Dates */
   dates: SaleDates;
   /** Sale Description */
@@ -604,6 +820,15 @@ export type Sale = {
   incrementTable?: Maybe<BidIncrementTable>;
   /** Items that have been associated with this sale. */
   items: ItemsConnection;
+  /** Live Item in the Sale (only applicable for live sales) */
+  liveItem?: Maybe<LiveItem>;
+  /**
+   * Live stream for the sale
+   * @deprecated use liveVideoStreams instead
+   */
+  liveStream?: Maybe<LiveStream>;
+  /** Live stream for the sale */
+  liveVideoStream?: Maybe<LiveVideoStream>;
   /** Sequence number of this sale. */
   sequenceNumber: number;
   /**
@@ -611,6 +836,11 @@ export type Sale = {
    * Null/empty for integrating applications.
    */
   slug?: Maybe<string>;
+  /**
+   * Full path for slug.
+   * Null/emtpy for integrating applications.
+   */
+  slugFullPath?: Maybe<string>;
   /** Sale status. */
   status: SaleStatus;
   /**
@@ -622,12 +852,16 @@ export type Sale = {
   title?: Maybe<string>;
   /** Sale type. */
   type: SaleType;
+  /** Paddle assigned to authenticated user */
+  userPaddle?: Maybe<Paddle>;
 };
 
 /** Sale */
 export type SaleItemsArgs = {
   after?: InputMaybe<string>;
+  filter?: InputMaybe<SaleItemFilter>;
   first?: InputMaybe<number>;
+  order?: InputMaybe<ItemOrderInput>;
 };
 
 export type SaleActivity = Item | Sale;
@@ -657,6 +891,14 @@ export type SaleDates = {
 export type SaleFilter = {
   /** Filter by sale status */
   statuses: Array<SaleStatus>;
+};
+
+/** Item filter for sale items. */
+export type SaleItemFilter = {
+  /** Item IDs */
+  itemIds?: InputMaybe<Array<string>>;
+  /** Filter by item status */
+  statuses?: InputMaybe<Array<ItemStatus>>;
 };
 
 /** Sale Status represent what status an sale is currently running in. */
@@ -721,6 +963,8 @@ export type Subscription = {
    * Note: items will not be populated with those events.
    */
   saleChanged: SaleChanged;
+  /** Subscription for multiple sales. */
+  salesChanged: SaleChanged;
   /** Periodic server time updates to syncronize clocks in applications using Basta. */
   serverTimeChanged: ServerTime;
 };
@@ -731,11 +975,16 @@ export type SubscriptionItemChangedArgs = {
 };
 
 export type SubscriptionSaleActivityArgs = {
+  itemIdFilter?: InputMaybe<ItemIdsFilter>;
   saleId: string;
 };
 
 export type SubscriptionSaleChangedArgs = {
   saleId: string;
+};
+
+export type SubscriptionSalesChangedArgs = {
+  saleIds: Array<string>;
 };
 
 export type UserAccountSubscription = {
@@ -772,8 +1021,9 @@ export type UserBidsEdge = {
   node: UserBid;
 };
 
-export type UserItemSubscription = {
-  __typename?: 'UserItemSubscription';
+export type UserSaleItemSubscription = {
+  __typename?: 'UserSaleItemSubscription';
+  accountId: string;
   itemId: string;
   saleId: string;
   userId: string;

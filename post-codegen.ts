@@ -11,6 +11,7 @@ const replaceInFile = async (filePath: string) => {
     fileContent = fileContent.replace(/Scalars\['Int'\]/g, 'number');
     fileContent = fileContent.replace(/Scalars\['String'\]/g, 'string');
     fileContent = fileContent.replace(/Scalars\['Boolean'\]/g, 'boolean');
+    fileContent = fileContent.replace(/Scalars\['Float'\]/g, 'number');
 
     fileContent = fileContent.replace(
       '/** All built-in and custom scalars, mapped to their actual values */\nexport type Scalars = {\n  ID: string;\n  String: string;\n  Boolean: boolean;\n  Int: number;\n  Float: number;\n};\n',
