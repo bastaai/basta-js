@@ -1,6 +1,6 @@
 {
   "name": "@bastaai/basta-js",
-  "version": "0.1.0-beta.110",
+  "version": "0.1.0-beta.112",
   "description": "A lightweight package for client-side apps to easily access and manage data from Basta's online auctions, providing a seamless integration for creating engaging auction experiences.",
   "author": "Basta (https://www.basta.ai)",
   "homepage": "https://docs.basta.ai",
@@ -25,7 +25,8 @@
     "lint": "eslint '{src,types}/**/*.ts' && prettier './**/*.{ts,md,html,css}' --check",
     "lint:fix": "eslint '{src,types}/**/*.ts' --fix && prettier './**/*.{ts,md,html,css}' --write",
     "prettier": "prettier './**/*.{js,ts,md,html,css}' --write",
-    "prettier-check": "prettier './**/*.{js,ts,md,html,css}' --check"
+    "prettier-check": "prettier './**/*.{js,ts,md,html,css}' --check",
+    "publish": "npm run build && npm publish --tag latest"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^3.3.1",
