@@ -72,6 +72,7 @@ export const GET_SALE = `query GET_SALE($id: String!) {
           totalBids
           nextAsks
           reserveMet
+          reserveStatus
           images {
             __typename
             id
@@ -140,6 +141,7 @@ export const ITEM_CHANGED = `subscription ITEM_CHANGED($saleId: ID!, $itemIds: [
       status
       nextAsks(iterations: $nextAsksIterations)
       reserveMet
+      reserveStatus
       dates {
         openDate
         closingStart

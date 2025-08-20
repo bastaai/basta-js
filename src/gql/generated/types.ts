@@ -1111,6 +1111,7 @@ export type Get_SaleQuery = {
           totalBids: number;
           nextAsks: Array<number>;
           reserveMet: boolean;
+          reserveStatus: ReserveStatus;
           images: Array<{
             __typename: 'Image';
             id: string;
@@ -1188,6 +1189,7 @@ export type Item_ChangedSubscription = {
         status: ItemStatus;
         nextAsks: Array<number>;
         reserveMet: boolean;
+        reserveStatus: ReserveStatus;
         dates?: {
           __typename?: 'ItemDates';
           openDate?: string | null;

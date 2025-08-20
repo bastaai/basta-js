@@ -17,7 +17,8 @@
   "scripts": {
     "build": "npm run clean && rollup --bundleConfigAsCjs -c",
     "debug": "nodemon -e ts --watch src --exec \"npm run build\"",
-    "clean": "rimraf dist",
+    "clean": "rimraf dist && pnpm run clean:cache",
+    "clean:cache": "rm -rf .rpt2_cache node_modules/.cache",
     "codegen": "graphql-codegen --require dotenv/config --config codegen.ts --verbose && ts-node ./post-codegen.ts",
     "test": "npm run lint && npm run test:unit && tsc",
     "test:unit": "true",

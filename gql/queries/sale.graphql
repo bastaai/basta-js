@@ -33,6 +33,7 @@ query GET_SALE($id: String!) {
           totalBids
           nextAsks
           reserveMet
+          reserveStatus
           images {
             __typename
             id

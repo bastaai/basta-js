@@ -29,6 +29,8 @@ export type Item = {
   nextAsks: number[];
   /** Was there an accepted bid that met the reserve price */
   reserveMet: boolean;
+  /** Reserve status. */
+  reserveStatus: ReserveStatus;
   /** The id of the sale that this item is associated to. */
   saleId: string;
   /** Starting bid of the item in minor currency unit. */
@@ -42,6 +44,15 @@ export type Item = {
   /** Get list of bids for this item that is placed by the logged in user. */
   userBids: Bid[];
 };
+
+export enum ReserveStatus {
+  /** Reserve has been met */
+  NotMet = 'NOT_MET',
+  /** Reserve has been met */
+  Met = 'MET',
+  /** The item has no reserve */
+  NoReserve = 'NO_RESERVE',
+}
 
 export type ItemDates = {
   closingEnd?: string | null | undefined;
@@ -63,5 +74,5 @@ export enum ItemStatus {
   ItemOpen = 'ITEM_OPEN',
   ItemPaused = 'ITEM_PAUSED',
   ItemProcessing = 'ITEM_PROCESSING',
-  ItemLive = "ITEM_LIVE"
+  ItemLive = 'ITEM_LIVE',
 }
