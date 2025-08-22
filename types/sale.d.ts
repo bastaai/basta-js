@@ -1,6 +1,7 @@
 import { Item } from './item';
 import { Image } from './image';
 import { BidIncrementTable } from './bid';
+import { Paddle } from './paddle';
 
 /** Sale */
 export type Sale = {
@@ -99,25 +100,6 @@ export enum SaleType {
   Live = 'LIVE',
   /** Sale is a online timed auction */
   OnlineTimed = 'ONLINE_TIMED',
-}
-
-/** Paddle represent a paddle in a sale */
-export type Paddle = {
-  /** Paddle created date */
-  created: string;
-  /** Paddle identifier */
-  identifier: string;
-  /** Paddle type */
-  type: PaddleType;
-};
-
-/** PaddleType represents the type of paddle */
-export enum PaddleType {
-  InRoom = 'IN_ROOM',
-  NotSet = 'NOT_SET',
-  Online = 'ONLINE',
-  Other = 'OTHER',
-  Phone = 'PHONE',
 }
 
 /** Sale Dates */

@@ -1,3 +1,5 @@
+import { Paddle } from './paddle';
+
 /**
  * Range rule explains increments in the table.
  * Each amount should be in its minor currency unit.
@@ -24,8 +26,18 @@ export type BidIncrementTable = {
 
 /** Bid represents a bid that has been placed. */
 export type Bid = {
+  /** Unique identifier for the bid */
+  id: string;
+  /** Id of the sale */
+  saleId: string;
+  /** Id of the item */
+  itemId: string;
   /** Amount of bid in minor currency unit. */
   amount: number;
+  /** Max amount placed with the bid in minor currency unit. */
+  maxAmount?: number | null | undefined;
+  /** Date of when the bid was placed. */
+  date: string;
   /** Bid status of for the bid */
   bidStatus?: BidStatus | null | undefined;
   /**
@@ -35,14 +47,10 @@ export type Bid = {
    * Default null
    */
   bidderIdentifier?: string | null | undefined;
-  /** Date of when the bid was placed. */
-  date: string;
-  /** Id of the item */
-  itemId: string;
-  /** Max amount placed with the bid in minor currency unit. */
-  maxAmount?: number | null | undefined;
-  /** Id of the sale */
-  saleId: string;
+  /** Optional paddle if bid is associated with a paddle. */
+  paddle?: Paddle | null | undefined;
+  /** Reactive bid if bid was placed as a side effect of a max bid */
+  reactiveBid: boolean;
 };
 
 export type BidResponse =

@@ -103,11 +103,13 @@ export class BidService implements IBidService {
     ) {
       return {
         bid: {
+          id: bid.id,
           amount: bid.amount,
           bidStatus: bid.bidStatus,
           date: bid.date,
           itemId: itemId,
           saleId: saleId,
+          reactiveBid: false,
         },
         success: true,
       };
