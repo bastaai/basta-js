@@ -1,20 +1,18 @@
 export const BID_ON_ITEM = `mutation BID_ON_ITEM($saleId: String!, $itemId: String!, $amount: Int!, $type: BidType!) {
   bidOnItem(saleId: $saleId, itemId: $itemId, amount: $amount, type: $type) {
-    __typename
     ... on BidPlacedSuccess {
-      __typename
+      id
       bidStatus
       date
       amount
     }
     ... on MaxBidPlacedSuccess {
-      __typename
+      id
       bidStatus
       date
       amount
     }
     ... on BidPlacedError {
-      __typename
       errorCode
       error
     }
@@ -23,7 +21,6 @@ export const BID_ON_ITEM = `mutation BID_ON_ITEM($saleId: String!, $itemId: Stri
 
 export const GET_ACCOUNT_BY_ID = `query GET_ACCOUNT_BY_ID($accountId: String!) {
   account(id: $accountId) {
-    __typename
     id
     name
     handle
@@ -39,48 +36,33 @@ export const GET_ACCOUNT_BY_ID = `query GET_ACCOUNT_BY_ID($accountId: String!) {
 
 export const GET_SALE = `query GET_SALE($id: String!) {
   sale(id: $id) {
-    __typename
     id
+    cursor
     accountId
     title
     description
     currency
     status
-    sequenceNumber
-    closingMethod
-    images {
-      __typename
-      id
-      url
-      order
-    }
     items {
-      __typename
       edges {
-        __typename
         cursor
         node {
-          __typename
           id
+          cursor
           saleId
+          accountId
           title
           description
-          status
-          startingBid
+          currency
+          estimates {
+            low
+            high
+          }
           currentBid
           bidStatus
           totalBids
-          nextAsks
-          reserveMet
-          reserveStatus
-          images {
-            __typename
-            id
-            url
-            order
-          }
           bids {
-            __typename
+            id
             saleId
             itemId
             amount
@@ -88,9 +70,15 @@ export const GET_SALE = `query GET_SALE($id: String!) {
             date
             bidStatus
             bidderIdentifier
+            paddle {
+              identifier
+              type
+              created
+            }
+            reactiveBid
           }
           userBids {
-            __typename
+            id
             saleId
             itemId
             amount
@@ -98,34 +86,179 @@ export const GET_SALE = `query GET_SALE($id: String!) {
             date
             bidStatus
             bidderIdentifier
+            paddle {
+              identifier
+              type
+              created
+            }
+            reactiveBid
+          }
+          reserveStatus
+          nextAsks
+          incrementTable {
+            rangeRules {
+              highRange
+              lowRange
+              step
+            }
           }
           dates {
-            __typename
             openDate
             closingStart
             closingEnd
           }
+          status
+          startingBid
+          images {
+            id
+            url
+            order
+          }
+          itemNumber
+          notifications {
+            ... on ItemMessageNotification {
+              id
+              message
+              date
+            }
+            ... on ItemFairWarningNotification {
+              id
+              date
+            }
+          }
+          reserveMet
         }
       }
       pageInfo {
-        __typename
         startCursor
         endCursor
         hasNextPage
+        totalRecords
       }
     }
     incrementTable {
       rangeRules {
-        __typename
         highRange
         lowRange
         step
       }
     }
+    sequenceNumber
     dates {
-      __typename
       openDate
       closingDate
+      liveDate
+    }
+    closingMethod
+    images {
+      id
+      url
+      order
+    }
+    type
+    liveVideoStream {
+      ... on ExternalLiveStream {
+        url
+        type
+        created
+        updated
+      }
+      ... on BastaLiveStream {
+        enabled
+        channelId
+        publicUrl
+        currentViewers
+      }
+    }
+    liveItem {
+      cursor
+      item {
+        id
+        cursor
+        saleId
+        accountId
+        title
+        description
+        currency
+        estimates {
+          low
+          high
+        }
+        currentBid
+        bidStatus
+        totalBids
+        bids {
+          id
+          saleId
+          itemId
+          amount
+          maxAmount
+          date
+          bidStatus
+          bidderIdentifier
+          paddle {
+            identifier
+            type
+            created
+          }
+          reactiveBid
+        }
+        userBids {
+          id
+          saleId
+          itemId
+          amount
+          maxAmount
+          date
+          bidStatus
+          bidderIdentifier
+          paddle {
+            identifier
+            type
+            created
+          }
+          reactiveBid
+        }
+        reserveStatus
+        nextAsks
+        incrementTable {
+          rangeRules {
+            highRange
+            lowRange
+            step
+          }
+        }
+        dates {
+          openDate
+          closingStart
+          closingEnd
+        }
+        status
+        startingBid
+        images {
+          id
+          url
+          order
+        }
+        itemNumber
+        notifications {
+          ... on ItemMessageNotification {
+            id
+            message
+            date
+          }
+          ... on ItemFairWarningNotification {
+            id
+            date
+          }
+        }
+        reserveMet
+      }
+    }
+    userPaddle {
+      identifier
+      type
+      created
     }
   }
 }`;
@@ -134,37 +267,85 @@ export const ITEM_CHANGED = `subscription ITEM_CHANGED($saleId: ID!, $itemIds: [
   itemChanged(saleId: $saleId, itemIds: $itemIds) {
     ... on Item {
       id
+      cursor
       saleId
+      accountId
+      title
+      description
+      currency
+      estimates {
+        low
+        high
+      }
       currentBid
       bidStatus
       totalBids
-      status
-      nextAsks(iterations: $nextAsksIterations)
-      reserveMet
+      bids {
+        id
+        saleId
+        itemId
+        amount
+        maxAmount
+        date
+        bidStatus
+        bidderIdentifier
+        paddle {
+          identifier
+          type
+          created
+        }
+        reactiveBid
+      }
+      userBids {
+        id
+        saleId
+        itemId
+        amount
+        maxAmount
+        date
+        bidStatus
+        bidderIdentifier
+        paddle {
+          identifier
+          type
+          created
+        }
+        reactiveBid
+      }
       reserveStatus
+      nextAsks(iterations: $nextAsksIterations)
+      incrementTable {
+        rangeRules {
+          highRange
+          lowRange
+          step
+        }
+      }
       dates {
         openDate
         closingStart
         closingEnd
       }
-      bids {
-        amount
-        maxAmount
-        date
-        bidStatus
-        saleId
-        itemId
-        bidderIdentifier
+      status
+      startingBid
+      images {
+        id
+        url
+        order
       }
-      userBids {
-        amount
-        maxAmount
-        date
-        bidStatus
-        saleId
-        itemId
-        bidderIdentifier
+      itemNumber
+      notifications {
+        ... on ItemMessageNotification {
+          id
+          message
+          date
+        }
+        ... on ItemFairWarningNotification {
+          id
+          date
+        }
       }
+      reserveMet
     }
     ... on ServerTime {
       currentTime

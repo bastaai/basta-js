@@ -9,6 +9,23 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
   [SubKey in K]: Maybe<T[SubKey]>;
 };
+export type MakeEmpty<
+  T extends { [key: string]: unknown },
+  K extends keyof T
+> = { [_ in K]?: never };
+export type Incremental<T> =
+  | T
+  | {
+      [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never;
+    };
+/** All built-in and custom scalars, mapped to their actual values */
+export type Scalars = {
+  ID: { input: string; output: string };
+  String: { input: string; output: string };
+  Boolean: { input: boolean; output: boolean };
+  Int: { input: number; output: number };
+  Float: { input: number; output: number };
+};
 
 export type Account = {
   __typename?: 'Account';
@@ -76,6 +93,8 @@ export type Bid = {
   maxAmount?: Maybe<number>;
   /** Optional paddle if bid is associated with a paddle. */
   paddle?: Maybe<Paddle>;
+  /** Reactive bid if bid was placed as a side effect of a max bid */
+  reactiveBid: boolean;
   /** Id of the sale */
   saleId: string;
 };
@@ -1001,6 +1020,7 @@ export type UserBid = {
   id: string;
   itemId: string;
   maxAmount: number;
+  reactiveBid: boolean;
   saleId: string;
   userId: string;
 };
@@ -1039,15 +1059,17 @@ export type Bid_On_ItemMutationVariables = Exact<{
 export type Bid_On_ItemMutation = {
   __typename?: 'Mutation';
   bidOnItem:
-    | { __typename: 'BidPlacedError'; errorCode: BidErrorCode; error: string }
+    | { __typename?: 'BidPlacedError'; errorCode: BidErrorCode; error: string }
     | {
-        __typename: 'BidPlacedSuccess';
+        __typename?: 'BidPlacedSuccess';
+        id: string;
         bidStatus: BidStatus;
         date: string;
         amount: number;
       }
     | {
-        __typename: 'MaxBidPlacedSuccess';
+        __typename?: 'MaxBidPlacedSuccess';
+        id: string;
         bidStatus: BidStatus;
         date: string;
         amount: number;
@@ -1061,7 +1083,7 @@ export type Get_Account_By_IdQueryVariables = Exact<{
 export type Get_Account_By_IdQuery = {
   __typename?: 'Query';
   account: {
-    __typename: 'Account';
+    __typename?: 'Account';
     id: string;
     name: string;
     handle?: string | null;
@@ -1078,8 +1100,9 @@ export type Get_SaleQueryVariables = Exact<{
 export type Get_SaleQuery = {
   __typename?: 'Query';
   sale: {
-    __typename: 'Sale';
+    __typename?: 'Sale';
     id: string;
+    cursor: string;
     accountId: string;
     title?: string | null;
     description?: string | null;
@@ -1087,39 +1110,38 @@ export type Get_SaleQuery = {
     status: SaleStatus;
     sequenceNumber: number;
     closingMethod: ClosingMethod;
-    images: Array<{
-      __typename: 'Image';
-      id: string;
-      url: string;
-      order: number;
-    }>;
+    type: SaleType;
     items: {
-      __typename: 'ItemsConnection';
+      __typename?: 'ItemsConnection';
       edges: Array<{
-        __typename: 'ItemsEdge';
+        __typename?: 'ItemsEdge';
         cursor: string;
         node: {
-          __typename: 'Item';
+          __typename?: 'Item';
           id: string;
+          cursor: string;
           saleId: string;
+          accountId: string;
           title?: string | null;
           description?: string | null;
-          status: ItemStatus;
-          startingBid?: number | null;
+          currency?: string | null;
           currentBid?: number | null;
           bidStatus?: BidStatus | null;
           totalBids: number;
-          nextAsks: Array<number>;
-          reserveMet: boolean;
           reserveStatus: ReserveStatus;
-          images: Array<{
-            __typename: 'Image';
-            id: string;
-            url: string;
-            order: number;
-          }>;
+          nextAsks: Array<number>;
+          status: ItemStatus;
+          startingBid?: number | null;
+          itemNumber: number;
+          reserveMet: boolean;
+          estimates: {
+            __typename?: 'Estimate';
+            low?: number | null;
+            high?: number | null;
+          };
           bids: Array<{
-            __typename: 'Bid';
+            __typename?: 'Bid';
+            id: string;
             saleId: string;
             itemId: string;
             amount: number;
@@ -1127,9 +1149,17 @@ export type Get_SaleQuery = {
             date: string;
             bidStatus?: BidStatus | null;
             bidderIdentifier?: string | null;
+            reactiveBid: boolean;
+            paddle?: {
+              __typename?: 'Paddle';
+              identifier: string;
+              type: PaddleType;
+              created: string;
+            } | null;
           }>;
           userBids: Array<{
-            __typename: 'Bid';
+            __typename?: 'Bid';
+            id: string;
             saleId: string;
             itemId: string;
             amount: number;
@@ -1137,36 +1167,199 @@ export type Get_SaleQuery = {
             date: string;
             bidStatus?: BidStatus | null;
             bidderIdentifier?: string | null;
+            reactiveBid: boolean;
+            paddle?: {
+              __typename?: 'Paddle';
+              identifier: string;
+              type: PaddleType;
+              created: string;
+            } | null;
           }>;
+          incrementTable?: {
+            __typename?: 'BidIncrementTable';
+            rangeRules: Array<{
+              __typename?: 'RangeRule';
+              highRange: number;
+              lowRange: number;
+              step: number;
+            }>;
+          } | null;
           dates?: {
-            __typename: 'ItemDates';
+            __typename?: 'ItemDates';
             openDate?: string | null;
             closingStart?: string | null;
             closingEnd?: string | null;
           } | null;
+          images: Array<{
+            __typename?: 'Image';
+            id: string;
+            url: string;
+            order: number;
+          }>;
+          notifications: Array<
+            | {
+                __typename?: 'ItemFairWarningNotification';
+                id: string;
+                date: string;
+              }
+            | {
+                __typename?: 'ItemMessageNotification';
+                id: string;
+                message: string;
+                date: string;
+              }
+          >;
         };
       }>;
       pageInfo: {
-        __typename: 'PageInfo';
+        __typename?: 'PageInfo';
         startCursor: string;
         endCursor: string;
         hasNextPage: boolean;
+        totalRecords: number;
       };
     };
     incrementTable?: {
       __typename?: 'BidIncrementTable';
       rangeRules: Array<{
-        __typename: 'RangeRule';
+        __typename?: 'RangeRule';
         highRange: number;
         lowRange: number;
         step: number;
       }>;
     } | null;
     dates: {
-      __typename: 'SaleDates';
+      __typename?: 'SaleDates';
       openDate?: string | null;
       closingDate?: string | null;
+      liveDate?: string | null;
     };
+    images: Array<{
+      __typename?: 'Image';
+      id: string;
+      url: string;
+      order: number;
+    }>;
+    liveVideoStream?:
+      | {
+          __typename?: 'BastaLiveStream';
+          enabled: boolean;
+          channelId?: string | null;
+          publicUrl?: string | null;
+          currentViewers?: number | null;
+        }
+      | {
+          __typename?: 'ExternalLiveStream';
+          url: string;
+          type: LiveStreamType;
+          created: string;
+          updated: string;
+        }
+      | null;
+    liveItem?: {
+      __typename?: 'LiveItem';
+      cursor: string;
+      item: {
+        __typename?: 'Item';
+        id: string;
+        cursor: string;
+        saleId: string;
+        accountId: string;
+        title?: string | null;
+        description?: string | null;
+        currency?: string | null;
+        currentBid?: number | null;
+        bidStatus?: BidStatus | null;
+        totalBids: number;
+        reserveStatus: ReserveStatus;
+        nextAsks: Array<number>;
+        status: ItemStatus;
+        startingBid?: number | null;
+        itemNumber: number;
+        reserveMet: boolean;
+        estimates: {
+          __typename?: 'Estimate';
+          low?: number | null;
+          high?: number | null;
+        };
+        bids: Array<{
+          __typename?: 'Bid';
+          id: string;
+          saleId: string;
+          itemId: string;
+          amount: number;
+          maxAmount?: number | null;
+          date: string;
+          bidStatus?: BidStatus | null;
+          bidderIdentifier?: string | null;
+          reactiveBid: boolean;
+          paddle?: {
+            __typename?: 'Paddle';
+            identifier: string;
+            type: PaddleType;
+            created: string;
+          } | null;
+        }>;
+        userBids: Array<{
+          __typename?: 'Bid';
+          id: string;
+          saleId: string;
+          itemId: string;
+          amount: number;
+          maxAmount?: number | null;
+          date: string;
+          bidStatus?: BidStatus | null;
+          bidderIdentifier?: string | null;
+          reactiveBid: boolean;
+          paddle?: {
+            __typename?: 'Paddle';
+            identifier: string;
+            type: PaddleType;
+            created: string;
+          } | null;
+        }>;
+        incrementTable?: {
+          __typename?: 'BidIncrementTable';
+          rangeRules: Array<{
+            __typename?: 'RangeRule';
+            highRange: number;
+            lowRange: number;
+            step: number;
+          }>;
+        } | null;
+        dates?: {
+          __typename?: 'ItemDates';
+          openDate?: string | null;
+          closingStart?: string | null;
+          closingEnd?: string | null;
+        } | null;
+        images: Array<{
+          __typename?: 'Image';
+          id: string;
+          url: string;
+          order: number;
+        }>;
+        notifications: Array<
+          | {
+              __typename?: 'ItemFairWarningNotification';
+              id: string;
+              date: string;
+            }
+          | {
+              __typename?: 'ItemMessageNotification';
+              id: string;
+              message: string;
+              date: string;
+            }
+        >;
+      };
+    } | null;
+    userPaddle?: {
+      __typename?: 'Paddle';
+      identifier: string;
+      type: PaddleType;
+      created: string;
+    } | null;
   };
 };
 
@@ -1182,40 +1375,96 @@ export type Item_ChangedSubscription = {
     | {
         __typename?: 'Item';
         id: string;
+        cursor: string;
         saleId: string;
+        accountId: string;
+        title?: string | null;
+        description?: string | null;
+        currency?: string | null;
         currentBid?: number | null;
         bidStatus?: BidStatus | null;
         totalBids: number;
-        status: ItemStatus;
-        nextAsks: Array<number>;
-        reserveMet: boolean;
         reserveStatus: ReserveStatus;
+        nextAsks: Array<number>;
+        status: ItemStatus;
+        startingBid?: number | null;
+        itemNumber: number;
+        reserveMet: boolean;
+        estimates: {
+          __typename?: 'Estimate';
+          low?: number | null;
+          high?: number | null;
+        };
+        bids: Array<{
+          __typename?: 'Bid';
+          id: string;
+          saleId: string;
+          itemId: string;
+          amount: number;
+          maxAmount?: number | null;
+          date: string;
+          bidStatus?: BidStatus | null;
+          bidderIdentifier?: string | null;
+          reactiveBid: boolean;
+          paddle?: {
+            __typename?: 'Paddle';
+            identifier: string;
+            type: PaddleType;
+            created: string;
+          } | null;
+        }>;
+        userBids: Array<{
+          __typename?: 'Bid';
+          id: string;
+          saleId: string;
+          itemId: string;
+          amount: number;
+          maxAmount?: number | null;
+          date: string;
+          bidStatus?: BidStatus | null;
+          bidderIdentifier?: string | null;
+          reactiveBid: boolean;
+          paddle?: {
+            __typename?: 'Paddle';
+            identifier: string;
+            type: PaddleType;
+            created: string;
+          } | null;
+        }>;
+        incrementTable?: {
+          __typename?: 'BidIncrementTable';
+          rangeRules: Array<{
+            __typename?: 'RangeRule';
+            highRange: number;
+            lowRange: number;
+            step: number;
+          }>;
+        } | null;
         dates?: {
           __typename?: 'ItemDates';
           openDate?: string | null;
           closingStart?: string | null;
           closingEnd?: string | null;
         } | null;
-        bids: Array<{
-          __typename?: 'Bid';
-          amount: number;
-          maxAmount?: number | null;
-          date: string;
-          bidStatus?: BidStatus | null;
-          saleId: string;
-          itemId: string;
-          bidderIdentifier?: string | null;
+        images: Array<{
+          __typename?: 'Image';
+          id: string;
+          url: string;
+          order: number;
         }>;
-        userBids: Array<{
-          __typename?: 'Bid';
-          amount: number;
-          maxAmount?: number | null;
-          date: string;
-          bidStatus?: BidStatus | null;
-          saleId: string;
-          itemId: string;
-          bidderIdentifier?: string | null;
-        }>;
+        notifications: Array<
+          | {
+              __typename?: 'ItemFairWarningNotification';
+              id: string;
+              date: string;
+            }
+          | {
+              __typename?: 'ItemMessageNotification';
+              id: string;
+              message: string;
+              date: string;
+            }
+        >;
       }
     | { __typename?: 'ServerTime'; currentTime: number };
 };

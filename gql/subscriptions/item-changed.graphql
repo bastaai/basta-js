@@ -6,37 +6,85 @@ subscription ITEM_CHANGED(
   itemChanged(saleId: $saleId, itemIds: $itemIds) {
     ... on Item {
       id
+      cursor
       saleId
+      accountId
+      title
+      description
+      currency
+      estimates {
+        low
+        high
+      }
       currentBid
       bidStatus
       totalBids
-      status
-      nextAsks(iterations: $nextAsksIterations)
-      reserveMet
+      bids {
+        id
+        saleId
+        itemId
+        amount
+        maxAmount
+        date
+        bidStatus
+        bidderIdentifier
+        paddle {
+          identifier
+          type
+          created
+        }
+        reactiveBid
+      }
+      userBids {
+        id
+        saleId
+        itemId
+        amount
+        maxAmount
+        date
+        bidStatus
+        bidderIdentifier
+        paddle {
+          identifier
+          type
+          created
+        }
+        reactiveBid
+      }
       reserveStatus
+      nextAsks(iterations: $nextAsksIterations)
+      incrementTable {
+        rangeRules {
+          highRange
+          lowRange
+          step
+        }
+      }
       dates {
         openDate
         closingStart
         closingEnd
       }
-      bids {
-        amount
-        maxAmount
-        date
-        bidStatus
-        saleId
-        itemId
-        bidderIdentifier
+      status
+      startingBid
+      images {
+        id
+        url
+        order
       }
-      userBids {
-        amount
-        maxAmount
-        date
-        bidStatus
-        saleId
-        itemId
-        bidderIdentifier
+      itemNumber
+      notifications {
+        ... on ItemMessageNotification {
+          id
+          message
+          date
+        }
+        ... on ItemFairWarningNotification {
+          id
+          date
+        }
       }
+      reserveMet
     }
 
     ... on ServerTime {

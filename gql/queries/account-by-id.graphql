@@ -1,6 +1,5 @@
 query GET_ACCOUNT_BY_ID($accountId: String!) {
   account(id: $accountId) {
-    __typename
     id
     name
     handle

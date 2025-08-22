@@ -5,21 +5,19 @@ mutation BID_ON_ITEM(
   $type: BidType!
 ) {
   bidOnItem(saleId: $saleId, itemId: $itemId, amount: $amount, type: $type) {
-    __typename
     ... on BidPlacedSuccess {
-      __typename
+      id
       bidStatus
       date
       amount
     }
     ... on MaxBidPlacedSuccess {
-      __typename
+      id
       bidStatus
       date
       amount
     }
     ... on BidPlacedError {
-      __typename
       errorCode
       error
     }
