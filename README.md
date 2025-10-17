@@ -165,6 +165,10 @@ This will prompt you to select an API version (e.g., `2022-10`, `unstable`) and 
 
 For the Management API you'll have to supply an Account ID and API Key, you can put them in an `.env` file and the script will pick it up for you. Otherwise you'll be prompted for it by the script.
 
+### Local dev
+
+todo: add section about using pnpm link (or just make a vite project example/ in this project)
+
 ## Requirements / Peer dependencies
 
 - `react` 16.8.0 or higher
