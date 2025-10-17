@@ -11,6 +11,8 @@
     "postbuild": "node scripts/prepare-package.js",
     "format": "biome format",
     "format:fix": "biome format --write",
+    "lint": "biome lint",
+    "lint:fix": "biome lint --write",
     "client:update": "node scripts/update-client.js",
     "manage:update": "dotenv -e .env -- node scripts/update-management.js"
   },

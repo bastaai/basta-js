@@ -1,7 +1,7 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("node:fs");
+const path = require("node:path");
 
-const pkg = require('../package.json');
+const pkg = require("../package.json");
 
 // Fields for npm distribution
 const distPkg = {
@@ -16,21 +16,21 @@ const distPkg = {
   homepage: pkg.homepage,
 
   // Entry points - tsup outputs to dist root
-  main: './index.js',           // CommonJS
-  module: './index.mjs',        // ESM
-  types: './index.d.ts',        // TypeScript types
+  main: "./index.js", // CommonJS
+  module: "./index.mjs", // ESM
+  types: "./index.d.ts", // TypeScript types
 
   // Modern exports field for better module resolution
   exports: {
-    '.': {
-      require: './index.js',
-      import: './index.mjs',
-      types: './index.d.ts'
-    }
+    ".": {
+      require: "./index.js",
+      import: "./index.mjs",
+      types: "./index.d.ts",
+    },
   },
 
   // Specify which files to include (everything in dist)
-  files: ['*'],
+  files: ["*"],
 
   // Runtime dependencies only
   dependencies: pkg.dependencies,
@@ -38,19 +38,22 @@ const distPkg = {
 };
 
 // Remove undefined/empty fields
-Object.keys(distPkg).forEach(key => {
+Object.keys(distPkg).forEach((key) => {
   const value = distPkg[key];
-  if (value === undefined || value === '' ||
-      (Array.isArray(value) && value.length === 0) ||
-      (typeof value === 'object' && Object.keys(value).length === 0)) {
+  if (
+    value === undefined ||
+    value === "" ||
+    (Array.isArray(value) && value.length === 0) ||
+    (typeof value === "object" && Object.keys(value).length === 0)
+  ) {
     delete distPkg[key];
   }
 });
 
-const distPath = path.join(__dirname, '../dist');
+const distPath = path.join(__dirname, "../dist");
 fs.writeFileSync(
-  path.join(distPath, 'package.json'),
-  JSON.stringify(distPkg, null, 2) + '\n'
+  path.join(distPath, "package.json"),
+  `${JSON.stringify(distPkg, null, 2)}\n`,
 );
 
-console.log('✓ Created dist/package.json');
+console.log("✓ Created dist/package.json");

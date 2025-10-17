@@ -1,4 +1,4 @@
-const { execSync } = require("child_process");
+const { execSync } = require("node:child_process");
 const prompts = require("prompts");
 
 const API_VERSIONS = ["2022-10", "unstable"];
@@ -62,7 +62,7 @@ async function main() {
   try {
     execSync(command, { stdio: "inherit" });
     console.log("\n✅ Management updated successfully");
-  } catch (error) {
+  } catch (_error) {
     console.error("\n❌ Failed to update management");
     process.exit(1);
   }

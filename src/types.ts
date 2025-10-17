@@ -60,6 +60,7 @@ export interface Client
   ) => TypedGraphqlOperation<SubscriptionResult<Fields>>;
 
   // urql hooks bound to this client's context
+  // biome-ignore lint/suspicious/noExplicitAny: We don't really care about this type
   useQuery: <TQuery extends TypedGraphqlOperation<any>>(
     args: Omit<
       UseQueryArgs<AnyVariables, ExtractResultType<TQuery>>,
@@ -69,12 +70,14 @@ export interface Client
     },
   ) => ReturnType<typeof useQuery<ExtractResultType<TQuery>, AnyVariables>>;
 
+  // biome-ignore lint/suspicious/noExplicitAny: We don't really care about this type
   useMutation: <TMutation extends TypedGraphqlOperation<any>>(
     query: TMutation,
   ) => ReturnType<
     typeof useMutation<ExtractResultType<TMutation>, AnyVariables>
   >;
 
+  // biome-ignore lint/suspicious/noExplicitAny: We don't really care about this type
   useSubscription: <TSubscription extends TypedGraphqlOperation<any>>(
     args: Omit<
       UseSubscriptionArgs<AnyVariables, ExtractResultType<TSubscription>>,
