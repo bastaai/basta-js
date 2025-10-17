@@ -1,7 +1,7 @@
 const { execSync } = require("child_process");
 const prompts = require("prompts");
 
-const API_VERSIONS = ["unstable", "2022-10"];
+const API_VERSIONS = ["2022-10", "unstable"];
 
 async function main() {
   const questions = [
