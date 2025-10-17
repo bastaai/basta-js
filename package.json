@@ -1,62 +1,41 @@
 {
   "name": "@bastaai/basta-js",
-  "version": "0.1.0-beta.114",
+  "version": "1.0.0-alpha.1",
   "description": "A lightweight package for client-side apps to easily access and manage data from Basta's online auctions, providing a seamless integration for creating engaging auction experiences.",
   "author": "Basta (https://www.basta.ai)",
   "homepage": "https://docs.basta.ai",
   "license": "UNLICENSED",
-  "main": "dist/index.js",
-  "module": "dist/index.esm.js",
-  "jsnext:main": "dist/index.esm.js",
-  "types": "types/index.d.ts",
-  "typings": "types/index.d.ts",
-  "files": [
-    "dist",
-    "types"
-  ],
+  "packageManager": "pnpm@10.17.1",
   "scripts": {
-    "build": "npm run clean && rollup --bundleConfigAsCjs -c",
-    "debug": "nodemon -e ts --watch src --exec \"npm run build\"",
-    "clean": "rimraf dist && pnpm run clean:cache",
-    "clean:cache": "rm -rf .rpt2_cache node_modules/.cache",
-    "codegen": "graphql-codegen --require dotenv/config --config codegen.ts --verbose && ts-node ./post-codegen.ts",
-    "test": "npm run lint && npm run test:unit && tsc",
-    "test:unit": "true",
-    "lint": "eslint '{src,types}/**/*.ts' && prettier './**/*.{ts,md,html,css}' --check",
-    "lint:fix": "eslint '{src,types}/**/*.ts' --fix && prettier './**/*.{ts,md,html,css}' --write",
-    "prettier": "prettier './**/*.{js,ts,md,html,css}' --write",
-    "prettier-check": "prettier './**/*.{js,ts,md,html,css}' --check",
-    "publish": "npm run build && npm publish --tag latest"
+    "build": "tsup",
+    "postbuild": "node scripts/prepare-package.js",
+    "format": "biome format",
+    "format:fix": "biome format --write",
+    "client:update": "node scripts/update-client.js",
+    "manage:update": "dotenv -e .env -- node scripts/update-management.js"
+  },
+  "dependencies": {
+    "ts-pattern": "5.8.0"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "5.0.7",
-    "@graphql-codegen/typescript": "^4.1.6",
-    "@graphql-codegen/typescript-operations": "^4.6.1",
-    "@graphql-eslint/eslint-plugin": "^3.18.0",
-    "@rollup/plugin-babel": "^6.0.3",
-    "@types/node": "^24.3.0",
-    "@typescript-eslint/eslint-plugin": "^5.59.2",
-    "@typescript-eslint/parser": "^5.59.2",
-    "dotenv": "^16.0.3",
-    "eslint": "^8.39.0",
-    "eslint-config-prettier": "^8.8.0",
-    "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-jest": "^27.2.1",
-    "eslint-plugin-prettier": "^4.2.1",
-    "graphql": "^16.6.0",
-    "nodemon": "^3.0.1",
-    "prettier": "^2.8.8",
-    "rimraf": "^5.0.0",
-    "rollup": "^3.28.1",
-    "rollup-plugin-typescript2": "^0.35.0",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.0.4"
+    "@biomejs/biome": "2.2.6",
+    "@genql/cli": "6.3.3",
+    "@types/react": "19",
+    "dotenv-cli": "10.0.0",
+    "graphql-ws": "6.0.6",
+    "prompts": "2.4.2",
+    "react": "19",
+    "tsup": "8.5.0",
+    "typescript": "5.9.3",
+    "urql": "5.0.1"
+  },
+  "peerDependencies": {
+    "graphql-ws": "^6.0.0",
+    "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0",
+    "urql": "^5.0.0"
   },
   "keywords": [
     "Basta.ai",
     "Basta SDK"
-  ],
-  "dependencies": {
-    "graphql-ws": "^5.14.0"
-  }
+  ]
 }
