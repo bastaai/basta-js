@@ -1,0 +1,1236 @@
+"""
+Directs the executor to defer this fragment when the `if` argument is true or undefined.
+"""
+directive @defer(
+  """Deferred when true or undefined."""
+  if: Boolean = true
+
+  """Unique name"""
+  label: String
+) on FRAGMENT_SPREAD | INLINE_FRAGMENT
+
+directive @hasPermission(permission: Permission!) on FIELD_DEFINITION
+
+type Account {
+  """ID of the account"""
+  id: ID!
+
+  """Name associated with account"""
+  name: String!
+
+  """Account handle, identifier for the account"""
+  handle: String
+
+  """Description for account"""
+  description: String
+
+  """Url for the profile image"""
+  imageUrl: String
+
+  """Links associated with account"""
+  links: [Link!]!
+
+  """Indicates whether account is using basta's bid client"""
+  bastaBidClient: Boolean!
+
+  """
+  Is logged-in user subscribed to account ?
+  Only applies to sales running on basta.app (false for all api clients)
+  """
+  isUserSubscribed: Boolean!
+
+  """PaymentDetails set by account"""
+  paymentDetails: PaymentDetails
+}
+
+type Aggregator {
+  name: String!
+  type: BidOriginType!
+}
+
+type BastaLiveStream {
+  """Is live stream enabled"""
+  enabled: Boolean!
+
+  """LiveStream channel ID"""
+  channelId: String
+
+  """LiveStream URL"""
+  publicUrl: String
+
+  """Is stream live"""
+  isLive: Boolean! @deprecated(reason: "use our partner sdk instead, currently always true")
+
+  """Current viewers"""
+  currentViewers: Int
+}
+
+"""Bid represents a bid that has been placed."""
+type Bid {
+  """Bid ID"""
+  id: ID!
+
+  """Id of the sale"""
+  saleId: String!
+
+  """Id of the item"""
+  itemId: String!
+
+  """Amount of bid in minor currency unit."""
+  amount: Int!
+
+  """Max amount placed with the bid in minor currency unit."""
+  maxAmount: Int
+
+  """Date of when the bid was placed."""
+  date: String!
+
+  """Bid status of for the bid"""
+  bidStatus: BidStatus
+
+  """
+  User Identifier.
+  Controlled in ManagementAPI for the SaleItem owning the bid.
+  Can be userID, randomIdentifier or null.
+  Default null
+  """
+  bidderIdentifier: String
+
+  """Optional paddle if bid is associated with a paddle."""
+  paddle: Paddle
+
+  """Reactive bid if bid was placed as a side effect of a max bid"""
+  reactiveBid: Boolean!
+
+  """BidOrigin"""
+  bidOrigin: BidOrigin!
+}
+
+"""Error code when failing to place a bid on an item"""
+enum BidErrorCode {
+  NO_ERROR
+  INTERNAL_ERROR
+  MAX_BID_LOWER_THAN_CURRENT_MAX
+  BID_LOWER_THAN_CURRENT_MAX
+  BID_LOWER_THAN_CURRENT_BID
+  ALREADY_HIGHER_MAX_BID
+  OFF_INCREMENT
+  STARTING_BID_HIGHER
+  NOT_OPEN_FOR_BIDDING
+  ITEM_CLOSING_PERIOD_PASSED
+  BID_AMOUNT_UPPER_LIMIT_REACHED
+  ITEM_ALREADY_CLOSED
+}
+
+"""
+Bid increment table represent how increments behave for a
+specific item or an sale.
+"""
+type BidIncrementTable {
+  """Range rules in the table."""
+  rangeRules: [RangeRule!]!
+}
+
+union BidOrigin = OnlineBidOrigin | PaddleBidOrigin | PhoneBidOrigin | Aggregator
+
+enum BidOriginType {
+  ONLINE
+  PADDLE
+  PHONE
+  AGGREGATOR
+}
+
+union BidPlaced = BidPlacedSuccess | MaxBidPlacedSuccess | BidPlacedError
+
+type BidPlacedError {
+  """Error description if an error occured."""
+  error: String!
+
+  """Error code if an error occured"""
+  errorCode: BidErrorCode!
+}
+
+"""
+Bid is placed response.
+Error will only appear if there was an error placing a bid, such as off increment etc.
+"""
+type BidPlacedSuccess {
+  """bidId"""
+  id: String!
+
+  """Amount of placed bid."""
+  amount: Int!
+
+  """Server time of when the bid was placed."""
+  date: String!
+
+  """Bid Status of the bid"""
+  bidStatus: BidStatus!
+}
+
+"""Bid statuses that calculates in what status the bid is."""
+enum BidStatus {
+  """User is winning the item."""
+  WINNING
+
+  """User is losing the item."""
+  LOSING
+
+  """User has lost the item."""
+  LOST
+
+  """User has won the item."""
+  WON
+
+  """User is not bidding on the item."""
+  NOT_BIDDING
+
+  """User has withdrawn an offer for the item."""
+  WITHDRAWN
+
+  """User has submitted an offer for the item."""
+  SUBMITTED
+}
+
+"""Bid Type represent what kind of bid is being placed on an item."""
+enum BidType {
+  """Bid is a normal bid."""
+  NORMAL
+
+  """
+  Bid is the highest amount a user is willing to pay. The auction
+  engine will automatically place the lowest bid necessary on behalf
+  of the user until the max amount is reached.
+  """
+  MAX
+
+  """Bid is an offer that the user commits to buying the item for."""
+  OFFER
+}
+
+input BidderVerificationInput {
+  """successful verification is redirected to this url"""
+  successUrl: String!
+
+  """
+  failed verification or if session is left wil send user to the cancelUrl
+  """
+  cancelUrl: String!
+
+  """
+  Verification mode. Defaults to 'REDIRECT' to maintain backwards compatability.
+  """
+  renderMode: RenderMode
+}
+
+type BidderVerificationLink {
+  """Redirection link to verification url"""
+  url: String!
+
+  """Client secret for embaddable ui"""
+  clientSecret: String!
+}
+
+"""
+ClosingMethod represents how SaleItems are moved into CLOSING status and when they are CLOSED
+"""
+enum ClosingMethod {
+  """
+  Only one item is in status CLOSING at a time.
+  Other items wait in status OPEN.
+  """
+  ONE_BY_ONE @deprecated(reason: "use OVERLAPPING, will be removed in the near future")
+
+  """
+  Each item has a precalculated closing time.
+  Items may be in closing at the same time.
+  """
+  OVERLAPPING
+
+  """
+  No sniping.
+  All items close at the same time as the sale
+  """
+  NONE
+}
+
+type CurrentItem {
+  item: Item!
+  cursor: String!
+}
+
+type Estimate {
+  """Item low estimate"""
+  low: Int
+
+  """Item high estimate"""
+  high: Int
+}
+
+type ExternalLiveStream {
+  """LiveStream URL"""
+  url: String!
+
+  """LiveStream Title"""
+  type: LiveStreamType!
+
+  """LiveStream Created"""
+  created: String!
+
+  """LiveStream Updated"""
+  updated: String!
+}
+
+"""Input parameters to get all bids for userId"""
+type GetUserBidsInput {
+  userId: String!
+  first: Int!
+  after: String
+}
+
+enum IdType {
+  ID
+  URI
+}
+
+"""Image object"""
+type Image {
+  """ID of the image, UUID string"""
+  id: String!
+
+  """Image URL"""
+  url: String!
+
+  """DisplayOrder for image"""
+  order: Int!
+}
+
+"""An item (can be associcated with a sale or not)"""
+type Item implements Node {
+  """Id of an item."""
+  id: ID!
+
+  """Item cursor is used in pagination."""
+  cursor: String!
+
+  """The id of the sale that this item is associated to."""
+  saleId: String!
+
+  """The id of the account that this item is associated to."""
+  accountId: String!
+
+  """Item title"""
+  title: String
+
+  """Item Description"""
+  description: String
+
+  """Currency. Capitalized string"""
+  currency: String
+
+  """Item estimate in minor currency unit."""
+  estimates: Estimate!
+
+  """Current bid amount for the item in minor currency unit."""
+  currentBid: Int
+
+  """Bid status of currently logged in user for this item"""
+  bidStatus: BidStatus
+
+  """Number of bids that have been placed on the item"""
+  totalBids: Int!
+
+  """
+  Get list of bids for this item.
+  Filters:
+    - collapseSequentialUserBids: Collapses multiple sequential bids from same user to a single bid (only the newest one is then returned).
+  """
+  bids(collapseSequentialUserBids: Boolean): [Bid!]!
+
+  """Get list of bids for this item that is placed by the logged in user."""
+  userBids: [Bid!]!
+
+  """Was there an accepted bid that met the reserve price"""
+  reserveMet: Boolean! @deprecated(reason: "use reserveStatus instead")
+
+  """Reserve status."""
+  reserveStatus: ReserveStatus!
+
+  """Next 10 asks for the item in minor currency unit."""
+  nextAsks(iterations: Int): [Int!]!
+
+  """Overridden increment table for the item."""
+  incrementTable: BidIncrementTable
+
+  """
+  DEPRECATED.
+  Closing timestamp if the item is closing
+  """
+  itemDates: ItemDates @deprecated(reason: "itemDates is deprecated. Use dates instead.")
+
+  """Closing start and end timestamps if the item is closing"""
+  dates: ItemDates
+
+  """Status of the item"""
+  status: ItemStatus!
+
+  """Starting bid of the item in minor currency unit."""
+  startingBid: Int
+
+  """Images attached to sale"""
+  images: [Image!]!
+
+  """
+  Slug identifier for item.
+  Null/empty for integrating applications.
+  """
+  slug: String
+
+  """
+  Full path for slug.
+  Null/emtpy for integrating applications.
+  """
+  slugFullPath: String
+
+  """Item number"""
+  itemNumber: Int!
+
+  """Item notifications if item is part of a live sale"""
+  notifications: [ItemNotification!]!
+
+  """
+  Is logged-in user subscribed to item ?
+  Only applies to sales running on basta.app (false for all api clients)
+  """
+  isUserSubscribed: Boolean!
+
+  """Allowed BidTypes on the item."""
+  allowedBidTypes: [BidType!]!
+
+  """Item specifications (dimensions, weight, type, etc.)"""
+  specifications: ItemSpecifications
+}
+
+union ItemChanged = Item | ServerTime
+
+type ItemDates {
+  openDate: String
+  closingStart: String
+  closingEnd: String
+}
+
+type ItemFairWarningNotification {
+  """Id of the notification"""
+  id: String!
+
+  """
+  Date timestamp when message was created.
+  RFC3339 formatted string
+  """
+  date: String!
+}
+
+input ItemIdsFilter {
+  itemIds: [ID!]
+}
+
+type ItemMessageNotification {
+  """Id of the notification"""
+  id: String!
+
+  """Message"""
+  message: String!
+
+  """
+  Date timestamp when message was created.
+  RFC3339 formatted string
+  """
+  date: String!
+}
+
+union ItemNotification = ItemMessageNotification | ItemFairWarningNotification
+
+enum ItemOrderField {
+  """Item Number"""
+  ITEM_NUMBER
+
+  """Created date"""
+  CREATED
+}
+
+input ItemOrderInput {
+  """Field to order by"""
+  field: ItemOrderField! = ITEM_NUMBER
+
+  """Order direction"""
+  direction: PaginationDirection! = FORWARD
+}
+
+"""Item specifications containing dimensions, weight, type, etc."""
+type ItemSpecifications {
+  """Type of specification (Art, Furniture, Jewelry, etc.)"""
+  type: SpecificationType
+
+  """Sub-type of specification (PaintingUnframed, Table, Ring, etc.)"""
+  subType: SpecificationSubType
+
+  """Height of the item"""
+  height: Float
+
+  """Length of the item"""
+  length: Float
+
+  """Depth of the item"""
+  depth: Float
+
+  """Unit of measurement for dimensions"""
+  measurementUnit: MeasurementUnit
+
+  """Weight of the item"""
+  weight: Float
+
+  """Unit of measurement for weight"""
+  weightUnit: WeightUnit
+}
+
+"""Item statuses for items in a sale"""
+enum ItemStatus {
+  ITEM_NOT_OPEN
+  ITEM_OPEN
+  ITEM_CLOSING
+  ITEM_CLOSED
+  ITEM_PAUSED
+  ITEM_PROCESSING
+  ITEM_LIVE
+}
+
+type ItemsConnection {
+  """Item edges"""
+  edges: [ItemsEdge!]!
+
+  """Current page information"""
+  pageInfo: PageInfo!
+}
+
+type ItemsEdge {
+  """Current item cursor"""
+  cursor: String!
+
+  """Item node"""
+  node: Item!
+}
+
+type Link {
+  type: LinkType!
+  url: String!
+}
+
+enum LinkType {
+  WEBSITE
+  INSTAGRAM
+  YOUTUBE
+  TIKTOK
+  FACEBOOK
+  X
+}
+
+"""
+Live Item represents an item that is currently being auctioned in a live sale.
+"""
+type LiveItem {
+  item: Item!
+  cursor: String!
+}
+
+"""deprecated type remove when everything is migrated to LiveVideoStream"""
+type LiveStream {
+  """LiveStream URL"""
+  url: String!
+
+  """LiveStream Title"""
+  type: LiveStreamType!
+
+  """LiveStream Created"""
+  created: String!
+
+  """LiveStream Updated"""
+  updated: String!
+}
+
+"""LiveStreamType represents the type of live stream"""
+enum LiveStreamType {
+  """Generic live stream"""
+  GENERIC
+
+  """Amazon IVS live stream"""
+  AMAZON_IVS
+
+  """YouTube live stream"""
+  YouTubeLive
+
+  """
+  Basta live stream
+  Built-in live stream for Basta
+  """
+  BASTA_LIVE
+}
+
+union LiveVideoStream = ExternalLiveStream | BastaLiveStream
+
+union MaxBidPlaced = MaxBidPlacedSuccess | BidPlacedError
+
+"""
+Bid is placed response.
+Error will only appear if there was an error placing a bid, such as off increment etc.
+"""
+type MaxBidPlacedSuccess {
+  """bidId"""
+  id: String!
+
+  """Current amount of placed bid in minor currency unit."""
+  amount: Int!
+
+  """Max amount of placed bid in minor currency unit."""
+  maxAmount: Int!
+
+  """Bid Status of the bid"""
+  bidStatus: BidStatus!
+
+  """Server time of when the bid was placed."""
+  date: String!
+}
+
+"""Me object keeps information about the logged in user."""
+type Me {
+  """Unique user id of the logged in user."""
+  userId: String!
+
+  """Get all bids that a user has placed on sales"""
+  bids(first: Int!, after: String): UserBidsConnection!
+
+  """Accounts for logged in user"""
+  accounts: [Account!]!
+
+  """True if logged in user is a verified Basta bidder"""
+  verifiedAsBidder: Boolean!
+
+  """
+  Sale that user has added to their watchlist.
+  Only works for users with Basta cookie and applications running on basta.app domain.
+  """
+  saleSubscriptions: SaleConnection
+
+  """
+  SaleItems that user has added to their watchlist.
+  Only works for users with Basta cookie and applications running on basta.app domain.
+  """
+  saleItemSubscriptions: ItemsConnection
+
+  """Latest items that user has placed a bid on."""
+  latestItemBids(first: Int): ItemsConnection!
+}
+
+"""Measurement unit enum"""
+enum MeasurementUnit {
+  NOT_SET
+  CM
+  INCH
+}
+
+type Mutation {
+  """
+  Place bid on a item for some amount. Can be of type NORMAL, MAX and OFFER.
+  Amount will be the max amount when bid is of type MAX.
+  """
+  bidOnItem(saleId: String!, itemId: String!, amount: Int!, type: BidType!): BidPlaced!
+
+  """
+  DEPRECATED.
+  Use BidOnItem with type input = MAX.
+  Place max bid on a item for some amount.
+  """
+  maxBidOnItem(saleId: String!, itemId: String!, maxAmount: Int!): MaxBidPlaced! @deprecated(reason: "maxBidOnItem is deprecated. Use bidOnItem with type as MAX instead.")
+
+  """
+  CreateBidderVerification.
+  This method is only available to basta users and front ends written by Basta.
+  """
+  createBidderVerification(input: BidderVerificationInput): BidderVerificationLink!
+
+  """
+  AcceptBidderTerms.
+  This method is only available to basta users and front ends written by Basta.
+  Returns a RFC3339 timestamp of when bidder terms were accepted.
+  """
+  acceptBidderTerms: String!
+
+  """
+  Users with basta session can subscribe to creators running sales on basta.app.
+  """
+  subscribeToAccount(accountId: String!): UserAccountSubscription!
+
+  """Unsusbscribe from an account"""
+  unsubscribeFromAccount(accountId: String!): ID!
+
+  """
+  Users with basta session can subscribe to individual sale items running on basta.app.
+  """
+  subsribeToItem(saleId: String!, itemId: String!): UserSaleItemSubscription!
+
+  """Unsubscribe from item"""
+  unsubscribeFromItem(saleId: String!, itemId: String!): ID!
+}
+
+interface Node {
+  """Identification of the node."""
+  id: ID!
+}
+
+type OnlineBidOrigin {
+  type: BidOriginType!
+}
+
+"""Paddle represent a paddle in a sale"""
+type Paddle {
+  """Paddle identifier"""
+  identifier: String!
+
+  """Paddle type"""
+  type: PaddleType!
+
+  """Paddle created date"""
+  created: String!
+}
+
+type PaddleBidOrigin {
+  type: BidOriginType!
+}
+
+"""PaddleType represents the type of paddle"""
+enum PaddleType {
+  NOT_SET
+  IN_ROOM
+  PHONE
+  ONLINE
+  OTHER
+}
+
+"""Page info for pagination"""
+type PageInfo {
+  """Starting cursor"""
+  startCursor: ID!
+
+  """Ending cursor"""
+  endCursor: ID!
+
+  """Has next page"""
+  hasNextPage: Boolean!
+
+  """Total records"""
+  totalRecords: Int!
+}
+
+"""Direction of pagination"""
+enum PaginationDirection {
+  """Ascending order"""
+  FORWARD
+
+  """Descending order"""
+  BACKWARDS
+}
+
+type PaymentDetails {
+  bidderPremium: Float!
+}
+
+type PaymentSession {
+  """Redirection link to payment session url"""
+  url: String!
+
+  """PaymentSession status"""
+  status: PaymentSessionStatus!
+}
+
+input PaymentSessionInput {
+  """Sale identifier."""
+  saleId: String!
+
+  """Item identifier."""
+  itemId: String!
+}
+
+enum PaymentSessionStatus {
+  """Invoice is being generated."""
+  WAITING
+
+  """Invoice is ready to be paid."""
+  READY
+
+  """Invoice has been paid."""
+  DONE
+}
+
+enum Permission {
+  BID_ON_ITEM
+  ACCESS_PRIVATE
+}
+
+type PhoneBidOrigin {
+  type: BidOriginType!
+}
+
+type Query {
+  """Get account information given an accountId"""
+  account(id: String!, idType: IdType): Account!
+
+  """Get all sales that have been created."""
+  sales(accountId: String!, first: Int = 20, after: String, filter: SaleFilter, idType: IdType): SaleConnection!
+
+  """Get information about an sale."""
+  sale(id: String!, idType: IdType): Sale!
+
+  """Get item information."""
+  saleItem(saleId: String!, itemId: String!): Item!
+
+  """
+  SaleItems for an account.
+  Defaults to 20 items if not specified.
+  Max allowed batch size is 50. Anything above that will be downgraded to 20 items.
+  """
+  accountSaleItems(accountId: String!, first: Int = 20, after: String = "", filter: SaleItemFilter): ItemsConnection!
+
+  """Get item information by URI."""
+  saleItemByURI(uri: String!): Item!
+
+  """Get all bids that a user has placed on sales"""
+  bids(userId: String!, first: Int!, after: String): UserBidsConnection! @deprecated(reason: "use me query")
+
+  """Get information about the logged in user."""
+  me: Me!
+
+  """Get current server time."""
+  serverTime: ServerTime!
+
+  """
+  This method is only available to basta users and front ends written by Basta
+  """
+  paymentSession(input: PaymentSessionInput): PaymentSession!
+}
+
+"""
+Range rule explains increments in the table.
+Each amount should be in its minor currency unit.
+The range rule [highRange: $1000, lowRange: $0, step: $25] would be
+  [highRange: 100000, lowRange: 0, step: 2500]
+"""
+type RangeRule {
+  """High range of the rule"""
+  highRange: Int!
+
+  """Low range of the rule"""
+  lowRange: Int!
+
+  """Step of the rule"""
+  step: Int!
+}
+
+enum RenderMode {
+  """When client wants a url to redirect to"""
+  REDIRECT
+
+  """When client wants a secret for embedded render"""
+  EMBED
+}
+
+enum ReserveStatus {
+  """Reserve has not been met"""
+  NOT_MET
+
+  """Reserve has been met"""
+  MET
+
+  """The item has no reserve"""
+  NO_RESERVE
+}
+
+"""Sale"""
+type Sale implements Node {
+  """Sale ID"""
+  id: ID!
+
+  """Sale cursor is used in pagination."""
+  cursor: String!
+
+  """Account ID associated with the sale"""
+  accountId: String!
+
+  """Sale Title"""
+  title: String
+
+  """Sale Description"""
+  description: String
+
+  """
+  Currency of the sale as capitalized string
+  Currently supported currencies:
+    - "USD"
+    - "ISK"
+    - "EUR"
+  """
+  currency: String
+
+  """Sale status."""
+  status: SaleStatus!
+
+  """Items that have been associated with this sale."""
+  items(first: Int = 20, after: String, filter: SaleItemFilter, order: ItemOrderInput): ItemsConnection!
+
+  """
+  Default increment table for the sale.
+  If an increment table is associated with any items in the sale
+  this will be overidden.
+  """
+  incrementTable: BidIncrementTable
+
+  """Sequence number of this sale."""
+  sequenceNumber: Int!
+
+  """Sale Dates"""
+  dates: SaleDates!
+
+  """Closing method."""
+  closingMethod: ClosingMethod!
+
+  """Images attached to sale"""
+  images: [Image!]!
+
+  """
+  Sale theme type.
+  Null/empty for integrating applications.
+  """
+  themeType: Int
+
+  """
+  Slug identifier for sale.
+  Null/empty for integrating applications.
+  """
+  slug: String
+
+  """
+  Full path for slug.
+  Null/emtpy for integrating applications.
+  """
+  slugFullPath: String
+
+  """Sale type."""
+  type: SaleType!
+
+  """Live stream for the sale"""
+  liveStream: LiveStream @deprecated(reason: "use liveVideoStreams instead")
+
+  """Live stream for the sale"""
+  liveVideoStream: LiveVideoStream
+
+  """Live Item in the Sale (only applicable for live sales)"""
+  liveItem: LiveItem
+
+  """Paddle assigned to authenticated user"""
+  userPaddle: Paddle
+}
+
+union SaleActivity = Sale | Item
+
+union SaleChanged = Sale | ServerTime
+
+type SaleConnection {
+  """Sale edges"""
+  edges: [SalesEdge!]!
+
+  """Current page information"""
+  pageInfo: PageInfo!
+}
+
+"""Sale Dates"""
+type SaleDates {
+  """Date of when the sale is supposed to be automatically closed."""
+  closingDate: String
+
+  """Date of when the sale is supposed to be automatically opened."""
+  openDate: String
+
+  """Date of when the sale is supposed to be live."""
+  liveDate: String
+}
+
+"""Sale filter for sales."""
+input SaleFilter {
+  """Filter by sale status"""
+  statuses: [SaleStatus!]!
+}
+
+"""Item filter for sale items."""
+input SaleItemFilter {
+  """Filter by item status"""
+  statuses: [ItemStatus!]
+
+  """Item IDs"""
+  itemIds: [String!]
+}
+
+"""Sale Status represent what status an sale is currently running in."""
+enum SaleStatus {
+  """
+  Sale has not been published. This status will never appear in the API expcept when you are previewing the sale.
+  """
+  UNPUBLISHED
+
+  """Sale has been published but is not opened for bidding."""
+  PUBLISHED
+
+  """Sale is opened for bidding."""
+  OPENED
+
+  """Sale is closed for bidding."""
+  CLOSED
+
+  """Sale is closing."""
+  CLOSING
+
+  """Sale is paused."""
+  PAUSED
+
+  """Sale is being processed."""
+  PROCESSING
+
+  """Sale is now live."""
+  LIVE
+}
+
+"""SaleType represents the type of sale"""
+enum SaleType {
+  """Sale is a live auction"""
+  LIVE
+
+  """Sale is a online timed auction"""
+  ONLINE_TIMED
+}
+
+type SalesEdge {
+  """Current sale cursor"""
+  cursor: String!
+
+  """Sale node"""
+  node: Sale!
+}
+
+type ServerTime {
+  """Current Time"""
+  currentTime: Int!
+}
+
+"""Specification sub-type enum"""
+enum SpecificationSubType {
+  NOT_SET
+  PAINTING_UNFRAMED
+  PAINTING_FRAMED
+  PAINTING_FRAMED_PLEXI
+  PAINTING_FRAMED_GLASS
+  WORK_ON_PAPER_UNFRAMED
+  WORK_ON_PAPER_FRAMED
+  WORK_ON_PAPER_FRAMED_PLEXI
+  WORK_ON_PAPER_FRAMED_GLASS
+  MIXED_MEDIA_UNFRAMED
+  MIXED_MEDIA_FRAMED
+  MIXED_MEDIA_FRAMED_PLEXI
+  MIXED_MEDIA_FRAMED_GLASS
+  PHOTOGRAPH_UNFRAMED
+  PHOTOGRAPH_FRAMED
+  PHOTOGRAPH_FRAMED_PLEXI
+  PHOTOGRAPH_FRAMED_GLASS
+  NEW_MEDIA
+  SCULPTURE
+  PEDESTAL
+  PEDESTAL_CASE_GLASS
+  PEDESTAL_CASE_PLEXI
+  CERAMIC
+  NEON
+  TAPESTRY
+  OTHER_ART
+  TABLE
+  CHAIR
+  SOFA_LOVESEAT_CHAISE
+  FLOOR_LAMP
+  FLOOR_LAMP_SHADE
+  TABLE_LAMP
+  TABLE_LAMP_SHADE
+  SCONCE
+  OTTOMAN
+  BOOKCASE_STORAGE
+  NIGHTSTAND
+  ARMOIRE_DRESSER
+  CARPET_RUG
+  MIRROR
+  CHANDELIER
+  BEDFRAME
+  HEADBOARD
+  DESK_VANITY
+  MEDIA_CONSOLE
+  OTHER_FURNITURE
+  EARRINGS
+  NECKLACE
+  BRACELET
+  RING
+  BROOCH
+  WATCH
+  CUFFLINKS
+  EYEGLASSES
+  SET
+  PRECIOUS_STONES
+  SNUFF_BOX_CIGARETTE_CASE
+  OTHER_JEWELRY
+  VASE_VESSEL
+  BOWL
+  PLAQUE
+  OBJECT_OF_VERTU
+  CANDELABRA_CANDLESTICK
+  DINNERWARE
+  FLATWARE
+  GLASSWARE
+  SERVEWARE
+  PORCELAIN_PLATE
+  PORCELAIN_BOWL
+  TABLETOP_ACCESSORY
+  CLOCK
+  OTHER_DECORATIVE_ARTS
+  STAMP
+  BOOK
+  COIN
+  DOCUMENT_MANUSCRIPT
+  TOY
+  MINIATURE_MODEL
+  FIGURINE_DOLL
+  NEON_SIGN
+  MEMORABILIA
+  CAMERA_ELECTRICAL
+  OTHER_COLLECTIBLES
+  WINE_BOTTLE
+  SPIRITS_BOTTLE
+  BEER_BOTTLE
+  WINE_CASE
+  SPIRITS_CASE
+  BEER_CASE
+  WINE_BARREL
+  SPIRITS_BARREL
+  BEER_BARREL
+  OTHER_ALCOHOLS
+  CAR
+  MOTORCYCLE
+  BUS
+  VAN
+  LIMOUSINE
+  CARRIAGE
+  TRAILER
+  SIDECAR
+  OTHER_AUTOMOTIVE
+  CLOTHING
+  FOOTWEAR
+  HANDBAG
+  ACCESSORIES
+  OTHER_FASHION
+  MUSICAL_INSTRUMENT
+  FIREARM_WEAPON
+  HUNTING_FISHING
+  MEDICAL_EQUIPMENT
+  OTHER
+}
+
+"""Specification type enum"""
+enum SpecificationType {
+  NOT_SET
+  ART
+  FURNITURE
+  JEWELRY
+  DECORATIVE_ARTS
+  COLLECTIBLES
+  ALCOHOL
+  AUTOMOTIVE
+  FASHION
+  OTHER
+}
+
+type Subscription {
+  """
+  Item changed subscription sends real-time information about changes
+  that happen to a item:
+  * When a bid is placed on a item
+  Server time will be sent also for syncronizing clocks with clients and server.
+  """
+  itemChanged(saleId: ID!, itemIds: [ID!]!): ItemChanged! @deprecated(reason: "use saleActivity instead")
+
+  """
+  Sale changed subscription send real-time information about changes
+  that happen on a sale:
+  * Changes to information for an sale such as dates, states, or a item is assigned to an sale or reordering has taken place.
+  Server time will be sent also for syncronizing clocks with clients and server.
+  Note: items will not be populated with those events.
+  """
+  saleChanged(saleId: ID!): SaleChanged!
+
+  """Subscription for multiple sales."""
+  salesChanged(saleIds: [ID!]!): SaleChanged!
+
+  """Subscription for Sale and Item updates."""
+  saleActivity(saleId: ID!, itemIdFilter: ItemIdsFilter): SaleActivity
+
+  """
+  Periodic server time updates to syncronize clocks in applications using Basta.
+  """
+  serverTimeChanged: ServerTime!
+}
+
+type UserAccountSubscription {
+  accountId: String!
+  userId: String!
+}
+
+"""A UserBid represents a single bid"""
+type UserBid implements Node {
+  id: ID!
+  userId: String!
+  saleId: String!
+  itemId: String!
+  amount: Int!
+  maxAmount: Int!
+  bidDate: String!
+  reactiveBid: Boolean!
+}
+
+type UserBidsConnection {
+  """UserBids edges"""
+  edges: [UserBidsEdge!]!
+
+  """Current page information"""
+  pageInfo: PageInfo!
+}
+
+type UserBidsEdge {
+  """Current UserBid cursor"""
+  cursor: String!
+
+  """UserBid node"""
+  node: UserBid!
+}
+
+type UserSaleItemSubscription {
+  accountId: String!
+  saleId: String!
+  itemId: String!
+  userId: String!
+}
+
+"""Weight unit enum"""
+enum WeightUnit {
+  NOT_SET
+  KG
+  LB
+}
