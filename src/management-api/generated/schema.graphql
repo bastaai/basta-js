@@ -1,0 +1,3594 @@
+directive @accountIdVerify on ARGUMENT_DEFINITION
+
+directive @binding(constraint: String!) on INPUT_FIELD_DEFINITION | ARGUMENT_DEFINITION
+
+"""
+Directs the executor to defer this fragment when the `if` argument is true or undefined.
+"""
+directive @defer(
+  """Deferred when true or undefined."""
+  if: Boolean = true
+
+  """Unique name"""
+  label: String
+) on FRAGMENT_SPREAD | INLINE_FRAGMENT
+
+directive @goField(forceResolver: String, name: String) on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @hasPermission(permission: Permission!) on FIELD_DEFINITION
+
+"""Account Information"""
+type Account {
+  """ID of the account"""
+  id: ID!
+
+  """Name of the account"""
+  name: String!
+
+  """Contact email address"""
+  email: String!
+
+  """created"""
+  created: String!
+
+  """modified"""
+  modified: String
+
+  """account handle, identifier for the account"""
+  handle: String
+
+  """description"""
+  description: String
+
+  """account image url"""
+  imageUrl: String
+
+  """account description (bio)"""
+  links: [Link!]!
+
+  """
+  Payment details associated with account.
+  Integrating businesses will have null in this field
+  """
+  paymentDetails: PaymentDetails
+
+  """Basta Bid Client"""
+  bastaBidClient: Boolean!
+
+  """
+  Populated with Seller terms have been accepted for account.
+  Integrating businesses will have null in this field.
+  """
+  terms: SellerTerms
+
+  """
+  Item schema used to construct Basta UI
+  TODO: hide
+  """
+  itemSchema: JSON
+
+  """Basta Live Stream Enabled"""
+  bastaLiveStreamEnabled: Boolean!
+
+  """Shopify Enabled Store Id"""
+  shopifyConfiguration: ShopifyConfiguration
+
+  """Auction Aggregators associated with the account"""
+  aggregators: [Aggregator!]!
+}
+
+type AccountFee implements Node {
+  """ID of the account fee record"""
+  id: ID!
+
+  """Name of the account fee which is used in orders"""
+  name: String!
+
+  """Account Fee type influences how the value is calculated"""
+  type: AccountFeeType!
+
+  """
+  Value of the account fee interpreted based on the type
+  * 500 means 5% if type is percentage
+  * 1000 means $10 if type is amount
+  """
+  value: Int!
+
+  """
+  Upper limit of the account fee.
+  If empty then there is no upper limit.
+  """
+  upperLteLimit: Int
+
+  """Lower limit of the account fee."""
+  lowerLimit: Int!
+}
+
+enum AccountFeeType {
+  """Account Fee type is not set"""
+  NOT_SET
+
+  """Account Fee type is percentage"""
+  PERCENTAGE
+
+  """Account Fee type is amount"""
+  AMOUNT
+}
+
+"""Filter for the Action Hook log."""
+input ActionHookFilter {
+  """Filter by Action Hook types"""
+  types: [ActionType]
+
+  """Filter by Action Hook status"""
+  statuses: [ActionHookStatus]
+}
+
+"""
+Action Hook Log represents a recorded Action Hook HTTP request to a customers web servers.
+Log entry may contain information about a pending, successful or failed request.
+"""
+type ActionHookLog implements Node {
+  """Action Hook log entry identifier."""
+  id: ID!
+
+  """Account identifier."""
+  accountId: String!
+
+  """Idempotency key"""
+  idempotencyKey: String!
+
+  """Action triggering the Action Hook."""
+  action: ActionType!
+
+  """Action Hook receiver endpoint."""
+  url: String!
+
+  """Headers sent with the Action Hook request."""
+  headers: [HttpHeader]
+
+  """Request Payload as stringified json"""
+  requestPayload: String!
+
+  """Response from Action Hook receiver."""
+  response: String
+
+  """Status of the Action Hook request."""
+  status: ActionHookStatus
+
+  """Error message returned by receiver."""
+  error: String
+
+  """Number of HTTP request retries."""
+  retries: Int
+
+  """Log creation timestamp."""
+  createdAt: String
+
+  """Latest request execution timestamp."""
+  executedAt: String
+}
+
+"""
+Datatype to group together 'connected' Action Hook logs
+based on page information.
+"""
+type ActionHookLogConnection {
+  """Action Hook log edges"""
+  edges: [ActionHookLogEdge!]!
+
+  """Current page information"""
+  pageInfo: PageInfo!
+}
+
+"""Datatype encapsulating an Action Hook log entry and its cursor."""
+type ActionHookLogEdge {
+  """Current Action Hook log cursor"""
+  cursor: String!
+
+  """Action Hook log node"""
+  node: ActionHookLog!
+}
+
+"""Status of the Action Hook request."""
+enum ActionHookStatus {
+  """Action Hook request is queued to be sent."""
+  PENDING
+
+  """Action Hook request was successfully sent."""
+  SUCCESS
+
+  """Action Hook request failed."""
+  FAILED
+
+  """Action Hook is scheduled for a retry"""
+  RETRY
+}
+
+"""
+Action Hook subscription contains subscriber registration information.
+Action Hook is an action that occurs when an event happens.
+Action can be an HTTP POST request that will be triggered to customers web servers.
+"""
+type ActionHookSubscription {
+  """Account identifier."""
+  accountId: String!
+
+  """Name of the basta action that is being subscribed to."""
+  action: ActionType!
+
+  """Action Hook receiver endpoint."""
+  url: String!
+
+  """Custom HTTP header values sent with the action Action Hook."""
+  headers: [HttpHeader]
+}
+
+"""Input to create an Action Hook subscription."""
+input ActionHookSubscriptionInput {
+  """Events that trigger the action."""
+  action: ActionType!
+
+  """Webhook URL that is called when Action Hook is triggered."""
+  url: String!
+
+  """Custom HTTP header values sent with the action."""
+  headers: [HttpHeaderInput]
+}
+
+"""Action types (events) that can trigger Action Hooks."""
+enum ActionType {
+  """
+  Sent when a bid on any item associated with your account occurs in the system.
+  """
+  BID_ON_ITEM
+
+  """
+  Sent when an item status change associated with your account occurs in the system.
+  """
+  ITEMS_STATUS_CHANGED
+
+  """
+  Sent when a sale status change associated with your account occurs in the system.
+  """
+  SALE_STATUS_CHANGED
+
+  """Sent when a sale is created associated with your account"""
+  SALE_CREATED
+
+  """Sent when an item is added to a sale in your account"""
+  ITEM_ADDED_TO_SALE
+
+  """Sent when SaleItem is updated"""
+  SALE_ITEM_UPDATED
+
+  """Sent when a SaleItem is removed from sale"""
+  SALE_ITEM_REMOVED
+
+  """Sent when bids are cancelled (removed) on an item in sale."""
+  CANCEL_BID_ON_ITEM
+
+  """Sent when an order is created"""
+  ORDER_CREATED
+
+  """Sent when an order is updated"""
+  ORDER_UPDATED
+
+  """Sent when an order is cancelled"""
+  ORDER_CANCELLED
+
+  """Sent when a sale is updated"""
+  SALE_UPDATED
+}
+
+input AddFairWarningNotificationToItemInput {
+  """Item ID"""
+  itemId: String!
+
+  """Sale ID"""
+  saleId: String!
+}
+
+"""Add a current item to a sale."""
+input AddItemToSaleInput {
+  """Id of the sale that is associated with the item."""
+  saleId: String!
+
+  """Item id of the item that you are adding to the sale."""
+  itemId: String!
+
+  """Optional bid increment table for this item."""
+  bidIncrementTable: BidIncrementTableInput
+
+  """Starting bid of the item in minor currency unit."""
+  startingBid: Int
+
+  """Reserve of the item in minor currency unit."""
+  reserve: Int
+
+  """Low estimate of the item (optional) in minor currency unit."""
+  lowEstimate: Int
+
+  """High estimate of the item (optional) in minor currency unit."""
+  highEstimate: Int
+
+  """Item number is used to order items (optional)"""
+  ItemNumber: Int
+
+  """
+  Allowed BidTypes on the item.
+  Currently only a single BidType is allowed per item.
+  Defaults to allowing only Max bids if not supplied.
+  """
+  allowedBidTypes: [BidType!]
+
+  """
+  Date and time when item should open up for bidding.
+  Format: RFC3339 timestamp.
+  Example: "2019-10-12T07:20:50.52Z"
+  """
+  openDate: String
+
+  """
+  Date and time when item should close.
+  Format: RFC3339 timestamp.
+  Example: "2019-10-12T07:20:50.52Z"
+  """
+  closingDate: String
+
+  """Should item be hidden from public view."""
+  hidden: Boolean
+
+  """
+  ClosingTime countdown is the sniping duration in milliseconds.
+  If not provided it defaults to 120000ms (2 minutes).
+  """
+  closingTimeCountdown: Int
+}
+
+input AddLiveStreamToSaleInput {
+  """Sale ID"""
+  saleId: String!
+
+  """Live Stream URL"""
+  url: String!
+
+  """Live Stream Type"""
+  type: LiveStreamType!
+}
+
+input AddMessageNotificationToItemInput {
+  """Item ID"""
+  itemId: String!
+
+  """Sale ID"""
+  saleId: String!
+
+  """Message"""
+  message: String!
+}
+
+input AddPaddleToSaleInput {
+  """Sale ID"""
+  saleId: String!
+
+  """Paddle ID"""
+  paddleIdentifier: String!
+
+  """Paddle User ID"""
+  userId: String!
+
+  """Paddle Type"""
+  type: PaddleType!
+}
+
+input AddTagToItemInput {
+  """Item ID"""
+  itemId: String!
+
+  """Tag Name"""
+  name: String!
+}
+
+input AddTagToSaleItemInput {
+  """Sale ID"""
+  saleId: String!
+
+  """Item ID"""
+  itemId: String!
+
+  """Tag Name"""
+  name: String!
+}
+
+enum AddressType {
+  BILLING
+  SHIPPING
+}
+
+type Aggregator {
+  name: String!
+  type: BidOriginType!
+}
+
+"""
+API key represent a secret key that allows
+software to access the API on behalf of customer.
+"""
+type ApiKey implements Node {
+  id: ID!
+  name: String!
+  accountId: String!
+  created: String!
+  roles: [ApiKeyRole!]!
+}
+
+type ApiKeyConnection {
+  """Edges"""
+  edges: [ApiKeyEdge!]!
+
+  """Current page information"""
+  pageInfo: PageInfo!
+}
+
+"""
+Created API key represent a secret key that allows
+software programs to access the API on behalf of customers to access the API.
+Make sure to copy api key now as it will not shown again.
+"""
+type ApiKeyCreated {
+  id: ID!
+  name: String!
+  generatedApiKey: String!
+  roles: [ApiKeyRole!]!
+}
+
+type ApiKeyEdge {
+  """Current cursor"""
+  cursor: String!
+
+  """Current node"""
+  node: ApiKey!
+}
+
+"""Input object for when creating a API key"""
+input ApiKeyInput {
+  """Name of the API key"""
+  name: String!
+
+  """Role associated to API key"""
+  role: [ApiKeyRole!]!
+}
+
+"""Role that authorize api keys"""
+enum ApiKeyRole {
+  """ADMIN HAS UNRESTRICTED ACCESS"""
+  ADMIN
+
+  """READ HAS READ ONLY ACCESS"""
+  READ
+}
+
+"""
+API token represent a token that allows
+customers to access the API in machine and machine manner.
+"""
+type ApiToken implements Node {
+  id: ID!
+  name: String!
+  accountId: String!
+  created: String!
+  roles: [ApiTokenRole!]!
+}
+
+"""DEPRECATED."""
+type ApiTokenConnection {
+  """Edges"""
+  edges: [ApiTokensEdge!]!
+
+  """Current page information"""
+  pageInfo: PageInfo!
+}
+
+"""
+Created API token represent a token that allows
+customers to access the API in machine and machine manner and includes
+the API key that the caller needs to write down (not able to see the key again)
+"""
+type ApiTokenCreated {
+  id: ID!
+  name: String!
+  generatedApiKey: String!
+  roles: [ApiTokenRole!]!
+}
+
+"""
+DEPRECATED.
+Input object for when creating a API token
+"""
+input ApiTokenInput {
+  """Name of the API token"""
+  name: String!
+
+  """Role associated to API token"""
+  role: [ApiTokenRole!]!
+}
+
+"""
+DEPRECATED.
+Role that authorize api keys
+"""
+enum ApiTokenRole {
+  """ADMIN HAS UNRESTRICTED ACCESS"""
+  ADMIN
+
+  """READ HAS READ ONLY ACCESS"""
+  READ
+}
+
+"""DEPRECATED."""
+type ApiTokensEdge {
+  """Current cursor"""
+  cursor: String!
+
+  """Current node"""
+  node: ApiToken!
+}
+
+type BastaLiveStream {
+  """
+  Is this option available for the account,
+  if not the account has to enable it in account settings.
+  """
+  optionAvailable: Boolean!
+
+  """LiveStream URL"""
+  publicUrl: String
+  ingestUrl: String!
+
+  """Channel ID"""
+  channelId: String
+
+  """Stream key"""
+  streamKey: String
+
+  """Is stream live"""
+  isLive: Boolean!
+
+  """Current viewers"""
+  currentViewers: Int
+}
+
+"""A bid on a item"""
+type Bid {
+  """BidId UUID string"""
+  bidId: String!
+
+  """Sale ID of the sale that includes the item in scope."""
+  saleId: String!
+
+  """Amount of the bid in minor currency unit."""
+  amount: Int!
+
+  """Max amount of the bid in minor currency unit."""
+  maxAmount: Int!
+
+  """Users id that placed the bid"""
+  userId: String!
+
+  """User Info"""
+  user: UserInfo
+
+  """Date of when the bid was placed."""
+  date: String!
+
+  """Bid status of currently logged in user for this item"""
+  bidStatus: BidStatus
+
+  """
+  Bids sequence number tells us how bids are connected.
+  Bids with the same bid sequence number happend during the same Bid/Max-bid request.
+  Mainly used for cancelling bids.
+  """
+  bidSequenceNumber: Int!
+
+  """A unique hash composed of SaleId, ItemId and UserId"""
+  bidderIdentifier: String!
+
+  """Optional paddle id if bid was placed with a paddle"""
+  paddle: Paddle
+
+  """BidOrigin"""
+  bidOrigin: BidOrigin!
+}
+
+"""Error code when failing to place a bid on an item"""
+enum BidErrorCode {
+  NO_ERROR
+  INTERNAL_ERROR
+  MAX_BID_LOWER_THAN_CURRENT_MAX
+  BID_LOWER_THAN_CURRENT_MAX
+  BID_LOWER_THAN_CURRENT_BID
+  ALREADY_HIGHER_MAX_BID
+  OFF_INCREMENT
+  STARTING_BID_HIGHER
+  NOT_OPEN_FOR_BIDDING
+  ITEM_CLOSING_PERIOD_PASSED
+  BID_AMOUNT_UPPER_LIMIT_REACHED
+}
+
+"""
+Bid increment table represent how increments behave for a
+specific item or a sale.
+"""
+type BidIncrementTable {
+  """All increments in the table."""
+  rules: [RangeRule!]!
+}
+
+"""Bid increment table input, to control increments in a sale."""
+input BidIncrementTableInput {
+  rules: [RangeRuleInput!]!
+}
+
+"""Bid on behalf of a user in a sale."""
+input BidOnBehalfInput {
+  """user id of the user that bid is being placed for."""
+  userId: String!
+
+  """bid amount of the bid in minor currency unit."""
+  amount: Int!
+
+  """item id of the item"""
+  itemId: String!
+
+  """The sale id which the item belongs that is being bidded on"""
+  saleId: String!
+
+  """The type represent what kind of bid is being placed on an item."""
+  type: BidType!
+
+  """BidOrigin"""
+  bidOrigin: BidOriginInput = {type: ONLINE}
+}
+
+enum BidOrderByField {
+  BID_DATE
+}
+
+union BidOrigin = OnlineBidOrigin | PaddleBidOrigin | PhoneBidOrigin | Aggregator
+
+input BidOriginInput {
+  type: BidOriginType!
+
+  """
+  Only use if type is Aggregator then pass in the name of the aggregator.
+  """
+  name: String
+}
+
+enum BidOriginType {
+  ONLINE
+  PADDLE
+  PHONE
+  AGGREGATOR
+}
+
+"""A bid is either successful or there was an error"""
+union BidPlaced = BidPlacedSuccess | BidPlacedError
+
+"""Error response for bidOnItem"""
+type BidPlacedError {
+  """Error description."""
+  error: String!
+
+  """Error code if an error occured."""
+  errorCode: BidErrorCode!
+}
+
+"""Bid was successfully placed"""
+type BidPlacedSuccess {
+  """BidId"""
+  bidId: String!
+
+  """Amount of placed bid. Minor currency units."""
+  amount: Int!
+
+  """
+  MaxAmount, only set if bid was of type MaxBid.
+  Should be kept secret and never rendered to clients.
+  """
+  maxAmount: Int!
+
+  """Server time of when the bid was recorded."""
+  date: String!
+
+  """Bid Status of the bid"""
+  bidStatus: BidStatus!
+
+  """BidType"""
+  bidType: BidType!
+}
+
+"""Bid statuses that calculates in what status the bid is."""
+enum BidStatus {
+  """User is winning the item."""
+  WINNING
+
+  """User is losing the item."""
+  LOSING
+
+  """User has lost the item."""
+  LOST
+
+  """User has won the item."""
+  WON
+
+  """User is not bidding on the item"""
+  NOT_BIDDING
+
+  """User submitted an offer successfully"""
+  SUBMITTED
+
+  """User's bid has been withdrawn"""
+  WITHDRAWN
+}
+
+"""Bid Type represent what kind of bid is being placed on an item."""
+enum BidType {
+  """Bid is a normal bid."""
+  NORMAL
+
+  """
+  Bid is the highest amount a user is willing to pay. The auction
+  engine will automatically place the lowest bid necessary on behalf
+  of the user until the max amount is reached.
+  """
+  MAX
+
+  """Bid is an offer that the user commits to buying the item for."""
+  OFFER
+}
+
+"""
+Bidder token is a token that is signed on behalf a user.
+The token returned will allow users to bid on items.
+"""
+type BidderToken {
+  token: String!
+  expiration: String!
+}
+
+"""Bidder token input, when generating a bidder token."""
+input BidderTokenInput {
+  """
+  Required metadata that needs to be included to generate a bidder token.
+  """
+  metadata: TokenMetadata!
+}
+
+type BidsConnection {
+  edges: [BidsEdge!]!
+  pageInfo: PageInfo!
+}
+
+type BidsEdge {
+  cursor: String!
+  node: Bid!
+}
+
+"""
+Cancel latest bid on an item.
+Caution: Be careful when using this operation. Multiple requests will end in multiple
+placed bids to be cancelled.
+Cancel latest bid will remove the latest bid and any reactive bid placed.
+This results in 1 or 2 bids being cancelled per call.
+"""
+input CancelLatestBidOnItemInput {
+  """Item ID of the item"""
+  itemId: String!
+
+  """Sale ID of the sale that includes the item in scope."""
+  saleId: String!
+
+  """Bid sequence number of the latest bid."""
+  sequenceNumber: Int!
+}
+
+input CancelPaymentOrderInput {
+  """OrderId to cancel"""
+  orderId: ID!
+}
+
+"""Response when canceling latest bid on item"""
+type CanceledLatestBidOnItem {
+  removedBids: [Bid!]!
+}
+
+enum ClientPermission {
+  BID_ON_ITEM
+  ACCESS_PRIVATE
+}
+
+"""Input object for when forcing sale to close."""
+input CloseSaleInput {
+  saleId: String!
+}
+
+"""
+ClosingMethod represents how SaleItems are moved into CLOSING status and when they are CLOSED
+"""
+enum ClosingMethod {
+  """
+  Only one item is in status CLOSING at once.
+  Other items wait in status OPEN.
+  """
+  ONE_BY_ONE @deprecated(reason: "use item dates, will be removed in the near future")
+
+  """
+  Each item has a precalculated closing time.
+  Default if ClosingMethod is not specified.
+  """
+  OVERLAPPING
+
+  """
+  No sniping.
+  All items close at the same time as the sale
+  """
+  NONE
+}
+
+"""
+Input type for connecting a Shopify store to an account.
+Include all required details for Shopify authentication.
+"""
+input ConnectShopifyToAccountInput {
+  shopId: String!
+  token: String!
+}
+
+input ContinueOnboardPaymentAccountInput {
+  returnUrl: String!
+}
+
+input CreateAccountFeeInput {
+  name: String!
+  type: AccountFeeType!
+  value: Int!
+  upperLteLimit: Int
+  lowerLimit: Int!
+}
+
+input CreateAccountInput {
+  """name for the account"""
+  name: String!
+
+  """email for the account"""
+  email: String!
+
+  """
+  Autogenerated if left empty.
+  If provided then it has to between 3-20 charachters long.
+  Accepted symbols for handles:
+    * lowercase alphabetical letters a-z
+    * numbers 0-9
+    * special charachter _ (underscore)
+  """
+  handle: String
+
+  """description to be displayed on account profile as bio"""
+  description: String
+
+  """links associated with the account"""
+  links: [LinkInput]
+}
+
+input CreateInvoiceInput {
+  """OrderId that invoice belongs to"""
+  orderId: ID!
+
+  """ExternalID for the invoice"""
+  externalID: String!
+
+  """Link to the invoice"""
+  url: String!
+
+  """Due date in RFC3339 format"""
+  dueDate: String!
+}
+
+"""Create Item Image"""
+input CreateItemImage {
+  itemId: String!
+  url: String!
+  order: Int!
+  imageId: String
+}
+
+"""Item input when creating an item"""
+input CreateItemInput {
+  """Title for describing the item"""
+  title: String
+
+  """Item description"""
+  description: String
+
+  """Item price information"""
+  price: ItemPriceInput
+
+  """Unique external identifier, e.g. warehouse id, inventory id, etc."""
+  externalId: String
+
+  """Custom data associated with the item"""
+  metadata: ItemMetadataInput
+
+  """Tags for the item"""
+  tags: [String!]
+
+  """Item specifications (dimensions, weight, type, etc.)"""
+  specifications: ItemSpecificationsInput
+  valuationAmount: Int
+  valuationCurrency: String
+  lowEstimate: Int
+  highEstimate: Int
+}
+
+input CreateItemNoteInput {
+  itemId: String!
+  note: String!
+}
+
+input CreateItemSchemaInput {
+  schema: JSON!
+  metadataSchema: JSON!
+}
+
+input CreatePaymentInput {
+  """OrderId that payment belongs to"""
+  orderId: ID!
+}
+
+input CreatePaymentOrderInput {
+  """SaleId that order belongs to"""
+  saleId: String!
+
+  """ItemId that order belongs to"""
+  itemId: String!
+
+  """UserId of user that will pay for the order"""
+  userId: String!
+
+  """OrderLines"""
+  orderLines: [CreatePaymentOrderLineInput!]!
+}
+
+input CreatePaymentOrderLineInput {
+  """Amount of the order line in minor currency unit"""
+  amount: Int!
+
+  """Description of the order line"""
+  description: String!
+
+  """Type of the order line"""
+  orderLineType: OrderLineType!
+}
+
+"""Input for creating or modifying sales."""
+input CreateSaleInput {
+  dates: SaleDatesInput
+  title: String
+  description: String
+  currency: String
+  bidIncrementTable: BidIncrementTableInput
+  closingMethod: ClosingMethod
+  closingTimeCountdown: Int
+
+  """
+  This setting governs the auction's reserve bid logic.
+  By default, it is set to STANDARD, meaning the reserve must be met or exceeded through standard bidding.
+  When configured to MAX_BID_BELOW_RESERVE_IS_MET, any maximum bid that matches or surpasses the reserve price automatically meets the reserve of the item or the max bid amount if below reserve.
+  Note, this setting cannot be changed after the sale is created.
+  """
+  reserveAutoBidMethod: ReserveAutoBidMethod
+  themeType: Int
+
+  """Should sale be hidden from public view. Default false."""
+  hidden: Boolean
+
+  """Sale type (defaults to ONLINE_TIMED)"""
+  type: SaleType
+
+  """Sale Is Test"""
+  isTestSale: Boolean
+}
+
+input CreateUploadUrlInput {
+  """The entities that the image belongs to"""
+  imageTypes: [ImageType!]!
+
+  """Image Content-Type"""
+  contentType: String!
+
+  """Image Order"""
+  order: Int!
+
+  """Conditional. Must be set if imageType is Sale or SaleItem"""
+  saleId: String
+
+  """Conditional. Must be set if imageType is Item or SaleItem"""
+  itemId: String
+}
+
+enum Currency {
+  USD
+  ISK
+  EUR
+  GBP
+  AUD
+  SEK
+  NOK
+  DKK
+  CHF
+  CAD
+  JPY
+  HKD
+}
+
+input DeleteAccountFeeInput {
+  id: String!
+}
+
+"""Input to delete an Action Hook subscription."""
+input DeleteActionHookSubscriptionInput {
+  """Event that triggers the action."""
+  action: ActionType!
+}
+
+"""Delete image input"""
+input DeleteImageInput {
+  """The sale identifier"""
+  saleId: String
+
+  """The item identifier"""
+  itemId: String
+
+  """The image identifier"""
+  imageId: String!
+
+  """The entities that the image belongs to"""
+  imageTypes: [ImageType!]!
+}
+
+"""Delete item image input"""
+input DeleteItemImageInput {
+  itemId: String!
+  imageId: String!
+}
+
+"""
+Input object for when deleting an item (including un-associating from a sale)
+"""
+input DeleteItemInput {
+  itemId: String!
+}
+
+input DeleteLiveStreamFromSaleInput {
+  """Sale ID"""
+  saleId: String!
+}
+
+input DeletePaymentOrderInput {
+  """OrderId to delete"""
+  orderId: ID!
+}
+
+"""Input object for when deleting a sale."""
+input DeleteSaleInput {
+  saleId: String!
+}
+
+"""Estimates for an item"""
+type Estimate {
+  """Item low estimate"""
+  low: Int
+
+  """Item high estimate"""
+  high: Int
+}
+
+type ExternalLiveStream {
+  """LiveStream URL"""
+  url: String!
+
+  """LiveStream Title"""
+  type: LiveStreamType!
+
+  """LiveStream Created"""
+  created: String!
+
+  """LiveStream Updated"""
+  updated: String!
+}
+
+type GetItemInput {
+  itemId: String
+}
+
+input GetItemsInput {
+  userId: String
+  first: Int
+  after: String
+  direction: PaginationDirection = FORWARD
+  itemsFilter: ItemsFilter!
+}
+
+"""Information about the highest bid in a sale."""
+type HighestBidInfo {
+  """Unique identifier for the bid."""
+  bidId: String!
+
+  """ID of the item that had the highest bid."""
+  itemId: String!
+
+  """The current bid amount (in minor currency)."""
+  currentAmount: Int!
+
+  """The maximum bid amount (in minor currency). 0 for normal bids."""
+  maxAmount: Int!
+}
+
+"""
+HttpHeader contains custom http request header information to be included in Action Hooks.
+All Action Hooks are sent with the {"Content-Type": "application/json"} header by default.
+"""
+type HttpHeader {
+  key: String!
+  value: String!
+}
+
+"""
+Input to include custom header key-value pairs with Action Hook requests.
+"""
+input HttpHeaderInput {
+  key: String!
+  value: String!
+}
+
+"""Image object"""
+type Image {
+  """ID of the image, UUID string"""
+  id: String!
+
+  """Image URL"""
+  url: String!
+
+  """DisplayOrder for image"""
+  order: Int!
+}
+
+"""Image reordering input"""
+input ImageOrderInput {
+  """The image identifier"""
+  imageId: String!
+
+  """The new image order"""
+  order: Int!
+}
+
+enum ImageType {
+  ACCOUNT
+  SALE
+  ITEM
+  SALE_ITEM
+}
+
+type Invoice {
+  """InvoiceId"""
+  invoiceId: ID!
+
+  """ExternalID"""
+  externalID: String!
+
+  """Due date in RFC3339 format"""
+  dueDate: String!
+
+  """Link to the invoice"""
+  url: String!
+}
+
+type Item implements Node {
+  """Id of an item."""
+  id: ID!
+
+  """Cursor is used in pagination."""
+  cursor: String!
+
+  """Item title"""
+  title: String
+
+  """Account ID"""
+  accountId: String!
+
+  """Item description"""
+  description: String
+
+  """Item pricing information"""
+  price: ItemPrice
+
+  """Images attached to item"""
+  images: [Image!]!
+
+  """Unique external identifier, e.g. Warehouse id, inventory id, etc."""
+  externalId: String
+
+  """Tags"""
+  tags: [String!]!
+
+  """Item Metadata"""
+  metadata: ItemMetadata
+
+  """
+  Item schema used to construct Basta UI
+  TODO: hide
+  """
+  schema: JSON
+
+  """Item Notes."""
+  itemNotes(take: Int = 5, cursor: String = "", direction: PaginationDirection = BACKWARDS): ItemNoteConnection!
+
+  """Item specifications (dimensions, weight, type, etc.)"""
+  specifications: ItemSpecifications
+
+  """Item estimate in minor currency unit."""
+  estimates: Estimate! @deprecated(reason: "Use price")
+
+  """Valuation of the item in minor currency units."""
+  valuationAmount: Int @deprecated(reason: "Will be removed in the future")
+
+  """Valuation currency"""
+  valuationCurrency: String @deprecated(reason: "Will be removed in the future")
+
+  """Sale Id, if the item is linked to a sale"""
+  saleId: String @deprecated(reason: "Will be removed in the future")
+}
+
+type ItemDates {
+  """UTC+0 RFC3339 formatted date and time when item will open."""
+  openDate: String
+
+  """
+  UTC+0 RFC3339 formatted date and time when item will start closing (start of sniping period).
+  """
+  closingStart: String
+
+  """
+  UTC+0 RFC3339 formatted date and time when item should move to status CLOSED.
+  This property is extend each time a bid is received during sniping.
+  Sniping is defined as the period between closingStart and closingEnd.
+  """
+  closingEnd: String
+}
+
+type ItemFairWarningNotification {
+  """Id of the notification"""
+  id: String!
+
+  """
+  Date timestamp when message was created.
+  RFC3339 formatted string
+  """
+  date: String!
+}
+
+"""Item filter"""
+input ItemFilter {
+  """Filter by item title"""
+  title: String
+}
+
+input ItemIdsFilter {
+  itemIds: [ID!]
+}
+
+type ItemMessageNotification {
+  """Id of the notification"""
+  id: String!
+
+  """Message"""
+  message: String!
+
+  """
+  Date timestamp when message was created.
+  RFC3339 formatted string
+  """
+  date: String!
+}
+
+"""Custom data defined by each account"""
+type ItemMetadata {
+  """Data"""
+  data: JSON
+
+  """JSON Schema"""
+  schema: JSON
+}
+
+"""Item additional data input"""
+input ItemMetadataInput {
+  """JSON"""
+  data: JSON
+}
+
+type ItemNote {
+  """ID"""
+  id: ID!
+
+  """Note"""
+  note: String!
+
+  """UserID"""
+  userId: String!
+
+  """The user that wrote the note"""
+  user: UserInfo!
+
+  """Created time"""
+  created: String!
+}
+
+type ItemNoteConnection {
+  """ItemNote edges"""
+  edges: [ItemNoteEdge!]!
+
+  """Current page information"""
+  pageInfo: PageInfo!
+}
+
+type ItemNoteEdge {
+  """Current ItemNote Cursor"""
+  cursor: String!
+
+  """ItemNote node"""
+  node: ItemNote!
+}
+
+union ItemNotification = ItemMessageNotification | ItemFairWarningNotification
+
+input ItemNumberChangeInput {
+  itemId: String!
+  itemNumber: Int!
+}
+
+enum ItemOrderField {
+  """Item Number"""
+  ITEM_NUMBER
+
+  """Created date"""
+  CREATED
+}
+
+input ItemOrderInput {
+  """Field to order by"""
+  field: ItemOrderField! = ITEM_NUMBER
+
+  """Order direction"""
+  direction: PaginationDirection! = FORWARD
+}
+
+"""Item pricing information"""
+type ItemPrice {
+  """Currency for pricing information"""
+  currency: Currency!
+
+  """Reserve in minor currency"""
+  reserve: Int!
+
+  """Starting bid in minor currency"""
+  startingBid: Int!
+
+  """Item low estimate"""
+  lowEstimate: Int
+
+  """Item high estimate"""
+  highEstimate: Int
+}
+
+"""Item price information input"""
+input ItemPriceInput {
+  """Currency for pricing information"""
+  currency: Currency
+
+  """Reserve in minor currency"""
+  reserve: Int
+
+  """Starting bid in minor currency"""
+  startingBid: Int
+
+  """Item low estimate"""
+  lowEstimate: Int
+
+  """Item high estimate"""
+  highEstimate: Int
+}
+
+type ItemSchema {
+  schema: JSON!
+  metadataSchema: JSON!
+}
+
+"""Item specifications containing dimensions, weight, type, etc."""
+type ItemSpecifications {
+  """Type of specification (Art, Furniture, Jewelry, etc.)"""
+  type: SpecificationType
+
+  """Sub-type of specification (PaintingUnframed, Table, Ring, etc.)"""
+  subType: SpecificationSubType
+
+  """Height of the item"""
+  height: Float
+
+  """Length of the item"""
+  length: Float
+
+  """Depth of the item"""
+  depth: Float
+
+  """Unit of measurement for dimensions"""
+  measurementUnit: MeasurementUnit
+
+  """Weight of the item"""
+  weight: Float
+
+  """Unit of measurement for weight"""
+  weightUnit: WeightUnit
+}
+
+"""Item specifications input for creating or updating items"""
+input ItemSpecificationsInput {
+  """Type of specification (Art, Furniture, Jewelry, etc.)"""
+  type: SpecificationType
+
+  """Sub-type of specification (PaintingUnframed, Table, Ring, etc.)"""
+  subType: SpecificationSubType
+
+  """Height of the item"""
+  height: Float
+
+  """Length of the item"""
+  length: Float
+
+  """Depth of the item"""
+  depth: Float
+
+  """Unit of measurement for dimensions"""
+  measurementUnit: MeasurementUnit
+
+  """Weight of the item"""
+  weight: Float
+
+  """Unit of measurement for weight"""
+  weightUnit: WeightUnit
+}
+
+"""Item statuses for items in a sale"""
+enum ItemStatus {
+  ITEM_NOT_OPEN
+  ITEM_OPEN
+  ITEM_CLOSING
+  ITEM_PROCESSING
+  ITEM_CLOSED
+  ITEM_PAUSED
+  ITEM_LIVE
+}
+
+type ItemsConnection {
+  """Item edges"""
+  edges: [ItemsEdge!]!
+
+  """Current page information"""
+  pageInfo: PageInfo!
+}
+
+type ItemsEdge {
+  """Current item cursor"""
+  cursor: String!
+
+  """Item node"""
+  node: Item!
+}
+
+input ItemsFilter {
+  onlyMyItems: Boolean!
+  title: String
+}
+
+"""
+The JSON scalar type represents JSON data as describe in [ECMA-404](https://ecma-international.org/wp-content/uploads/ECMA-404.pdf).
+"""
+scalar JSON
+
+type Link {
+  type: LinkType!
+  url: String!
+}
+
+input LinkInput {
+  type: LinkType!
+  url: String!
+}
+
+enum LinkType {
+  WEBSITE
+  INSTAGRAM
+  YOUTUBE
+  TIKTOK
+  FACEBOOK
+  X
+}
+
+"""
+Live Item represents an item that is currently being auctioned in a live sale.
+"""
+type LiveItem {
+  item: SaleItem!
+  cursor: String!
+}
+
+union LiveStream = ExternalLiveStream | BastaLiveStream
+
+input LiveStreamInput {
+  """LiveStream URL"""
+  url: String!
+
+  """LiveStream Title"""
+  type: LiveStreamType!
+}
+
+"""LiveStreamType represents the type of live stream"""
+enum LiveStreamType {
+  """Generic live stream"""
+  GENERIC
+
+  """Amazon IVS live stream"""
+  AMAZON_IVS
+
+  """YouTube live stream"""
+  YouTubeLive
+
+  """
+  Basta live stream
+  Built-in live stream for Basta
+  """
+  BASTA_LIVE
+}
+
+"""Max bid on behalf of a user in a sale."""
+input MaxBidOnBehalfInput {
+  """user id of the user that bid is being placed for."""
+  userId: String!
+
+  """max bid amount of the bid in minor currency unit."""
+  maxAmount: Int!
+
+  """item id of the item"""
+  itemId: String!
+
+  """The sale id which the item belongs that is being bidded on"""
+  saleId: String!
+
+  """BidOrigin"""
+  bidOrigin: BidOriginInput = {type: ONLINE}
+}
+
+"""Measurement unit enum"""
+enum MeasurementUnit {
+  NOT_SET
+  CM
+  INCH
+}
+
+type Mutation {
+  """Update Account"""
+  updateAccount(accountId: String!, input: UpdateAccountInput!): Account!
+
+  """Create a sale"""
+  createSale(accountId: String!, input: CreateSaleInput!): Sale!
+
+  """Update a sale"""
+  updateSale(accountId: String!, saleId: String!, input: UpdateSaleInput!): Sale!
+
+  """Open a sale, non forcefully."""
+  openSale(accountId: String!, input: OpenSaleInput!): Sale!
+
+  """Close a sale, non forcefully."""
+  closeSale(accountId: String!, input: CloseSaleInput!): Sale!
+
+  """Set Sale State unforcefully"""
+  setSaleStatus(accountId: String!, input: SetSaleStatusInput!): Sale!
+
+  """Start to close the sale, non forcefully"""
+  startClosingSale(accountId: String!, input: StartClosingSaleInput!): Sale!
+
+  """Open a sale, forcefully."""
+  forceOpenSale(accountId: String!, input: OpenSaleInput!): Sale!
+
+  """Close a sale, forcefully."""
+  forceCloseSale(accountId: String!, input: CloseSaleInput!): Sale!
+
+  """Start to close the sale, forcefully"""
+  forceStartClosingSale(accountId: String!, input: StartClosingSaleInput!): Sale!
+
+  """Publish a sale, forcefully."""
+  publishSale(accountId: String!, input: PublishSaleInput!): Sale!
+
+  """
+  Create item. This operation will create a standalone item that is not part of a sale.
+  """
+  createItem(accountId: String!, input: CreateItemInput!): Item!
+
+  """
+  Update item. This will update information about items for all sales that has not been closed.
+  """
+  updateItem(accountId: String!, itemId: String!, input: UpdateItemInput!): Item!
+
+  """Update ItemNumbers input"""
+  updateItemNumbers(accountId: String!, input: UpdateItemNumbersInput!): Sale!
+
+  """
+  Create item and add to a sale. This operation will automatically create an item and add it to the sale.
+  """
+  createItemForSale(accountId: String!, input: SaleItemInput!): SaleItem!
+
+  """Add a currently existing item to a sale."""
+  addItemToSale(accountId: String!, input: AddItemToSaleInput!): SaleItem!
+
+  """Update item associated with a sale."""
+  updateItemForSale(accountId: String!, input: UpdateSaleItemInput!): SaleItem!
+
+  """
+  Sets sale item winner. Marks bid as won and closes item. Used in offer model.
+  """
+  setItemWinner(accountId: String!, input: SetItemWinnerInput!): SaleItem!
+
+  """
+  Sets sale item status. Used in offer model to close item with no winner.
+  """
+  setSaleItemStatus(accountId: String!, input: SetSaleItemStatusInput!): SaleItem!
+
+  """
+  Remove an item from the sale. This will not delete the item completely.
+  """
+  removeItemFromSale(accountId: String!, input: RemoveSaleItemInput!): Sale!
+
+  """
+  Create an API key, that can access all functions in the API on behalf of the account.
+  """
+  createApiKey(accountId: String!, input: ApiKeyInput!): ApiKeyCreated!
+
+  """Revoke the API key by id."""
+  revokeApiKey(accountId: String!, input: RevokeApiKeyInput!): Boolean!
+
+  """
+  DEPRECATED.
+  Create an API key, that can access all functions in the API on behalf of the logged in customer.
+  """
+  createApiToken(accountId: String!, input: ApiTokenInput!): ApiTokenCreated! @deprecated(reason: "Use createApiKey mutation")
+
+  """
+  DEPRECATED.
+  Revoke the API key by id.
+  """
+  revokeApiToken(accountId: String!, input: RevokeApiTokenInput!): Boolean! @deprecated(reason: "Use revokeApiKey mutation")
+
+  """Bid on behalf of a user"""
+  bidOnBehalf(accountId: String!, input: BidOnBehalfInput!): Bid!
+
+  """Max bid on behalf of a user"""
+  maxBidOnBehalf(accountId: String!, input: MaxBidOnBehalfInput!): Bid! @deprecated(reason: "Use bidOnBehalf with type as MAX")
+
+  """
+  Cancel the latest bid on item (including reactive bids that were placed as a side-effect)
+  """
+  cancelLatestBidOnItem(accountId: String!, input: CancelLatestBidOnItemInput!): CanceledLatestBidOnItem!
+  setUserIdOnBid(accountId: String!, input: SetUserIdOnBidInput!): Bid!
+
+  """
+  Create and sign a token that can be used to bid on behalf of a user (unique user id needs to be provided)
+  """
+  createBidderToken(accountId: String!, input: BidderTokenInput!): BidderToken!
+
+  """
+  Will replace createBidderToken(accountId: String!, input: BidderTokenInput!): BidderToken!
+  Only accessible for SDK users at the moment
+  """
+  createUserTokenV2(accountId: String!, input: UserTokenInput!): UserToken!
+
+  """Add action hook subscription"""
+  addActionHookSubscription(accountId: String!, input: ActionHookSubscriptionInput!): ActionHookSubscription!
+
+  """Update action hook subscription"""
+  updateActionHookSubscription(accountId: String!, input: UpdateActionHookSubscriptionInput!): ActionHookSubscription!
+
+  """Delete action hook subscription"""
+  deleteActionHookSubscription(accountId: String!, input: DeleteActionHookSubscriptionInput!): Boolean!
+
+  """
+  Test ActionHook configuration. This will trigger an action hook to be sent.
+  """
+  testActionHook(accountId: String!, input: ActionHookSubscriptionInput!): TestActionHookResponse!
+
+  """
+  Onboard Basta Sellers onto supported payment provider/s.
+  Not available for integrating applications.
+  """
+  onboardPaymentAccount(accountId: String!, input: OnboardPaymentAccountInput!): OnboardPaymentAccountResponse!
+
+  """
+  If payment provider onboarding was not finished then this mutation can be called to regenerate onboarding link.
+  Not available for integration applications. Only accesible via admin.
+  """
+  continueOnboardPaymentAccount(accountId: String!, input: ContinueOnboardPaymentAccountInput!): OnboardPaymentAccountResponse!
+
+  """
+  Not available for integrating applications.
+  Accepts seller terms on behalf of account.
+  Returns a RFC399 timestamp of when seller terms were accepted.
+  """
+  acceptTerms(accountId: String!): String!
+
+  """
+  Create Item Image.
+  Method only available through admin.
+  """
+  createItemImage(accountId: String!, input: CreateItemImage!): [Image!]!
+
+  """
+  Reorder item images.
+  Method only available through admin.
+  """
+  reorderItemImages(accountId: String!, input: ReorderItemImages!): [Image!]! @deprecated(reason: "Use reorderImages mutation")
+
+  """
+  Reorder images based on type.
+  Method only available through admin.
+  """
+  reorderImages(accountId: String!, input: ReorderImagesInput!): [Image!]!
+
+  """
+  Delete item image.
+  Method only available through admin.
+  """
+  deleteItemImage(accountId: String!, input: DeleteItemImageInput!): [Image!]! @deprecated(reason: "Use deleteImage mutation")
+
+  """
+  Delete image based on type.
+  Method only available through admin.
+  """
+  deleteImage(accountId: String!, input: DeleteImageInput!): [Image!]!
+
+  """Add paddle to sale."""
+  addPaddleToSale(accountId: String!, input: AddPaddleToSaleInput!): [Paddle!]!
+
+  """Remove paddle from sale."""
+  removePaddleFromSale(accountId: String!, input: RemovePaddleFromSaleInput!): [Paddle!]!
+
+  """Register user to sale."""
+  registerUserPaddle(accountId: String!, input: RegisterUserPaddleInput!): [Paddle!]!
+
+  """Add notification to an item"""
+  addMessageNotificationToItem(accountId: String!, input: AddMessageNotificationToItemInput!): SaleItem!
+
+  """Add fair warning notification to an item"""
+  addFairWarningNotificationToItem(accountId: String!, input: AddFairWarningNotificationToItemInput!): SaleItem!
+
+  """Add live stream to a sale, this operation is idempotent."""
+  addLiveStreamToSale(accountId: String!, input: AddLiveStreamToSaleInput!): LiveStream!
+
+  """Delete live stream from a sale"""
+  deleteLiveStreamFromSale(accountId: String!, input: DeleteLiveStreamFromSaleInput!): Boolean!
+
+  """Add tag to an item"""
+  addTagToItem(accountId: String!, input: AddTagToItemInput!): Tag!
+
+  """Remove tag from an item"""
+  removeTagFromItem(accountId: String!, input: RemoveTagFromItemInput!): Boolean!
+
+  """Add tag to a sale item"""
+  addTagToSaleItem(accountId: String!, input: AddTagToSaleItemInput!): Tag!
+
+  """Remove tag from a sale item"""
+  removeTagFromSaleItem(accountId: String!, input: RemoveTagFromSaleItemInput!): Boolean!
+  createItemNote(accountId: String!, input: CreateItemNoteInput!): ItemNote!
+
+  """CreateUploadUrl"""
+  createUploadUrl(accountId: String!, input: CreateUploadUrlInput!): UploadUrl!
+
+  """
+  Create Schema.
+  WARNING. DO NOT USE. Temporary method that is scheduled for removal
+  """
+  createItemSchema(accountId: String!, input: CreateItemSchemaInput!): ItemSchema!
+
+  """
+  Update increment table globally for a sale, this will update all items in the sale.
+  """
+  updateGlobalIncrementTable(accountId: String!, input: UpdateGlobalIncrementTableInput!): Sale!
+
+  """
+  Update dates globally for a sale, this will update all items in the sale.
+  """
+  updateGlobalDates(accountId: String!, input: UpdateGlobalDatesInput!): Sale!
+
+  """
+  Update closing time countdown globally for a sale, this will update all items in the sale.
+  """
+  updateGlobalClosingTimeCountdown(accountId: String!, input: UpdateGlobalClosingTimeCountdownInput!): Sale!
+
+  """
+  PassLiveItem. Mutation only available with valid session cookie.
+  Moves item to status processing and raises the reserve if it has been met.
+  Only works on "LIVE" sale type
+  """
+  passLiveItem(accountId: String!, input: PassLiveItemInput!): SaleItem!
+
+  """
+  SellLiveItem. Mutation only available with valid session cookie.
+  Moves item to status processing and lowers the reserve if it has not been met.
+  Only works on "LIVE" sale type
+  """
+  sellLiveItem(accountId: String!, input: SellLiveItemInput!): SaleItem!
+
+  """
+  Connect a a shopify store to an account.
+  Only applicable accounts will work when connecting to shopify.
+  """
+  connectShopifyToAccount(accountId: String!, input: ConnectShopifyToAccountInput!): ShopifyConnection!
+
+  """Create a payment order"""
+  createPaymentOrder(accountId: String!, input: CreatePaymentOrderInput!): PaymentOrder!
+
+  """Update a payment order"""
+  updatePaymentOrder(accountId: String!, input: UpdatePaymentOrderInput!): PaymentOrder!
+
+  """Delete a payment order, this will cancel order."""
+  deletePaymentOrder(accountId: String!, input: DeletePaymentOrderInput!): PaymentOrder! @deprecated(reason: "Use cancelPaymentOrder mutation")
+
+  """Cancel a payment order"""
+  cancelPaymentOrder(accountId: String!, input: CancelPaymentOrderInput!): PaymentOrder!
+
+  """Create Invoice for order"""
+  createInvoice(accountId: String!, input: CreateInvoiceInput!): Invoice!
+
+  """Create a payment for an order"""
+  createPayment(accountId: String!, input: CreatePaymentInput!): Payment!
+
+  """Create an account fee"""
+  createAccountFee(accountId: String!, input: CreateAccountFeeInput!): AccountFee!
+
+  """Update an account fee"""
+  updateAccountFee(accountId: String!, input: UpdateAccountFeeInput!): AccountFee!
+
+  """Delete an account fee"""
+  deleteAccountFee(accountId: String!, input: DeleteAccountFeeInput!): ID!
+}
+
+interface Node {
+  """Identification of the node."""
+  id: ID!
+}
+
+input OnboardPaymentAccountInput {
+  sellerLocation: SellerLocation!
+  type: PaymentAccountType!
+  returnUrl: String!
+}
+
+type OnboardPaymentAccountResponse {
+  """Client should redirect Basta sellers to this url to finish onboarding."""
+  onboardingUrl: String!
+}
+
+type OnlineBidOrigin {
+  type: BidOriginType!
+}
+
+"""Input object for when forcing sale to open."""
+input OpenSaleInput {
+  saleId: String!
+}
+
+type OrderConnection {
+  """Order edges"""
+  edges: [OrderEdge!]!
+
+  """Current page information"""
+  pageInfo: PageInfo!
+}
+
+type OrderEdge {
+  """Current order cursor"""
+  cursor: String!
+
+  """Order node"""
+  node: PaymentOrder!
+}
+
+type OrderLine {
+  """OrderLineId"""
+  orderLineId: ID!
+
+  """Amount"""
+  amount: Int!
+
+  """Description"""
+  description: String!
+
+  """Type of the order line"""
+  orderLineType: OrderLineType!
+}
+
+enum OrderLineType {
+  """When the order line amount comes from a bid"""
+  BidAmount
+
+  """When order line amount does not come from a bid"""
+  DirectSale
+}
+
+enum OrderStatus {
+  """The order is in draft state"""
+  DRAFT
+
+  """The order was placed or created."""
+  OPEN
+
+  """The order was cancelled."""
+  CANCELLED
+
+  """The invoice was issued for the order."""
+  INVOICE_ISSUED
+
+  """The order has been paid."""
+  PAID
+}
+
+"""Paddle represent a paddle in a sale"""
+type Paddle {
+  """Paddle identifier"""
+  identifier: String!
+
+  """User Id of the paddle owner"""
+  userId: String!
+
+  """The user info, only populated for Basta users."""
+  user: UserInfo
+
+  """Paddle type"""
+  type: PaddleType!
+
+  """Paddle created date"""
+  created: String!
+}
+
+type PaddleBidOrigin {
+  type: BidOriginType!
+}
+
+"""PaddleType represents the type of paddle"""
+enum PaddleType {
+  NOT_SET
+  IN_ROOM
+  PHONE
+  ONLINE
+  OTHER
+}
+
+"""Page info for pagination"""
+type PageInfo {
+  """Starting cursor"""
+  startCursor: ID!
+
+  """Ending cursor"""
+  endCursor: ID!
+
+  """Has next page"""
+  hasNextPage: Boolean!
+
+  """Total records"""
+  totalRecords: Int!
+}
+
+"""Direction of pagination"""
+enum PaginationDirection {
+  """Ascending order"""
+  FORWARD
+
+  """Descending order"""
+  BACKWARDS
+}
+
+"""
+Participant represent a bidder in a sale, it will be automatically created
+when the user starts bidding on a sale.
+"""
+type Participant {
+  """User Id"""
+  userId: String!
+}
+
+type ParticipantsConnection {
+  edges: [ParticipantsEdge!]!
+  totalCount: Int!
+  pageInfo: PageInfo!
+}
+
+type ParticipantsEdge {
+  cursor: String!
+  node: Participant!
+}
+
+input PassLiveItemInput {
+  saleId: String!
+  itemId: String!
+  transitionToUpcomingLot: Boolean
+}
+
+type Payment {
+  """PaymentId"""
+  paymentId: ID!
+}
+
+enum PaymentAccountType {
+  """Standard account type"""
+  Standard
+
+  """Express account type"""
+  Express
+}
+
+type PaymentDetails {
+  """External account id from payment provider"""
+  paymentProviderAccountId: String!
+
+  """Payment Setup Status"""
+  status: PaymentProviderStatus!
+
+  """Account Fees"""
+  accountFees: [AccountFee!]!
+}
+
+type PaymentOrder implements Node {
+  """ID"""
+  id: ID!
+
+  """OrderID"""
+  orderId: ID! @deprecated(reason: "use id")
+
+  """SaleID"""
+  saleId: String!
+
+  """ItemID"""
+  itemId: String!
+
+  """InvoiceID of invoice sent to winner"""
+  invoiceId: String
+
+  """Invoice details"""
+  invoice: Invoice
+
+  """PaymentID set if payment has been made on invoice"""
+  paymentId: String
+
+  """UserID"""
+  userId: String!
+
+  """OrderLines"""
+  orderLines: [OrderLine!]!
+
+  """UserInfo for payment order"""
+  user: UserInfo
+
+  """Status of the order"""
+  status: OrderStatus!
+
+  """Created"""
+  created: String!
+
+  """Modified"""
+  modified: String!
+}
+
+enum PaymentProviderStatus {
+  """Account has started onboarding for payment provider but not finished."""
+  STARTED
+
+  """
+  Account has finished onboarding for payment provider and details are being processed.
+  """
+  PROCESSING
+
+  """
+  Account has finished onboarding and details have been processed and confirmed.
+  """
+  ENABLED
+
+  """Account has been disabled by payments provider"""
+  DISABLED
+}
+
+enum Permission {
+  READ_SALE
+  WRITE_SALE
+  WRITE_ITEM
+  READ_ITEM
+  READ_ACCOUNT
+  WRITE_ACCOUNT
+  READ_API_TOKENS
+  WRITE_API_TOKENS
+  READ_API_KEYS
+  WRITE_API_KEYS
+  READ_ACTION_HOOKS
+  WRITE_ACTION_HOOKS
+  WRITE_BIDDER_TOKEN
+  WRITE_CANCEL_BID
+  WRITE_SHOPIFY_CONFIGURATION
+  READ_ORDER
+}
+
+type PhoneBidOrigin {
+  type: BidOriginType!
+}
+
+"""Input object for when forcing sale to published."""
+input PublishSaleInput {
+  saleId: String!
+}
+
+type Query {
+  """Fetch information about an account"""
+  account(accountId: String!): Account!
+
+  """Fetch information about accessable accounts"""
+  accounts: [Account!]!
+
+  """
+  Get all sales that have been created. You can at most fetch 50 sales at a time.
+  """
+  sales(accountId: String!, first: Int = 20, after: String, filter: SaleFilter): SaleConnection!
+
+  """Get a single sale."""
+  sale(accountId: String!, id: ID!): Sale!
+
+  """Get SaleItem"""
+  saleItem(accountId: String!, saleId: String!, itemId: String!): SaleItem
+
+  """Get API Keys that have created."""
+  apiKeys(accountId: String!, first: Int = 20, after: String): ApiKeyConnection!
+
+  """Get API key for searching collection"""
+  searchKey(accountId: String!): SearchKey!
+
+  """
+  DEPRECATED.
+  Get API Keys that have created.
+  """
+  apiTokens(accountId: String!, first: Int = 20, after: String): ApiTokenConnection! @deprecated(reason: "Use apiKeys query")
+
+  """Get account action hook subscriptions"""
+  actionHookSubscriptions(accountId: String!): [ActionHookSubscription!]!
+
+  """Get all Action Hook logs."""
+  actionHookLogs(accountId: String!, first: Int = 10, after: String, filter: ActionHookFilter): ActionHookLogConnection!
+
+  """Fetch information about an Item"""
+  item(accountId: String!, itemId: String!): Item!
+
+  """
+  Get all items for accountId
+  
+  onlyMyItems if true filters items belonging to the current user
+  """
+  items(accountId: String!, first: Int = 20, after: String, itemsFilter: ItemsFilter!, direction: PaginationDirection = FORWARD): ItemsConnection!
+  salesAggregate(accountId: String!): SalesAggregate!
+
+  """User Bid Activity"""
+  userBidActivity(accountId: String!, userId: String!, first: Int = 20, after: String, filter: UserBidActivityFilter, direction: PaginationDirection = BACKWARDS, orderBy: BidOrderByField = BID_DATE): UserBidActivityConnection!
+  orders(accountId: String!, first: Int, after: String, before: String, last: Int): OrderConnection!
+
+  """Orders associated with a user"""
+  userOrders(accountId: String!, userID: String!, first: Int, after: String, before: String, last: Int): OrderConnection!
+}
+
+"""
+Range rule explains increments in the table.
+Represented as minor currency units.
+"""
+type RangeRule {
+  """High range of the rule"""
+  highRange: Int!
+
+  """Low range of the rule"""
+  lowRange: Int!
+
+  """Step of the rule"""
+  step: Int!
+}
+
+"""
+Range rules input in an increment table.
+Values should be in minor currency units.
+If a sale has USD as currency then the minor currency unit is cents.
+The rule [hihgRange: $1000, lowRange: $0, step: $25] should be sent as
+  [highRange: 100000, lowRange: 0, step: 2500]
+"""
+input RangeRuleInput {
+  """High range of the rule in minor currency units."""
+  highRange: Int!
+
+  """Low range of the rule in minor currency units."""
+  lowRange: Int!
+
+  """Step of the rule in minor currency units."""
+  step: Int!
+}
+
+input RegisterUserPaddleInput {
+  """Sale ID"""
+  saleId: String!
+
+  """Paddle ID"""
+  paddleIdentifier: String!
+
+  """Paddle Type"""
+  type: PaddleType!
+
+  """User email address"""
+  email: String!
+
+  """User first name"""
+  firstName: String!
+
+  """User last name"""
+  lastName: String!
+}
+
+input RemovePaddleFromSaleInput {
+  """Sale ID"""
+  saleId: String!
+
+  """Paddle ID"""
+  paddleIdentifier: String!
+}
+
+"""Input to remove an item from a sale"""
+input RemoveSaleItemInput {
+  """Id of the sale that is associated with the item."""
+  saleId: String!
+
+  """Item id of the item that you are removing from the sale."""
+  itemId: String!
+}
+
+input RemoveTagFromItemInput {
+  """Item ID"""
+  itemId: String!
+
+  """Tag Name"""
+  name: String!
+}
+
+input RemoveTagFromSaleItemInput {
+  """Sale ID"""
+  saleId: String!
+
+  """Item ID"""
+  itemId: String!
+
+  """Tag Name"""
+  name: String!
+}
+
+input ReorderImagesInput {
+  """The sale identifier, required for Sale and SaleItem image types"""
+  saleId: String
+
+  """The item identifier, required for Item and SaleItem image types."""
+  itemId: String
+
+  """The entity that the images belong to"""
+  imageType: ImageType!
+
+  """The new image order"""
+  imageOrderChanges: [ImageOrderInput!]!
+}
+
+input ReorderItemImages {
+  itemId: String!
+  imageOrderChanges: [ImageOrderInput!]!
+}
+
+enum ReserveAutoBidMethod {
+  STANDARD
+  MAX_BID_BELOW_RESERVE_IS_MET
+}
+
+enum ReserveStatus {
+  """Reserve has not been met"""
+  NOT_MET
+
+  """Reserve has been met"""
+  MET
+
+  """The item has no reserve"""
+  NO_RESERVE
+}
+
+"""Input object for when revoking a API key"""
+input RevokeApiKeyInput {
+  """API key Id that needs to be revoked"""
+  apiKeyId: String!
+}
+
+"""
+DEPRECATED.
+Input object for when revoking a API token
+"""
+input RevokeApiTokenInput {
+  """API token Id that needs to be revoked"""
+  apiTokenId: String!
+}
+
+"""Sale"""
+type Sale implements Node {
+  """Id of a sale."""
+  id: ID!
+
+  """Cursor is used in pagination."""
+  cursor: String!
+
+  """Sale type"""
+  type: SaleType!
+
+  """Account ID associated with the sale"""
+  accountId: String!
+
+  """Sale Title"""
+  title: String
+
+  """Sale Description"""
+  description: String
+
+  """Currency of the sale (capital letters: EUR, USD, etc.)"""
+  currency: String
+
+  """Sale status"""
+  status: SaleStatus!
+
+  """
+  Items that have been associated with this sale. You can at most get 50 items at a time.
+  """
+  items(first: Int = 20, after: String, filter: SaleItemFilter, order: ItemOrderInput): SaleItemsConnection!
+
+  """
+  Default increment table for the sale.
+  If an increment table is associated with any items in the sale
+  this will be overidden.
+  """
+  incrementTable: BidIncrementTable
+
+  """Sale Dates"""
+  dates: SaleDates!
+
+  """Get list of participants for this sale"""
+  participants(take: Int = 20, cursor: String, direction: PaginationDirection): ParticipantsConnection!
+
+  """Sequence number of this sale."""
+  sequenceNumber: Int!
+
+  """Chosen ClosingMethod"""
+  closingMethod: ClosingMethod
+
+  """
+  ClosingTime countdown is the sniping duration in milliseconds.
+  If not provided it defaults to 120000 (2 minutes).
+  If a sale has an OVERLAPPING closing method it also assigns the item's closing time in asceding order.
+  """
+  closingTimeCountdown: Int!
+
+  """Images attached to sale"""
+  images: [Image!]!
+
+  """
+  Sale theme type.
+  Only used for sales owned by basta
+  """
+  themeType: Int
+
+  """
+  Sale slug. Only set on basta created sales.
+  Null/empty for integrating applications.
+  """
+  slug: String
+
+  """
+  This setting governs the auction's reserve bid logic.
+  By default, it is set to STANDARD, meaning the reserve must be met or exceeded through standard bidding.
+  When configured to MAX_BID_BELOW_RESERVE_IS_MET, any maximum bid that matches or surpasses the reserve price automatically meets the reserve of the item or the max bid amount if below reserve.
+  Note, this setting cannot be changed after the sale is created.
+  """
+  reserveAutoBidMethod: ReserveAutoBidMethod!
+
+  """
+  Indicates whether this is a test sale.
+  Test sales are used for testing purposes and should be filtered out from production data.
+  """
+  isTestSale: Boolean!
+
+  """Is sale available on the basta bid client ?"""
+  bastaBidClient: Boolean!
+
+  """Is sale hidden for public, and not shown on your profile."""
+  hidden: Boolean!
+
+  """Sale paddles created for the sale"""
+  paddles: [Paddle!]!
+
+  """Live Stream"""
+  liveStream: ExternalLiveStream @deprecated(reason: "old livestream link, use liveVideoStream instead")
+  liveVideoStream: LiveStream
+
+  """Live Item in the Sale (only applicable for live sales)"""
+  liveItem(itemOrderInput: ItemOrderInput): LiveItem
+
+  """Count of all bids in sale accross all items"""
+  saleBidsCounts: Int
+
+  """Sum Of all highest bids per item"""
+  sumOfHighestBids: Int
+
+  """
+  Statistics for a sale providing insights into bidding activity, item performance, and auction dynamics.
+  """
+  statistics: SaleStatistics!
+}
+
+union SaleActivity = Sale | SaleItem
+
+type SaleConnection {
+  """Sale edges"""
+  edges: [SalesEdge!]!
+
+  """Current page information"""
+  pageInfo: PageInfo!
+}
+
+"""Sale Dates"""
+type SaleDates {
+  """Date of when the sale is supposed to be automatically closed."""
+  closingDate: String
+
+  """Date of when the sale is supposed to be automatically opened."""
+  openDate: String
+
+  """Date of when the sale is supposed to be manually put to live."""
+  liveDate: String
+}
+
+"""Input arguments for when creating or modifying a sale."""
+input SaleDatesInput {
+  """Closing Date"""
+  closingDate: String
+
+  """Opening Date"""
+  openDate: String
+
+  """Live Date"""
+  liveDate: String
+}
+
+"""Sale filter for sales."""
+input SaleFilter {
+  """Filter by sale status"""
+  statuses: [SaleStatus!]!
+
+  """
+  Show test sales filter: null = all sales, true = only test sales, false = only regular sales
+  """
+  showTestSales: Boolean
+}
+
+"""A sale item (item that has been added to a sale)"""
+type SaleItem {
+  """Id of an item."""
+  id: ID!
+
+  """Cursor is used in pagination."""
+  cursor: String!
+
+  """AccountId that owns the item"""
+  accountId: String!
+
+  """Item title"""
+  title: String
+
+  """Number of bids that have been placed on the item"""
+  totalBids: Int!
+
+  """Item description"""
+  description: String
+
+  """Current bid amount for the item as minor currency unit."""
+  currentBid: Int
+
+  """Currency for pricing information which is set on auction level."""
+  currency: String!
+
+  """
+  Current leader (user id) for the item.
+  If SaleItem is closed then this is the user id holding the highest bid.
+  """
+  leaderId: String
+
+  """
+  Sale id, as items can be created without having to be associated to a sale.
+  """
+  saleId: String!
+
+  """Get list of bids for this item"""
+  bids(collapseSequentialUserBids: Boolean): [Bid!]!
+
+  """Reserve on the item in minor currency unit."""
+  reserve: Int
+
+  """Starting bid for the item in minor currency unit."""
+  startingBid: Int
+
+  """Overridden increment table for the item."""
+  incrementTable: BidIncrementTable
+
+  """Status of the item"""
+  status: ItemStatus!
+
+  """Item estimate in minor currency unit."""
+  estimates: Estimate!
+
+  """Item number"""
+  itemNumber: Int!
+
+  """Scheduled closing timestamp for the item."""
+  dates: ItemDates!
+
+  """
+  Allowed BidTypes on the item.
+  Currently only a single BidType is allowed per item.
+  Defaults to allowing only Max bids if not supplied.
+  """
+  allowedBidTypes: [BidType!]
+
+  """Images attached to saleItem"""
+  images: [Image!]!
+
+  """
+  Item slug. Only set on basta created items.
+  Null/empty for integrating applications
+  """
+  slug: String
+
+  """Active Order information associated with item."""
+  paymentOrder: PaymentOrder
+
+  """All Orders associated with the item."""
+  paymentOrders: [PaymentOrder!]
+
+  """Is item hidden for public, and not shown on your sale page."""
+  hidden: Boolean!
+
+  """Next asks for the item in minor currency units."""
+  nextAsks(iterations: Int): [Int!]!
+
+  """Reserve met"""
+  reserveMet: Boolean! @deprecated(reason: "use reserveStatus instead")
+
+  """SaleItem notifications if item is part of a live sale"""
+  notifications: [ItemNotification!]!
+
+  """Tags"""
+  tags: [String!]! @deprecated(reason: "use tagsV2")
+
+  """Tags v2"""
+  tagsV2: [Tag!]!
+
+  """Reserve status."""
+  reserveStatus: ReserveStatus!
+
+  """External ID"""
+  externalId: String
+
+  """Metadata associated with the item"""
+  metadata: ItemMetadata
+
+  """closingTimeCountdown for the item."""
+  closingTimeCountdown: Int!
+
+  """Item specifications"""
+  specifications: ItemSpecifications
+}
+
+"""Item filter for sale items."""
+input SaleItemFilter {
+  """Filter by item status"""
+  statuses: [ItemStatus!]!
+
+  """Show hidden items"""
+  showHiddenItems: Boolean = true
+}
+
+"""Item input when creating an item"""
+input SaleItemInput {
+  """Id of the sale that is associated with the item."""
+  saleId: String!
+
+  """Optional bid increment table for this item."""
+  bidIncrementTable: BidIncrementTableInput
+
+  """Title for describing the item"""
+  title: String
+
+  """Description for describing the item"""
+  description: String
+
+  """Starting bid of the item in minor currency unit."""
+  startingBid: Int
+
+  """Valuation of the item in minor currency unit."""
+  valuationAmount: Int
+
+  """Valuation currency"""
+  valuationCurrency: String
+
+  """
+  The reserve is the minimum amount that an item will sell for.
+  Reserve should be in minor currency units.
+  A reserve of 0 is treated like a no reserve sale.
+  """
+  reserve: Int
+
+  """Low estimate of the item (optional) in minor currency unit."""
+  lowEstimate: Int
+
+  """High estimate of the item (optional) in minor currency unit."""
+  highEstimate: Int
+
+  """Item number is used to order items (optional)"""
+  ItemNumber: Int
+
+  """
+  Allowed BidTypes on the item.
+  Currently only a single BidType is allowed per item.
+  Defaults to allowing only Max bids if not supplied.
+  """
+  allowedBidTypes: [BidType!]
+
+  """
+  Date and time when item should open up for bidding.
+  Format: RFC3339 timestamp.
+  Example: "2019-10-12T07:20:50.52Z"
+  """
+  openDate: String
+
+  """
+  Date and time when item should close.
+  Format: RFC3339 timestamp.
+  Example: "2019-10-12T07:20:50.52Z"
+  """
+  closingDate: String
+
+  """
+  ClosingTime countdown is the sniping duration in milliseconds.
+  If not provided it defaults to 120000ms (2 minutes).
+  """
+  closingTimeCountdown: Int
+
+  """Should item be hidden from public view. Default false."""
+  hidden: Boolean
+
+  """Tags for the item"""
+  tags: [String!]
+
+  """Item Specifications (dimensions, weight, type, etc.)"""
+  specifications: ItemSpecificationsInput
+}
+
+type SaleItemsConnection {
+  """Sale Item edges"""
+  edges: [SaleItemsEdge!]!
+
+  """Current page information"""
+  pageInfo: PageInfo!
+}
+
+type SaleItemsEdge {
+  """Current item cursor"""
+  cursor: String!
+
+  """Sale Item node"""
+  node: SaleItem!
+}
+
+"""Comprehensive metrics for auction/sale performance."""
+type SaleMetrics {
+  """Total number of items in the sale."""
+  totalItems: Int!
+
+  """
+  Number of items that have received bids at or above their reserve price.
+  """
+  itemsOverReserve: Int!
+
+  """Number of items that have received at least one bid."""
+  itemsWithBids: Int!
+
+  """Total number of bids placed across all items in the sale."""
+  totalBids: Int!
+
+  """Number of unique bidders who have placed at least one bid in the sale."""
+  uniqueBidders: Int!
+
+  """Sum of high estimates for all items in the sale (in minor currency)."""
+  highEstimateSum: Int!
+
+  """Sum of low estimates for all items in the sale (in minor currency)."""
+  lowEstimateSum: Int!
+
+  """
+  Total amount from items that sold (items with bids at or above reserve price) (in minor currency).
+  """
+  currentBidOverReserveTotal: Int!
+
+  """
+  Sum of current highest bids across all items in the sale (in minor currency).
+  """
+  currentBidTotal: Int!
+
+  """
+  Sum of maximum bid amounts across all items in the sale (in minor currency).
+  """
+  maxBidsTotal: Int!
+
+  """
+  Percentage of items that have received bids at or above their reserve price.
+  """
+  itemsOverReservePercentage: Float!
+
+  """Percentage of items that have received at least one bid."""
+  itemsWithBidsPercentage: Float!
+
+  """Average number of bids per item across all items in the sale."""
+  averageBidsPerItem: Float!
+
+  """Number of items that are hidden from public view."""
+  hiddenItems: Int!
+
+  """Information about the highest bid placed in the sale."""
+  highestBid: HighestBidInfo
+
+  """
+  Percentage of bidders who placed bids on multiple items, indicating bidder engagement across the auction.
+  """
+  bidderEngagement: Float!
+
+  """
+  Time series data showing the number of bids placed each day during the sale period.
+  """
+  dailyBidCounts: [SaleStatisticBidCounts!]!
+
+  """Timestamp when the sale metrics were last calculated."""
+  calculatedAt: String!
+}
+
+"""Daily bid count data for a specific date in the sale."""
+type SaleStatisticBidCounts {
+  """Date in YYYY-MM-DD format when the bids were placed."""
+  date: String!
+
+  """Number of bids placed on this specific date."""
+  bidCount: Int!
+}
+
+"""
+Statistics for a sale providing insights into bidding activity, item performance, and auction dynamics.
+"""
+type SaleStatistics {
+  """Core sale performance metrics."""
+  saleMetrics: SaleMetrics!
+}
+
+"""Sale Status represent what status a sale is currently running in."""
+enum SaleStatus {
+  """
+  Sale has not been published. This status will never appear in the API expcept when you are previewing the sale.
+  """
+  UNPUBLISHED
+
+  """Sale has been published but is not opened for bidding."""
+  PUBLISHED
+
+  """Sale is opened for bidding."""
+  OPENED
+
+  """Sale is closed for bidding."""
+  CLOSED
+
+  """Sale is closing ."""
+  CLOSING
+
+  """Sale is paused."""
+  PAUSED
+
+  """Sale is being processed."""
+  PROCESSING
+
+  """Sale is now live"""
+  LIVE
+}
+
+"""SaleType represents the type of sale"""
+enum SaleType {
+  """Sale is a live auction"""
+  LIVE
+
+  """Sale is a online timed auction"""
+  ONLINE_TIMED
+}
+
+type SalesAggregate {
+  """Number of open sales"""
+  open: Int!
+
+  """Number of sales in a closing state"""
+  closing: Int!
+
+  """Number of closed sales"""
+  closed: Int!
+
+  """Number of published sales"""
+  published: Int!
+
+  """Number of unpublished sales"""
+  unpublished: Int!
+}
+
+input SalesAggregateInput {
+  """Account ID the sales belong to"""
+  accountId: String!
+}
+
+type SalesEdge {
+  """Current sale cursor"""
+  cursor: String!
+
+  """Sale node"""
+  node: Sale!
+}
+
+"""Search Key allows you to search our collections"""
+type SearchKey {
+  """Key value"""
+  key: String!
+
+  """Collections"""
+  collections: [String!]!
+
+  """Expiration"""
+  expiration: String!
+}
+
+input SellLiveItemInput {
+  saleId: String!
+  itemId: String!
+  transitionToUpcomingLot: Boolean
+}
+
+"""Alpha2 country code for seller location"""
+enum SellerLocation {
+  """United States"""
+  US
+
+  """Iceland"""
+  IS
+
+  """Australia"""
+  AU
+
+  """Austria"""
+  AT
+
+  """Belgium"""
+  BE
+
+  """Croatia"""
+  HR
+
+  """Cyprus"""
+  CY
+
+  """Denmark"""
+  DK
+
+  """Estonia"""
+  EE
+
+  """Finland"""
+  FI
+
+  """France"""
+  FR
+
+  """Germany"""
+  DE
+
+  """Greece"""
+  GR
+
+  """Ireland"""
+  IE
+
+  """Italy"""
+  IT
+
+  """Kosovo"""
+  XK
+
+  """Latvia"""
+  LV
+
+  """Lithuania"""
+  LT
+
+  """Luxembourg"""
+  LU
+
+  """Malta"""
+  MT
+
+  """Monaco"""
+  MC
+
+  """Montenegro"""
+  ME
+
+  """Netherlands"""
+  NL
+
+  """Portugal"""
+  PT
+
+  """San Marino"""
+  SM
+
+  """Slovakia"""
+  SK
+
+  """Slovenia"""
+  SI
+
+  """Spain"""
+  ES
+
+  """Vatican City"""
+  VA
+
+  """Switzerland"""
+  CH
+
+  """Norway"""
+  NO
+
+  """Sweden"""
+  SE
+
+  """United Kingdom"""
+  GB
+}
+
+"""Terms information, who and when terms were accepted"""
+type SellerTerms {
+  accepted_by: String!
+  accepted_date: String!
+}
+
+"""Input to set an item winner and close the item."""
+input SetItemWinnerInput {
+  saleId: String!
+  itemId: String!
+  bidId: String!
+}
+
+"""Input object for when setting sale item status"""
+input SetSaleItemStatusInput {
+  saleId: String!
+  itemId: String!
+  status: ItemStatus!
+}
+
+"""Input object for when setting sale status"""
+input SetSaleStatusInput {
+  saleId: String!
+  status: SaleStatus!
+}
+
+input SetUserIdOnBidInput {
+  """Sale ID of the sale that includes the item in scope."""
+  saleId: String!
+
+  """Item ID of the item that includes the bid in scope."""
+  itemId: String!
+
+  """Bid ID of the item that includes the bid in scope."""
+  bidId: String!
+
+  """Updated user ID."""
+  userId: String!
+}
+
+type ShopifyConfiguration {
+  """Shopify Shop Id"""
+  shopId: String
+}
+
+"""
+Type representing a successful connection between an account and a Shopify store.
+"""
+type ShopifyConnection {
+  accountId: String!
+  shopId: String!
+}
+
+"""Specification sub-type enum"""
+enum SpecificationSubType {
+  NOT_SET
+  PAINTING_UNFRAMED
+  PAINTING_FRAMED
+  PAINTING_FRAMED_PLEXI
+  PAINTING_FRAMED_GLASS
+  WORK_ON_PAPER_UNFRAMED
+  WORK_ON_PAPER_FRAMED
+  WORK_ON_PAPER_FRAMED_PLEXI
+  WORK_ON_PAPER_FRAMED_GLASS
+  MIXED_MEDIA_UNFRAMED
+  MIXED_MEDIA_FRAMED
+  MIXED_MEDIA_FRAMED_PLEXI
+  MIXED_MEDIA_FRAMED_GLASS
+  PHOTOGRAPH_UNFRAMED
+  PHOTOGRAPH_FRAMED
+  PHOTOGRAPH_FRAMED_PLEXI
+  PHOTOGRAPH_FRAMED_GLASS
+  NEW_MEDIA
+  SCULPTURE
+  PEDESTAL
+  PEDESTAL_CASE_GLASS
+  PEDESTAL_CASE_PLEXI
+  CERAMIC
+  NEON
+  TAPESTRY
+  OTHER_ART
+  TABLE
+  CHAIR
+  SOFA_LOVESEAT_CHAISE
+  FLOOR_LAMP
+  FLOOR_LAMP_SHADE
+  TABLE_LAMP
+  TABLE_LAMP_SHADE
+  SCONCE
+  OTTOMAN
+  BOOKCASE_STORAGE
+  NIGHTSTAND
+  ARMOIRE_DRESSER
+  CARPET_RUG
+  MIRROR
+  CHANDELIER
+  BEDFRAME
+  HEADBOARD
+  DESK_VANITY
+  MEDIA_CONSOLE
+  OTHER_FURNITURE
+  EARRINGS
+  NECKLACE
+  BRACELET
+  RING
+  BROOCH
+  WATCH
+  CUFFLINKS
+  EYEGLASSES
+  SET
+  PRECIOUS_STONES
+  SNUFF_BOX_CIGARETTE_CASE
+  OTHER_JEWELRY
+  VASE_VESSEL
+  BOWL
+  PLAQUE
+  OBJECT_OF_VERTU
+  CANDELABRA_CANDLESTICK
+  DINNERWARE
+  FLATWARE
+  GLASSWARE
+  SERVEWARE
+  PORCELAIN_PLATE
+  PORCELAIN_BOWL
+  TABLETOP_ACCESSORY
+  CLOCK
+  OTHER_DECORATIVE_ARTS
+  STAMP
+  BOOK
+  COIN
+  DOCUMENT_MANUSCRIPT
+  TOY
+  MINIATURE_MODEL
+  FIGURINE_DOLL
+  NEON_SIGN
+  MEMORABILIA
+  CAMERA_ELECTRICAL
+  OTHER_COLLECTIBLES
+  WINE_BOTTLE
+  SPIRITS_BOTTLE
+  BEER_BOTTLE
+  WINE_CASE
+  SPIRITS_CASE
+  BEER_CASE
+  WINE_BARREL
+  SPIRITS_BARREL
+  BEER_BARREL
+  OTHER_ALCOHOLS
+  CAR
+  MOTORCYCLE
+  BUS
+  VAN
+  LIMOUSINE
+  CARRIAGE
+  TRAILER
+  SIDECAR
+  OTHER_AUTOMOTIVE
+  CLOTHING
+  FOOTWEAR
+  HANDBAG
+  ACCESSORIES
+  OTHER_FASHION
+  MUSICAL_INSTRUMENT
+  FIREARM_WEAPON
+  HUNTING_FISHING
+  MEDICAL_EQUIPMENT
+  OTHER
+}
+
+"""Specification type enum"""
+enum SpecificationType {
+  NOT_SET
+  ART
+  FURNITURE
+  JEWELRY
+  DECORATIVE_ARTS
+  COLLECTIBLES
+  ALCOHOL
+  AUTOMOTIVE
+  FASHION
+  OTHER
+}
+
+"""Input object for when starting to close a sale."""
+input StartClosingSaleInput {
+  saleId: String!
+}
+
+type Subscription {
+  """
+  Real-time information for sale related events.
+  Both Sale and SaleItem data is sent to the socket
+  """
+  saleActivity(accountId: String!, saleId: ID!, itemIdFilter: ItemIdsFilter): SaleActivity!
+}
+
+type Tag {
+  """id of tag"""
+  id: ID!
+
+  """Tag name"""
+  name: String!
+
+  """Created date"""
+  created: String!
+
+  """Associated date"""
+  associated: String!
+}
+
+"""
+Action Hook response from test message.
+Contains the status code received.
+"""
+type TestActionHookResponse {
+  requestHeaders: [HttpHeader]!
+  requestPayload: String!
+  requestMethod: String!
+  responseHeaders: [HttpHeader]
+  responseBody: String
+  statusCode: Int!
+}
+
+"""
+Token metadata is mandatory information that needs to be included
+to create a signed bidder token.
+"""
+input TokenMetadata {
+  """Unique User ID that represents a user in customer's user database."""
+  userId: String!
+
+  """Time to live of the bidders token, represented minutes."""
+  ttl: Int!
+
+  """
+  User permissions granted by the token, if left empty token will include all permissions.
+  """
+  permissions: [ClientPermission!]
+}
+
+input UpdateAccountFeeInput {
+  id: String!
+  name: String!
+  type: AccountFeeType!
+  value: Int!
+  upperLteLimit: Int
+  lowerLimit: Int!
+}
+
+"""
+Update Account properties.
+Only provided values will be applied.
+Null/Nil values are ignored.
+"""
+input UpdateAccountInput {
+  """name"""
+  name: String
+
+  """email"""
+  email: String
+
+  """handle"""
+  handle: String
+
+  """description to be displayed on account profile as bio"""
+  description: String
+
+  """links associated with the account"""
+  links: [LinkInput]
+
+  """Autogenerate a new handle as part of the update"""
+  generateNewHandle: Boolean
+
+  """Enable basta streaming for the account (charges will apply)"""
+  enableBastaStreaming: Boolean
+}
+
+"""Input to update an Action Hook subscription."""
+input UpdateActionHookSubscriptionInput {
+  """Event that triggers the action."""
+  action: ActionType!
+
+  """Webhook URL that is called when Action Hook is triggered."""
+  url: String!
+
+  """Custom HTTP header values sent with the action."""
+  headers: [HttpHeaderInput]
+}
+
+"""Input object for global updates of closing time countdown for a sale"""
+input UpdateGlobalClosingTimeCountdownInput {
+  saleId: String!
+  closingTimeCountdown: Int!
+}
+
+"""Input object for global updates of dates for a sale"""
+input UpdateGlobalDatesInput {
+  saleId: String!
+  openDate: String!
+  closingDate: String!
+}
+
+"""Input object for global updates of increment table for a sale"""
+input UpdateGlobalIncrementTableInput {
+  saleId: String!
+  incrementTable: BidIncrementTableInput!
+}
+
+"""Item input when modifying an item"""
+input UpdateItemInput {
+  """Title for describing the item"""
+  title: String
+
+  """Item description"""
+  description: String
+
+  """Item price information"""
+  price: ItemPriceInput
+
+  """Unique external identifier, e.g. warehouse id, inventory id, etc."""
+  externalId: String
+
+  """Custom data associated with the item"""
+  metadata: ItemMetadataInput
+
+  """Tags for the item"""
+  tags: [String!]
+
+  """Item specifications (dimensions, weight, type, etc.)"""
+  specifications: ItemSpecificationsInput
+  valuationAmount: Int
+  valuationCurrency: String
+}
+
+input UpdateItemNumbersInput {
+  saleId: String!
+  itemNumberChanges: [ItemNumberChangeInput!]!
+}
+
+input UpdatePaymentOrderInput {
+  """OrderId that order belongs to"""
+  orderId: ID!
+
+  """
+  UserId of user that will pay for the order.
+  Optional. If not provided, the order will be updated for the current user.
+  """
+  userId: String
+  orderLines: [UpdatePaymentOrderLineInput!]
+}
+
+input UpdatePaymentOrderLineInput {
+  """OrderLineId"""
+  orderLineId: ID!
+
+  """
+  Amount of the order line in minor currency unit.
+  Optional. If not provided, the order line amount will not be updated.
+  """
+  amount: Int
+
+  """
+  Description of the order line
+  Optional. If not provided, the order line description will not be updated.
+  """
+  description: String
+
+  """
+  Type of the order line
+  Optional. If not provided, the order line type will not be updated.
+  """
+  orderLineType: OrderLineType
+}
+
+"""
+Input for updating a sale.
+All fields are mandatory. If something shouldn't change then
+the provided value should be the same as it was before.
+"""
+input UpdateSaleInput {
+  dates: SaleDatesInput
+  title: String!
+  description: String!
+  currency: String!
+  bidIncrementTable: BidIncrementTableInput!
+  closingMethod: ClosingMethod!
+  closingTimeCountdown: Int!
+  themeType: Int
+  slug: String
+
+  """Should sale be hidden from public view. Default false."""
+  hidden: Boolean
+
+  """optional live stream information"""
+  liveStream: LiveStreamInput
+
+  """sale Type"""
+  saleType: SaleType
+
+  """Sale Is Test"""
+  isTestSale: Boolean
+}
+
+"""
+Update SaleItem input when modifying an item.
+All inputs should be set
+"""
+input UpdateSaleItemInput {
+  """Id of the item that should be updated"""
+  itemId: String!
+
+  """Id of the sale that the item belongs to"""
+  saleId: String!
+
+  """Optional bid increment table for this item."""
+  bidIncrementTable: BidIncrementTableInput
+
+  """Title for describing the item"""
+  title: String
+
+  """Description for describing the item"""
+  description: String
+
+  """Starting bid of the item in minor currency unit."""
+  startingBid: Int
+
+  """Valuation of the item in minor currency unit."""
+  valuationAmount: Int
+
+  """Valuation currency in minor currency unit."""
+  valuationCurrency: String
+
+  """Reserve of the item in minor currency unit."""
+  reserve: Int
+
+  """Low estimate of the item (optional) in minor currency unit."""
+  lowEstimate: Int
+
+  """High estimate of the item (optional) in minor currency unit."""
+  highEstimate: Int
+
+  """
+  Allowed BidTypes on the item.
+  Currently only a single BidType is allowed per item.
+  Defaults to allowing only Max bids if not supplied.
+  """
+  allowedBidTypes: [BidType!]
+
+  """
+  Date and time when item should open up for bidding.
+  Format: RFC3339 timestamp.
+  Example: "2019-10-12T07:20:50.52Z"
+  """
+  openDate: String
+
+  """
+  Date and time when item should close.
+  Format: RFC3339 timestamp.
+  Example: "2019-10-12T07:20:50.52Z"
+  """
+  closingDate: String
+
+  """
+  Update SaleSlug.
+  Only applies to sales hosted by Basta.
+  """
+  slug: String
+
+  """Should item be hidden from public view."""
+  hidden: Boolean
+
+  """ClosingTime countdown is the sniping duration in milliseconds."""
+  closingTimeCountdown: Int
+
+  """Tags for the sale item"""
+  tags: [String!]
+
+  """Specifications for the sale item(dimensions, weight, type, etc.)"""
+  specifications: ItemSpecificationsInput
+}
+
+type UploadUrl {
+  """Image ID"""
+  imageId: String!
+
+  """The signed upload url."""
+  uploadUrl: String!
+
+  """Image url to render the image after upload"""
+  imageUrl: String!
+
+  """Headers that should be sent with upload"""
+  headers: [HttpHeader!]
+
+  """Order"""
+  order: Int!
+}
+
+type UserAddress {
+  id: String!
+  addressType: AddressType!
+  line1: String!
+  line2: String
+  city: String!
+  state: String
+  postalCode: String
+  country: String
+}
+
+type UserBidActivity {
+  """BidId UUID string"""
+  bidId: String!
+
+  """Sale ID of the sale that includes the item in scope."""
+  saleId: String!
+
+  """ItemId"""
+  itemId: String!
+
+  """Amount of the bid in minor currency unit."""
+  amount: Int!
+
+  """Max amount of the bid in minor currency unit."""
+  maxAmount: Int!
+
+  """Users id that placed the bid"""
+  userId: String!
+
+  """Date of when the bid was placed."""
+  date: String!
+
+  """Bid status of currently logged in user for this item"""
+  bidStatus: BidStatus
+
+  """
+  Bids sequence number tells us how bids are connected.
+  Bids with the same bid sequence number happend during the same Bid/Max-bid request.
+  Mainly used for cancelling bids.
+  """
+  bidSequenceNumber: Int!
+
+  """Optional paddle id if bid was placed with a paddle"""
+  paddle: Paddle
+}
+
+type UserBidActivityConnection {
+  edges: [UserBidActivityEdge!]!
+  pageInfo: PageInfo!
+}
+
+type UserBidActivityEdge {
+  cursor: String!
+  node: UserBidActivity!
+}
+
+input UserBidActivityFilter {
+  saleId: String
+  itemId: String
+}
+
+"""The user info"""
+type UserInfo {
+  """UserId"""
+  userId: String!
+
+  """Name"""
+  name: String!
+
+  """Email"""
+  email: String!
+
+  """Addresses"""
+  addresses: [UserAddress!]!
+}
+
+"""
+A signed jwt token from Basta that is inteded to authenticate a
+single user for a websocket connection to get updates based on user context.
+"""
+type UserToken {
+  """Signed JWT token that can be used for websocket authentication"""
+  token: String!
+
+  """Expiration date as string."""
+  expirationDate: String!
+}
+
+input UserTokenInput {
+  """Unique UserID that represents a user in your system."""
+  userID: String!
+
+  """Time to live for the user token, represented as minutes"""
+  ttlMinutes: Int!
+}
+
+"""Weight unit enum"""
+enum WeightUnit {
+  NOT_SET
+  KG
+  LB
+}

@@ -17,3 +17,5 @@ export {
 
 // Re-export the raw genql client for Node.js/non-React usage
 export { createClient as createClientApiClient } from "./client-api/generated";
+// Re-export the raw genql client for Node.js/non-React usage
+export { createClient as createManagementApiClient } from "./management-api/generated";

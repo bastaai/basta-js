@@ -1,10 +1,14 @@
 import { type ReactNode, createContext, useContext, useMemo } from "react";
 import { Provider as UrqlProvider } from "urql";
-import { match } from "ts-pattern";
+import { match, P } from "ts-pattern";
 import { createClient as createClientApi } from "./client-api/generated";
 import { createUrqlClientWithConfig } from "./urql-client";
 import { enhanceClient } from "./client-enhancer";
 import type { ApiConfig, BastaContextValue, Client } from "./types";
+import {
+  DEFAULT_CLIENT_API_URL,
+  DEFAULT_MANAGEMENT_API_URL,
+} from "./constants";
 
 const BastaContext = createContext<BastaContextValue | null>(null);
 
@@ -20,14 +24,17 @@ export function BastaProvider({
   managementApi: managementConfig,
 }: BastaProviderProps) {
   // Create urql clients and enhanced clients
-  const value = useMemo<BastaContextValue>(() => {
+  const { clientApi, managementApi } = useMemo<BastaContextValue>(() => {
     const clientApi = clientConfig
       ? (() => {
           const baseClient = createClientApi({
             url: clientConfig.url,
             headers: clientConfig.headers,
           });
-          const urqlClient = createUrqlClientWithConfig(clientConfig);
+          const urqlClient = createUrqlClientWithConfig(
+            clientConfig,
+            DEFAULT_CLIENT_API_URL,
+          );
           return enhanceClient(baseClient, urqlClient);
         })()
       : null;
@@ -38,7 +45,10 @@ export function BastaProvider({
             url: managementConfig.url,
             headers: managementConfig.headers,
           });
-          const urqlClient = createUrqlClientWithConfig(managementConfig);
+          const urqlClient = createUrqlClientWithConfig(
+            managementConfig,
+            DEFAULT_MANAGEMENT_API_URL,
+          );
           return enhanceClient(baseClient, urqlClient);
         })()
       : null;
@@ -48,29 +58,38 @@ export function BastaProvider({
 
   // Use ts-pattern to conditionally render urql providers
   const content = match({
-    clientApi: !!value.clientApi,
-    managementApi: !!value.managementApi,
+    clientApi,
+    managementApi,
   })
-    .with({ clientApi: true, managementApi: true }, () => (
-      <UrqlProvider value={value.clientApi!.urqlClient}>
-        <UrqlProvider value={value.managementApi!.urqlClient}>
-          {children}
+    .with(
+      { clientApi: P.nonNullable, managementApi: P.nonNullable },
+      ({ clientApi, managementApi }) => (
+        <UrqlProvider value={clientApi.urqlClient}>
+          <UrqlProvider value={managementApi.urqlClient}>
+            {children}
+          </UrqlProvider>
         </UrqlProvider>
-      </UrqlProvider>
-    ))
-    .with({ clientApi: true, managementApi: false }, () => (
-      <UrqlProvider value={value.clientApi!.urqlClient}>
-        {children}
-      </UrqlProvider>
-    ))
-    .with({ clientApi: false, managementApi: true }, () => (
-      <UrqlProvider value={value.managementApi!.urqlClient}>
-        {children}
-      </UrqlProvider>
-    ))
+      ),
+    )
+    .with(
+      { clientApi: P.nonNullable, managementApi: null },
+      ({ clientApi }) => (
+        <UrqlProvider value={clientApi.urqlClient}>{children}</UrqlProvider>
+      ),
+    )
+    .with(
+      { clientApi: null, managementApi: P.nonNullable },
+      ({ managementApi }) => (
+        <UrqlProvider value={managementApi.urqlClient}>{children}</UrqlProvider>
+      ),
+    )
     .otherwise(() => children);
 
-  return <BastaContext.Provider value={value}>{content}</BastaContext.Provider>;
+  return (
+    <BastaContext.Provider value={{ clientApi, managementApi }}>
+      {content}
+    </BastaContext.Provider>
+  );
 }
 
 // Hook to use the client API - returns Client (non-null) if configured
