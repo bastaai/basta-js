@@ -14,7 +14,8 @@
     "lint": "biome lint",
     "lint:fix": "biome lint --write",
     "client:update": "node scripts/update-client.js",
-    "manage:update": "dotenv -e .env -- node scripts/update-management.js"
+    "manage:update": "dotenv -e .env -- node scripts/update-management.js",
+    "publish": "cd dist && npm publish --tag alpha"
   },
   "dependencies": {
     "ts-pattern": "5.8.0"
