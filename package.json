@@ -8,14 +8,14 @@
   "packageManager": "pnpm@10.17.1",
   "scripts": {
     "build": "tsup",
-    "postbuild": "node scripts/prepare-package.js",
+    "postbuild": "node scripts/prepare-package.js && cp .npmrc dist/.npmrc",
     "format": "biome format",
     "format:fix": "biome format --write",
     "lint": "biome lint",
     "lint:fix": "biome lint --write",
     "client:update": "node scripts/update-client.js",
     "manage:update": "dotenv -e .env -- node scripts/update-management.js",
-    "publish": "cd dist && npm publish --tag alpha"
+    "publish": "cd dist && npm publish --tag alpha --access public"
   },
   "dependencies": {
     "ts-pattern": "5.8.0"
