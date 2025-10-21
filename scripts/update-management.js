@@ -66,6 +66,29 @@ async function main() {
     console.error("\n❌ Failed to update management");
     process.exit(1);
   }
+
+  // Update the MANAGEMENT_API_VERSION constant in constants.ts
+  console.log("\nUpdating MANAGEMENT_API_VERSION constant...");
+  try {
+    const fs = require("node:fs");
+    const constantsPath = "./src/constants.ts";
+    let constantsContent = fs.readFileSync(constantsPath, "utf8");
+
+    // Replace the MANAGEMENT_API_VERSION value
+    constantsContent = constantsContent.replace(
+      /export const MANAGEMENT_API_VERSION = ".*";/,
+      `export const MANAGEMENT_API_VERSION = "${response.version}";`,
+    );
+
+    fs.writeFileSync(constantsPath, constantsContent, "utf8");
+    console.log("✅ MANAGEMENT_API_VERSION constant updated");
+  } catch (error) {
+    console.error(
+      "❌ Failed to update MANAGEMENT_API_VERSION constant:",
+      error,
+    );
+    process.exit(1);
+  }
 }
 
 main();

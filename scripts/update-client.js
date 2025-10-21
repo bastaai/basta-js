@@ -31,6 +31,26 @@ async function main() {
     console.error("\n❌ Failed to update client");
     process.exit(1);
   }
+
+  // Update the CLIENT_API_VERSION constant in constants.ts
+  console.log("\nUpdating CLIENT_API_VERSION constant...");
+  try {
+    const fs = require("node:fs");
+    const constantsPath = "./src/constants.ts";
+    let constantsContent = fs.readFileSync(constantsPath, "utf8");
+
+    // Replace the CLIENT_API_VERSION value
+    constantsContent = constantsContent.replace(
+      /export const CLIENT_API_VERSION = ".*";/,
+      `export const CLIENT_API_VERSION = "${response.version}";`,
+    );
+
+    fs.writeFileSync(constantsPath, constantsContent, "utf8");
+    console.log("✅ CLIENT_API_VERSION constant updated");
+  } catch (error) {
+    console.error("❌ Failed to update CLIENT_API_VERSION constant:", error);
+    process.exit(1);
+  }
 }
 
 main();
