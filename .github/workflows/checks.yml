@@ -1,0 +1,23 @@
+name: Lint and Format Check
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  lint-and-format:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup-env
+
+      - name: Run linter
+        run: pnpm run lint
+
+      - name: Check formatting
+        run: pnpm run format -- --check
