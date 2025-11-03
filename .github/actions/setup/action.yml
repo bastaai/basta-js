@@ -14,4 +14,3 @@ runs:
       uses: pnpm/action-setup@v4
       with:
         version: 10
-        run_install: true
