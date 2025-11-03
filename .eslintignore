@@ -1,5 +1,0 @@
-dist
-node_modules
-examples
-tests/types
-**/fragment-masking.ts

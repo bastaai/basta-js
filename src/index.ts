@@ -1,52 +1,22 @@
-import type { BastaRequest } from '../types/request';
-import {
-  IBasta,
-  IAccountService,
-  ISaleService,
-  ISubscriptionService,
-  IBidService,
-} from '../types/sdk';
-import {
-  BidStatus,
-  ClosingMethod,
-  ItemStatus,
-  SaleStatus,
-  LinkType,
-} from './gql/generated/types';
-import { AccountService } from './services/account-service';
-import { BidService } from './services/bid-service';
-import { SaleService } from './services/sale-service';
-import { SubscriptionService } from './services/subscription-service';
+// Export types
+export type { ApiConfig } from "./types";
 
-export { SaleStatus, ItemStatus, BidStatus, ClosingMethod, LinkType };
+// Export constants
+export {
+  DEFAULT_CLIENT_API_URL,
+  DEFAULT_MANAGEMENT_API_URL,
+} from "./constants";
 
-export const initBasta = () => {
-  return new Basta();
-};
+// Export React provider and hooks
+export {
+  BastaProvider,
+  useClientApi,
+  useManagementApi,
+  useBasta,
+} from "./provider";
 
-class Basta implements IBasta {
-  readonly account: IAccountService;
-  readonly sale: ISaleService;
-  readonly subscribeTo: ISubscriptionService;
-  readonly bid: IBidService;
-
-  private readonly _bastaReq: BastaRequest;
-
-  constructor() {
-    const baseUrl =
-      process.env.NEXT_PUBLIC_BASTA_SDK_GRAPHQL || 'client.api.basta.ai';
-
-    this._bastaReq = {
-      url: `https://${baseUrl}/graphql`,
-      socketUrl: `wss://${baseUrl}/graphql`,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
-
-    this.account = new AccountService(this._bastaReq);
-    this.sale = new SaleService(this._bastaReq);
-    this.subscribeTo = new SubscriptionService(this._bastaReq);
-    this.bid = new BidService(this._bastaReq);
-  }
-}
+// Export wrapped genql clients for Node.js/non-React usage
+export {
+  createClientApiClient,
+  createManagementApiClient,
+} from "./base-client-wrappers";
