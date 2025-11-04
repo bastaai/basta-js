@@ -17,7 +17,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - uses: ./.github/actions/setup-node-and-pnpm
+      - uses: ./.github/actions/setup
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
