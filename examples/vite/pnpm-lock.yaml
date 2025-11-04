@@ -11,6 +11,9 @@ importers:
       '@bastaai/basta-js':
         specifier: 1.0.0-alpha.1
         version: 1.0.0-alpha.1(graphql-ws@6.0.6(graphql@16.11.0))(react@19.2.0)(urql@5.0.1(@urql/core@6.0.1(graphql@16.11.0))(react@19.2.0))
+      '@bastaai/basta-js-local':
+        specifier: file:../../dist
+        version: '@bastaai/basta-js@file:../../dist(graphql-ws@6.0.6(graphql@16.11.0))(react@19.2.0)(urql@5.0.1(@urql/core@6.0.1(graphql@16.11.0))(react@19.2.0))'
       '@tanstack/react-query':
         specifier: 5.90.3
         version: 5.90.3(react@19.2.0)
@@ -159,6 +162,13 @@ packages:
 
   '@bastaai/basta-js@1.0.0-alpha.1':
     resolution: {integrity: sha512-SMx1mFt3JA39zJkPlIWhmitcEt+1CCXid+hiRQxeEXqqFPCCrJEKfJZf6cgAsPJJybjV9dylnMhbO5WgqExr1A==}
+    peerDependencies:
+      graphql-ws: ^6.0.0
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      urql: ^5.0.0
+
+  '@bastaai/basta-js@file:../../dist':
+    resolution: {directory: ../../dist, type: directory}
     peerDependencies:
       graphql-ws: ^6.0.0
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
@@ -1327,6 +1337,13 @@ snapshots:
       '@babel/helper-validator-identifier': 7.27.1
 
   '@bastaai/basta-js@1.0.0-alpha.1(graphql-ws@6.0.6(graphql@16.11.0))(react@19.2.0)(urql@5.0.1(@urql/core@6.0.1(graphql@16.11.0))(react@19.2.0))':
+    dependencies:
+      graphql-ws: 6.0.6(graphql@16.11.0)
+      react: 19.2.0
+      ts-pattern: 5.8.0
+      urql: 5.0.1(@urql/core@6.0.1(graphql@16.11.0))(react@19.2.0)
+
+  '@bastaai/basta-js@file:../../dist(graphql-ws@6.0.6(graphql@16.11.0))(react@19.2.0)(urql@5.0.1(@urql/core@6.0.1(graphql@16.11.0))(react@19.2.0))':
     dependencies:
       graphql-ws: 6.0.6(graphql@16.11.0)
       react: 19.2.0
