@@ -15,7 +15,9 @@
     "lint:fix": "biome lint --write",
     "client:update": "node scripts/update-client.js",
     "manage:update": "dotenv -e .env -- node scripts/update-management.js",
-    "publish": "cd dist && npm publish --tag alpha --access public"
+    "publish": "cd dist && npm publish --tag alpha --access public",
+    "preexample:vite": "pnpm -C examples/vite install",
+    "example:vite": "pnpm -C examples/vite dev"
   },
   "dependencies": {
     "ts-pattern": "5.8.0"
