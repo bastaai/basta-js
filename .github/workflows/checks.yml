@@ -5,6 +5,10 @@ on:
     branches: [ main ]
   pull_request:
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   lint-and-format:
     runs-on: ubuntu-latest
@@ -13,8 +17,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js and pnpm
-        uses: ./.github/actions/setup
+      - uses: ./.github/actions/setup-node-and-pnpm
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
