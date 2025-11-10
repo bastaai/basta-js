@@ -9,3 +9,6 @@ node_modules
 dist
 
 *.tgz
+
+next-env.d.ts
+.next

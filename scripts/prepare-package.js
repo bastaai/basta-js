@@ -27,6 +27,11 @@ const distPkg = {
       import: "./index.mjs",
       types: "./index.d.ts",
     },
+    "./client": {
+      require: "./client/index.js",
+      import: "./client/index.mjs",
+      types: "./client/index.d.ts",
+    },
   },
 
   // Specify which files to include (everything in dist)

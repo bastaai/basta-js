@@ -1,6 +1,6 @@
 {
   "name": "@bastaai/basta-js",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.2",
   "description": "A lightweight package for client-side apps to easily access and manage data from Basta's online auctions, providing a seamless integration for creating engaging auction experiences.",
   "author": "Basta (https://www.basta.ai)",
   "homepage": "https://docs.basta.ai",
@@ -18,13 +18,15 @@
     "publish": "cd dist && npm publish --tag alpha --access public",
     "preexample:vite": "pnpm -C examples/vite install",
     "example:vite": "pnpm -C examples/vite dev",
+    "preexample:next": "pnpm -C examples/nextjs install",
+    "example:next": "pnpm -C examples/nextjs dev",
     "clean": "find examples -type d -name node_modules -prune -exec rm -r {} + && rm -r node_modules"
   },
   "dependencies": {
     "ts-pattern": "5.8.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.2.6",
+    "@biomejs/biome": "2.3.4",
     "@genql/cli": "6.3.3",
     "@types/react": "19",
     "dotenv-cli": "10.0.0",

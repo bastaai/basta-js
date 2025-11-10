@@ -1,6 +1,6 @@
 import { createClient as createClientApi } from "./client-api/generated";
 import { createUrqlClientWithConfig } from "./urql-client";
-import { enhanceClient } from "./client-enhancer";
+import { enhanceClient } from "./client/client-enhancer";
 import type { ApiConfig, Client } from "./types";
 
 // Singleton client instance
