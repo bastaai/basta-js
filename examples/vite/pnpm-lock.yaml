@@ -8,20 +8,14 @@ importers:
 
   .:
     dependencies:
-      '@bastaai/basta-js':
-        specifier: 1.0.0-alpha.1
-        version: 1.0.0-alpha.1(graphql-ws@6.0.6(graphql@16.11.0))(react@19.2.0)(urql@5.0.1(@urql/core@6.0.1(graphql@16.11.0))(react@19.2.0))
       '@bastaai/basta-js-local':
         specifier: file:../../dist
         version: '@bastaai/basta-js@file:../../dist(graphql-ws@6.0.6(graphql@16.11.0))(react@19.2.0)(urql@5.0.1(@urql/core@6.0.1(graphql@16.11.0))(react@19.2.0))'
-      '@tanstack/react-query':
-        specifier: 5.90.3
-        version: 5.90.3(react@19.2.0)
       react:
-        specifier: ^19.1.1
+        specifier: 19.2.0
         version: 19.2.0
       react-dom:
-        specifier: ^19.1.1
+        specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
       urql:
         specifier: 5.0.1
@@ -159,13 +153,6 @@ packages:
   '@babel/types@7.28.4':
     resolution: {integrity: sha512-bkFqkLhh3pMBUQQkpVgWDWq/lqzc2678eUyDlTBhRqhCHFguYYGM0Efga7tYk4TogG/3x0EEl66/OQ+WGbWB/Q==}
     engines: {node: '>=6.9.0'}
-
-  '@bastaai/basta-js@1.0.0-alpha.1':
-    resolution: {integrity: sha512-SMx1mFt3JA39zJkPlIWhmitcEt+1CCXid+hiRQxeEXqqFPCCrJEKfJZf6cgAsPJJybjV9dylnMhbO5WgqExr1A==}
-    peerDependencies:
-      graphql-ws: ^6.0.0
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-      urql: ^5.0.0
 
   '@bastaai/basta-js@file:../../dist':
     resolution: {directory: ../../dist, type: directory}
@@ -524,14 +511,6 @@ packages:
     resolution: {integrity: sha512-bf9PtUa0u8IXDVxzRToFQKsNCRz9qLYfR/MpECxl4mRoWYjAeFjgxj1XdZr2M/GNVpT05p+LgQOHopYDlUu6/w==}
     cpu: [x64]
     os: [win32]
-
-  '@tanstack/query-core@5.90.3':
-    resolution: {integrity: sha512-HtPOnCwmx4dd35PfXU8jjkhwYrsHfuqgC8RCJIwWglmhIUIlzPP0ZcEkDAc+UtAWCiLm7T8rxeEfHZlz3hYMCA==}
-
-  '@tanstack/react-query@5.90.3':
-    resolution: {integrity: sha512-i/LRL6DtuhG6bjGzavIMIVuKKPWx2AnEBIsBfuMm3YoHne0a20nWmsatOCBcVSaT0/8/5YFjNkebHAPLVUSi0Q==}
-    peerDependencies:
-      react: ^18 || ^19
 
   '@types/babel__core@7.20.5':
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
@@ -1336,13 +1315,6 @@ snapshots:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.27.1
 
-  '@bastaai/basta-js@1.0.0-alpha.1(graphql-ws@6.0.6(graphql@16.11.0))(react@19.2.0)(urql@5.0.1(@urql/core@6.0.1(graphql@16.11.0))(react@19.2.0))':
-    dependencies:
-      graphql-ws: 6.0.6(graphql@16.11.0)
-      react: 19.2.0
-      ts-pattern: 5.8.0
-      urql: 5.0.1(@urql/core@6.0.1(graphql@16.11.0))(react@19.2.0)
-
   '@bastaai/basta-js@file:../../dist(graphql-ws@6.0.6(graphql@16.11.0))(react@19.2.0)(urql@5.0.1(@urql/core@6.0.1(graphql@16.11.0))(react@19.2.0))':
     dependencies:
       graphql-ws: 6.0.6(graphql@16.11.0)
@@ -1583,13 +1555,6 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.52.4':
     optional: true
-
-  '@tanstack/query-core@5.90.3': {}
-
-  '@tanstack/react-query@5.90.3(react@19.2.0)':
-    dependencies:
-      '@tanstack/query-core': 5.90.3
-      react: 19.2.0
 
   '@types/babel__core@7.20.5':
     dependencies:

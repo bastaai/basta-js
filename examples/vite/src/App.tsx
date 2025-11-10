@@ -1,4 +1,4 @@
-import { BastaProvider, useClientApi } from "@bastaai/basta-js";
+import { BastaProvider, useClientApi } from "@bastaai/basta-js-local/client";
 
 import "./App.css";
 

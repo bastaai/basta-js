@@ -1,4 +1,4 @@
-import { createClientApiClient } from "@bastaai/basta-js";
+import { createClientApiClient } from "@bastaai/basta-js-local";
 
 const client = createClientApiClient({
   headers: {
