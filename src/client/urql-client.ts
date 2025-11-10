@@ -6,7 +6,7 @@ import {
   subscriptionExchange,
 } from "urql";
 import { createClient as createWSClient } from "graphql-ws";
-import type { ApiConfig } from "./types";
+import type { ApiConfig } from "../types";
 
 /**
  * Creates a urql client with optional websocket support for subscriptions
