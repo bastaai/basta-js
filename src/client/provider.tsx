@@ -1,16 +1,16 @@
 import { type ReactNode, createContext, useContext, useMemo } from "react";
 import { Provider as UrqlProvider } from "urql";
 import { match, P } from "ts-pattern";
-import { createClient as createClientApi } from "./client-api/generated";
+import { createClient as createClientApi } from "../client-api/generated";
 import { createUrqlClientWithConfig } from "./urql-client";
 import { enhanceClient } from "./client-enhancer";
-import type { ApiConfig, BastaContextValue, Client } from "./types";
+import type { ApiConfig, BastaContextValue, Client } from "../types";
 import {
   DEFAULT_CLIENT_API_URL,
   DEFAULT_MANAGEMENT_API_URL,
   CLIENT_API_VERSION,
   MANAGEMENT_API_VERSION,
-} from "./constants";
+} from "../constants";
 
 const BastaContext = createContext<BastaContextValue | null>(null);
 

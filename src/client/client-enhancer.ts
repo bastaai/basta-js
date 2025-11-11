@@ -15,8 +15,8 @@ import {
   type QueryResult,
   type MutationResult,
   type SubscriptionResult,
-} from "./client-api/generated";
-import type { Client, TypedGraphqlOperation } from "./types";
+} from "../client-api/generated";
+import type { Client, TypedGraphqlOperation } from "../types";
 
 /**
  * Enhances a base genql client with:

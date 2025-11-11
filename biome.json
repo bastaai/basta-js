@@ -1,7 +1,7 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.2.6/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.3.4/schema.json",
   "files": {
-    "includes": ["src/*", "scripts/*"]
+    "includes": ["src/*", "src/client/*", "scripts/*", "examples/**/src/**"]
   },
   "formatter": {
     "enabled": true,
@@ -9,5 +9,15 @@
   },
   "linter": {
     "enabled": true
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
+  },
+  "assist": {
+    "actions": {
+      "recommended": true
+    }
   }
 }
