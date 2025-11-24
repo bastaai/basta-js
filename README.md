@@ -167,7 +167,7 @@ For the Management API you'll have to supply an Account ID and API Key, you can 
 
 ### Local dev
 
-todo: add section about using pnpm link (or just make a vite project example/ in this project)
+There are a couple of example projects setup within this repo for demonstration purposes. They can be run by doing `pnpm example:next` or `pnpm example:vite`. For the nextjs project you are required to have a `.env` file in the `examples/nextjs` folder for the extra authentication needed to perform queries with the management api.
 
 ## Requirements / Peer dependencies
 

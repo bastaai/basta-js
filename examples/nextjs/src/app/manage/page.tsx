@@ -17,10 +17,13 @@ export default async function Page({ searchParams }: PageProps) {
   const params = await searchParams;
   const ttlParam = params?.ttl;
   const ttl = ttlParam ? Number(ttlParam) : 60;
-  const accountId = "fill-me-in";
-  const userId = "fill-me-in";
+  if (!process.env.USER_ID) {
+    console.error("Missing env variables: USER_ID");
+    return notFound();
+  }
+  const userId = process.env.USER_ID;
 
-  const bidderToken = await getBidderToken(accountId, userId, ttl);
+  const bidderToken = await getBidderToken(userId, ttl);
 
   if (!bidderToken) {
     notFound();
@@ -31,22 +34,26 @@ export default async function Page({ searchParams }: PageProps) {
       style={{ fontFamily: "sans-serif", textAlign: "center", padding: "2rem" }}
     >
       <h1>Server-Side Rendered Page (App Router)</h1>
-      <p>{bidderToken?.token ?? "no token available"}</p>
+      <p>Bidder token: {`${bidderToken.token.substring(0, 15)}...`}</p>
       <p>Expires at: {bidderToken?.expiration ?? "N/A"}</p>
     </main>
   );
 }
 
 async function getBidderToken(
-  accountId: string,
   userId: string,
   ttl: number,
 ): Promise<BidderToken | null> {
-  if (!process.env.BEARER_TOKEN) return null;
+  console.log("env: ", process.env.ACCOUNT_ID, process.env.API_KEY);
+  if (!process.env.ACCOUNT_ID || !process.env.API_KEY) {
+    console.error("Missing env variables: ACCOUNT_ID | API_KEY");
+    return null;
+  }
 
   const client = createManagementApiClient({
     headers: {
-      Authorization: process.env.BEARER_TOKEN,
+      "x-account-id": process.env.ACCOUNT_ID,
+      "x-api-key": process.env.API_KEY,
     },
   });
 
@@ -54,7 +61,7 @@ async function getBidderToken(
     const response = await client.mutation({
       createBidderToken: {
         __args: {
-          accountId,
+          accountId: process.env.ACCOUNT_ID,
           input: {
             metadata: {
               ttl,
