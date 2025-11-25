@@ -1,7 +1,8 @@
-import { createClient as createClientApi } from "./client-api/generated";
+import { createClient as createClientApi } from "../client-api/generated";
 import { createUrqlClientWithConfig } from "./urql-client";
 import { enhanceClient } from "./client-enhancer";
-import type { ApiConfig, Client } from "./types";
+import type { ApiConfig, Client } from "../types";
+import { DEFAULT_CLIENT_API_URL } from "../constants";
 
 // Singleton client instance
 let clientApiInstance: Client | null = null;
@@ -23,8 +24,13 @@ let clientApiInstance: Client | null = null;
 export function createClientApiClient(config?: ApiConfig): Client {
   if (!clientApiInstance) {
     const baseClient = createClientApi(config || {});
-    const urqlClient = createUrqlClientWithConfig(config || {});
+    const urqlClient = createUrqlClientWithConfig(
+      config || {},
+      DEFAULT_CLIENT_API_URL,
+    );
     clientApiInstance = enhanceClient(baseClient, urqlClient);
   }
   return clientApiInstance;
 }
+
+// This file is WIP
