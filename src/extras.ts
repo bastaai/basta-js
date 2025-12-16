@@ -1,10 +1,10 @@
 // Export the query builders
 import {
-  type Query as ClientApiQuery,
   type Mutation as ClientApiMutation,
+  type Query as ClientApiQuery,
   type Subscription as ClientApiSubscription,
-  generateQueryOp as clientQueryOp,
   generateMutationOp as clientMutationOp,
+  generateQueryOp as clientQueryOp,
   generateSubscriptionOp as clientSubscriptionOp,
 } from "./client-api/generated";
 import * as clientApiSchema from "./client-api/generated/schema";
@@ -22,8 +22,8 @@ const clientApiGql = {
 };
 
 import {
-  generateQueryOp as managementQueryOp,
   generateMutationOp as managementMutationOp,
+  generateQueryOp as managementQueryOp,
   generateSubscriptionOp as managementSubscriptionOp,
 } from "./management-api/generated";
 import * as managementApiSchema from "./management-api/generated/schema";

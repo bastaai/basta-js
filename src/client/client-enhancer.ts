@@ -1,19 +1,19 @@
 import type { Client as UrqlClient } from "urql";
 import {
-  useQuery as useUrqlQuery,
   useMutation as useUrqlMutation,
+  useQuery as useUrqlQuery,
   useSubscription as useUrqlSubscription,
 } from "urql";
 import {
   type Client as BaseClient,
-  generateQueryOp,
   generateMutationOp,
+  generateQueryOp,
   generateSubscriptionOp,
-  type QueryGenqlSelection,
   type MutationGenqlSelection,
-  type SubscriptionGenqlSelection,
-  type QueryResult,
   type MutationResult,
+  type QueryGenqlSelection,
+  type QueryResult,
+  type SubscriptionGenqlSelection,
   type SubscriptionResult,
 } from "../client-api/generated";
 import type { Client, TypedGraphqlOperation } from "../types";

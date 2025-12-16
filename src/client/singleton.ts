@@ -1,8 +1,8 @@
 import { createClient as createClientApi } from "../client-api/generated";
-import { createUrqlClientWithConfig } from "./urql-client";
-import { enhanceClient } from "./client-enhancer";
-import type { ApiConfig, Client } from "../types";
 import { DEFAULT_CLIENT_API_URL } from "../constants";
+import type { ApiConfig, Client } from "../types";
+import { enhanceClient } from "./client-enhancer";
+import { createUrqlClientWithConfig } from "./urql-client";
 
 // Singleton client instance
 let clientApiInstance: Client | null = null;
