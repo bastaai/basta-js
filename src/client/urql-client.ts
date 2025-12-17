@@ -1,11 +1,11 @@
+import { createClient as createWSClient } from "graphql-ws";
 import {
-  createClient as createUrqlClient,
-  type Client as UrqlClient,
   cacheExchange,
+  createClient as createUrqlClient,
   fetchExchange,
   subscriptionExchange,
+  type Client as UrqlClient,
 } from "urql";
-import { createClient as createWSClient } from "graphql-ws";
 import type { ApiConfig } from "../types";
 
 /**

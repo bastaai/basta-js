@@ -1,22 +1,24 @@
 import type {
+  AnyVariables,
   Client as UrqlClient,
   UseQueryArgs,
   UseSubscriptionArgs,
-  AnyVariables,
+  useMutation,
+  useQuery,
+  useSubscription,
 } from "urql";
 import type {
   Client as BaseClient,
-  generateQueryOp,
   generateMutationOp,
+  generateQueryOp,
   generateSubscriptionOp,
-  QueryGenqlSelection,
   MutationGenqlSelection,
-  SubscriptionGenqlSelection,
-  QueryResult,
   MutationResult,
+  QueryGenqlSelection,
+  QueryResult,
+  SubscriptionGenqlSelection,
   SubscriptionResult,
 } from "./client-api/generated";
-import type { useQuery, useMutation, useSubscription } from "urql";
 
 // Define API configuration types
 export interface ApiConfig {

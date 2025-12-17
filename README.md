@@ -174,3 +174,11 @@ There are a couple of example projects setup within this repo for demonstration 
 - `react` 16.8.0 or higher
 - `urql` 5.0.0 or higher
 - `graphql-ws` 6.0.0 or higher (optional)
+
+## Publishing a new version
+
+Right now this is a manual process.
+
+1. Update the `package.json` version
+2. run `pnpm build` for a new dist folder (probably smart to clear dist folder beforehand)
+3. run the `pnpm publish` script, make sure you're logged in on your terminal with correct access to publish new versions
