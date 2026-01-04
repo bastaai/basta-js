@@ -33,6 +33,10 @@ export interface Account {
     isUserSubscribed: Scalars['Boolean']
     /** PaymentDetails set by account */
     paymentDetails: (PaymentDetails | null)
+    /** Metafields associated with the account */
+    metafields: MetafieldsConnection[]
+    /** Metafield associated with the account */
+    metafield: (Metafield | null)
     __typename: 'Account'
 }
 
@@ -94,7 +98,7 @@ export interface Bid {
 
 
 /** Error code when failing to place a bid on an item */
-export type BidErrorCode = 'NO_ERROR' | 'INTERNAL_ERROR' | 'MAX_BID_LOWER_THAN_CURRENT_MAX' | 'BID_LOWER_THAN_CURRENT_MAX' | 'BID_LOWER_THAN_CURRENT_BID' | 'ALREADY_HIGHER_MAX_BID' | 'OFF_INCREMENT' | 'STARTING_BID_HIGHER' | 'NOT_OPEN_FOR_BIDDING' | 'ITEM_CLOSING_PERIOD_PASSED' | 'BID_AMOUNT_UPPER_LIMIT_REACHED' | 'ITEM_ALREADY_CLOSED'
+export type BidErrorCode = 'NO_ERROR' | 'INTERNAL_ERROR' | 'MAX_BID_LOWER_THAN_CURRENT_MAX' | 'BID_LOWER_THAN_CURRENT_MAX' | 'BID_LOWER_THAN_CURRENT_BID' | 'ALREADY_HIGHER_MAX_BID' | 'OFF_INCREMENT' | 'STARTING_BID_HIGHER' | 'NOT_OPEN_FOR_BIDDING' | 'ITEM_CLOSING_PERIOD_PASSED' | 'BID_AMOUNT_UPPER_LIMIT_REACHED' | 'ITEM_ALREADY_CLOSED' | 'USER_REQUIRED_TO_HAVE_ACCEPTED_REGISTRATION_FOR_SALE' | 'USER_REGISTRATION_REJECTED_FOR_SALE' | 'USER_REGISTRATION_PENDING_FOR_SALE'
 
 
 /**
@@ -158,6 +162,10 @@ export interface BidderVerificationLink {
 /** ClosingMethod represents how SaleItems are moved into CLOSING status and when they are CLOSED */
 export type ClosingMethod = 'ONE_BY_ONE' | 'OVERLAPPING' | 'NONE'
 
+
+/** ISO 3166-1 alpha-2 country codes */
+export type Country = 'AF' | 'AL' | 'AQ' | 'DZ' | 'AS' | 'AD' | 'AO' | 'AG' | 'AZ' | 'AR' | 'AU' | 'AT' | 'BS' | 'BH' | 'BD' | 'AM' | 'BB' | 'BE' | 'BM' | 'BT' | 'BO' | 'BA' | 'BW' | 'BV' | 'BR' | 'BZ' | 'IO' | 'SB' | 'VG' | 'BN' | 'BG' | 'MM' | 'BI' | 'BY' | 'KH' | 'CM' | 'CA' | 'CV' | 'KY' | 'CF' | 'LK' | 'TD' | 'CL' | 'CN' | 'TW' | 'CX' | 'CC' | 'CO' | 'KM' | 'YT' | 'CG' | 'CD' | 'CK' | 'CR' | 'HR' | 'CU' | 'CY' | 'CZ' | 'BJ' | 'DK' | 'DM' | 'DO' | 'EC' | 'SV' | 'GQ' | 'ET' | 'ER' | 'EE' | 'FO' | 'FK' | 'GS' | 'FJ' | 'FI' | 'AX' | 'FR' | 'GF' | 'PF' | 'TF' | 'DJ' | 'GA' | 'GE' | 'GM' | 'PS' | 'DE' | 'GH' | 'GI' | 'KI' | 'GR' | 'GL' | 'GD' | 'GP' | 'GU' | 'GT' | 'GN' | 'GY' | 'HT' | 'HM' | 'VA' | 'HN' | 'HK' | 'HU' | 'IS' | 'IN' | 'ID' | 'IR' | 'IQ' | 'IE' | 'IL' | 'IT' | 'CI' | 'JM' | 'JP' | 'KZ' | 'JO' | 'KE' | 'KP' | 'KR' | 'KW' | 'KG' | 'LA' | 'LB' | 'LS' | 'LV' | 'LR' | 'LY' | 'LI' | 'LT' | 'LU' | 'MO' | 'MG' | 'MW' | 'MY' | 'MV' | 'ML' | 'MT' | 'MQ' | 'MR' | 'MU' | 'MX' | 'MC' | 'MN' | 'MD' | 'ME' | 'MS' | 'MA' | 'MZ' | 'OM' | 'NA' | 'NR' | 'NP' | 'NL' | 'CW' | 'AW' | 'SX' | 'BQ' | 'NC' | 'VU' | 'NZ' | 'NI' | 'NE' | 'NG' | 'NU' | 'NF' | 'NO' | 'MP' | 'UM' | 'FM' | 'MH' | 'PW' | 'PK' | 'PA' | 'PG' | 'PY' | 'PE' | 'PH' | 'PN' | 'PL' | 'PT' | 'GW' | 'TL' | 'PR' | 'QA' | 'RE' | 'RO' | 'RU' | 'RW' | 'BL' | 'SH' | 'KN' | 'AI' | 'LC' | 'MF' | 'PM' | 'VC' | 'SM' | 'ST' | 'SA' | 'SN' | 'RS' | 'SC' | 'SL' | 'SG' | 'SK' | 'VN' | 'SI' | 'SO' | 'ZA' | 'ZW' | 'ES' | 'SS' | 'SD' | 'EH' | 'SR' | 'SJ' | 'SZ' | 'SE' | 'CH' | 'SY' | 'TJ' | 'TH' | 'TG' | 'TK' | 'TO' | 'TT' | 'AE' | 'TN' | 'TR' | 'TM' | 'TC' | 'TV' | 'UG' | 'UA' | 'MK' | 'EG' | 'GB' | 'GG' | 'JE' | 'IM' | 'TZ' | 'US' | 'VI' | 'BF' | 'UY' | 'UZ' | 'VE' | 'WF' | 'WS' | 'YE' | 'ZM'
+
 export interface CurrentItem {
     item: Item
     cursor: Scalars['String']
@@ -182,6 +190,46 @@ export interface ExternalLiveStream {
     /** LiveStream Updated */
     updated: Scalars['String']
     __typename: 'ExternalLiveStream'
+}
+
+
+/** Facet count for a specific field, containing all unique values and their counts. */
+export interface FacetCount {
+    /** The field name this facet represents (e.g., "status", "tags", "reserveMet") */
+    fieldName: Scalars['String']
+    /** Individual value counts for this field */
+    counts: FacetValue[]
+    /** Statistical information for numeric fields (optional) */
+    stats: (FacetStats | null)
+    __typename: 'FacetCount'
+}
+
+
+/** Statistical information for numeric facet fields */
+export interface FacetStats {
+    /** Average value */
+    avg: (Scalars['Float'] | null)
+    /** Maximum value */
+    max: (Scalars['Float'] | null)
+    /** Minimum value */
+    min: (Scalars['Float'] | null)
+    /** Sum of all values */
+    sum: (Scalars['Float'] | null)
+    /** Total number of values */
+    totalValues: (Scalars['Int'] | null)
+    __typename: 'FacetStats'
+}
+
+
+/** Individual facet value and its count */
+export interface FacetValue {
+    /** The facet value (e.g., "OPEN", "Kitchenware", "true") */
+    value: Scalars['String']
+    /** Number of items with this value */
+    count: Scalars['Int']
+    /** Highlighted value (may include search term highlighting) */
+    highlighted: (Scalars['String'] | null)
+    __typename: 'FacetValue'
 }
 
 
@@ -288,6 +336,23 @@ export interface Item {
     allowedBidTypes: BidType[]
     /** Item specifications (dimensions, weight, type, etc.) */
     specifications: (ItemSpecifications | null)
+    /** Previous item */
+    prevItem: (Item | null)
+    /** Next item */
+    nextItem: (Item | null)
+    /**
+     * Unique external identifier for the item, typically utilized for integration with third-party systems.
+     * Note: Inherited from the underlying item if not set specifically for the item in the sale.
+     */
+    externalId: (Scalars['String'] | null)
+    /** Location of the item */
+    location: (Scalars['String'] | null)
+    /** ClosingTimeCountdown. Should be interpreted as milliseconds. */
+    closingTimeCountdown: Scalars['Int']
+    /** Metafields associated with the item */
+    metafields: MetafieldsConnection[]
+    /** Metafield associated with the item */
+    metafield: (Metafield | null)
     __typename: 'Item'
 }
 
@@ -406,6 +471,21 @@ export type LiveStreamType = 'GENERIC' | 'AMAZON_IVS' | 'YouTubeLive' | 'BASTA_L
 
 export type LiveVideoStream = (ExternalLiveStream | BastaLiveStream) & { __isUnion?: true }
 
+
+/** Mailing address */
+export interface MailingAddress {
+    name: Scalars['String']
+    company: Scalars['String']
+    phone: Scalars['String']
+    line1: Scalars['String']
+    line2: Scalars['String']
+    city: Scalars['String']
+    state: Scalars['String']
+    postalCode: Scalars['String']
+    country: Country
+    __typename: 'MailingAddress'
+}
+
 export type MaxBidPlaced = (MaxBidPlacedSuccess | BidPlacedError) & { __isUnion?: true }
 
 
@@ -450,12 +530,48 @@ export interface Me {
     saleItemSubscriptions: (ItemsConnection | null)
     /** Latest items that user has placed a bid on. */
     latestItemBids: ItemsConnection
+    /** Billing address */
+    billingAddress: MailingAddress
+    /** Shipping address */
+    shippingAddress: MailingAddress
     __typename: 'Me'
 }
 
 
 /** Measurement unit enum */
 export type MeasurementUnit = 'NOT_SET' | 'CM' | 'INCH'
+
+
+/** Object for a metafield */
+export interface Metafield {
+    id: Scalars['ID']
+    key: Scalars['String']
+    value: Scalars['String']
+    valueType: MetafieldValueType
+    __typename: 'Metafield'
+}
+
+
+/** Enum for the value type of a metafield */
+export type MetafieldValueType = 'METAFIELD_VALUE_TYPE_SINGLE_LINE_TEXT' | 'METAFIELD_VALUE_TYPE_RICH_TEXT'
+
+export interface MetafieldsConnection {
+    /** Metafields edges */
+    edges: MetafieldsEdge[]
+    /** Metafields nodes */
+    nodes: Metafield[]
+    /** Current page information */
+    pageInfo: PageInfo
+    __typename: 'MetafieldsConnection'
+}
+
+export interface MetafieldsEdge {
+    /** Current metafield cursor */
+    cursor: Scalars['String']
+    /** Metafield node */
+    node: Metafield
+    __typename: 'MetafieldsEdge'
+}
 
 export interface Mutation {
     /**
@@ -489,10 +605,17 @@ export interface Mutation {
     subsribeToItem: UserSaleItemSubscription
     /** Unsubscribe from item */
     unsubscribeFromItem: Scalars['ID']
+    /**
+     * Returns session credentials for selected payment provider, e.g. Stripe Customer Session
+     * A Customer Session allows you to grant Stripe’s frontend SDKs (like Stripe.js) client-side access control over a Customer.
+     */
+    createPaymentProviderSession: PaymentProviderSession
+    /** Update user information. */
+    updateUser: Me
     __typename: 'Mutation'
 }
 
-export type Node = (Item | Sale | UserBid) & { __isUnion?: true }
+export type Node = (Item | Metafield | Sale | UserBid) & { __isUnion?: true }
 
 export interface OnlineBidOrigin {
     type: BidOriginType
@@ -543,6 +666,10 @@ export interface PaymentDetails {
     __typename: 'PaymentDetails'
 }
 
+
+/** PaymentProviderSession is a union of all possible payment provider sessions. */
+export type PaymentProviderSession = (StripePaymentProviderSession) & { __isUnion?: true }
+
 export interface PaymentSession {
     /** Redirection link to payment session url */
     url: Scalars['String']
@@ -588,6 +715,15 @@ export interface Query {
     serverTime: ServerTime
     /** This method is only available to basta users and front ends written by Basta */
     paymentSession: PaymentSession
+    /**
+     * Search across different node types in the graph (items).
+     * 
+     * Using search uses a search index that is eventually consistent, this means we cannot guarantee that the results are always up to date, even though the search index is updated in almost real time.
+     * 
+     * Example queries:
+     *   - Search for items: search(type: ITEM, query: "vintage watch", first: 20)
+     */
+    search: SearchResultConnection
     __typename: 'Query'
 }
 
@@ -635,7 +771,10 @@ export interface Sale {
     currency: (Scalars['String'] | null)
     /** Sale status. */
     status: SaleStatus
-    /** Items that have been associated with this sale. */
+    /**
+     * Items that have been associated with this sale.
+     * Uses cursor-based pagination.
+     */
     items: ItemsConnection
     /**
      * Default increment table for the sale.
@@ -679,6 +818,16 @@ export interface Sale {
     liveItem: (LiveItem | null)
     /** Paddle assigned to authenticated user */
     userPaddle: (Paddle | null)
+    /** Sale registration for authenticated user */
+    userSaleRegistrations: UserSaleRegistration[]
+    /** Unique external identifier for the sale, typically utilized for integration with third-party systems. */
+    externalId: (Scalars['String'] | null)
+    /** Location of the sale */
+    location: (Scalars['String'] | null)
+    /** Metafields associated with the sale */
+    metafields: MetafieldsConnection[]
+    /** Metafield associated with the sale */
+    metafield: (Metafield | null)
     __typename: 'Sale'
 }
 
@@ -706,6 +855,10 @@ export interface SaleDates {
     __typename: 'SaleDates'
 }
 
+export type SaleRegistrationStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED'
+
+export type SaleRegistrationType = 'ONLINE' | 'PHONE' | 'PADDLE' | 'AGGREGATOR'
+
 
 /** Sale Status represent what status an sale is currently running in. */
 export type SaleStatus = 'UNPUBLISHED' | 'PUBLISHED' | 'OPENED' | 'CLOSED' | 'CLOSING' | 'PAUSED' | 'PROCESSING' | 'LIVE'
@@ -722,6 +875,63 @@ export interface SalesEdge {
     __typename: 'SalesEdge'
 }
 
+
+/** Page info for search results using page-based pagination. */
+export interface SearchPageInfo {
+    /** Current page number (1-based) */
+    page: Scalars['Int']
+    /** Number of results per page */
+    pageSize: Scalars['Int']
+    /** Total number of pages */
+    totalPages: Scalars['Int']
+    /** Whether there is a next page */
+    hasNextPage: Scalars['Boolean']
+    /** Whether there is a previous page */
+    hasPreviousPage: Scalars['Boolean']
+    /** Total number of results across all pages */
+    totalRecords: Scalars['Int']
+    __typename: 'SearchPageInfo'
+}
+
+
+/**
+ * Connection type for search results.
+ * Includes pagination info and facets for filtering.
+ */
+export interface SearchResultConnection {
+    /** Search result edges */
+    edges: SearchResultEdge[]
+    /** Page-based pagination info */
+    pageInfo: SearchPageInfo
+    /** Total number of results found */
+    resultCount: Scalars['Int']
+    /**
+     * Facet counts for building filter UIs.
+     * Available facets depend on the search type.
+     */
+    facets: FacetCount[]
+    __typename: 'SearchResultConnection'
+}
+
+
+/** Edge for search results */
+export interface SearchResultEdge {
+    /** The search result node */
+    node: SearchResultItem
+    __typename: 'SearchResultEdge'
+}
+
+
+/**
+ * Union type representing a search result item.
+ * Depending on the SearchType, this will be an Item, Sale, or other supported nodes.
+ */
+export type SearchResultItem = (Item | Sale) & { __isUnion?: true }
+
+
+/** Search type enum specifies what type of node to search for. */
+export type SearchType = 'ITEM'
+
 export interface ServerTime {
     /** Current Time */
     currentTime: Scalars['Int']
@@ -735,6 +945,21 @@ export type SpecificationSubType = 'NOT_SET' | 'PAINTING_UNFRAMED' | 'PAINTING_F
 
 /** Specification type enum */
 export type SpecificationType = 'NOT_SET' | 'ART' | 'FURNITURE' | 'JEWELRY' | 'DECORATIVE_ARTS' | 'COLLECTIBLES' | 'ALCOHOL' | 'AUTOMOTIVE' | 'FASHION' | 'OTHER'
+
+
+/**
+ * StripePaymentProviderSession provides credentials for client-side Stripe integration.
+ * A Customer Session allows you to grant Stripe’s frontend SDKs (like Stripe.js) client-side access control over a Customer.
+ */
+export interface StripePaymentProviderSession {
+    /** Publishable Key */
+    publishableKey: Scalars['String']
+    /** Customer Session Client Secret */
+    customerSessionClientSecret: Scalars['String']
+    /** Setup Intent Client Secret */
+    setupIntentClientSecret: Scalars['String']
+    __typename: 'StripePaymentProviderSession'
+}
 
 export interface Subscription {
     /**
@@ -806,6 +1031,20 @@ export interface UserSaleItemSubscription {
     __typename: 'UserSaleItemSubscription'
 }
 
+export interface UserSaleRegistration {
+    /** Id of the registration */
+    id: Scalars['ID']
+    /** Sale ID that the user is registering for */
+    saleId: Scalars['String']
+    /** User ID of the person registering */
+    userId: Scalars['String']
+    /** Type of registration */
+    registrationType: SaleRegistrationType
+    /** Status of the registration */
+    status: SaleRegistrationStatus
+    __typename: 'UserSaleRegistration'
+}
+
 
 /** Weight unit enum */
 export type WeightUnit = 'NOT_SET' | 'KG' | 'LB'
@@ -832,6 +1071,10 @@ export interface AccountGenqlSelection{
     isUserSubscribed?: boolean | number
     /** PaymentDetails set by account */
     paymentDetails?: PaymentDetailsGenqlSelection
+    /** Metafields associated with the account */
+    metafields?: (MetafieldsConnectionGenqlSelection & { __args?: {input?: (GetMetafieldsInput | null)} })
+    /** Metafield associated with the account */
+    metafield?: (MetafieldGenqlSelection & { __args: {input: GetMetafieldInput} })
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -996,6 +1239,57 @@ export interface ExternalLiveStreamGenqlSelection{
 }
 
 
+/** Facet count for a specific field, containing all unique values and their counts. */
+export interface FacetCountGenqlSelection{
+    /** The field name this facet represents (e.g., "status", "tags", "reserveMet") */
+    fieldName?: boolean | number
+    /** Individual value counts for this field */
+    counts?: FacetValueGenqlSelection
+    /** Statistical information for numeric fields (optional) */
+    stats?: FacetStatsGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Statistical information for numeric facet fields */
+export interface FacetStatsGenqlSelection{
+    /** Average value */
+    avg?: boolean | number
+    /** Maximum value */
+    max?: boolean | number
+    /** Minimum value */
+    min?: boolean | number
+    /** Sum of all values */
+    sum?: boolean | number
+    /** Total number of values */
+    totalValues?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Individual facet value and its count */
+export interface FacetValueGenqlSelection{
+    /** The facet value (e.g., "OPEN", "Kitchenware", "true") */
+    value?: boolean | number
+    /** Number of items with this value */
+    count?: boolean | number
+    /** Highlighted value (may include search term highlighting) */
+    highlighted?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Input for getting a single metafield connected to a specific entity */
+export interface GetMetafieldInput {key: Scalars['String']}
+
+
+/** Input for getting multiple metafields connected to a specific entity, we return at max 10 metafields */
+export interface GetMetafieldsInput {keys?: (Scalars['String'][] | null)}
+
+
 /** Input parameters to get all bids for userId */
 export interface GetUserBidsInputGenqlSelection{
     userId?: boolean | number
@@ -1099,6 +1393,23 @@ export interface ItemGenqlSelection{
     allowedBidTypes?: boolean | number
     /** Item specifications (dimensions, weight, type, etc.) */
     specifications?: ItemSpecificationsGenqlSelection
+    /** Previous item */
+    prevItem?: (ItemGenqlSelection & { __args?: {sortBy?: (ItemOrderField | null)} })
+    /** Next item */
+    nextItem?: (ItemGenqlSelection & { __args?: {sortBy?: (ItemOrderField | null)} })
+    /**
+     * Unique external identifier for the item, typically utilized for integration with third-party systems.
+     * Note: Inherited from the underlying item if not set specifically for the item in the sale.
+     */
+    externalId?: boolean | number
+    /** Location of the item */
+    location?: boolean | number
+    /** ClosingTimeCountdown. Should be interpreted as milliseconds. */
+    closingTimeCountdown?: boolean | number
+    /** Metafields associated with the item */
+    metafields?: (MetafieldsConnectionGenqlSelection & { __args?: {input?: (GetMetafieldsInput | null)} })
+    /** Metafield associated with the item */
+    metafield?: (MetafieldGenqlSelection & { __args: {input: GetMetafieldInput} })
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -1236,6 +1547,26 @@ export interface LiveVideoStreamGenqlSelection{
     __typename?: boolean | number
 }
 
+
+/** Mailing address */
+export interface MailingAddressGenqlSelection{
+    name?: boolean | number
+    company?: boolean | number
+    phone?: boolean | number
+    line1?: boolean | number
+    line2?: boolean | number
+    city?: boolean | number
+    state?: boolean | number
+    postalCode?: boolean | number
+    country?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Input for mailing address. */
+export interface MailingAddressInput {name: Scalars['String'],company: Scalars['String'],phone: Scalars['String'],line1: Scalars['String'],line2: Scalars['String'],city: Scalars['String'],state: Scalars['String'],postalCode: Scalars['String'],country: Country}
+
 export interface MaxBidPlacedGenqlSelection{
     on_MaxBidPlacedSuccess?:MaxBidPlacedSuccessGenqlSelection,
     on_BidPlacedError?:BidPlacedErrorGenqlSelection,
@@ -1285,6 +1616,41 @@ export interface MeGenqlSelection{
     saleItemSubscriptions?: ItemsConnectionGenqlSelection
     /** Latest items that user has placed a bid on. */
     latestItemBids?: (ItemsConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null)} })
+    /** Billing address */
+    billingAddress?: MailingAddressGenqlSelection
+    /** Shipping address */
+    shippingAddress?: MailingAddressGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Object for a metafield */
+export interface MetafieldGenqlSelection{
+    id?: boolean | number
+    key?: boolean | number
+    value?: boolean | number
+    valueType?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface MetafieldsConnectionGenqlSelection{
+    /** Metafields edges */
+    edges?: MetafieldsEdgeGenqlSelection
+    /** Metafields nodes */
+    nodes?: MetafieldGenqlSelection
+    /** Current page information */
+    pageInfo?: PageInfoGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface MetafieldsEdgeGenqlSelection{
+    /** Current metafield cursor */
+    cursor?: boolean | number
+    /** Metafield node */
+    node?: MetafieldGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -1321,6 +1687,13 @@ export interface MutationGenqlSelection{
     subsribeToItem?: (UserSaleItemSubscriptionGenqlSelection & { __args: {saleId: Scalars['String'], itemId: Scalars['String']} })
     /** Unsubscribe from item */
     unsubscribeFromItem?: { __args: {saleId: Scalars['String'], itemId: Scalars['String']} }
+    /**
+     * Returns session credentials for selected payment provider, e.g. Stripe Customer Session
+     * A Customer Session allows you to grant Stripe’s frontend SDKs (like Stripe.js) client-side access control over a Customer.
+     */
+    createPaymentProviderSession?: (PaymentProviderSessionGenqlSelection & { __args: {input: PaymentProviderSessionInput} })
+    /** Update user information. */
+    updateUser?: (MeGenqlSelection & { __args: {input: UpdateUserInput} })
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -1329,6 +1702,7 @@ export interface NodeGenqlSelection{
     /** Identification of the node. */
     id?: boolean | number
     on_Item?: ItemGenqlSelection
+    on_Metafield?: MetafieldGenqlSelection
     on_Sale?: SaleGenqlSelection
     on_UserBid?: UserBidGenqlSelection
     __typename?: boolean | number
@@ -1381,6 +1755,17 @@ export interface PaymentDetailsGenqlSelection{
     __scalar?: boolean | number
 }
 
+
+/** PaymentProviderSession is a union of all possible payment provider sessions. */
+export interface PaymentProviderSessionGenqlSelection{
+    on_StripePaymentProviderSession?:StripePaymentProviderSessionGenqlSelection,
+    __typename?: boolean | number
+}
+
+export interface PaymentProviderSessionInput {
+/** Account identifier */
+accountId: Scalars['String']}
+
 export interface PaymentSessionGenqlSelection{
     /** Redirection link to payment session url */
     url?: boolean | number
@@ -1430,6 +1815,48 @@ export interface QueryGenqlSelection{
     serverTime?: ServerTimeGenqlSelection
     /** This method is only available to basta users and front ends written by Basta */
     paymentSession?: (PaymentSessionGenqlSelection & { __args?: {input?: (PaymentSessionInput | null)} })
+    /**
+     * Search across different node types in the graph (items).
+     * 
+     * Using search uses a search index that is eventually consistent, this means we cannot guarantee that the results are always up to date, even though the search index is updated in almost real time.
+     * 
+     * Example queries:
+     *   - Search for items: search(type: ITEM, query: "vintage watch", first: 20)
+     */
+    search?: (SearchResultConnectionGenqlSelection & { __args: {
+    /** Account ID to search within. */
+    accountId: Scalars['String'], 
+    /** The type of node to search for (ITEM) */
+    type: SearchType, 
+    /** Search query text */
+    query: Scalars['String'], 
+    /** Number of results to return per page */
+    first?: (Scalars['Int'] | null), 
+    /** Page number for pagination (1-based) */
+    page?: (Scalars['Int'] | null), 
+    /**
+     * Fields to search in. If not specified, searches across default fields for the type.
+     * 
+     * For ITEM: title, description, tags
+     */
+    queryBy?: (Scalars['String'][] | null), 
+    /**
+     * Sort results by field and direction.
+     * Format: "field:direction" (e.g., "title:asc", "createdAt:desc")
+     * If not provided, results are sorted by relevance.
+     */
+    orderBy?: (Scalars['String'] | null), 
+    /**
+     * Additional filter conditions specific to the search type.
+     * 
+     * For ITEM filters, examples:
+     *   - "saleId:=xyz789"
+     *   - "reserveMet:true"
+     *   - "currentBid:>= 10000"
+     * 
+     * Multiple conditions can be combined with AND using &&
+     */
+    filterBy?: (Scalars['String'] | null)} })
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -1475,7 +1902,10 @@ export interface SaleGenqlSelection{
     currency?: boolean | number
     /** Sale status. */
     status?: boolean | number
-    /** Items that have been associated with this sale. */
+    /**
+     * Items that have been associated with this sale.
+     * Uses cursor-based pagination.
+     */
     items?: (ItemsConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), filter?: (SaleItemFilter | null), order?: (ItemOrderInput | null)} })
     /**
      * Default increment table for the sale.
@@ -1519,6 +1949,16 @@ export interface SaleGenqlSelection{
     liveItem?: LiveItemGenqlSelection
     /** Paddle assigned to authenticated user */
     userPaddle?: PaddleGenqlSelection
+    /** Sale registration for authenticated user */
+    userSaleRegistrations?: UserSaleRegistrationGenqlSelection
+    /** Unique external identifier for the sale, typically utilized for integration with third-party systems. */
+    externalId?: boolean | number
+    /** Location of the sale */
+    location?: boolean | number
+    /** Metafields associated with the sale */
+    metafields?: (MetafieldsConnectionGenqlSelection & { __args?: {input?: (GetMetafieldsInput | null)} })
+    /** Metafield associated with the sale */
+    metafield?: (MetafieldGenqlSelection & { __args: {input: GetMetafieldInput} })
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -1582,9 +2022,86 @@ export interface SalesEdgeGenqlSelection{
     __scalar?: boolean | number
 }
 
+
+/** Page info for search results using page-based pagination. */
+export interface SearchPageInfoGenqlSelection{
+    /** Current page number (1-based) */
+    page?: boolean | number
+    /** Number of results per page */
+    pageSize?: boolean | number
+    /** Total number of pages */
+    totalPages?: boolean | number
+    /** Whether there is a next page */
+    hasNextPage?: boolean | number
+    /** Whether there is a previous page */
+    hasPreviousPage?: boolean | number
+    /** Total number of results across all pages */
+    totalRecords?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/**
+ * Connection type for search results.
+ * Includes pagination info and facets for filtering.
+ */
+export interface SearchResultConnectionGenqlSelection{
+    /** Search result edges */
+    edges?: SearchResultEdgeGenqlSelection
+    /** Page-based pagination info */
+    pageInfo?: SearchPageInfoGenqlSelection
+    /** Total number of results found */
+    resultCount?: boolean | number
+    /**
+     * Facet counts for building filter UIs.
+     * Available facets depend on the search type.
+     */
+    facets?: FacetCountGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Edge for search results */
+export interface SearchResultEdgeGenqlSelection{
+    /** The search result node */
+    node?: SearchResultItemGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/**
+ * Union type representing a search result item.
+ * Depending on the SearchType, this will be an Item, Sale, or other supported nodes.
+ */
+export interface SearchResultItemGenqlSelection{
+    on_Item?:ItemGenqlSelection,
+    on_Sale?:SaleGenqlSelection,
+    on_Node?: NodeGenqlSelection,
+    __typename?: boolean | number
+}
+
 export interface ServerTimeGenqlSelection{
     /** Current Time */
     currentTime?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/**
+ * StripePaymentProviderSession provides credentials for client-side Stripe integration.
+ * A Customer Session allows you to grant Stripe’s frontend SDKs (like Stripe.js) client-side access control over a Customer.
+ */
+export interface StripePaymentProviderSessionGenqlSelection{
+    /** Publishable Key */
+    publishableKey?: boolean | number
+    /** Customer Session Client Secret */
+    customerSessionClientSecret?: boolean | number
+    /** Setup Intent Client Secret */
+    setupIntentClientSecret?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -1615,6 +2132,14 @@ export interface SubscriptionGenqlSelection{
     __typename?: boolean | number
     __scalar?: boolean | number
 }
+
+
+/** Input for updating user information. */
+export interface UpdateUserInput {
+/** Billing address */
+billingAddress?: (MailingAddressInput | null),
+/** Shipping address */
+shippingAddress?: (MailingAddressInput | null)}
 
 export interface UserAccountSubscriptionGenqlSelection{
     accountId?: boolean | number
@@ -1661,6 +2186,21 @@ export interface UserSaleItemSubscriptionGenqlSelection{
     saleId?: boolean | number
     itemId?: boolean | number
     userId?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface UserSaleRegistrationGenqlSelection{
+    /** Id of the registration */
+    id?: boolean | number
+    /** Sale ID that the user is registering for */
+    saleId?: boolean | number
+    /** User ID of the person registering */
+    userId?: boolean | number
+    /** Type of registration */
+    registrationType?: boolean | number
+    /** Status of the registration */
+    status?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -1766,6 +2306,30 @@ export interface UserSaleItemSubscriptionGenqlSelection{
     export const isExternalLiveStream = (obj?: { __typename?: any } | null): obj is ExternalLiveStream => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isExternalLiveStream"')
       return ExternalLiveStream_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const FacetCount_possibleTypes: string[] = ['FacetCount']
+    export const isFacetCount = (obj?: { __typename?: any } | null): obj is FacetCount => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isFacetCount"')
+      return FacetCount_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const FacetStats_possibleTypes: string[] = ['FacetStats']
+    export const isFacetStats = (obj?: { __typename?: any } | null): obj is FacetStats => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isFacetStats"')
+      return FacetStats_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const FacetValue_possibleTypes: string[] = ['FacetValue']
+    export const isFacetValue = (obj?: { __typename?: any } | null): obj is FacetValue => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isFacetValue"')
+      return FacetValue_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -1890,6 +2454,14 @@ export interface UserSaleItemSubscriptionGenqlSelection{
     
 
 
+    const MailingAddress_possibleTypes: string[] = ['MailingAddress']
+    export const isMailingAddress = (obj?: { __typename?: any } | null): obj is MailingAddress => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isMailingAddress"')
+      return MailingAddress_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const MaxBidPlaced_possibleTypes: string[] = ['MaxBidPlacedSuccess','BidPlacedError']
     export const isMaxBidPlaced = (obj?: { __typename?: any } | null): obj is MaxBidPlaced => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isMaxBidPlaced"')
@@ -1914,6 +2486,30 @@ export interface UserSaleItemSubscriptionGenqlSelection{
     
 
 
+    const Metafield_possibleTypes: string[] = ['Metafield']
+    export const isMetafield = (obj?: { __typename?: any } | null): obj is Metafield => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isMetafield"')
+      return Metafield_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const MetafieldsConnection_possibleTypes: string[] = ['MetafieldsConnection']
+    export const isMetafieldsConnection = (obj?: { __typename?: any } | null): obj is MetafieldsConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isMetafieldsConnection"')
+      return MetafieldsConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const MetafieldsEdge_possibleTypes: string[] = ['MetafieldsEdge']
+    export const isMetafieldsEdge = (obj?: { __typename?: any } | null): obj is MetafieldsEdge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isMetafieldsEdge"')
+      return MetafieldsEdge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const Mutation_possibleTypes: string[] = ['Mutation']
     export const isMutation = (obj?: { __typename?: any } | null): obj is Mutation => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isMutation"')
@@ -1922,7 +2518,7 @@ export interface UserSaleItemSubscriptionGenqlSelection{
     
 
 
-    const Node_possibleTypes: string[] = ['Item','Sale','UserBid']
+    const Node_possibleTypes: string[] = ['Item','Metafield','Sale','UserBid']
     export const isNode = (obj?: { __typename?: any } | null): obj is Node => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isNode"')
       return Node_possibleTypes.includes(obj.__typename)
@@ -1966,6 +2562,14 @@ export interface UserSaleItemSubscriptionGenqlSelection{
     export const isPaymentDetails = (obj?: { __typename?: any } | null): obj is PaymentDetails => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isPaymentDetails"')
       return PaymentDetails_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const PaymentProviderSession_possibleTypes: string[] = ['StripePaymentProviderSession']
+    export const isPaymentProviderSession = (obj?: { __typename?: any } | null): obj is PaymentProviderSession => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isPaymentProviderSession"')
+      return PaymentProviderSession_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -2050,10 +2654,50 @@ export interface UserSaleItemSubscriptionGenqlSelection{
     
 
 
+    const SearchPageInfo_possibleTypes: string[] = ['SearchPageInfo']
+    export const isSearchPageInfo = (obj?: { __typename?: any } | null): obj is SearchPageInfo => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isSearchPageInfo"')
+      return SearchPageInfo_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const SearchResultConnection_possibleTypes: string[] = ['SearchResultConnection']
+    export const isSearchResultConnection = (obj?: { __typename?: any } | null): obj is SearchResultConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isSearchResultConnection"')
+      return SearchResultConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const SearchResultEdge_possibleTypes: string[] = ['SearchResultEdge']
+    export const isSearchResultEdge = (obj?: { __typename?: any } | null): obj is SearchResultEdge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isSearchResultEdge"')
+      return SearchResultEdge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const SearchResultItem_possibleTypes: string[] = ['Item','Sale']
+    export const isSearchResultItem = (obj?: { __typename?: any } | null): obj is SearchResultItem => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isSearchResultItem"')
+      return SearchResultItem_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const ServerTime_possibleTypes: string[] = ['ServerTime']
     export const isServerTime = (obj?: { __typename?: any } | null): obj is ServerTime => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isServerTime"')
       return ServerTime_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const StripePaymentProviderSession_possibleTypes: string[] = ['StripePaymentProviderSession']
+    export const isStripePaymentProviderSession = (obj?: { __typename?: any } | null): obj is StripePaymentProviderSession => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isStripePaymentProviderSession"')
+      return StripePaymentProviderSession_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -2105,6 +2749,14 @@ export interface UserSaleItemSubscriptionGenqlSelection{
     }
     
 
+
+    const UserSaleRegistration_possibleTypes: string[] = ['UserSaleRegistration']
+    export const isUserSaleRegistration = (obj?: { __typename?: any } | null): obj is UserSaleRegistration => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isUserSaleRegistration"')
+      return UserSaleRegistration_possibleTypes.includes(obj.__typename)
+    }
+    
+
 export const enumBidErrorCode = {
    NO_ERROR: 'NO_ERROR' as const,
    INTERNAL_ERROR: 'INTERNAL_ERROR' as const,
@@ -2117,7 +2769,10 @@ export const enumBidErrorCode = {
    NOT_OPEN_FOR_BIDDING: 'NOT_OPEN_FOR_BIDDING' as const,
    ITEM_CLOSING_PERIOD_PASSED: 'ITEM_CLOSING_PERIOD_PASSED' as const,
    BID_AMOUNT_UPPER_LIMIT_REACHED: 'BID_AMOUNT_UPPER_LIMIT_REACHED' as const,
-   ITEM_ALREADY_CLOSED: 'ITEM_ALREADY_CLOSED' as const
+   ITEM_ALREADY_CLOSED: 'ITEM_ALREADY_CLOSED' as const,
+   USER_REQUIRED_TO_HAVE_ACCEPTED_REGISTRATION_FOR_SALE: 'USER_REQUIRED_TO_HAVE_ACCEPTED_REGISTRATION_FOR_SALE' as const,
+   USER_REGISTRATION_REJECTED_FOR_SALE: 'USER_REGISTRATION_REJECTED_FOR_SALE' as const,
+   USER_REGISTRATION_PENDING_FOR_SALE: 'USER_REGISTRATION_PENDING_FOR_SALE' as const
 }
 
 export const enumBidOriginType = {
@@ -2147,6 +2802,258 @@ export const enumClosingMethod = {
    ONE_BY_ONE: 'ONE_BY_ONE' as const,
    OVERLAPPING: 'OVERLAPPING' as const,
    NONE: 'NONE' as const
+}
+
+export const enumCountry = {
+   AF: 'AF' as const,
+   AL: 'AL' as const,
+   AQ: 'AQ' as const,
+   DZ: 'DZ' as const,
+   AS: 'AS' as const,
+   AD: 'AD' as const,
+   AO: 'AO' as const,
+   AG: 'AG' as const,
+   AZ: 'AZ' as const,
+   AR: 'AR' as const,
+   AU: 'AU' as const,
+   AT: 'AT' as const,
+   BS: 'BS' as const,
+   BH: 'BH' as const,
+   BD: 'BD' as const,
+   AM: 'AM' as const,
+   BB: 'BB' as const,
+   BE: 'BE' as const,
+   BM: 'BM' as const,
+   BT: 'BT' as const,
+   BO: 'BO' as const,
+   BA: 'BA' as const,
+   BW: 'BW' as const,
+   BV: 'BV' as const,
+   BR: 'BR' as const,
+   BZ: 'BZ' as const,
+   IO: 'IO' as const,
+   SB: 'SB' as const,
+   VG: 'VG' as const,
+   BN: 'BN' as const,
+   BG: 'BG' as const,
+   MM: 'MM' as const,
+   BI: 'BI' as const,
+   BY: 'BY' as const,
+   KH: 'KH' as const,
+   CM: 'CM' as const,
+   CA: 'CA' as const,
+   CV: 'CV' as const,
+   KY: 'KY' as const,
+   CF: 'CF' as const,
+   LK: 'LK' as const,
+   TD: 'TD' as const,
+   CL: 'CL' as const,
+   CN: 'CN' as const,
+   TW: 'TW' as const,
+   CX: 'CX' as const,
+   CC: 'CC' as const,
+   CO: 'CO' as const,
+   KM: 'KM' as const,
+   YT: 'YT' as const,
+   CG: 'CG' as const,
+   CD: 'CD' as const,
+   CK: 'CK' as const,
+   CR: 'CR' as const,
+   HR: 'HR' as const,
+   CU: 'CU' as const,
+   CY: 'CY' as const,
+   CZ: 'CZ' as const,
+   BJ: 'BJ' as const,
+   DK: 'DK' as const,
+   DM: 'DM' as const,
+   DO: 'DO' as const,
+   EC: 'EC' as const,
+   SV: 'SV' as const,
+   GQ: 'GQ' as const,
+   ET: 'ET' as const,
+   ER: 'ER' as const,
+   EE: 'EE' as const,
+   FO: 'FO' as const,
+   FK: 'FK' as const,
+   GS: 'GS' as const,
+   FJ: 'FJ' as const,
+   FI: 'FI' as const,
+   AX: 'AX' as const,
+   FR: 'FR' as const,
+   GF: 'GF' as const,
+   PF: 'PF' as const,
+   TF: 'TF' as const,
+   DJ: 'DJ' as const,
+   GA: 'GA' as const,
+   GE: 'GE' as const,
+   GM: 'GM' as const,
+   PS: 'PS' as const,
+   DE: 'DE' as const,
+   GH: 'GH' as const,
+   GI: 'GI' as const,
+   KI: 'KI' as const,
+   GR: 'GR' as const,
+   GL: 'GL' as const,
+   GD: 'GD' as const,
+   GP: 'GP' as const,
+   GU: 'GU' as const,
+   GT: 'GT' as const,
+   GN: 'GN' as const,
+   GY: 'GY' as const,
+   HT: 'HT' as const,
+   HM: 'HM' as const,
+   VA: 'VA' as const,
+   HN: 'HN' as const,
+   HK: 'HK' as const,
+   HU: 'HU' as const,
+   IS: 'IS' as const,
+   IN: 'IN' as const,
+   ID: 'ID' as const,
+   IR: 'IR' as const,
+   IQ: 'IQ' as const,
+   IE: 'IE' as const,
+   IL: 'IL' as const,
+   IT: 'IT' as const,
+   CI: 'CI' as const,
+   JM: 'JM' as const,
+   JP: 'JP' as const,
+   KZ: 'KZ' as const,
+   JO: 'JO' as const,
+   KE: 'KE' as const,
+   KP: 'KP' as const,
+   KR: 'KR' as const,
+   KW: 'KW' as const,
+   KG: 'KG' as const,
+   LA: 'LA' as const,
+   LB: 'LB' as const,
+   LS: 'LS' as const,
+   LV: 'LV' as const,
+   LR: 'LR' as const,
+   LY: 'LY' as const,
+   LI: 'LI' as const,
+   LT: 'LT' as const,
+   LU: 'LU' as const,
+   MO: 'MO' as const,
+   MG: 'MG' as const,
+   MW: 'MW' as const,
+   MY: 'MY' as const,
+   MV: 'MV' as const,
+   ML: 'ML' as const,
+   MT: 'MT' as const,
+   MQ: 'MQ' as const,
+   MR: 'MR' as const,
+   MU: 'MU' as const,
+   MX: 'MX' as const,
+   MC: 'MC' as const,
+   MN: 'MN' as const,
+   MD: 'MD' as const,
+   ME: 'ME' as const,
+   MS: 'MS' as const,
+   MA: 'MA' as const,
+   MZ: 'MZ' as const,
+   OM: 'OM' as const,
+   NA: 'NA' as const,
+   NR: 'NR' as const,
+   NP: 'NP' as const,
+   NL: 'NL' as const,
+   CW: 'CW' as const,
+   AW: 'AW' as const,
+   SX: 'SX' as const,
+   BQ: 'BQ' as const,
+   NC: 'NC' as const,
+   VU: 'VU' as const,
+   NZ: 'NZ' as const,
+   NI: 'NI' as const,
+   NE: 'NE' as const,
+   NG: 'NG' as const,
+   NU: 'NU' as const,
+   NF: 'NF' as const,
+   NO: 'NO' as const,
+   MP: 'MP' as const,
+   UM: 'UM' as const,
+   FM: 'FM' as const,
+   MH: 'MH' as const,
+   PW: 'PW' as const,
+   PK: 'PK' as const,
+   PA: 'PA' as const,
+   PG: 'PG' as const,
+   PY: 'PY' as const,
+   PE: 'PE' as const,
+   PH: 'PH' as const,
+   PN: 'PN' as const,
+   PL: 'PL' as const,
+   PT: 'PT' as const,
+   GW: 'GW' as const,
+   TL: 'TL' as const,
+   PR: 'PR' as const,
+   QA: 'QA' as const,
+   RE: 'RE' as const,
+   RO: 'RO' as const,
+   RU: 'RU' as const,
+   RW: 'RW' as const,
+   BL: 'BL' as const,
+   SH: 'SH' as const,
+   KN: 'KN' as const,
+   AI: 'AI' as const,
+   LC: 'LC' as const,
+   MF: 'MF' as const,
+   PM: 'PM' as const,
+   VC: 'VC' as const,
+   SM: 'SM' as const,
+   ST: 'ST' as const,
+   SA: 'SA' as const,
+   SN: 'SN' as const,
+   RS: 'RS' as const,
+   SC: 'SC' as const,
+   SL: 'SL' as const,
+   SG: 'SG' as const,
+   SK: 'SK' as const,
+   VN: 'VN' as const,
+   SI: 'SI' as const,
+   SO: 'SO' as const,
+   ZA: 'ZA' as const,
+   ZW: 'ZW' as const,
+   ES: 'ES' as const,
+   SS: 'SS' as const,
+   SD: 'SD' as const,
+   EH: 'EH' as const,
+   SR: 'SR' as const,
+   SJ: 'SJ' as const,
+   SZ: 'SZ' as const,
+   SE: 'SE' as const,
+   CH: 'CH' as const,
+   SY: 'SY' as const,
+   TJ: 'TJ' as const,
+   TH: 'TH' as const,
+   TG: 'TG' as const,
+   TK: 'TK' as const,
+   TO: 'TO' as const,
+   TT: 'TT' as const,
+   AE: 'AE' as const,
+   TN: 'TN' as const,
+   TR: 'TR' as const,
+   TM: 'TM' as const,
+   TC: 'TC' as const,
+   TV: 'TV' as const,
+   UG: 'UG' as const,
+   UA: 'UA' as const,
+   MK: 'MK' as const,
+   EG: 'EG' as const,
+   GB: 'GB' as const,
+   GG: 'GG' as const,
+   JE: 'JE' as const,
+   IM: 'IM' as const,
+   TZ: 'TZ' as const,
+   US: 'US' as const,
+   VI: 'VI' as const,
+   BF: 'BF' as const,
+   UY: 'UY' as const,
+   UZ: 'UZ' as const,
+   VE: 'VE' as const,
+   WF: 'WF' as const,
+   WS: 'WS' as const,
+   YE: 'YE' as const,
+   ZM: 'ZM' as const
 }
 
 export const enumIdType = {
@@ -2191,6 +3098,11 @@ export const enumMeasurementUnit = {
    INCH: 'INCH' as const
 }
 
+export const enumMetafieldValueType = {
+   METAFIELD_VALUE_TYPE_SINGLE_LINE_TEXT: 'METAFIELD_VALUE_TYPE_SINGLE_LINE_TEXT' as const,
+   METAFIELD_VALUE_TYPE_RICH_TEXT: 'METAFIELD_VALUE_TYPE_RICH_TEXT' as const
+}
+
 export const enumPaddleType = {
    NOT_SET: 'NOT_SET' as const,
    IN_ROOM: 'IN_ROOM' as const,
@@ -2226,6 +3138,19 @@ export const enumReserveStatus = {
    NO_RESERVE: 'NO_RESERVE' as const
 }
 
+export const enumSaleRegistrationStatus = {
+   PENDING: 'PENDING' as const,
+   ACCEPTED: 'ACCEPTED' as const,
+   REJECTED: 'REJECTED' as const
+}
+
+export const enumSaleRegistrationType = {
+   ONLINE: 'ONLINE' as const,
+   PHONE: 'PHONE' as const,
+   PADDLE: 'PADDLE' as const,
+   AGGREGATOR: 'AGGREGATOR' as const
+}
+
 export const enumSaleStatus = {
    UNPUBLISHED: 'UNPUBLISHED' as const,
    PUBLISHED: 'PUBLISHED' as const,
@@ -2240,6 +3165,10 @@ export const enumSaleStatus = {
 export const enumSaleType = {
    LIVE: 'LIVE' as const,
    ONLINE_TIMED: 'ONLINE_TIMED' as const
+}
+
+export const enumSearchType = {
+   ITEM: 'ITEM' as const
 }
 
 export const enumSpecificationSubType = {

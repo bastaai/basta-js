@@ -41,6 +41,12 @@ type Account {
 
   """PaymentDetails set by account"""
   paymentDetails: PaymentDetails
+
+  """Metafields associated with the account"""
+  metafields(input: GetMetafieldsInput): [MetafieldsConnection!]!
+
+  """Metafield associated with the account"""
+  metafield(input: GetMetafieldInput!): Metafield
 }
 
 type Aggregator {
@@ -120,6 +126,9 @@ enum BidErrorCode {
   ITEM_CLOSING_PERIOD_PASSED
   BID_AMOUNT_UPPER_LIMIT_REACHED
   ITEM_ALREADY_CLOSED
+  USER_REQUIRED_TO_HAVE_ACCEPTED_REGISTRATION_FOR_SALE
+  USER_REGISTRATION_REJECTED_FOR_SALE
+  USER_REGISTRATION_PENDING_FOR_SALE
 }
 
 """
@@ -254,6 +263,259 @@ enum ClosingMethod {
   NONE
 }
 
+"""ISO 3166-1 alpha-2 country codes"""
+enum Country {
+  AF
+  AL
+  AQ
+  DZ
+  AS
+  AD
+  AO
+  AG
+  AZ
+  AR
+  AU
+  AT
+  BS
+  BH
+  BD
+  AM
+  BB
+  BE
+  BM
+  BT
+  BO
+  BA
+  BW
+  BV
+  BR
+  BZ
+  IO
+  SB
+  VG
+  BN
+  BG
+  MM
+  BI
+  BY
+  KH
+  CM
+  CA
+  CV
+  KY
+  CF
+  LK
+  TD
+  CL
+  CN
+  TW
+  CX
+  CC
+  CO
+  KM
+  YT
+  CG
+  CD
+  CK
+  CR
+  HR
+  CU
+  CY
+  CZ
+  BJ
+  DK
+  DM
+  DO
+  EC
+  SV
+  GQ
+  ET
+  ER
+  EE
+  FO
+  FK
+  GS
+  FJ
+  FI
+  AX
+  FR
+  GF
+  PF
+  TF
+  DJ
+  GA
+  GE
+  GM
+  PS
+  DE
+  GH
+  GI
+  KI
+  GR
+  GL
+  GD
+  GP
+  GU
+  GT
+  GN
+  GY
+  HT
+  HM
+  VA
+  HN
+  HK
+  HU
+  IS
+  IN
+  ID
+  IR
+  IQ
+  IE
+  IL
+  IT
+  CI
+  JM
+  JP
+  KZ
+  JO
+  KE
+  KP
+  KR
+  KW
+  KG
+  LA
+  LB
+  LS
+  LV
+  LR
+  LY
+  LI
+  LT
+  LU
+  MO
+  MG
+  MW
+  MY
+  MV
+  ML
+  MT
+  MQ
+  MR
+  MU
+  MX
+  MC
+  MN
+  MD
+  ME
+  MS
+  MA
+  MZ
+  OM
+  NA
+  NR
+  NP
+  NL
+  CW
+  AW
+  SX
+  BQ
+  NC
+  VU
+  NZ
+  NI
+  NE
+  NG
+  NU
+  NF
+  NO
+  MP
+  UM
+  FM
+  MH
+  PW
+  PK
+  PA
+  PG
+  PY
+  PE
+  PH
+  PN
+  PL
+  PT
+  GW
+  TL
+  PR
+  QA
+  RE
+  RO
+  RU
+  RW
+  BL
+  SH
+  KN
+  AI
+  LC
+  MF
+  PM
+  VC
+  SM
+  ST
+  SA
+  SN
+  RS
+  SC
+  SL
+  SG
+  SK
+  VN
+  SI
+  SO
+  ZA
+  ZW
+  ES
+  SS
+  SD
+  EH
+  SR
+  SJ
+  SZ
+  SE
+  CH
+  SY
+  TJ
+  TH
+  TG
+  TK
+  TO
+  TT
+  AE
+  TN
+  TR
+  TM
+  TC
+  TV
+  UG
+  UA
+  MK
+  EG
+  GB
+  GG
+  JE
+  IM
+  TZ
+  US
+  VI
+  BF
+  UY
+  UZ
+  VE
+  WF
+  WS
+  YE
+  ZM
+}
+
 type CurrentItem {
   item: Item!
   cursor: String!
@@ -279,6 +541,64 @@ type ExternalLiveStream {
 
   """LiveStream Updated"""
   updated: String!
+}
+
+"""
+Facet count for a specific field, containing all unique values and their counts.
+"""
+type FacetCount {
+  """
+  The field name this facet represents (e.g., "status", "tags", "reserveMet")
+  """
+  fieldName: String!
+
+  """Individual value counts for this field"""
+  counts: [FacetValue!]!
+
+  """Statistical information for numeric fields (optional)"""
+  stats: FacetStats
+}
+
+"""Statistical information for numeric facet fields"""
+type FacetStats {
+  """Average value"""
+  avg: Float
+
+  """Maximum value"""
+  max: Float
+
+  """Minimum value"""
+  min: Float
+
+  """Sum of all values"""
+  sum: Float
+
+  """Total number of values"""
+  totalValues: Int
+}
+
+"""Individual facet value and its count"""
+type FacetValue {
+  """The facet value (e.g., "OPEN", "Kitchenware", "true")"""
+  value: String!
+
+  """Number of items with this value"""
+  count: Int!
+
+  """Highlighted value (may include search term highlighting)"""
+  highlighted: String
+}
+
+"""Input for getting a single metafield connected to a specific entity"""
+input GetMetafieldInput {
+  key: String!
+}
+
+"""
+Input for getting multiple metafields connected to a specific entity, we return at max 10 metafields
+"""
+input GetMetafieldsInput {
+  keys: [String!]
 }
 
 """Input parameters to get all bids for userId"""
@@ -409,6 +729,30 @@ type Item implements Node {
 
   """Item specifications (dimensions, weight, type, etc.)"""
   specifications: ItemSpecifications
+
+  """Previous item"""
+  prevItem(sortBy: ItemOrderField = ITEM_NUMBER): Item
+
+  """Next item"""
+  nextItem(sortBy: ItemOrderField = ITEM_NUMBER): Item
+
+  """
+  Unique external identifier for the item, typically utilized for integration with third-party systems.
+  Note: Inherited from the underlying item if not set specifically for the item in the sale.
+  """
+  externalId: String
+
+  """Location of the item"""
+  location: String
+
+  """ClosingTimeCountdown. Should be interpreted as milliseconds."""
+  closingTimeCountdown: Int!
+
+  """Metafields associated with the item"""
+  metafields(input: GetMetafieldsInput): [MetafieldsConnection!]!
+
+  """Metafield associated with the item"""
+  metafield(input: GetMetafieldInput!): Metafield
 }
 
 union ItemChanged = Item | ServerTime
@@ -577,6 +921,32 @@ enum LiveStreamType {
 
 union LiveVideoStream = ExternalLiveStream | BastaLiveStream
 
+"""Mailing address"""
+type MailingAddress {
+  name: String!
+  company: String!
+  phone: String!
+  line1: String!
+  line2: String!
+  city: String!
+  state: String!
+  postalCode: String!
+  country: Country!
+}
+
+"""Input for mailing address."""
+input MailingAddressInput {
+  name: String!
+  company: String!
+  phone: String!
+  line1: String!
+  line2: String!
+  city: String!
+  state: String!
+  postalCode: String!
+  country: Country!
+}
+
 union MaxBidPlaced = MaxBidPlacedSuccess | BidPlacedError
 
 """
@@ -628,6 +998,12 @@ type Me {
 
   """Latest items that user has placed a bid on."""
   latestItemBids(first: Int): ItemsConnection!
+
+  """Billing address"""
+  billingAddress: MailingAddress!
+
+  """Shipping address"""
+  shippingAddress: MailingAddress!
 }
 
 """Measurement unit enum"""
@@ -635,6 +1011,39 @@ enum MeasurementUnit {
   NOT_SET
   CM
   INCH
+}
+
+"""Object for a metafield"""
+type Metafield implements Node {
+  id: ID!
+  key: String!
+  value: String!
+  valueType: MetafieldValueType!
+}
+
+"""Enum for the value type of a metafield"""
+enum MetafieldValueType {
+  METAFIELD_VALUE_TYPE_SINGLE_LINE_TEXT
+  METAFIELD_VALUE_TYPE_RICH_TEXT
+}
+
+type MetafieldsConnection {
+  """Metafields edges"""
+  edges: [MetafieldsEdge!]!
+
+  """Metafields nodes"""
+  nodes: [Metafield!]!
+
+  """Current page information"""
+  pageInfo: PageInfo!
+}
+
+type MetafieldsEdge {
+  """Current metafield cursor"""
+  cursor: String!
+
+  """Metafield node"""
+  node: Metafield!
 }
 
 type Mutation {
@@ -679,6 +1088,15 @@ type Mutation {
 
   """Unsubscribe from item"""
   unsubscribeFromItem(saleId: String!, itemId: String!): ID!
+
+  """
+  Returns session credentials for selected payment provider, e.g. Stripe Customer Session
+  A Customer Session allows you to grant Stripe’s frontend SDKs (like Stripe.js) client-side access control over a Customer.
+  """
+  createPaymentProviderSession(input: PaymentProviderSessionInput!): PaymentProviderSession!
+
+  """Update user information."""
+  updateUser(input: UpdateUserInput!): Me!
 }
 
 interface Node {
@@ -741,6 +1159,16 @@ enum PaginationDirection {
 
 type PaymentDetails {
   bidderPremium: Float!
+}
+
+"""
+PaymentProviderSession is a union of all possible payment provider sessions.
+"""
+union PaymentProviderSession = StripePaymentProviderSession
+
+input PaymentProviderSessionInput {
+  """Account identifier"""
+  accountId: String!
 }
 
 type PaymentSession {
@@ -815,6 +1243,57 @@ type Query {
   This method is only available to basta users and front ends written by Basta
   """
   paymentSession(input: PaymentSessionInput): PaymentSession!
+
+  """
+  Search across different node types in the graph (items).
+  
+  Using search uses a search index that is eventually consistent, this means we cannot guarantee that the results are always up to date, even though the search index is updated in almost real time.
+  
+  Example queries:
+    - Search for items: search(type: ITEM, query: "vintage watch", first: 20)
+  """
+  search(
+    """Account ID to search within."""
+    accountId: String!
+
+    """The type of node to search for (ITEM)"""
+    type: SearchType!
+
+    """Search query text"""
+    query: String!
+
+    """Number of results to return per page"""
+    first: Int = 20
+
+    """Page number for pagination (1-based)"""
+    page: Int = 1
+
+    """
+    Fields to search in. If not specified, searches across default fields for the type.
+    
+    For ITEM: title, description, tags
+    """
+    queryBy: [String!]
+
+    """
+    Sort results by field and direction.
+    Format: "field:direction" (e.g., "title:asc", "createdAt:desc")
+    If not provided, results are sorted by relevance.
+    """
+    orderBy: String
+
+    """
+    Additional filter conditions specific to the search type.
+    
+    For ITEM filters, examples:
+      - "saleId:=xyz789"
+      - "reserveMet:true"
+      - "currentBid:>= 10000"
+    
+    Multiple conditions can be combined with AND using &&
+    """
+    filterBy: String
+  ): SearchResultConnection!
 }
 
 """
@@ -882,7 +1361,10 @@ type Sale implements Node {
   """Sale status."""
   status: SaleStatus!
 
-  """Items that have been associated with this sale."""
+  """
+  Items that have been associated with this sale.
+  Uses cursor-based pagination.
+  """
   items(first: Int = 20, after: String, filter: SaleItemFilter, order: ItemOrderInput): ItemsConnection!
 
   """
@@ -936,6 +1418,23 @@ type Sale implements Node {
 
   """Paddle assigned to authenticated user"""
   userPaddle: Paddle
+
+  """Sale registration for authenticated user"""
+  userSaleRegistrations: [UserSaleRegistration!]!
+
+  """
+  Unique external identifier for the sale, typically utilized for integration with third-party systems.
+  """
+  externalId: String
+
+  """Location of the sale"""
+  location: String
+
+  """Metafields associated with the sale"""
+  metafields(input: GetMetafieldsInput): [MetafieldsConnection!]!
+
+  """Metafield associated with the sale"""
+  metafield(input: GetMetafieldInput!): Metafield
 }
 
 union SaleActivity = Sale | Item
@@ -975,6 +1474,31 @@ input SaleItemFilter {
 
   """Item IDs"""
   itemIds: [String!]
+}
+
+enum SaleRegistrationStatus {
+  """Registration is pending approval"""
+  PENDING
+
+  """Registration has been accepted"""
+  ACCEPTED
+
+  """Registration has been rejected"""
+  REJECTED
+}
+
+enum SaleRegistrationType {
+  """Online registration (web/app)"""
+  ONLINE
+
+  """Phone bidding registration"""
+  PHONE
+
+  """Paddle registration (in-person bidding)"""
+  PADDLE
+
+  """Aggregator registration (third-party platform)"""
+  AGGREGATOR
 }
 
 """Sale Status represent what status an sale is currently running in."""
@@ -1021,6 +1545,66 @@ type SalesEdge {
 
   """Sale node"""
   node: Sale!
+}
+
+"""Page info for search results using page-based pagination."""
+type SearchPageInfo {
+  """Current page number (1-based)"""
+  page: Int!
+
+  """Number of results per page"""
+  pageSize: Int!
+
+  """Total number of pages"""
+  totalPages: Int!
+
+  """Whether there is a next page"""
+  hasNextPage: Boolean!
+
+  """Whether there is a previous page"""
+  hasPreviousPage: Boolean!
+
+  """Total number of results across all pages"""
+  totalRecords: Int!
+}
+
+"""
+Connection type for search results.
+Includes pagination info and facets for filtering.
+"""
+type SearchResultConnection {
+  """Search result edges"""
+  edges: [SearchResultEdge!]!
+
+  """Page-based pagination info"""
+  pageInfo: SearchPageInfo!
+
+  """Total number of results found"""
+  resultCount: Int!
+
+  """
+  Facet counts for building filter UIs.
+  Available facets depend on the search type.
+  """
+  facets: [FacetCount!]!
+}
+
+"""Edge for search results"""
+type SearchResultEdge {
+  """The search result node"""
+  node: SearchResultItem!
+}
+
+"""
+Union type representing a search result item.
+Depending on the SearchType, this will be an Item, Sale, or other supported nodes.
+"""
+union SearchResultItem = Item | Sale
+
+"""Search type enum specifies what type of node to search for."""
+enum SearchType {
+  """Search for items across all sales"""
+  ITEM
 }
 
 type ServerTime {
@@ -1158,6 +1742,21 @@ enum SpecificationType {
   OTHER
 }
 
+"""
+StripePaymentProviderSession provides credentials for client-side Stripe integration.
+A Customer Session allows you to grant Stripe’s frontend SDKs (like Stripe.js) client-side access control over a Customer.
+"""
+type StripePaymentProviderSession {
+  """Publishable Key"""
+  publishableKey: String!
+
+  """Customer Session Client Secret"""
+  customerSessionClientSecret: String!
+
+  """Setup Intent Client Secret"""
+  setupIntentClientSecret: String!
+}
+
 type Subscription {
   """
   Item changed subscription sends real-time information about changes
@@ -1186,6 +1785,15 @@ type Subscription {
   Periodic server time updates to syncronize clocks in applications using Basta.
   """
   serverTimeChanged: ServerTime!
+}
+
+"""Input for updating user information."""
+input UpdateUserInput {
+  """Billing address"""
+  billingAddress: MailingAddressInput
+
+  """Shipping address"""
+  shippingAddress: MailingAddressInput
 }
 
 type UserAccountSubscription {
@@ -1226,6 +1834,23 @@ type UserSaleItemSubscription {
   saleId: String!
   itemId: String!
   userId: String!
+}
+
+type UserSaleRegistration {
+  """Id of the registration"""
+  id: ID!
+
+  """Sale ID that the user is registering for"""
+  saleId: String!
+
+  """User ID of the person registering"""
+  userId: String!
+
+  """Type of registration"""
+  registrationType: SaleRegistrationType!
+
+  """Status of the registration"""
+  status: SaleRegistrationStatus!
 }
 
 """Weight unit enum"""

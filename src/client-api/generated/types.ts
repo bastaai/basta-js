@@ -6,47 +6,52 @@ export default {
         12,
         15,
         16,
-        20,
-        22,
-        23,
-        25,
-        33,
-        36,
-        40,
-        43,
-        48,
-        54,
+        17,
+        24,
+        28,
+        29,
+        31,
+        39,
+        42,
+        46,
+        49,
         56,
-        60,
-        61,
-        65,
+        58,
         66,
+        68,
         74,
         75,
-        78,
         79,
         80,
-        87
+        88,
+        89,
+        90,
+        91,
+        97,
+        99,
+        100,
+        101,
+        111
     ],
     "types": {
         "Account": {
             "id": [
-                22
+                28
             ],
             "name": [
-                80
+                101
             ],
             "handle": [
-                80
+                101
             ],
             "description": [
-                80
+                101
             ],
             "imageUrl": [
-                80
+                101
             ],
             "links": [
-                39
+                45
             ],
             "bastaBidClient": [
                 15
@@ -55,21 +60,38 @@ export default {
                 15
             ],
             "paymentDetails": [
-                57
+                69
+            ],
+            "metafields": [
+                59,
+                {
+                    "input": [
+                        26
+                    ]
+                }
+            ],
+            "metafield": [
+                57,
+                {
+                    "input": [
+                        25,
+                        "GetMetafieldInput!"
+                    ]
+                }
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "Aggregator": {
             "name": [
-                80
+                101
             ],
             "type": [
                 7
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "BastaLiveStream": {
@@ -77,48 +99,48 @@ export default {
                 15
             ],
             "channelId": [
-                80
+                101
             ],
             "publicUrl": [
-                80
+                101
             ],
             "isLive": [
                 15
             ],
             "currentViewers": [
-                25
+                31
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "Bid": {
             "id": [
-                22
+                28
             ],
             "saleId": [
-                80
+                101
             ],
             "itemId": [
-                80
+                101
             ],
             "amount": [
-                25
+                31
             ],
             "maxAmount": [
-                25
+                31
             ],
             "date": [
-                80
+                101
             ],
             "bidStatus": [
                 11
             ],
             "bidderIdentifier": [
-                80
+                101
             ],
             "paddle": [
-                52
+                64
             ],
             "reactiveBid": [
                 15
@@ -127,33 +149,33 @@ export default {
                 6
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "BidErrorCode": {},
         "BidIncrementTable": {
             "rangeRules": [
-                64
+                78
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "BidOrigin": {
             "on_OnlineBidOrigin": [
-                51
+                63
             ],
             "on_PaddleBidOrigin": [
-                53
+                65
             ],
             "on_PhoneBidOrigin": [
-                62
+                76
             ],
             "on_Aggregator": [
                 1
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "BidOriginType": {},
@@ -162,176 +184,241 @@ export default {
                 10
             ],
             "on_MaxBidPlacedSuccess": [
-                46
+                54
             ],
             "on_BidPlacedError": [
                 9
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "BidPlacedError": {
             "error": [
-                80
+                101
             ],
             "errorCode": [
                 4
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "BidPlacedSuccess": {
             "id": [
-                80
+                101
             ],
             "amount": [
-                25
+                31
             ],
             "date": [
-                80
+                101
             ],
             "bidStatus": [
                 11
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "BidStatus": {},
         "BidType": {},
         "BidderVerificationInput": {
             "successUrl": [
-                80
+                101
             ],
             "cancelUrl": [
-                80
+                101
             ],
             "renderMode": [
-                65
+                79
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "BidderVerificationLink": {
             "url": [
-                80
+                101
             ],
             "clientSecret": [
-                80
+                101
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "Boolean": {},
         "ClosingMethod": {},
+        "Country": {},
         "CurrentItem": {
             "item": [
-                26
+                32
             ],
             "cursor": [
-                80
+                101
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "Estimate": {
             "low": [
-                25
+                31
             ],
             "high": [
-                25
+                31
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "ExternalLiveStream": {
             "url": [
-                80
+                101
             ],
             "type": [
-                43
+                49
             ],
             "created": [
-                80
+                101
             ],
             "updated": [
-                80
+                101
             ],
             "__typename": [
-                80
+                101
+            ]
+        },
+        "FacetCount": {
+            "fieldName": [
+                101
+            ],
+            "counts": [
+                23
+            ],
+            "stats": [
+                22
+            ],
+            "__typename": [
+                101
+            ]
+        },
+        "FacetStats": {
+            "avg": [
+                24
+            ],
+            "max": [
+                24
+            ],
+            "min": [
+                24
+            ],
+            "sum": [
+                24
+            ],
+            "totalValues": [
+                31
+            ],
+            "__typename": [
+                101
+            ]
+        },
+        "FacetValue": {
+            "value": [
+                101
+            ],
+            "count": [
+                31
+            ],
+            "highlighted": [
+                101
+            ],
+            "__typename": [
+                101
             ]
         },
         "Float": {},
-        "GetUserBidsInput": {
-            "userId": [
-                80
-            ],
-            "first": [
-                25
-            ],
-            "after": [
-                80
+        "GetMetafieldInput": {
+            "key": [
+                101
             ],
             "__typename": [
-                80
+                101
+            ]
+        },
+        "GetMetafieldsInput": {
+            "keys": [
+                101
+            ],
+            "__typename": [
+                101
+            ]
+        },
+        "GetUserBidsInput": {
+            "userId": [
+                101
+            ],
+            "first": [
+                31
+            ],
+            "after": [
+                101
+            ],
+            "__typename": [
+                101
             ]
         },
         "ID": {},
         "IdType": {},
         "Image": {
             "id": [
-                80
+                101
             ],
             "url": [
-                80
+                101
             ],
             "order": [
-                25
+                31
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "Int": {},
         "Item": {
             "id": [
-                22
+                28
             ],
             "cursor": [
-                80
+                101
             ],
             "saleId": [
-                80
+                101
             ],
             "accountId": [
-                80
+                101
             ],
             "title": [
-                80
+                101
             ],
             "description": [
-                80
+                101
             ],
             "currency": [
-                80
+                101
             ],
             "estimates": [
-                18
+                19
             ],
             "currentBid": [
-                25
+                31
             ],
             "bidStatus": [
                 11
             ],
             "totalBids": [
-                25
+                31
             ],
             "bids": [
                 3,
@@ -348,13 +435,13 @@ export default {
                 15
             ],
             "reserveStatus": [
-                66
+                80
             ],
             "nextAsks": [
-                25,
+                31,
                 {
                     "iterations": [
-                        25
+                        31
                     ]
                 }
             ],
@@ -362,31 +449,31 @@ export default {
                 5
             ],
             "itemDates": [
-                28
+                34
             ],
             "dates": [
-                28
+                34
             ],
             "status": [
-                36
+                42
             ],
             "startingBid": [
-                25
+                31
             ],
             "images": [
-                24
+                30
             ],
             "slug": [
-                80
+                101
             ],
             "slugFullPath": [
-                80
+                101
             ],
             "itemNumber": [
-                25
+                31
             ],
             "notifications": [
-                32
+                38
             ],
             "isUserSubscribed": [
                 15
@@ -395,244 +482,350 @@ export default {
                 12
             ],
             "specifications": [
-                35
+                41
+            ],
+            "prevItem": [
+                32,
+                {
+                    "sortBy": [
+                        39
+                    ]
+                }
+            ],
+            "nextItem": [
+                32,
+                {
+                    "sortBy": [
+                        39
+                    ]
+                }
+            ],
+            "externalId": [
+                101
+            ],
+            "location": [
+                101
+            ],
+            "closingTimeCountdown": [
+                31
+            ],
+            "metafields": [
+                59,
+                {
+                    "input": [
+                        26
+                    ]
+                }
+            ],
+            "metafield": [
+                57,
+                {
+                    "input": [
+                        25,
+                        "GetMetafieldInput!"
+                    ]
+                }
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "ItemChanged": {
             "on_Item": [
-                26
+                32
             ],
             "on_ServerTime": [
-                77
+                98
             ],
             "on_Node": [
-                50
+                62
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "ItemDates": {
             "openDate": [
-                80
+                101
             ],
             "closingStart": [
-                80
+                101
             ],
             "closingEnd": [
-                80
+                101
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "ItemFairWarningNotification": {
             "id": [
-                80
+                101
             ],
             "date": [
-                80
+                101
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "ItemIdsFilter": {
             "itemIds": [
-                22
+                28
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "ItemMessageNotification": {
             "id": [
-                80
+                101
             ],
             "message": [
-                80
+                101
             ],
             "date": [
-                80
+                101
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "ItemNotification": {
             "on_ItemMessageNotification": [
-                31
+                37
             ],
             "on_ItemFairWarningNotification": [
-                29
+                35
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "ItemOrderField": {},
         "ItemOrderInput": {
             "field": [
-                33
+                39
             ],
             "direction": [
-                56
+                68
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "ItemSpecifications": {
             "type": [
-                79
+                100
             ],
             "subType": [
-                78
+                99
             ],
             "height": [
-                20
+                24
             ],
             "length": [
-                20
+                24
             ],
             "depth": [
-                20
+                24
             ],
             "measurementUnit": [
-                48
+                56
             ],
             "weight": [
-                20
+                24
             ],
             "weightUnit": [
-                87
+                111
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "ItemStatus": {},
         "ItemsConnection": {
             "edges": [
-                38
+                44
             ],
             "pageInfo": [
-                55
+                67
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "ItemsEdge": {
             "cursor": [
-                80
+                101
             ],
             "node": [
-                26
+                32
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "Link": {
             "type": [
-                40
+                46
             ],
             "url": [
-                80
+                101
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "LinkType": {},
         "LiveItem": {
             "item": [
-                26
+                32
             ],
             "cursor": [
-                80
+                101
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "LiveStream": {
             "url": [
-                80
+                101
             ],
             "type": [
-                43
+                49
             ],
             "created": [
-                80
+                101
             ],
             "updated": [
-                80
+                101
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "LiveStreamType": {},
         "LiveVideoStream": {
             "on_ExternalLiveStream": [
-                19
+                20
             ],
             "on_BastaLiveStream": [
                 2
             ],
             "__typename": [
-                80
+                101
+            ]
+        },
+        "MailingAddress": {
+            "name": [
+                101
+            ],
+            "company": [
+                101
+            ],
+            "phone": [
+                101
+            ],
+            "line1": [
+                101
+            ],
+            "line2": [
+                101
+            ],
+            "city": [
+                101
+            ],
+            "state": [
+                101
+            ],
+            "postalCode": [
+                101
+            ],
+            "country": [
+                17
+            ],
+            "__typename": [
+                101
+            ]
+        },
+        "MailingAddressInput": {
+            "name": [
+                101
+            ],
+            "company": [
+                101
+            ],
+            "phone": [
+                101
+            ],
+            "line1": [
+                101
+            ],
+            "line2": [
+                101
+            ],
+            "city": [
+                101
+            ],
+            "state": [
+                101
+            ],
+            "postalCode": [
+                101
+            ],
+            "country": [
+                17
+            ],
+            "__typename": [
+                101
             ]
         },
         "MaxBidPlaced": {
             "on_MaxBidPlacedSuccess": [
-                46
+                54
             ],
             "on_BidPlacedError": [
                 9
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "MaxBidPlacedSuccess": {
             "id": [
-                80
+                101
             ],
             "amount": [
-                25
+                31
             ],
             "maxAmount": [
-                25
+                31
             ],
             "bidStatus": [
                 11
             ],
             "date": [
-                80
+                101
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "Me": {
             "userId": [
-                80
+                101
             ],
             "bids": [
-                84,
+                107,
                 {
                     "first": [
-                        25,
+                        31,
                         "Int!"
                     ],
                     "after": [
-                        80
+                        101
                     ]
                 }
             ],
@@ -643,38 +836,87 @@ export default {
                 15
             ],
             "saleSubscriptions": [
-                70
+                84
             ],
             "saleItemSubscriptions": [
-                37
+                43
             ],
             "latestItemBids": [
-                37,
+                43,
                 {
                     "first": [
-                        25
+                        31
                     ]
                 }
             ],
+            "billingAddress": [
+                51
+            ],
+            "shippingAddress": [
+                51
+            ],
             "__typename": [
-                80
+                101
             ]
         },
         "MeasurementUnit": {},
+        "Metafield": {
+            "id": [
+                28
+            ],
+            "key": [
+                101
+            ],
+            "value": [
+                101
+            ],
+            "valueType": [
+                58
+            ],
+            "__typename": [
+                101
+            ]
+        },
+        "MetafieldValueType": {},
+        "MetafieldsConnection": {
+            "edges": [
+                60
+            ],
+            "nodes": [
+                57
+            ],
+            "pageInfo": [
+                67
+            ],
+            "__typename": [
+                101
+            ]
+        },
+        "MetafieldsEdge": {
+            "cursor": [
+                101
+            ],
+            "node": [
+                57
+            ],
+            "__typename": [
+                101
+            ]
+        },
         "Mutation": {
             "bidOnItem": [
                 8,
                 {
                     "saleId": [
-                        80,
+                        101,
                         "String!"
                     ],
                     "itemId": [
-                        80,
+                        101,
                         "String!"
                     ],
                     "amount": [
-                        25,
+                        31,
                         "Int!"
                     ],
                     "type": [
@@ -684,18 +926,18 @@ export default {
                 }
             ],
             "maxBidOnItem": [
-                45,
+                53,
                 {
                     "saleId": [
-                        80,
+                        101,
                         "String!"
                     ],
                     "itemId": [
-                        80,
+                        101,
                         "String!"
                     ],
                     "maxAmount": [
-                        25,
+                        31,
                         "Int!"
                     ]
                 }
@@ -709,71 +951,92 @@ export default {
                 }
             ],
             "acceptBidderTerms": [
-                80
+                101
             ],
             "subscribeToAccount": [
-                82,
+                105,
                 {
                     "accountId": [
-                        80,
+                        101,
                         "String!"
                     ]
                 }
             ],
             "unsubscribeFromAccount": [
-                22,
+                28,
                 {
                     "accountId": [
-                        80,
+                        101,
                         "String!"
                     ]
                 }
             ],
             "subsribeToItem": [
-                86,
+                109,
                 {
                     "saleId": [
-                        80,
+                        101,
                         "String!"
                     ],
                     "itemId": [
-                        80,
+                        101,
                         "String!"
                     ]
                 }
             ],
             "unsubscribeFromItem": [
-                22,
+                28,
                 {
                     "saleId": [
-                        80,
+                        101,
                         "String!"
                     ],
                     "itemId": [
-                        80,
+                        101,
                         "String!"
                     ]
                 }
             ],
+            "createPaymentProviderSession": [
+                70,
+                {
+                    "input": [
+                        71,
+                        "PaymentProviderSessionInput!"
+                    ]
+                }
+            ],
+            "updateUser": [
+                55,
+                {
+                    "input": [
+                        104,
+                        "UpdateUserInput!"
+                    ]
+                }
+            ],
             "__typename": [
-                80
+                101
             ]
         },
         "Node": {
             "id": [
-                22
+                28
             ],
             "on_Item": [
-                26
+                32
+            ],
+            "on_Metafield": [
+                57
             ],
             "on_Sale": [
-                67
+                81
             ],
             "on_UserBid": [
-                83
+                106
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "OnlineBidOrigin": {
@@ -781,21 +1044,21 @@ export default {
                 7
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "Paddle": {
             "identifier": [
-                80
+                101
             ],
             "type": [
-                54
+                66
             ],
             "created": [
-                80
+                101
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "PaddleBidOrigin": {
@@ -803,56 +1066,72 @@ export default {
                 7
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "PaddleType": {},
         "PageInfo": {
             "startCursor": [
-                22
+                28
             ],
             "endCursor": [
-                22
+                28
             ],
             "hasNextPage": [
                 15
             ],
             "totalRecords": [
-                25
+                31
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "PaginationDirection": {},
         "PaymentDetails": {
             "bidderPremium": [
-                20
+                24
             ],
             "__typename": [
-                80
+                101
+            ]
+        },
+        "PaymentProviderSession": {
+            "on_StripePaymentProviderSession": [
+                102
+            ],
+            "__typename": [
+                101
+            ]
+        },
+        "PaymentProviderSessionInput": {
+            "accountId": [
+                101
+            ],
+            "__typename": [
+                101
             ]
         },
         "PaymentSession": {
             "url": [
-                80
+                101
             ],
             "status": [
-                60
+                74
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "PaymentSessionInput": {
             "saleId": [
-                80
+                101
             ],
             "itemId": [
-                80
+                101
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "PaymentSessionStatus": {},
@@ -862,7 +1141,7 @@ export default {
                 7
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "Query": {
@@ -870,173 +1149,206 @@ export default {
                 0,
                 {
                     "id": [
-                        80,
+                        101,
                         "String!"
                     ],
                     "idType": [
-                        23
+                        29
                     ]
                 }
             ],
             "sales": [
-                70,
+                84,
                 {
                     "accountId": [
-                        80,
+                        101,
                         "String!"
                     ],
                     "first": [
-                        25
+                        31
                     ],
                     "after": [
-                        80
+                        101
                     ],
                     "filter": [
-                        72
+                        86
                     ],
                     "idType": [
-                        23
+                        29
                     ]
                 }
             ],
             "sale": [
-                67,
+                81,
                 {
                     "id": [
-                        80,
+                        101,
                         "String!"
                     ],
                     "idType": [
-                        23
+                        29
                     ]
                 }
             ],
             "saleItem": [
-                26,
+                32,
                 {
                     "saleId": [
-                        80,
+                        101,
                         "String!"
                     ],
                     "itemId": [
-                        80,
+                        101,
                         "String!"
                     ]
                 }
             ],
             "accountSaleItems": [
-                37,
+                43,
                 {
                     "accountId": [
-                        80,
+                        101,
                         "String!"
                     ],
                     "first": [
-                        25
+                        31
                     ],
                     "after": [
-                        80
+                        101
                     ],
                     "filter": [
-                        73
+                        87
                     ]
                 }
             ],
             "saleItemByURI": [
-                26,
+                32,
                 {
                     "uri": [
-                        80,
+                        101,
                         "String!"
                     ]
                 }
             ],
             "bids": [
-                84,
+                107,
                 {
                     "userId": [
-                        80,
+                        101,
                         "String!"
                     ],
                     "first": [
-                        25,
+                        31,
                         "Int!"
                     ],
                     "after": [
-                        80
+                        101
                     ]
                 }
             ],
             "me": [
-                47
+                55
             ],
             "serverTime": [
-                77
+                98
             ],
             "paymentSession": [
-                58,
+                72,
                 {
                     "input": [
-                        59
+                        73
+                    ]
+                }
+            ],
+            "search": [
+                94,
+                {
+                    "accountId": [
+                        101,
+                        "String!"
+                    ],
+                    "type": [
+                        97,
+                        "SearchType!"
+                    ],
+                    "query": [
+                        101,
+                        "String!"
+                    ],
+                    "first": [
+                        31
+                    ],
+                    "page": [
+                        31
+                    ],
+                    "queryBy": [
+                        101,
+                        "[String!]"
+                    ],
+                    "orderBy": [
+                        101
+                    ],
+                    "filterBy": [
+                        101
                     ]
                 }
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "RangeRule": {
             "highRange": [
-                25
+                31
             ],
             "lowRange": [
-                25
+                31
             ],
             "step": [
-                25
+                31
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "RenderMode": {},
         "ReserveStatus": {},
         "Sale": {
             "id": [
-                22
+                28
             ],
             "cursor": [
-                80
+                101
             ],
             "accountId": [
-                80
+                101
             ],
             "title": [
-                80
+                101
             ],
             "description": [
-                80
+                101
             ],
             "currency": [
-                80
+                101
             ],
             "status": [
-                74
+                90
             ],
             "items": [
-                37,
+                43,
                 {
                     "first": [
-                        25
+                        31
                     ],
                     "after": [
-                        80
+                        101
                     ],
                     "filter": [
-                        73
+                        87
                     ],
                     "order": [
-                        34
+                        40
                     ]
                 }
             ],
@@ -1044,269 +1356,405 @@ export default {
                 5
             ],
             "sequenceNumber": [
-                25
+                31
             ],
             "dates": [
-                71
+                85
             ],
             "closingMethod": [
                 16
             ],
             "images": [
-                24
+                30
             ],
             "themeType": [
-                25
+                31
             ],
             "slug": [
-                80
+                101
             ],
             "slugFullPath": [
-                80
+                101
             ],
             "type": [
-                75
+                91
             ],
             "liveStream": [
-                42
+                48
             ],
             "liveVideoStream": [
-                44
+                50
             ],
             "liveItem": [
-                41
+                47
             ],
             "userPaddle": [
-                52
+                64
+            ],
+            "userSaleRegistrations": [
+                110
+            ],
+            "externalId": [
+                101
+            ],
+            "location": [
+                101
+            ],
+            "metafields": [
+                59,
+                {
+                    "input": [
+                        26
+                    ]
+                }
+            ],
+            "metafield": [
+                57,
+                {
+                    "input": [
+                        25,
+                        "GetMetafieldInput!"
+                    ]
+                }
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "SaleActivity": {
             "on_Sale": [
-                67
+                81
             ],
             "on_Item": [
-                26
+                32
             ],
             "on_Node": [
-                50
+                62
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "SaleChanged": {
             "on_Sale": [
-                67
+                81
             ],
             "on_ServerTime": [
-                77
+                98
             ],
             "on_Node": [
-                50
+                62
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "SaleConnection": {
             "edges": [
-                76
+                92
             ],
             "pageInfo": [
-                55
+                67
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "SaleDates": {
             "closingDate": [
-                80
+                101
             ],
             "openDate": [
-                80
+                101
             ],
             "liveDate": [
-                80
+                101
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "SaleFilter": {
             "statuses": [
-                74
+                90
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "SaleItemFilter": {
             "statuses": [
-                36
+                42
             ],
             "itemIds": [
-                80
+                101
             ],
             "__typename": [
-                80
+                101
             ]
         },
+        "SaleRegistrationStatus": {},
+        "SaleRegistrationType": {},
         "SaleStatus": {},
         "SaleType": {},
         "SalesEdge": {
             "cursor": [
-                80
+                101
             ],
             "node": [
-                67
+                81
             ],
             "__typename": [
-                80
+                101
             ]
         },
-        "ServerTime": {
-            "currentTime": [
-                25
+        "SearchPageInfo": {
+            "page": [
+                31
+            ],
+            "pageSize": [
+                31
+            ],
+            "totalPages": [
+                31
+            ],
+            "hasNextPage": [
+                15
+            ],
+            "hasPreviousPage": [
+                15
+            ],
+            "totalRecords": [
+                31
             ],
             "__typename": [
-                80
+                101
+            ]
+        },
+        "SearchResultConnection": {
+            "edges": [
+                95
+            ],
+            "pageInfo": [
+                93
+            ],
+            "resultCount": [
+                31
+            ],
+            "facets": [
+                21
+            ],
+            "__typename": [
+                101
+            ]
+        },
+        "SearchResultEdge": {
+            "node": [
+                96
+            ],
+            "__typename": [
+                101
+            ]
+        },
+        "SearchResultItem": {
+            "on_Item": [
+                32
+            ],
+            "on_Sale": [
+                81
+            ],
+            "on_Node": [
+                62
+            ],
+            "__typename": [
+                101
+            ]
+        },
+        "SearchType": {},
+        "ServerTime": {
+            "currentTime": [
+                31
+            ],
+            "__typename": [
+                101
             ]
         },
         "SpecificationSubType": {},
         "SpecificationType": {},
         "String": {},
+        "StripePaymentProviderSession": {
+            "publishableKey": [
+                101
+            ],
+            "customerSessionClientSecret": [
+                101
+            ],
+            "setupIntentClientSecret": [
+                101
+            ],
+            "__typename": [
+                101
+            ]
+        },
         "Subscription": {
             "itemChanged": [
-                27,
+                33,
                 {
                     "saleId": [
-                        22,
+                        28,
                         "ID!"
                     ],
                     "itemIds": [
-                        22,
+                        28,
                         "[ID!]!"
                     ]
                 }
             ],
             "saleChanged": [
-                69,
+                83,
                 {
                     "saleId": [
-                        22,
+                        28,
                         "ID!"
                     ]
                 }
             ],
             "salesChanged": [
-                69,
+                83,
                 {
                     "saleIds": [
-                        22,
+                        28,
                         "[ID!]!"
                     ]
                 }
             ],
             "saleActivity": [
-                68,
+                82,
                 {
                     "saleId": [
-                        22,
+                        28,
                         "ID!"
                     ],
                     "itemIdFilter": [
-                        30
+                        36
                     ]
                 }
             ],
             "serverTimeChanged": [
-                77
+                98
             ],
             "__typename": [
-                80
+                101
+            ]
+        },
+        "UpdateUserInput": {
+            "billingAddress": [
+                52
+            ],
+            "shippingAddress": [
+                52
+            ],
+            "__typename": [
+                101
             ]
         },
         "UserAccountSubscription": {
             "accountId": [
-                80
+                101
             ],
             "userId": [
-                80
+                101
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "UserBid": {
             "id": [
-                22
+                28
             ],
             "userId": [
-                80
+                101
             ],
             "saleId": [
-                80
+                101
             ],
             "itemId": [
-                80
+                101
             ],
             "amount": [
-                25
+                31
             ],
             "maxAmount": [
-                25
+                31
             ],
             "bidDate": [
-                80
+                101
             ],
             "reactiveBid": [
                 15
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "UserBidsConnection": {
             "edges": [
-                85
+                108
             ],
             "pageInfo": [
-                55
+                67
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "UserBidsEdge": {
             "cursor": [
-                80
+                101
             ],
             "node": [
-                83
+                106
             ],
             "__typename": [
-                80
+                101
             ]
         },
         "UserSaleItemSubscription": {
             "accountId": [
-                80
+                101
             ],
             "saleId": [
-                80
+                101
             ],
             "itemId": [
-                80
+                101
             ],
             "userId": [
-                80
+                101
             ],
             "__typename": [
-                80
+                101
+            ]
+        },
+        "UserSaleRegistration": {
+            "id": [
+                28
+            ],
+            "saleId": [
+                101
+            ],
+            "userId": [
+                101
+            ],
+            "registrationType": [
+                89
+            ],
+            "status": [
+                88
+            ],
+            "__typename": [
+                101
             ]
         },
         "WeightUnit": {}
