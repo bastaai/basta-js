@@ -56,6 +56,10 @@ export interface Account {
     shopifyConfiguration: (ShopifyConfiguration | null)
     /** Auction Aggregators associated with the account */
     aggregators: Aggregator[]
+    /** Metafields associated with the account */
+    metafields: Metafield[]
+    /** Metafield associated with the account */
+    metafield: (Metafield | null)
     __typename: 'Account'
 }
 
@@ -166,7 +170,7 @@ export interface ActionHookSubscription {
 
 
 /** Action types (events) that can trigger Action Hooks. */
-export type ActionType = 'BID_ON_ITEM' | 'ITEMS_STATUS_CHANGED' | 'SALE_STATUS_CHANGED' | 'SALE_CREATED' | 'ITEM_ADDED_TO_SALE' | 'SALE_ITEM_UPDATED' | 'SALE_ITEM_REMOVED' | 'CANCEL_BID_ON_ITEM' | 'ORDER_CREATED' | 'ORDER_UPDATED' | 'ORDER_CANCELLED' | 'SALE_UPDATED'
+export type ActionType = 'BID_ON_ITEM' | 'ITEMS_STATUS_CHANGED' | 'SALE_STATUS_CHANGED' | 'SALE_CREATED' | 'ITEM_ADDED_TO_SALE' | 'SALE_ITEM_UPDATED' | 'SALE_ITEM_REMOVED' | 'CANCEL_BID_ON_ITEM' | 'ORDER_CREATED' | 'ORDER_UPDATED' | 'ORDER_CANCELLED' | 'SALE_UPDATED' | 'SALE_REGISTRATION_CREATED' | 'SALE_REGISTRATION_UPDATED' | 'SALE_REGISTRATION_DELETED' | 'SALE_ITEM_REGISTRATION_CREATED' | 'SALE_ITEM_REGISTRATION_DELETED'
 
 export type AddressType = 'BILLING' | 'SHIPPING'
 
@@ -306,6 +310,12 @@ export interface Bid {
     bidId: Scalars['String']
     /** Sale ID of the sale that includes the item in scope. */
     saleId: Scalars['String']
+    /** Item ID of the item that includes the bid in scope. */
+    itemId: Scalars['String']
+    /** Sale */
+    sale: Sale
+    /** Item */
+    saleItem: SaleItem
     /** Amount of the bid in minor currency unit. */
     amount: Scalars['Int']
     /** Max amount of the bid in minor currency unit. */
@@ -390,6 +400,14 @@ export interface BidPlacedSuccess {
 }
 
 
+/** Restrictions for bidding on a sale */
+export interface BidRestrictions {
+    /** Users need to have an accepted registration to bid on this sale */
+    acceptedRegistrationRequired: Scalars['Boolean']
+    __typename: 'BidRestrictions'
+}
+
+
 /** Bid statuses that calculates in what status the bid is. */
 export type BidStatus = 'WINNING' | 'LOSING' | 'LOST' | 'WON' | 'NOT_BIDDING' | 'SUBMITTED' | 'WITHDRAWN'
 
@@ -433,6 +451,10 @@ export type ClientPermission = 'BID_ON_ITEM' | 'ACCESS_PRIVATE'
 /** ClosingMethod represents how SaleItems are moved into CLOSING status and when they are CLOSED */
 export type ClosingMethod = 'ONE_BY_ONE' | 'OVERLAPPING' | 'NONE'
 
+
+/** ISO 3166-1 alpha-2 country codes */
+export type Country = 'AF' | 'AL' | 'AQ' | 'DZ' | 'AS' | 'AD' | 'AO' | 'AG' | 'AZ' | 'AR' | 'AU' | 'AT' | 'BS' | 'BH' | 'BD' | 'AM' | 'BB' | 'BE' | 'BM' | 'BT' | 'BO' | 'BA' | 'BW' | 'BV' | 'BR' | 'BZ' | 'IO' | 'SB' | 'VG' | 'BN' | 'BG' | 'MM' | 'BI' | 'BY' | 'KH' | 'CM' | 'CA' | 'CV' | 'KY' | 'CF' | 'LK' | 'TD' | 'CL' | 'CN' | 'TW' | 'CX' | 'CC' | 'CO' | 'KM' | 'YT' | 'CG' | 'CD' | 'CK' | 'CR' | 'HR' | 'CU' | 'CY' | 'CZ' | 'BJ' | 'DK' | 'DM' | 'DO' | 'EC' | 'SV' | 'GQ' | 'ET' | 'ER' | 'EE' | 'FO' | 'FK' | 'GS' | 'FJ' | 'FI' | 'AX' | 'FR' | 'GF' | 'PF' | 'TF' | 'DJ' | 'GA' | 'GE' | 'GM' | 'PS' | 'DE' | 'GH' | 'GI' | 'KI' | 'GR' | 'GL' | 'GD' | 'GP' | 'GU' | 'GT' | 'GN' | 'GY' | 'HT' | 'HM' | 'VA' | 'HN' | 'HK' | 'HU' | 'IS' | 'IN' | 'ID' | 'IR' | 'IQ' | 'IE' | 'IL' | 'IT' | 'CI' | 'JM' | 'JP' | 'KZ' | 'JO' | 'KE' | 'KP' | 'KR' | 'KW' | 'KG' | 'LA' | 'LB' | 'LS' | 'LV' | 'LR' | 'LY' | 'LI' | 'LT' | 'LU' | 'MO' | 'MG' | 'MW' | 'MY' | 'MV' | 'ML' | 'MT' | 'MQ' | 'MR' | 'MU' | 'MX' | 'MC' | 'MN' | 'MD' | 'ME' | 'MS' | 'MA' | 'MZ' | 'OM' | 'NA' | 'NR' | 'NP' | 'NL' | 'CW' | 'AW' | 'SX' | 'BQ' | 'NC' | 'VU' | 'NZ' | 'NI' | 'NE' | 'NG' | 'NU' | 'NF' | 'NO' | 'MP' | 'UM' | 'FM' | 'MH' | 'PW' | 'PK' | 'PA' | 'PG' | 'PY' | 'PE' | 'PH' | 'PN' | 'PL' | 'PT' | 'GW' | 'TL' | 'PR' | 'QA' | 'RE' | 'RO' | 'RU' | 'RW' | 'BL' | 'SH' | 'KN' | 'AI' | 'LC' | 'MF' | 'PM' | 'VC' | 'SM' | 'ST' | 'SA' | 'SN' | 'RS' | 'SC' | 'SL' | 'SG' | 'SK' | 'VN' | 'SI' | 'SO' | 'ZA' | 'ZW' | 'ES' | 'SS' | 'SD' | 'EH' | 'SR' | 'SJ' | 'SZ' | 'SE' | 'CH' | 'SY' | 'TJ' | 'TH' | 'TG' | 'TK' | 'TO' | 'TT' | 'AE' | 'TN' | 'TR' | 'TM' | 'TC' | 'TV' | 'UG' | 'UA' | 'MK' | 'EG' | 'GB' | 'GG' | 'JE' | 'IM' | 'TZ' | 'US' | 'VI' | 'BF' | 'UY' | 'UZ' | 'VE' | 'WF' | 'WS' | 'YE' | 'ZM'
+
 export type Currency = 'USD' | 'ISK' | 'EUR' | 'GBP' | 'AUD' | 'SEK' | 'NOK' | 'DKK' | 'CHF' | 'CAD' | 'JPY' | 'HKD'
 
 
@@ -456,6 +478,31 @@ export interface ExternalLiveStream {
     updated: Scalars['String']
     __typename: 'ExternalLiveStream'
 }
+
+export interface FeeRule {
+    /** ID of the fee rule record */
+    id: Scalars['ID']
+    /** Name of the fee rule which is used in orders */
+    name: Scalars['String']
+    /** Fee Rule type influences how the value is calculated */
+    type: FeeRuleType
+    /**
+     * Value of the fee rule interpreted based on the type
+     * * 500 means 5% if type is percentage
+     * * 1000 means $10 if type is amount
+     */
+    value: Scalars['Int']
+    /**
+     * Upper limit of the fee rule.
+     * If empty then there is no upper limit.
+     */
+    upperLteLimit: (Scalars['Int'] | null)
+    /** Lower limit of the fee rule. */
+    lowerLimit: Scalars['Int']
+    __typename: 'FeeRule'
+}
+
+export type FeeRuleType = 'NOT_SET' | 'PERCENTAGE' | 'AMOUNT'
 
 export interface GetItemInput {
     itemId: (Scalars['String'] | null)
@@ -496,6 +543,8 @@ export interface Image {
     url: Scalars['String']
     /** DisplayOrder for image */
     order: Scalars['Int']
+    /** Optional unique external identifier. */
+    externalId: (Scalars['String'] | null)
     __typename: 'Image'
 }
 
@@ -563,6 +612,12 @@ export interface Item {
      * Sale Id, if the item is linked to a sale
      */
     saleId: (Scalars['String'] | null)
+    /** Location of the item */
+    location: (Scalars['String'] | null)
+    /** Metafields associated with the item */
+    metafields: Metafield[]
+    /** Metafield associated with the item */
+    metafield: (Metafield | null)
     __typename: 'Item'
 }
 
@@ -734,9 +789,41 @@ export type LiveStream = (ExternalLiveStream | BastaLiveStream) & { __isUnion?: 
 /** LiveStreamType represents the type of live stream */
 export type LiveStreamType = 'GENERIC' | 'AMAZON_IVS' | 'YouTubeLive' | 'BASTA_LIVE'
 
+export interface MailingAddress {
+    name: Scalars['String']
+    company: Scalars['String']
+    phone: Scalars['String']
+    line1: Scalars['String']
+    line2: Scalars['String']
+    city: Scalars['String']
+    state: Scalars['String']
+    postalCode: Scalars['String']
+    country: Country
+    __typename: 'MailingAddress'
+}
+
 
 /** Measurement unit enum */
 export type MeasurementUnit = 'NOT_SET' | 'CM' | 'INCH'
+
+
+/** Object for a metafield */
+export interface Metafield {
+    id: Scalars['String']
+    key: Scalars['String']
+    value: Scalars['String']
+    valueType: MetafieldValueType
+    entityType: MetafieldEntityType
+    __typename: 'Metafield'
+}
+
+
+/** Enum for the type of entity a metafield is connected to */
+export type MetafieldEntityType = 'METAFIELD_ENTITY_TYPE_SALE' | 'METAFIELD_ENTITY_TYPE_ITEM' | 'METAFIELD_ENTITY_TYPE_SALE_ITEM' | 'METAFIELD_ENTITY_TYPE_ACCOUNT'
+
+
+/** Enum for the value type of a metafield */
+export type MetafieldValueType = 'METAFIELD_VALUE_TYPE_SINGLE_LINE_TEXT' | 'METAFIELD_VALUE_TYPE_RICH_TEXT'
 
 export interface Mutation {
     /** Update Account */
@@ -916,10 +1003,26 @@ export interface Mutation {
      * Only applicable accounts will work when connecting to shopify.
      */
     connectShopifyToAccount: ShopifyConnection
-    /** Create a payment order */
+    /**
+     * @deprecated Use createOrder mutation
+     * Create a payment order
+     */
     createPaymentOrder: PaymentOrder
-    /** Update a payment order */
+    /** Create an order */
+    createOrder: PaymentOrder
+    /** Create an order line for a payment order */
+    createOrderLine: OrderLine
+    /** Update an order line for a payment order */
+    updateOrderLine: OrderLine
+    /** Delete an order line for a payment order */
+    deleteOrderLine: OrderLine
+    /**
+     * @deprecated Use updateOrder mutation
+     * Update a payment order
+     */
     updatePaymentOrder: PaymentOrder
+    /** Update an order */
+    updateOrder: PaymentOrder
     /**
      * @deprecated Use cancelPaymentOrder mutation
      * Delete a payment order, this will cancel order.
@@ -927,6 +1030,8 @@ export interface Mutation {
     deletePaymentOrder: PaymentOrder
     /** Cancel a payment order */
     cancelPaymentOrder: PaymentOrder
+    /** Publish a payment order */
+    publishPaymentOrder: PaymentOrder
     /** Create Invoice for order */
     createInvoice: Invoice
     /** Create a payment for an order */
@@ -937,10 +1042,29 @@ export interface Mutation {
     updateAccountFee: AccountFee
     /** Delete an account fee */
     deleteAccountFee: Scalars['ID']
+    /** Create a sale registration */
+    createSaleRegistration: SaleRegistration
+    /** Accept a sale registration */
+    acceptSaleRegistration: SaleRegistration
+    /** Reject a sale registration */
+    rejectSaleRegistration: SaleRegistration
+    /** Delete a sale registration */
+    deleteSaleRegistration: Scalars['ID']
+    /** Create a sale item registration */
+    createSaleItemRegistration: SaleItemRegistration
+    /** Delete a sale item registration */
+    deleteSaleItemRegistration: Scalars['ID']
+    /**
+     * Set one or more metafields (create or update), 
+     * you can at most set 10 metafields at a time for a single entity.
+     */
+    setMetafields: Metafield[]
+    /** Delete a metafield */
+    deleteMetafield: Scalars['Boolean']
     __typename: 'Mutation'
 }
 
-export type Node = (AccountFee | ActionHookLog | ApiKey | ApiToken | Item | PaymentOrder | Sale) & { __isUnion?: true }
+export type Node = (AccountFee | ActionHookLog | ApiKey | ApiToken | FeeRule | Item | PaymentOrder | Sale | SaleItemRegistration | SaleRegistration | User) & { __isUnion?: true }
 
 export interface OnboardPaymentAccountResponse {
     /** Client should redirect Basta sellers to this url to finish onboarding. */
@@ -976,9 +1100,37 @@ export interface OrderLine {
     amount: Scalars['Int']
     /** Description */
     description: Scalars['String']
-    /** Type of the order line */
+    /**
+     * @deprecated will be removed in the future
+     * Type of the order line
+     */
     orderLineType: OrderLineType
+    /** Fees associated with the order line, e.g. Buyer's Premium. */
+    fees: OrderLineFee[]
+    /** Seller fees associated with the order line to be paid by the seller, e.g. Platform Fee. */
+    sellerFees: OrderLineFee[]
+    /** Item associated with the order line. */
+    item: (SaleItemOrItem | null)
     __typename: 'OrderLine'
+}
+
+
+/** Fee associated with an order line */
+export interface OrderLineFee {
+    /** Unique identifier for the fee. */
+    id: Scalars['ID']
+    /** Fee description. */
+    description: Scalars['String']
+    /**
+     * @deprecated use description
+     * Fee name.
+     */
+    name: Scalars['String']
+    /** Fee amount in minor currency unit. */
+    amount: Scalars['Int']
+    /** Is system defined, cannot be edited. */
+    isSystemDefined: Scalars['Boolean']
+    __typename: 'OrderLineFee'
 }
 
 export type OrderLineType = 'BidAmount' | 'DirectSale'
@@ -1078,6 +1230,10 @@ export interface PaymentOrder {
      * OrderID
      */
     orderId: Scalars['ID']
+    /** Title */
+    title: Scalars['String']
+    /** Currency */
+    currency: Currency
     /** SaleID */
     saleId: Scalars['String']
     /** ItemID */
@@ -1092,8 +1248,15 @@ export interface PaymentOrder {
     userId: Scalars['String']
     /** OrderLines */
     orderLines: OrderLine[]
-    /** UserInfo for payment order */
+    /**
+     * @deprecated use billing and/or shipping address
+     * UserInfo for payment order
+     */
     user: (UserInfo | null)
+    /** Billing address for the order */
+    billingAddress: (MailingAddress | null)
+    /** Shipping address for the order */
+    shippingAddress: (MailingAddress | null)
     /** Status of the order */
     status: OrderStatus
     /** Created */
@@ -1105,7 +1268,7 @@ export interface PaymentOrder {
 
 export type PaymentProviderStatus = 'STARTED' | 'PROCESSING' | 'ENABLED' | 'DISABLED'
 
-export type Permission = 'READ_SALE' | 'WRITE_SALE' | 'WRITE_ITEM' | 'READ_ITEM' | 'READ_ACCOUNT' | 'WRITE_ACCOUNT' | 'READ_API_TOKENS' | 'WRITE_API_TOKENS' | 'READ_API_KEYS' | 'WRITE_API_KEYS' | 'READ_ACTION_HOOKS' | 'WRITE_ACTION_HOOKS' | 'WRITE_BIDDER_TOKEN' | 'WRITE_CANCEL_BID' | 'WRITE_SHOPIFY_CONFIGURATION' | 'READ_ORDER'
+export type Permission = 'READ_SALE' | 'WRITE_SALE' | 'WRITE_ITEM' | 'READ_ITEM' | 'READ_ACCOUNT' | 'WRITE_ACCOUNT' | 'READ_API_TOKENS' | 'WRITE_API_TOKENS' | 'READ_API_KEYS' | 'WRITE_API_KEYS' | 'READ_ACTION_HOOKS' | 'WRITE_ACTION_HOOKS' | 'WRITE_BIDDER_TOKEN' | 'WRITE_CANCEL_BID' | 'WRITE_SHOPIFY_CONFIGURATION' | 'READ_ORDER' | 'READ_USER' | 'READ_METAFIELDS' | 'WRITE_METAFIELDS'
 
 export interface PhoneBidOrigin {
     type: BidOriginType
@@ -1123,6 +1286,8 @@ export interface Query {
     sale: Sale
     /** Get SaleItem */
     saleItem: (SaleItem | null)
+    /** Get SaleItem by external id */
+    saleItemByExternalId: SaleItem
     /** Get API Keys that have created. */
     apiKeys: ApiKeyConnection
     /** Get API key for searching collection */
@@ -1139,6 +1304,8 @@ export interface Query {
     actionHookLogs: ActionHookLogConnection
     /** Fetch information about an Item */
     item: Item
+    /** Fetch information about an Item by external identifier */
+    itemByExternalId: Item
     /**
      * Get all items for accountId
      * 
@@ -1148,9 +1315,20 @@ export interface Query {
     salesAggregate: SalesAggregate
     /** User Bid Activity */
     userBidActivity: UserBidActivityConnection
+    /**
+     * Get a user node for a given account and user ID.
+     * If idType is USER_ID_TYPE_IDENTITY_PROVIDER_ID, the user ID is an identity provider ID.
+     * If idType is USER_ID_TYPE_USER_ID, the user ID is a user ID.
+     */
+    user: User
+    /** Orders associated with an account */
     orders: OrderConnection
     /** Orders associated with a user */
     userOrders: OrderConnection
+    /** Get all sale registrations for a sale */
+    saleRegistrations: SaleRegistrationsConnection
+    /** Get all users for an account */
+    users: UsersConnection
     __typename: 'Query'
 }
 
@@ -1258,6 +1436,20 @@ export interface Sale {
     sumOfHighestBids: (Scalars['Int'] | null)
     /** Statistics for a sale providing insights into bidding activity, item performance, and auction dynamics. */
     statistics: SaleStatistics
+    /** Restrictions for bidding on a sale */
+    bidRestrictions: BidRestrictions
+    /** Get list of registrations for this sale */
+    registrations: SaleRegistrationsConnection
+    /** All Orders associated with the sale. */
+    orders: OrderConnection
+    /** Unique external identifier, e.g. external system's id, inventory id, etc. */
+    externalId: (Scalars['String'] | null)
+    /** Location of the sale */
+    location: (Scalars['String'] | null)
+    /** Metafields associated with the sale */
+    metafields: Metafield[]
+    /** Metafield associated with the sale */
+    metafield: (Metafield | null)
     __typename: 'Sale'
 }
 
@@ -1282,6 +1474,8 @@ export interface SaleDates {
     liveDate: (Scalars['String'] | null)
     __typename: 'SaleDates'
 }
+
+export type SaleIDType = 'ID' | 'EXTERNAL_ID'
 
 
 /** A sale item (item that has been added to a sale) */
@@ -1327,7 +1521,6 @@ export interface SaleItem {
     dates: ItemDates
     /**
      * Allowed BidTypes on the item.
-     * Currently only a single BidType is allowed per item.
      * Defaults to allowing only Max bids if not supplied.
      */
     allowedBidTypes: (BidType[] | null)
@@ -1362,15 +1555,66 @@ export interface SaleItem {
     tagsV2: Tag[]
     /** Reserve status. */
     reserveStatus: ReserveStatus
-    /** External ID */
+    /** Unique external identifier, e.g. external system's id, inventory id, etc. */
     externalId: (Scalars['String'] | null)
+    /** Optional lot display number. */
+    displayNumber: (Scalars['String'] | null)
     /** Metadata associated with the item */
     metadata: (ItemMetadata | null)
     /** closingTimeCountdown for the item. */
     closingTimeCountdown: Scalars['Int']
     /** Item specifications */
     specifications: (ItemSpecifications | null)
+    /** Get list of registrations for this sale item */
+    registrations: SaleItemRegistrationsConnection
+    /**
+     * Rules for account specific fees that should be applied to the item when sold.
+     * e.g. Buyer's Premium.
+     */
+    feeRules: FeeRule[]
+    /** Location of the item */
+    location: (Scalars['String'] | null)
+    /** Metafields associated with the item */
+    metafields: Metafield[]
+    /** Metafield associated with the item */
+    metafield: (Metafield | null)
     __typename: 'SaleItem'
+}
+
+export type SaleItemOrItem = (SaleItem | Item) & { __isUnion?: true }
+
+
+/** Sale item registration for a specific item */
+export interface SaleItemRegistration {
+    /** Id of the SaleItem registration */
+    id: Scalars['ID']
+    /** Sale registration ID this item registration belongs to */
+    saleRegistration: SaleRegistration
+    /** Item that the user is registering for */
+    saleItem: SaleItem
+    /** When the SaleItem registration was created */
+    createdAt: Scalars['String']
+    __typename: 'SaleItemRegistration'
+}
+
+
+/** Sale item registration edge for connection */
+export interface SaleItemRegistrationEdge {
+    /** The item registration node */
+    node: SaleItemRegistration
+    /** Cursor for pagination */
+    cursor: Scalars['String']
+    __typename: 'SaleItemRegistrationEdge'
+}
+
+
+/** Sale item registration connection for pagination */
+export interface SaleItemRegistrationsConnection {
+    /** Sale item registration edges */
+    edges: SaleItemRegistrationEdge[]
+    /** Current page information */
+    pageInfo: PageInfo
+    __typename: 'SaleItemRegistrationsConnection'
 }
 
 export interface SaleItemsConnection {
@@ -1429,6 +1673,56 @@ export interface SaleMetrics {
     /** Timestamp when the sale metrics were last calculated. */
     calculatedAt: Scalars['String']
     __typename: 'SaleMetrics'
+}
+
+
+/** Sale registration for a user */
+export interface SaleRegistration {
+    /** Id of the registration */
+    id: Scalars['ID']
+    /** Account ID associated with the registration */
+    account: Account
+    /** Sale ID that the user is registering for */
+    sale: Sale
+    /** User ID of the person registering */
+    userId: Scalars['String']
+    /** Type of registration (online, phone, paddle, aggregator) */
+    type: SaleRegistrationType
+    /** Registration identifier (phone number, paddle number, etc.) */
+    identifier: (Scalars['String'] | null)
+    /** Current status of the registration */
+    status: SaleRegistrationStatus
+    /** Reason for rejection if status is REJECTED */
+    rejectedReason: (Scalars['String'] | null)
+    /** When the registration was created */
+    createdAt: Scalars['String']
+    __typename: 'SaleRegistration'
+}
+
+
+/** Sale registration edge for connection */
+export interface SaleRegistrationEdge {
+    /** The registration node */
+    node: SaleRegistration
+    /** Cursor for pagination */
+    cursor: Scalars['String']
+    __typename: 'SaleRegistrationEdge'
+}
+
+export type SaleRegistrationSortByField = 'CREATED_AT'
+
+export type SaleRegistrationStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED'
+
+export type SaleRegistrationType = 'ONLINE' | 'PHONE' | 'PADDLE' | 'AGGREGATOR'
+
+
+/** Sale registration connection for pagination */
+export interface SaleRegistrationsConnection {
+    /** Sale registration edges */
+    edges: SaleRegistrationEdge[]
+    /** Current page information */
+    pageInfo: PageInfo
+    __typename: 'SaleRegistrationsConnection'
 }
 
 
@@ -1572,7 +1866,33 @@ export interface UploadUrl {
     headers: (HttpHeader[] | null)
     /** Order */
     order: Scalars['Int']
+    /** Optional unique external identifier. */
+    externalId: (Scalars['String'] | null)
     __typename: 'UploadUrl'
+}
+
+
+/**
+ * The `User` type represents a user node in the system, including metadata such as account ID, user ID, creation and modification timestamps, and a profile from a connected identity provider.
+ * 
+ * Unlike `UserInfo`, which contains only the profile information retrieved from an identity provider, `User` provides both system-level user metadata and the associated identity provider profile.
+ * 
+ * Use `User` when you need to access user metadata and their identity provider profile together. Use `UserInfo` when you only need the profile details from the identity provider.
+ */
+export interface User {
+    /** Id of the user node */
+    id: Scalars['ID']
+    /** Account ID */
+    accountId: Scalars['String']
+    /** UserId */
+    userId: Scalars['String']
+    /** Created */
+    created: Scalars['String']
+    /** Modified */
+    modified: Scalars['String']
+    /** User Profile from connected identity provider */
+    profile: (UserInfo | null)
+    __typename: 'User'
 }
 
 export interface UserAddress {
@@ -1588,12 +1908,18 @@ export interface UserAddress {
 }
 
 export interface UserBidActivity {
+    /** Account ID */
+    accountId: Scalars['String']
     /** BidId UUID string */
     bidId: Scalars['String']
     /** Sale ID of the sale that includes the item in scope. */
     saleId: Scalars['String']
+    /** Sale */
+    sale: Sale
     /** ItemId */
     itemId: Scalars['String']
+    /** Item */
+    saleItem: SaleItem
     /** Amount of the bid in minor currency unit. */
     amount: Scalars['Int']
     /** Max amount of the bid in minor currency unit. */
@@ -1627,6 +1953,18 @@ export interface UserBidActivityEdge {
     __typename: 'UserBidActivityEdge'
 }
 
+export interface UserEdge {
+    /** User */
+    node: User
+    /** Cursor */
+    cursor: Scalars['String']
+    __typename: 'UserEdge'
+}
+
+
+/** Type of user ID to get */
+export type UserIdType = 'USER_ID' | 'IDENTITY_PROVIDER_ID'
+
 
 /** The user info */
 export interface UserInfo {
@@ -1655,8 +1993,24 @@ export interface UserToken {
 }
 
 
+/** Users connection for pagination */
+export interface UsersConnection {
+    /** User edges */
+    edges: UserEdge[]
+    /** Current page information */
+    pageInfo: PageInfo
+    __typename: 'UsersConnection'
+}
+
+
 /** Weight unit enum */
 export type WeightUnit = 'NOT_SET' | 'KG' | 'LB'
+
+
+/** Input for accepting a sale registration */
+export interface AcceptSaleRegistrationInput {
+/** Registration ID to accept */
+registrationId: Scalars['String']}
 
 
 /** Account Information */
@@ -1702,6 +2056,10 @@ export interface AccountGenqlSelection{
     shopifyConfiguration?: ShopifyConfigurationGenqlSelection
     /** Auction Aggregators associated with the account */
     aggregators?: AggregatorGenqlSelection
+    /** Metafields associated with the account */
+    metafields?: (MetafieldGenqlSelection & { __args: {input: GetMetafieldsInput} })
+    /** Metafield associated with the account */
+    metafield?: (MetafieldGenqlSelection & { __args: {input: GetMetafieldInput} })
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -1855,7 +2213,6 @@ highEstimate?: (Scalars['Int'] | null),
 ItemNumber?: (Scalars['Int'] | null),
 /**
  * Allowed BidTypes on the item.
- * Currently only a single BidType is allowed per item.
  * Defaults to allowing only Max bids if not supplied.
  */
 allowedBidTypes?: (BidType[] | null),
@@ -1877,7 +2234,14 @@ hidden?: (Scalars['Boolean'] | null),
  * ClosingTime countdown is the sniping duration in milliseconds.
  * If not provided it defaults to 120000ms (2 minutes).
  */
-closingTimeCountdown?: (Scalars['Int'] | null)}
+closingTimeCountdown?: (Scalars['Int'] | null),
+/**
+ * Unique external identifier, e.g. external system's id, inventory id, etc.
+ * If set, this overrides the external_id for the sale item, but does not update the external_id on the underlying item itself. Setting this to an empty string will clear the external_id for the sale item.
+ */
+externalId?: (Scalars['String'] | null),
+/** Optional lot display number. */
+displayNumber?: (Scalars['String'] | null)}
 
 export interface AddLiveStreamToSaleInput {
 /** Sale ID */
@@ -2073,6 +2437,12 @@ export interface BidGenqlSelection{
     bidId?: boolean | number
     /** Sale ID of the sale that includes the item in scope. */
     saleId?: boolean | number
+    /** Item ID of the item that includes the bid in scope. */
+    itemId?: boolean | number
+    /** Sale */
+    sale?: SaleGenqlSelection
+    /** Item */
+    saleItem?: SaleItemGenqlSelection
     /** Amount of the bid in minor currency unit. */
     amount?: boolean | number
     /** Max amount of the bid in minor currency unit. */
@@ -2185,6 +2555,21 @@ export interface BidPlacedSuccessGenqlSelection{
     __typename?: boolean | number
     __scalar?: boolean | number
 }
+
+
+/** Restrictions for bidding on a sale */
+export interface BidRestrictionsGenqlSelection{
+    /** Users need to have an accepted registration to bid on this sale */
+    acceptedRegistrationRequired?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Input object for restrictions for bidding on a sale */
+export interface BidRestrictionsInput {
+/** Users need to have an accepted registration to bid on this sale */
+acceptedRegistrationRequired: Scalars['Boolean']}
 
 
 /**
@@ -2310,11 +2695,51 @@ metadata?: (ItemMetadataInput | null),
 /** Tags for the item */
 tags?: (Scalars['String'][] | null),
 /** Item specifications (dimensions, weight, type, etc.) */
-specifications?: (ItemSpecificationsInput | null),valuationAmount?: (Scalars['Int'] | null),valuationCurrency?: (Scalars['String'] | null),lowEstimate?: (Scalars['Int'] | null),highEstimate?: (Scalars['Int'] | null)}
+specifications?: (ItemSpecificationsInput | null),valuationAmount?: (Scalars['Int'] | null),valuationCurrency?: (Scalars['String'] | null),lowEstimate?: (Scalars['Int'] | null),highEstimate?: (Scalars['Int'] | null),
+/** Location of the item */
+location?: (Scalars['String'] | null)}
 
 export interface CreateItemNoteInput {itemId: Scalars['String'],note: Scalars['String']}
 
 export interface CreateItemSchemaInput {schema: Scalars['JSON'],metadataSchema: Scalars['JSON']}
+
+export interface CreateOrderInput {
+/** SaleId that order belongs to */
+saleId: Scalars['String'],
+/** UserId of user that will pay for the order */
+userId: Scalars['String'],
+/** Order title */
+title: Scalars['String'],
+/** Currency for the order, optional to be backwards compatible. */
+currency?: (Currency | null),
+/** Billing address for the order */
+billingAddress?: (MailingAddressInput | null),
+/** Shipping address for the order */
+shippingAddress?: (MailingAddressInput | null),
+/** OrderLines */
+orderLines?: (CreateOrderLineForOrderInput[] | null)}
+
+export interface CreateOrderLineForOrderInput {
+/** ItemId that order line belongs to */
+itemId: Scalars['String'],
+/** Amount of the order line in minor currency unit */
+amount: Scalars['Int'],
+/** Description of the order line */
+description: Scalars['String'],
+/** Fees associated with the order line, e.g. Buyer's Premium. */
+fees?: (CreatePaymentOrderLineFeeInput[] | null)}
+
+export interface CreateOrderLineInput {
+/** OrderId that order line belongs to */
+orderId: Scalars['ID'],
+/** ItemId that order line belongs to */
+itemId: Scalars['String'],
+/** Amount of the order line in minor currency unit */
+amount: Scalars['Int'],
+/** Description of the order line */
+description: Scalars['String'],
+/** Fees associated with the order line, e.g. Buyer's Premium. */
+fees?: (CreatePaymentOrderLineFeeInput[] | null)}
 
 export interface CreatePaymentInput {
 /** OrderId that payment belongs to */
@@ -2324,19 +2749,35 @@ export interface CreatePaymentOrderInput {
 /** SaleId that order belongs to */
 saleId: Scalars['String'],
 /** ItemId that order belongs to */
-itemId: Scalars['String'],
+itemId?: (Scalars['String'] | null),
 /** UserId of user that will pay for the order */
 userId: Scalars['String'],
 /** OrderLines */
-orderLines: CreatePaymentOrderLineInput[]}
+orderLines: CreatePaymentOrderLineInput[],
+/** Currency for the order, optional to be backwards compatible. */
+currency?: (Currency | null),
+/** Billing address for the order */
+billingAddress?: (MailingAddressInput | null),
+/** Shipping address for the order */
+shippingAddress?: (MailingAddressInput | null)}
+
+export interface CreatePaymentOrderLineFeeInput {
+/** Fee description */
+description: Scalars['String'],
+/** Fee amount in minor currency unit */
+amount: Scalars['Int']}
 
 export interface CreatePaymentOrderLineInput {
+/** ItemId that order line belongs to (optional to be backwards compatible) */
+itemId?: (Scalars['String'] | null),
 /** Amount of the order line in minor currency unit */
 amount: Scalars['Int'],
 /** Description of the order line */
 description: Scalars['String'],
 /** Type of the order line */
-orderLineType: OrderLineType}
+orderLineType?: (OrderLineType | null),
+/** Fees associated with the order line, e.g. Buyer's Premium. */
+fees?: (CreatePaymentOrderLineFeeInput[] | null)}
 
 
 /** Input for creating or modifying sales. */
@@ -2353,7 +2794,46 @@ hidden?: (Scalars['Boolean'] | null),
 /** Sale type (defaults to ONLINE_TIMED) */
 type?: (SaleType | null),
 /** Sale Is Test */
-isTestSale?: (Scalars['Boolean'] | null)}
+isTestSale?: (Scalars['Boolean'] | null),
+/** Restrictions for bidding on a sale */
+bidRestrictions?: (BidRestrictionsInput | null),
+/** Unique external identifier, e.g. external system's id, inventory id, etc. */
+externalId?: (Scalars['String'] | null),
+/** Location of the sale */
+location?: (Scalars['String'] | null)}
+
+
+/**
+ * Input for creating a sale item registration.
+ * Creates Sale Registration for user-id and type if it doesn't exist
+ */
+export interface CreateSaleItemRegistrationInput {
+/** Sale ID that the item belongs to */
+saleId: Scalars['String'],
+/** Item ID that the user is registering for */
+itemId: Scalars['String'],
+/** User ID of the person registering */
+userId: Scalars['String'],
+/** Type of registration */
+type: SaleRegistrationType,
+/** Registration identifier */
+identifier?: (Scalars['String'] | null),
+/** Registration status (defaults to PENDING) */
+status?: (SaleRegistrationStatus | null)}
+
+
+/** Input for creating a sale registration */
+export interface CreateSaleRegistrationInput {
+/** Sale ID that the user is registering for */
+saleId: Scalars['String'],
+/** User ID of the person registering */
+userId: Scalars['String'],
+/** Type of registration (online, phone, paddle, aggregator) */
+type: SaleRegistrationType,
+/** Registration identifier (phone number, paddle number, etc.) */
+identifier?: (Scalars['String'] | null),
+/** Initial status of the registration (defaults to PENDING) */
+status?: (SaleRegistrationStatus | null)}
 
 export interface CreateUploadUrlInput {
 /** The entities that the image belongs to */
@@ -2365,7 +2845,9 @@ order: Scalars['Int'],
 /** Conditional. Must be set if imageType is Sale or SaleItem */
 saleId?: (Scalars['String'] | null),
 /** Conditional. Must be set if imageType is Item or SaleItem */
-itemId?: (Scalars['String'] | null)}
+itemId?: (Scalars['String'] | null),
+/** Optional unique external identifier. */
+externalId?: (Scalars['String'] | null)}
 
 export interface DeleteAccountFeeInput {id: Scalars['String']}
 
@@ -2399,6 +2881,22 @@ export interface DeleteLiveStreamFromSaleInput {
 /** Sale ID */
 saleId: Scalars['String']}
 
+
+/** Input for deleting a single metafield */
+export interface DeleteMetafieldInput {
+/** The type of entity the metafield is connected to */
+entityType: MetafieldEntityType,
+/** The ID of the entity the metafield is connected to */
+entityId: Scalars['String'],
+/** The key of the metafield to delete */
+key: Scalars['String']}
+
+export interface DeleteOrderLineInput {
+/** OrderId that order line belongs to */
+orderId: Scalars['ID'],
+/** OrderLineId to delete */
+orderLineId: Scalars['ID']}
+
 export interface DeletePaymentOrderInput {
 /** OrderId to delete */
 orderId: Scalars['ID']}
@@ -2406,6 +2904,18 @@ orderId: Scalars['ID']}
 
 /** Input object for when deleting a sale. */
 export interface DeleteSaleInput {saleId: Scalars['String']}
+
+
+/** Input for deleting a sale item registration */
+export interface DeleteSaleItemRegistrationInput {
+/** Item registration ID to delete */
+itemRegistrationId: Scalars['String']}
+
+
+/** Input for deleting a sale registration */
+export interface DeleteSaleRegistrationInput {
+/** Registration ID to delete */
+registrationId: Scalars['String']}
 
 
 /** Estimates for an item */
@@ -2431,6 +2941,30 @@ export interface ExternalLiveStreamGenqlSelection{
     __scalar?: boolean | number
 }
 
+export interface FeeRuleGenqlSelection{
+    /** ID of the fee rule record */
+    id?: boolean | number
+    /** Name of the fee rule which is used in orders */
+    name?: boolean | number
+    /** Fee Rule type influences how the value is calculated */
+    type?: boolean | number
+    /**
+     * Value of the fee rule interpreted based on the type
+     * * 500 means 5% if type is percentage
+     * * 1000 means $10 if type is amount
+     */
+    value?: boolean | number
+    /**
+     * Upper limit of the fee rule.
+     * If empty then there is no upper limit.
+     */
+    upperLteLimit?: boolean | number
+    /** Lower limit of the fee rule. */
+    lowerLimit?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
 export interface GetItemInputGenqlSelection{
     itemId?: boolean | number
     __typename?: boolean | number
@@ -2438,6 +2972,14 @@ export interface GetItemInputGenqlSelection{
 }
 
 export interface GetItemsInput {userId?: (Scalars['String'] | null),first?: (Scalars['Int'] | null),after?: (Scalars['String'] | null),direction?: (PaginationDirection | null),itemsFilter: ItemsFilter}
+
+
+/** Input for getting a single metafield connected to a specific entity */
+export interface GetMetafieldInput {key: Scalars['String']}
+
+
+/** Input for getting multiple metafields connected to a specific entity, we return at max 10 metafields */
+export interface GetMetafieldsInput {keys?: (Scalars['String'][] | null)}
 
 
 /** Information about the highest bid in a sale. */
@@ -2479,6 +3021,8 @@ export interface ImageGenqlSelection{
     url?: boolean | number
     /** DisplayOrder for image */
     order?: boolean | number
+    /** Optional unique external identifier. */
+    externalId?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -2554,6 +3098,12 @@ export interface ItemGenqlSelection{
      * Sale Id, if the item is linked to a sale
      */
     saleId?: boolean | number
+    /** Location of the item */
+    location?: boolean | number
+    /** Metafields associated with the item */
+    metafields?: (MetafieldGenqlSelection & { __args: {input: GetMetafieldsInput} })
+    /** Metafield associated with the item */
+    metafield?: (MetafieldGenqlSelection & { __args: {input: GetMetafieldInput} })
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -2802,6 +3352,22 @@ url: Scalars['String'],
 /** LiveStream Title */
 type: LiveStreamType}
 
+export interface MailingAddressGenqlSelection{
+    name?: boolean | number
+    company?: boolean | number
+    phone?: boolean | number
+    line1?: boolean | number
+    line2?: boolean | number
+    city?: boolean | number
+    state?: boolean | number
+    postalCode?: boolean | number
+    country?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface MailingAddressInput {name: Scalars['String'],company: Scalars['String'],phone: Scalars['String'],line1: Scalars['String'],line2: Scalars['String'],city: Scalars['String'],state: Scalars['String'],postalCode: Scalars['String'],country: Country}
+
 
 /** Max bid on behalf of a user in a sale. */
 export interface MaxBidOnBehalfInput {
@@ -2815,6 +3381,18 @@ itemId: Scalars['String'],
 saleId: Scalars['String'],
 /** BidOrigin */
 bidOrigin?: (BidOriginInput | null)}
+
+
+/** Object for a metafield */
+export interface MetafieldGenqlSelection{
+    id?: boolean | number
+    key?: boolean | number
+    value?: boolean | number
+    valueType?: boolean | number
+    entityType?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
 
 export interface MutationGenqlSelection{
     /** Update Account */
@@ -2994,10 +3572,26 @@ export interface MutationGenqlSelection{
      * Only applicable accounts will work when connecting to shopify.
      */
     connectShopifyToAccount?: (ShopifyConnectionGenqlSelection & { __args: {accountId: Scalars['String'], input: ConnectShopifyToAccountInput} })
-    /** Create a payment order */
+    /**
+     * @deprecated Use createOrder mutation
+     * Create a payment order
+     */
     createPaymentOrder?: (PaymentOrderGenqlSelection & { __args: {accountId: Scalars['String'], input: CreatePaymentOrderInput} })
-    /** Update a payment order */
+    /** Create an order */
+    createOrder?: (PaymentOrderGenqlSelection & { __args: {accountId: Scalars['String'], input: CreateOrderInput} })
+    /** Create an order line for a payment order */
+    createOrderLine?: (OrderLineGenqlSelection & { __args: {accountId: Scalars['String'], input: CreateOrderLineInput} })
+    /** Update an order line for a payment order */
+    updateOrderLine?: (OrderLineGenqlSelection & { __args: {accountId: Scalars['String'], input: UpdateOrderLineInput} })
+    /** Delete an order line for a payment order */
+    deleteOrderLine?: (OrderLineGenqlSelection & { __args: {accountId: Scalars['String'], input: DeleteOrderLineInput} })
+    /**
+     * @deprecated Use updateOrder mutation
+     * Update a payment order
+     */
     updatePaymentOrder?: (PaymentOrderGenqlSelection & { __args: {accountId: Scalars['String'], input: UpdatePaymentOrderInput} })
+    /** Update an order */
+    updateOrder?: (PaymentOrderGenqlSelection & { __args: {accountId: Scalars['String'], input: UpdateOrderInput} })
     /**
      * @deprecated Use cancelPaymentOrder mutation
      * Delete a payment order, this will cancel order.
@@ -3005,6 +3599,8 @@ export interface MutationGenqlSelection{
     deletePaymentOrder?: (PaymentOrderGenqlSelection & { __args: {accountId: Scalars['String'], input: DeletePaymentOrderInput} })
     /** Cancel a payment order */
     cancelPaymentOrder?: (PaymentOrderGenqlSelection & { __args: {accountId: Scalars['String'], input: CancelPaymentOrderInput} })
+    /** Publish a payment order */
+    publishPaymentOrder?: (PaymentOrderGenqlSelection & { __args: {accountId: Scalars['String'], input: PublishPaymentOrderInput} })
     /** Create Invoice for order */
     createInvoice?: (InvoiceGenqlSelection & { __args: {accountId: Scalars['String'], input: CreateInvoiceInput} })
     /** Create a payment for an order */
@@ -3015,6 +3611,25 @@ export interface MutationGenqlSelection{
     updateAccountFee?: (AccountFeeGenqlSelection & { __args: {accountId: Scalars['String'], input: UpdateAccountFeeInput} })
     /** Delete an account fee */
     deleteAccountFee?: { __args: {accountId: Scalars['String'], input: DeleteAccountFeeInput} }
+    /** Create a sale registration */
+    createSaleRegistration?: (SaleRegistrationGenqlSelection & { __args: {accountId: Scalars['String'], input: CreateSaleRegistrationInput} })
+    /** Accept a sale registration */
+    acceptSaleRegistration?: (SaleRegistrationGenqlSelection & { __args: {accountId: Scalars['String'], input: AcceptSaleRegistrationInput} })
+    /** Reject a sale registration */
+    rejectSaleRegistration?: (SaleRegistrationGenqlSelection & { __args: {accountId: Scalars['String'], input: RejectSaleRegistrationInput} })
+    /** Delete a sale registration */
+    deleteSaleRegistration?: { __args: {accountId: Scalars['String'], input: DeleteSaleRegistrationInput} }
+    /** Create a sale item registration */
+    createSaleItemRegistration?: (SaleItemRegistrationGenqlSelection & { __args: {accountId: Scalars['String'], input: CreateSaleItemRegistrationInput} })
+    /** Delete a sale item registration */
+    deleteSaleItemRegistration?: { __args: {accountId: Scalars['String'], input: DeleteSaleItemRegistrationInput} }
+    /**
+     * Set one or more metafields (create or update), 
+     * you can at most set 10 metafields at a time for a single entity.
+     */
+    setMetafields?: (MetafieldGenqlSelection & { __args: {accountId: Scalars['String'], metafields: SetMetafieldInput[]} })
+    /** Delete a metafield */
+    deleteMetafield?: { __args: {accountId: Scalars['String'], input: DeleteMetafieldInput} }
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -3026,9 +3641,13 @@ export interface NodeGenqlSelection{
     on_ActionHookLog?: ActionHookLogGenqlSelection
     on_ApiKey?: ApiKeyGenqlSelection
     on_ApiToken?: ApiTokenGenqlSelection
+    on_FeeRule?: FeeRuleGenqlSelection
     on_Item?: ItemGenqlSelection
     on_PaymentOrder?: PaymentOrderGenqlSelection
     on_Sale?: SaleGenqlSelection
+    on_SaleItemRegistration?: SaleItemRegistrationGenqlSelection
+    on_SaleRegistration?: SaleRegistrationGenqlSelection
+    on_User?: UserGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -3077,8 +3696,37 @@ export interface OrderLineGenqlSelection{
     amount?: boolean | number
     /** Description */
     description?: boolean | number
-    /** Type of the order line */
+    /**
+     * @deprecated will be removed in the future
+     * Type of the order line
+     */
     orderLineType?: boolean | number
+    /** Fees associated with the order line, e.g. Buyer's Premium. */
+    fees?: OrderLineFeeGenqlSelection
+    /** Seller fees associated with the order line to be paid by the seller, e.g. Platform Fee. */
+    sellerFees?: OrderLineFeeGenqlSelection
+    /** Item associated with the order line. */
+    item?: SaleItemOrItemGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Fee associated with an order line */
+export interface OrderLineFeeGenqlSelection{
+    /** Unique identifier for the fee. */
+    id?: boolean | number
+    /** Fee description. */
+    description?: boolean | number
+    /**
+     * @deprecated use description
+     * Fee name.
+     */
+    name?: boolean | number
+    /** Fee amount in minor currency unit. */
+    amount?: boolean | number
+    /** Is system defined, cannot be edited. */
+    isSystemDefined?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -3176,6 +3824,10 @@ export interface PaymentOrderGenqlSelection{
      * OrderID
      */
     orderId?: boolean | number
+    /** Title */
+    title?: boolean | number
+    /** Currency */
+    currency?: boolean | number
     /** SaleID */
     saleId?: boolean | number
     /** ItemID */
@@ -3190,8 +3842,15 @@ export interface PaymentOrderGenqlSelection{
     userId?: boolean | number
     /** OrderLines */
     orderLines?: OrderLineGenqlSelection
-    /** UserInfo for payment order */
+    /**
+     * @deprecated use billing and/or shipping address
+     * UserInfo for payment order
+     */
     user?: UserInfoGenqlSelection
+    /** Billing address for the order */
+    billingAddress?: MailingAddressGenqlSelection
+    /** Shipping address for the order */
+    shippingAddress?: MailingAddressGenqlSelection
     /** Status of the order */
     status?: boolean | number
     /** Created */
@@ -3208,6 +3867,10 @@ export interface PhoneBidOriginGenqlSelection{
     __scalar?: boolean | number
 }
 
+export interface PublishPaymentOrderInput {
+/** OrderId to publish */
+orderId: Scalars['ID']}
+
 
 /** Input object for when forcing sale to published. */
 export interface PublishSaleInput {saleId: Scalars['String']}
@@ -3220,9 +3883,11 @@ export interface QueryGenqlSelection{
     /** Get all sales that have been created. You can at most fetch 50 sales at a time. */
     sales?: (SaleConnectionGenqlSelection & { __args: {accountId: Scalars['String'], first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), filter?: (SaleFilter | null)} })
     /** Get a single sale. */
-    sale?: (SaleGenqlSelection & { __args: {accountId: Scalars['String'], id: Scalars['ID']} })
+    sale?: (SaleGenqlSelection & { __args: {accountId: Scalars['String'], id: Scalars['ID'], saleIdType?: (SaleIDType | null)} })
     /** Get SaleItem */
     saleItem?: (SaleItemGenqlSelection & { __args: {accountId: Scalars['String'], saleId: Scalars['String'], itemId: Scalars['String']} })
+    /** Get SaleItem by external id */
+    saleItemByExternalId?: (SaleItemGenqlSelection & { __args: {accountId: Scalars['String'], externalId: Scalars['String']} })
     /** Get API Keys that have created. */
     apiKeys?: (ApiKeyConnectionGenqlSelection & { __args: {accountId: Scalars['String'], first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null)} })
     /** Get API key for searching collection */
@@ -3239,6 +3904,8 @@ export interface QueryGenqlSelection{
     actionHookLogs?: (ActionHookLogConnectionGenqlSelection & { __args: {accountId: Scalars['String'], first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), filter?: (ActionHookFilter | null)} })
     /** Fetch information about an Item */
     item?: (ItemGenqlSelection & { __args: {accountId: Scalars['String'], itemId: Scalars['String']} })
+    /** Fetch information about an Item by external identifier */
+    itemByExternalId?: (ItemGenqlSelection & { __args: {accountId: Scalars['String'], externalId: Scalars['String']} })
     /**
      * Get all items for accountId
      * 
@@ -3248,9 +3915,20 @@ export interface QueryGenqlSelection{
     salesAggregate?: (SalesAggregateGenqlSelection & { __args: {accountId: Scalars['String']} })
     /** User Bid Activity */
     userBidActivity?: (UserBidActivityConnectionGenqlSelection & { __args: {accountId: Scalars['String'], userId: Scalars['String'], first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), filter?: (UserBidActivityFilter | null), direction?: (PaginationDirection | null), orderBy?: (BidOrderByField | null)} })
+    /**
+     * Get a user node for a given account and user ID.
+     * If idType is USER_ID_TYPE_IDENTITY_PROVIDER_ID, the user ID is an identity provider ID.
+     * If idType is USER_ID_TYPE_USER_ID, the user ID is a user ID.
+     */
+    user?: (UserGenqlSelection & { __args: {accountID: Scalars['String'], userId: Scalars['String'], idType: UserIdType} })
+    /** Orders associated with an account */
     orders?: (OrderConnectionGenqlSelection & { __args: {accountId: Scalars['String'], first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), before?: (Scalars['String'] | null), last?: (Scalars['Int'] | null)} })
     /** Orders associated with a user */
     userOrders?: (OrderConnectionGenqlSelection & { __args: {accountId: Scalars['String'], userID: Scalars['String'], first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), before?: (Scalars['String'] | null), last?: (Scalars['Int'] | null)} })
+    /** Get all sale registrations for a sale */
+    saleRegistrations?: (SaleRegistrationsConnectionGenqlSelection & { __args: {accountId: Scalars['String'], first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), filter?: (SaleRegistrationsQueryFilter | null), direction?: (PaginationDirection | null), sortByField?: (SaleRegistrationSortByField | null)} })
+    /** Get all users for an account */
+    users?: (UsersConnectionGenqlSelection & { __args: {accountId: Scalars['String'], first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null)} })
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -3300,6 +3978,14 @@ email: Scalars['String'],
 firstName: Scalars['String'],
 /** User last name */
 lastName: Scalars['String']}
+
+
+/** Input for rejecting a sale registration */
+export interface RejectSaleRegistrationInput {
+/** Registration ID to reject */
+registrationId: Scalars['String'],
+/** Reason for rejection */
+reason?: (Scalars['String'] | null)}
 
 export interface RemovePaddleFromSaleInput {
 /** Sale ID */
@@ -3441,6 +4127,20 @@ export interface SaleGenqlSelection{
     sumOfHighestBids?: boolean | number
     /** Statistics for a sale providing insights into bidding activity, item performance, and auction dynamics. */
     statistics?: SaleStatisticsGenqlSelection
+    /** Restrictions for bidding on a sale */
+    bidRestrictions?: BidRestrictionsGenqlSelection
+    /** Get list of registrations for this sale */
+    registrations?: (SaleRegistrationsConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), filter?: (SaleRegistrationsForSaleFilter | null), direction?: (PaginationDirection | null), sortByField?: (SaleRegistrationSortByField | null)} })
+    /** All Orders associated with the sale. */
+    orders?: (OrderConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), before?: (Scalars['String'] | null), last?: (Scalars['Int'] | null)} })
+    /** Unique external identifier, e.g. external system's id, inventory id, etc. */
+    externalId?: boolean | number
+    /** Location of the sale */
+    location?: boolean | number
+    /** Metafields associated with the sale */
+    metafields?: (MetafieldGenqlSelection & { __args: {input: GetMetafieldsInput} })
+    /** Metafield associated with the sale */
+    metafield?: (MetafieldGenqlSelection & { __args: {input: GetMetafieldInput} })
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -3536,7 +4236,6 @@ export interface SaleItemGenqlSelection{
     dates?: ItemDatesGenqlSelection
     /**
      * Allowed BidTypes on the item.
-     * Currently only a single BidType is allowed per item.
      * Defaults to allowing only Max bids if not supplied.
      */
     allowedBidTypes?: boolean | number
@@ -3571,14 +4270,29 @@ export interface SaleItemGenqlSelection{
     tagsV2?: TagGenqlSelection
     /** Reserve status. */
     reserveStatus?: boolean | number
-    /** External ID */
+    /** Unique external identifier, e.g. external system's id, inventory id, etc. */
     externalId?: boolean | number
+    /** Optional lot display number. */
+    displayNumber?: boolean | number
     /** Metadata associated with the item */
     metadata?: ItemMetadataGenqlSelection
     /** closingTimeCountdown for the item. */
     closingTimeCountdown?: boolean | number
     /** Item specifications */
     specifications?: ItemSpecificationsGenqlSelection
+    /** Get list of registrations for this sale item */
+    registrations?: (SaleItemRegistrationsConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), filter?: (SaleItemRegistrationFilter | null)} })
+    /**
+     * Rules for account specific fees that should be applied to the item when sold.
+     * e.g. Buyer's Premium.
+     */
+    feeRules?: FeeRuleGenqlSelection
+    /** Location of the item */
+    location?: boolean | number
+    /** Metafields associated with the item */
+    metafields?: (MetafieldGenqlSelection & { __args: {input: GetMetafieldsInput} })
+    /** Metafield associated with the item */
+    metafield?: (MetafieldGenqlSelection & { __args: {input: GetMetafieldInput} })
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -3592,7 +4306,10 @@ statuses: ItemStatus[],
 showHiddenItems?: (Scalars['Boolean'] | null)}
 
 
-/** Item input when creating an item */
+/**
+ * Item input when creating an item
+ * Use for creating item and associating it with a sale.
+ */
 export interface SaleItemInput {
 /** Id of the sale that is associated with the item. */
 saleId: Scalars['String'],
@@ -3622,7 +4339,6 @@ highEstimate?: (Scalars['Int'] | null),
 ItemNumber?: (Scalars['Int'] | null),
 /**
  * Allowed BidTypes on the item.
- * Currently only a single BidType is allowed per item.
  * Defaults to allowing only Max bids if not supplied.
  */
 allowedBidTypes?: (BidType[] | null),
@@ -3648,7 +4364,66 @@ hidden?: (Scalars['Boolean'] | null),
 /** Tags for the item */
 tags?: (Scalars['String'][] | null),
 /** Item Specifications (dimensions, weight, type, etc.) */
-specifications?: (ItemSpecificationsInput | null)}
+specifications?: (ItemSpecificationsInput | null),
+/**
+ * Unique external identifier, e.g. external system's id, inventory id, etc.
+ * Note: this will set the externalId on the underlying item itself.
+ */
+externalId?: (Scalars['String'] | null),
+/** Optional lot display number. */
+displayNumber?: (Scalars['String'] | null)}
+
+export interface SaleItemOrItemGenqlSelection{
+    on_SaleItem?:SaleItemGenqlSelection,
+    on_Item?:ItemGenqlSelection,
+    on_Node?: NodeGenqlSelection,
+    __typename?: boolean | number
+}
+
+
+/** Sale item registration for a specific item */
+export interface SaleItemRegistrationGenqlSelection{
+    /** Id of the SaleItem registration */
+    id?: boolean | number
+    /** Sale registration ID this item registration belongs to */
+    saleRegistration?: SaleRegistrationGenqlSelection
+    /** Item that the user is registering for */
+    saleItem?: SaleItemGenqlSelection
+    /** When the SaleItem registration was created */
+    createdAt?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Sale item registration edge for connection */
+export interface SaleItemRegistrationEdgeGenqlSelection{
+    /** The item registration node */
+    node?: SaleItemRegistrationGenqlSelection
+    /** Cursor for pagination */
+    cursor?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Filter for sale item registrations */
+export interface SaleItemRegistrationFilter {
+/** Filter by registration type */
+types?: (SaleRegistrationType[] | null),
+/** Filter by user ID */
+userId?: (Scalars['String'] | null)}
+
+
+/** Sale item registration connection for pagination */
+export interface SaleItemRegistrationsConnectionGenqlSelection{
+    /** Sale item registration edges */
+    edges?: SaleItemRegistrationEdgeGenqlSelection
+    /** Current page information */
+    pageInfo?: PageInfoGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
 
 export interface SaleItemsConnectionGenqlSelection{
     /** Sale Item edges */
@@ -3710,6 +4485,65 @@ export interface SaleMetricsGenqlSelection{
     __typename?: boolean | number
     __scalar?: boolean | number
 }
+
+
+/** Sale registration for a user */
+export interface SaleRegistrationGenqlSelection{
+    /** Id of the registration */
+    id?: boolean | number
+    /** Account ID associated with the registration */
+    account?: AccountGenqlSelection
+    /** Sale ID that the user is registering for */
+    sale?: SaleGenqlSelection
+    /** User ID of the person registering */
+    userId?: boolean | number
+    /** Type of registration (online, phone, paddle, aggregator) */
+    type?: boolean | number
+    /** Registration identifier (phone number, paddle number, etc.) */
+    identifier?: boolean | number
+    /** Current status of the registration */
+    status?: boolean | number
+    /** Reason for rejection if status is REJECTED */
+    rejectedReason?: boolean | number
+    /** When the registration was created */
+    createdAt?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Sale registration edge for connection */
+export interface SaleRegistrationEdgeGenqlSelection{
+    /** The registration node */
+    node?: SaleRegistrationGenqlSelection
+    /** Cursor for pagination */
+    cursor?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Sale registration connection for pagination */
+export interface SaleRegistrationsConnectionGenqlSelection{
+    /** Sale registration edges */
+    edges?: SaleRegistrationEdgeGenqlSelection
+    /** Current page information */
+    pageInfo?: PageInfoGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Filter for sale registrations */
+export interface SaleRegistrationsForSaleFilter {
+/** Filter by registration type */
+types?: (SaleRegistrationType[] | null),
+/** Filter by registration status */
+statuses?: (SaleRegistrationStatus[] | null),
+/** Filter by user ID */
+userId?: (Scalars['String'] | null)}
+
+export interface SaleRegistrationsQueryFilter {saleIds?: (Scalars['String'][] | null),userIds?: (Scalars['String'][] | null),types?: (SaleRegistrationType[] | null),statuses?: (SaleRegistrationStatus[] | null)}
 
 
 /** Daily bid count data for a specific date in the sale. */
@@ -3786,6 +4620,20 @@ export interface SellerTermsGenqlSelection{
 
 /** Input to set an item winner and close the item. */
 export interface SetItemWinnerInput {saleId: Scalars['String'],itemId: Scalars['String'],bidId: Scalars['String']}
+
+
+/** Input for setting a single metafield connected to a specific entity */
+export interface SetMetafieldInput {
+/** The type of entity the metafield is connected to */
+entityType: MetafieldEntityType,
+/** The ID of the entity the metafield is connected to */
+entityId: Scalars['String'],
+/** The key of the metafield */
+key: Scalars['String'],
+/** The value of the metafield */
+value: Scalars['String'],
+/** The value type of the metafield */
+valueType: MetafieldValueType}
 
 
 /** Input object for when setting sale item status */
@@ -3939,9 +4787,29 @@ metadata?: (ItemMetadataInput | null),
 /** Tags for the item */
 tags?: (Scalars['String'][] | null),
 /** Item specifications (dimensions, weight, type, etc.) */
-specifications?: (ItemSpecificationsInput | null),valuationAmount?: (Scalars['Int'] | null),valuationCurrency?: (Scalars['String'] | null)}
+specifications?: (ItemSpecificationsInput | null),valuationAmount?: (Scalars['Int'] | null),valuationCurrency?: (Scalars['String'] | null),
+/** Location of the item */
+location?: (Scalars['String'] | null)}
 
 export interface UpdateItemNumbersInput {saleId: Scalars['String'],itemNumberChanges: ItemNumberChangeInput[]}
+
+export interface UpdateOrderInput {
+/** Order identifier */
+id: Scalars['ID'],
+/** Order title */
+title?: (Scalars['String'] | null),
+/** Billing address for the order */
+billingAddress?: (MailingAddressInput | null),
+/** Shipping address for the order */
+shippingAddress?: (MailingAddressInput | null)}
+
+export interface UpdateOrderLineFeeInput {
+/** Fee description */
+description: Scalars['String'],
+/** Fee amount in minor currency unit */
+amount: Scalars['Int']}
+
+export interface UpdateOrderLineInput {id: Scalars['ID'],orderId: Scalars['ID'],amount?: (Scalars['Int'] | null),description?: (Scalars['String'] | null),fees?: (UpdateOrderLineFeeInput[] | null)}
 
 export interface UpdatePaymentOrderInput {
 /** OrderId that order belongs to */
@@ -3985,7 +4853,13 @@ liveStream?: (LiveStreamInput | null),
 /** sale Type */
 saleType?: (SaleType | null),
 /** Sale Is Test */
-isTestSale?: (Scalars['Boolean'] | null)}
+isTestSale?: (Scalars['Boolean'] | null),
+/** Restrictions for bidding on a sale */
+bidRestrictions?: (BidRestrictionsInput | null),
+/** Unique external identifier, e.g. external system's id, inventory id, etc. */
+externalId?: (Scalars['String'] | null),
+/** Location of the sale */
+location?: (Scalars['String'] | null)}
 
 
 /**
@@ -4017,7 +4891,7 @@ lowEstimate?: (Scalars['Int'] | null),
 highEstimate?: (Scalars['Int'] | null),
 /**
  * Allowed BidTypes on the item.
- * Currently only a single BidType is allowed per item.
+ * 
  * Defaults to allowing only Max bids if not supplied.
  */
 allowedBidTypes?: (BidType[] | null),
@@ -4045,7 +4919,14 @@ closingTimeCountdown?: (Scalars['Int'] | null),
 /** Tags for the sale item */
 tags?: (Scalars['String'][] | null),
 /** Specifications for the sale item(dimensions, weight, type, etc.) */
-specifications?: (ItemSpecificationsInput | null)}
+specifications?: (ItemSpecificationsInput | null),
+/**
+ * Unique external identifier, e.g. external system's id, inventory id, etc.
+ * Note: If set, this overrides the external_id for the sale item, but does not update the external_id on the underlying item itself. Setting this to an empty string will clear the external_id for the sale item.
+ */
+externalId?: (Scalars['String'] | null),
+/** Optional lot display number. */
+displayNumber?: (Scalars['String'] | null)}
 
 export interface UploadUrlGenqlSelection{
     /** Image ID */
@@ -4058,6 +4939,33 @@ export interface UploadUrlGenqlSelection{
     headers?: HttpHeaderGenqlSelection
     /** Order */
     order?: boolean | number
+    /** Optional unique external identifier. */
+    externalId?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/**
+ * The `User` type represents a user node in the system, including metadata such as account ID, user ID, creation and modification timestamps, and a profile from a connected identity provider.
+ * 
+ * Unlike `UserInfo`, which contains only the profile information retrieved from an identity provider, `User` provides both system-level user metadata and the associated identity provider profile.
+ * 
+ * Use `User` when you need to access user metadata and their identity provider profile together. Use `UserInfo` when you only need the profile details from the identity provider.
+ */
+export interface UserGenqlSelection{
+    /** Id of the user node */
+    id?: boolean | number
+    /** Account ID */
+    accountId?: boolean | number
+    /** UserId */
+    userId?: boolean | number
+    /** Created */
+    created?: boolean | number
+    /** Modified */
+    modified?: boolean | number
+    /** User Profile from connected identity provider */
+    profile?: UserInfoGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -4076,12 +4984,18 @@ export interface UserAddressGenqlSelection{
 }
 
 export interface UserBidActivityGenqlSelection{
+    /** Account ID */
+    accountId?: boolean | number
     /** BidId UUID string */
     bidId?: boolean | number
     /** Sale ID of the sale that includes the item in scope. */
     saleId?: boolean | number
+    /** Sale */
+    sale?: SaleGenqlSelection
     /** ItemId */
     itemId?: boolean | number
+    /** Item */
+    saleItem?: SaleItemGenqlSelection
     /** Amount of the bid in minor currency unit. */
     amount?: boolean | number
     /** Max amount of the bid in minor currency unit. */
@@ -4120,6 +5034,15 @@ export interface UserBidActivityEdgeGenqlSelection{
 
 export interface UserBidActivityFilter {saleId?: (Scalars['String'] | null),itemId?: (Scalars['String'] | null)}
 
+export interface UserEdgeGenqlSelection{
+    /** User */
+    node?: UserGenqlSelection
+    /** Cursor */
+    cursor?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
 
 /** The user info */
 export interface UserInfoGenqlSelection{
@@ -4154,6 +5077,17 @@ export interface UserTokenInput {
 userID: Scalars['String'],
 /** Time to live for the user token, represented as minutes */
 ttlMinutes: Scalars['Int']}
+
+
+/** Users connection for pagination */
+export interface UsersConnectionGenqlSelection{
+    /** User edges */
+    edges?: UserEdgeGenqlSelection
+    /** Current page information */
+    pageInfo?: PageInfoGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
 
 
     const Account_possibleTypes: string[] = ['Account']
@@ -4332,6 +5266,14 @@ ttlMinutes: Scalars['Int']}
     
 
 
+    const BidRestrictions_possibleTypes: string[] = ['BidRestrictions']
+    export const isBidRestrictions = (obj?: { __typename?: any } | null): obj is BidRestrictions => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isBidRestrictions"')
+      return BidRestrictions_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const BidderToken_possibleTypes: string[] = ['BidderToken']
     export const isBidderToken = (obj?: { __typename?: any } | null): obj is BidderToken => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isBidderToken"')
@@ -4376,6 +5318,14 @@ ttlMinutes: Scalars['Int']}
     export const isExternalLiveStream = (obj?: { __typename?: any } | null): obj is ExternalLiveStream => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isExternalLiveStream"')
       return ExternalLiveStream_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const FeeRule_possibleTypes: string[] = ['FeeRule']
+    export const isFeeRule = (obj?: { __typename?: any } | null): obj is FeeRule => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isFeeRule"')
+      return FeeRule_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -4556,6 +5506,22 @@ ttlMinutes: Scalars['Int']}
     
 
 
+    const MailingAddress_possibleTypes: string[] = ['MailingAddress']
+    export const isMailingAddress = (obj?: { __typename?: any } | null): obj is MailingAddress => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isMailingAddress"')
+      return MailingAddress_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const Metafield_possibleTypes: string[] = ['Metafield']
+    export const isMetafield = (obj?: { __typename?: any } | null): obj is Metafield => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isMetafield"')
+      return Metafield_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const Mutation_possibleTypes: string[] = ['Mutation']
     export const isMutation = (obj?: { __typename?: any } | null): obj is Mutation => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isMutation"')
@@ -4564,7 +5530,7 @@ ttlMinutes: Scalars['Int']}
     
 
 
-    const Node_possibleTypes: string[] = ['AccountFee','ActionHookLog','ApiKey','ApiToken','Item','PaymentOrder','Sale']
+    const Node_possibleTypes: string[] = ['AccountFee','ActionHookLog','ApiKey','ApiToken','FeeRule','Item','PaymentOrder','Sale','SaleItemRegistration','SaleRegistration','User']
     export const isNode = (obj?: { __typename?: any } | null): obj is Node => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isNode"')
       return Node_possibleTypes.includes(obj.__typename)
@@ -4608,6 +5574,14 @@ ttlMinutes: Scalars['Int']}
     export const isOrderLine = (obj?: { __typename?: any } | null): obj is OrderLine => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isOrderLine"')
       return OrderLine_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const OrderLineFee_possibleTypes: string[] = ['OrderLineFee']
+    export const isOrderLineFee = (obj?: { __typename?: any } | null): obj is OrderLineFee => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isOrderLineFee"')
+      return OrderLineFee_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -4748,6 +5722,38 @@ ttlMinutes: Scalars['Int']}
     
 
 
+    const SaleItemOrItem_possibleTypes: string[] = ['SaleItem','Item']
+    export const isSaleItemOrItem = (obj?: { __typename?: any } | null): obj is SaleItemOrItem => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isSaleItemOrItem"')
+      return SaleItemOrItem_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const SaleItemRegistration_possibleTypes: string[] = ['SaleItemRegistration']
+    export const isSaleItemRegistration = (obj?: { __typename?: any } | null): obj is SaleItemRegistration => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isSaleItemRegistration"')
+      return SaleItemRegistration_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const SaleItemRegistrationEdge_possibleTypes: string[] = ['SaleItemRegistrationEdge']
+    export const isSaleItemRegistrationEdge = (obj?: { __typename?: any } | null): obj is SaleItemRegistrationEdge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isSaleItemRegistrationEdge"')
+      return SaleItemRegistrationEdge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const SaleItemRegistrationsConnection_possibleTypes: string[] = ['SaleItemRegistrationsConnection']
+    export const isSaleItemRegistrationsConnection = (obj?: { __typename?: any } | null): obj is SaleItemRegistrationsConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isSaleItemRegistrationsConnection"')
+      return SaleItemRegistrationsConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const SaleItemsConnection_possibleTypes: string[] = ['SaleItemsConnection']
     export const isSaleItemsConnection = (obj?: { __typename?: any } | null): obj is SaleItemsConnection => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isSaleItemsConnection"')
@@ -4768,6 +5774,30 @@ ttlMinutes: Scalars['Int']}
     export const isSaleMetrics = (obj?: { __typename?: any } | null): obj is SaleMetrics => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isSaleMetrics"')
       return SaleMetrics_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const SaleRegistration_possibleTypes: string[] = ['SaleRegistration']
+    export const isSaleRegistration = (obj?: { __typename?: any } | null): obj is SaleRegistration => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isSaleRegistration"')
+      return SaleRegistration_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const SaleRegistrationEdge_possibleTypes: string[] = ['SaleRegistrationEdge']
+    export const isSaleRegistrationEdge = (obj?: { __typename?: any } | null): obj is SaleRegistrationEdge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isSaleRegistrationEdge"')
+      return SaleRegistrationEdge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const SaleRegistrationsConnection_possibleTypes: string[] = ['SaleRegistrationsConnection']
+    export const isSaleRegistrationsConnection = (obj?: { __typename?: any } | null): obj is SaleRegistrationsConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isSaleRegistrationsConnection"')
+      return SaleRegistrationsConnection_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -4868,6 +5898,14 @@ ttlMinutes: Scalars['Int']}
     
 
 
+    const User_possibleTypes: string[] = ['User']
+    export const isUser = (obj?: { __typename?: any } | null): obj is User => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isUser"')
+      return User_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const UserAddress_possibleTypes: string[] = ['UserAddress']
     export const isUserAddress = (obj?: { __typename?: any } | null): obj is UserAddress => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isUserAddress"')
@@ -4900,6 +5938,14 @@ ttlMinutes: Scalars['Int']}
     
 
 
+    const UserEdge_possibleTypes: string[] = ['UserEdge']
+    export const isUserEdge = (obj?: { __typename?: any } | null): obj is UserEdge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isUserEdge"')
+      return UserEdge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const UserInfo_possibleTypes: string[] = ['UserInfo']
     export const isUserInfo = (obj?: { __typename?: any } | null): obj is UserInfo => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isUserInfo"')
@@ -4912,6 +5958,14 @@ ttlMinutes: Scalars['Int']}
     export const isUserToken = (obj?: { __typename?: any } | null): obj is UserToken => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isUserToken"')
       return UserToken_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const UsersConnection_possibleTypes: string[] = ['UsersConnection']
+    export const isUsersConnection = (obj?: { __typename?: any } | null): obj is UsersConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isUsersConnection"')
+      return UsersConnection_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -4940,7 +5994,12 @@ export const enumActionType = {
    ORDER_CREATED: 'ORDER_CREATED' as const,
    ORDER_UPDATED: 'ORDER_UPDATED' as const,
    ORDER_CANCELLED: 'ORDER_CANCELLED' as const,
-   SALE_UPDATED: 'SALE_UPDATED' as const
+   SALE_UPDATED: 'SALE_UPDATED' as const,
+   SALE_REGISTRATION_CREATED: 'SALE_REGISTRATION_CREATED' as const,
+   SALE_REGISTRATION_UPDATED: 'SALE_REGISTRATION_UPDATED' as const,
+   SALE_REGISTRATION_DELETED: 'SALE_REGISTRATION_DELETED' as const,
+   SALE_ITEM_REGISTRATION_CREATED: 'SALE_ITEM_REGISTRATION_CREATED' as const,
+   SALE_ITEM_REGISTRATION_DELETED: 'SALE_ITEM_REGISTRATION_DELETED' as const
 }
 
 export const enumAddressType = {
@@ -5010,6 +6069,258 @@ export const enumClosingMethod = {
    NONE: 'NONE' as const
 }
 
+export const enumCountry = {
+   AF: 'AF' as const,
+   AL: 'AL' as const,
+   AQ: 'AQ' as const,
+   DZ: 'DZ' as const,
+   AS: 'AS' as const,
+   AD: 'AD' as const,
+   AO: 'AO' as const,
+   AG: 'AG' as const,
+   AZ: 'AZ' as const,
+   AR: 'AR' as const,
+   AU: 'AU' as const,
+   AT: 'AT' as const,
+   BS: 'BS' as const,
+   BH: 'BH' as const,
+   BD: 'BD' as const,
+   AM: 'AM' as const,
+   BB: 'BB' as const,
+   BE: 'BE' as const,
+   BM: 'BM' as const,
+   BT: 'BT' as const,
+   BO: 'BO' as const,
+   BA: 'BA' as const,
+   BW: 'BW' as const,
+   BV: 'BV' as const,
+   BR: 'BR' as const,
+   BZ: 'BZ' as const,
+   IO: 'IO' as const,
+   SB: 'SB' as const,
+   VG: 'VG' as const,
+   BN: 'BN' as const,
+   BG: 'BG' as const,
+   MM: 'MM' as const,
+   BI: 'BI' as const,
+   BY: 'BY' as const,
+   KH: 'KH' as const,
+   CM: 'CM' as const,
+   CA: 'CA' as const,
+   CV: 'CV' as const,
+   KY: 'KY' as const,
+   CF: 'CF' as const,
+   LK: 'LK' as const,
+   TD: 'TD' as const,
+   CL: 'CL' as const,
+   CN: 'CN' as const,
+   TW: 'TW' as const,
+   CX: 'CX' as const,
+   CC: 'CC' as const,
+   CO: 'CO' as const,
+   KM: 'KM' as const,
+   YT: 'YT' as const,
+   CG: 'CG' as const,
+   CD: 'CD' as const,
+   CK: 'CK' as const,
+   CR: 'CR' as const,
+   HR: 'HR' as const,
+   CU: 'CU' as const,
+   CY: 'CY' as const,
+   CZ: 'CZ' as const,
+   BJ: 'BJ' as const,
+   DK: 'DK' as const,
+   DM: 'DM' as const,
+   DO: 'DO' as const,
+   EC: 'EC' as const,
+   SV: 'SV' as const,
+   GQ: 'GQ' as const,
+   ET: 'ET' as const,
+   ER: 'ER' as const,
+   EE: 'EE' as const,
+   FO: 'FO' as const,
+   FK: 'FK' as const,
+   GS: 'GS' as const,
+   FJ: 'FJ' as const,
+   FI: 'FI' as const,
+   AX: 'AX' as const,
+   FR: 'FR' as const,
+   GF: 'GF' as const,
+   PF: 'PF' as const,
+   TF: 'TF' as const,
+   DJ: 'DJ' as const,
+   GA: 'GA' as const,
+   GE: 'GE' as const,
+   GM: 'GM' as const,
+   PS: 'PS' as const,
+   DE: 'DE' as const,
+   GH: 'GH' as const,
+   GI: 'GI' as const,
+   KI: 'KI' as const,
+   GR: 'GR' as const,
+   GL: 'GL' as const,
+   GD: 'GD' as const,
+   GP: 'GP' as const,
+   GU: 'GU' as const,
+   GT: 'GT' as const,
+   GN: 'GN' as const,
+   GY: 'GY' as const,
+   HT: 'HT' as const,
+   HM: 'HM' as const,
+   VA: 'VA' as const,
+   HN: 'HN' as const,
+   HK: 'HK' as const,
+   HU: 'HU' as const,
+   IS: 'IS' as const,
+   IN: 'IN' as const,
+   ID: 'ID' as const,
+   IR: 'IR' as const,
+   IQ: 'IQ' as const,
+   IE: 'IE' as const,
+   IL: 'IL' as const,
+   IT: 'IT' as const,
+   CI: 'CI' as const,
+   JM: 'JM' as const,
+   JP: 'JP' as const,
+   KZ: 'KZ' as const,
+   JO: 'JO' as const,
+   KE: 'KE' as const,
+   KP: 'KP' as const,
+   KR: 'KR' as const,
+   KW: 'KW' as const,
+   KG: 'KG' as const,
+   LA: 'LA' as const,
+   LB: 'LB' as const,
+   LS: 'LS' as const,
+   LV: 'LV' as const,
+   LR: 'LR' as const,
+   LY: 'LY' as const,
+   LI: 'LI' as const,
+   LT: 'LT' as const,
+   LU: 'LU' as const,
+   MO: 'MO' as const,
+   MG: 'MG' as const,
+   MW: 'MW' as const,
+   MY: 'MY' as const,
+   MV: 'MV' as const,
+   ML: 'ML' as const,
+   MT: 'MT' as const,
+   MQ: 'MQ' as const,
+   MR: 'MR' as const,
+   MU: 'MU' as const,
+   MX: 'MX' as const,
+   MC: 'MC' as const,
+   MN: 'MN' as const,
+   MD: 'MD' as const,
+   ME: 'ME' as const,
+   MS: 'MS' as const,
+   MA: 'MA' as const,
+   MZ: 'MZ' as const,
+   OM: 'OM' as const,
+   NA: 'NA' as const,
+   NR: 'NR' as const,
+   NP: 'NP' as const,
+   NL: 'NL' as const,
+   CW: 'CW' as const,
+   AW: 'AW' as const,
+   SX: 'SX' as const,
+   BQ: 'BQ' as const,
+   NC: 'NC' as const,
+   VU: 'VU' as const,
+   NZ: 'NZ' as const,
+   NI: 'NI' as const,
+   NE: 'NE' as const,
+   NG: 'NG' as const,
+   NU: 'NU' as const,
+   NF: 'NF' as const,
+   NO: 'NO' as const,
+   MP: 'MP' as const,
+   UM: 'UM' as const,
+   FM: 'FM' as const,
+   MH: 'MH' as const,
+   PW: 'PW' as const,
+   PK: 'PK' as const,
+   PA: 'PA' as const,
+   PG: 'PG' as const,
+   PY: 'PY' as const,
+   PE: 'PE' as const,
+   PH: 'PH' as const,
+   PN: 'PN' as const,
+   PL: 'PL' as const,
+   PT: 'PT' as const,
+   GW: 'GW' as const,
+   TL: 'TL' as const,
+   PR: 'PR' as const,
+   QA: 'QA' as const,
+   RE: 'RE' as const,
+   RO: 'RO' as const,
+   RU: 'RU' as const,
+   RW: 'RW' as const,
+   BL: 'BL' as const,
+   SH: 'SH' as const,
+   KN: 'KN' as const,
+   AI: 'AI' as const,
+   LC: 'LC' as const,
+   MF: 'MF' as const,
+   PM: 'PM' as const,
+   VC: 'VC' as const,
+   SM: 'SM' as const,
+   ST: 'ST' as const,
+   SA: 'SA' as const,
+   SN: 'SN' as const,
+   RS: 'RS' as const,
+   SC: 'SC' as const,
+   SL: 'SL' as const,
+   SG: 'SG' as const,
+   SK: 'SK' as const,
+   VN: 'VN' as const,
+   SI: 'SI' as const,
+   SO: 'SO' as const,
+   ZA: 'ZA' as const,
+   ZW: 'ZW' as const,
+   ES: 'ES' as const,
+   SS: 'SS' as const,
+   SD: 'SD' as const,
+   EH: 'EH' as const,
+   SR: 'SR' as const,
+   SJ: 'SJ' as const,
+   SZ: 'SZ' as const,
+   SE: 'SE' as const,
+   CH: 'CH' as const,
+   SY: 'SY' as const,
+   TJ: 'TJ' as const,
+   TH: 'TH' as const,
+   TG: 'TG' as const,
+   TK: 'TK' as const,
+   TO: 'TO' as const,
+   TT: 'TT' as const,
+   AE: 'AE' as const,
+   TN: 'TN' as const,
+   TR: 'TR' as const,
+   TM: 'TM' as const,
+   TC: 'TC' as const,
+   TV: 'TV' as const,
+   UG: 'UG' as const,
+   UA: 'UA' as const,
+   MK: 'MK' as const,
+   EG: 'EG' as const,
+   GB: 'GB' as const,
+   GG: 'GG' as const,
+   JE: 'JE' as const,
+   IM: 'IM' as const,
+   TZ: 'TZ' as const,
+   US: 'US' as const,
+   VI: 'VI' as const,
+   BF: 'BF' as const,
+   UY: 'UY' as const,
+   UZ: 'UZ' as const,
+   VE: 'VE' as const,
+   WF: 'WF' as const,
+   WS: 'WS' as const,
+   YE: 'YE' as const,
+   ZM: 'ZM' as const
+}
+
 export const enumCurrency = {
    USD: 'USD' as const,
    ISK: 'ISK' as const,
@@ -5023,6 +6334,12 @@ export const enumCurrency = {
    CAD: 'CAD' as const,
    JPY: 'JPY' as const,
    HKD: 'HKD' as const
+}
+
+export const enumFeeRuleType = {
+   NOT_SET: 'NOT_SET' as const,
+   PERCENTAGE: 'PERCENTAGE' as const,
+   AMOUNT: 'AMOUNT' as const
 }
 
 export const enumImageType = {
@@ -5067,6 +6384,18 @@ export const enumMeasurementUnit = {
    NOT_SET: 'NOT_SET' as const,
    CM: 'CM' as const,
    INCH: 'INCH' as const
+}
+
+export const enumMetafieldEntityType = {
+   METAFIELD_ENTITY_TYPE_SALE: 'METAFIELD_ENTITY_TYPE_SALE' as const,
+   METAFIELD_ENTITY_TYPE_ITEM: 'METAFIELD_ENTITY_TYPE_ITEM' as const,
+   METAFIELD_ENTITY_TYPE_SALE_ITEM: 'METAFIELD_ENTITY_TYPE_SALE_ITEM' as const,
+   METAFIELD_ENTITY_TYPE_ACCOUNT: 'METAFIELD_ENTITY_TYPE_ACCOUNT' as const
+}
+
+export const enumMetafieldValueType = {
+   METAFIELD_VALUE_TYPE_SINGLE_LINE_TEXT: 'METAFIELD_VALUE_TYPE_SINGLE_LINE_TEXT' as const,
+   METAFIELD_VALUE_TYPE_RICH_TEXT: 'METAFIELD_VALUE_TYPE_RICH_TEXT' as const
 }
 
 export const enumOrderLineType = {
@@ -5123,7 +6452,10 @@ export const enumPermission = {
    WRITE_BIDDER_TOKEN: 'WRITE_BIDDER_TOKEN' as const,
    WRITE_CANCEL_BID: 'WRITE_CANCEL_BID' as const,
    WRITE_SHOPIFY_CONFIGURATION: 'WRITE_SHOPIFY_CONFIGURATION' as const,
-   READ_ORDER: 'READ_ORDER' as const
+   READ_ORDER: 'READ_ORDER' as const,
+   READ_USER: 'READ_USER' as const,
+   READ_METAFIELDS: 'READ_METAFIELDS' as const,
+   WRITE_METAFIELDS: 'WRITE_METAFIELDS' as const
 }
 
 export const enumReserveAutoBidMethod = {
@@ -5135,6 +6467,28 @@ export const enumReserveStatus = {
    NOT_MET: 'NOT_MET' as const,
    MET: 'MET' as const,
    NO_RESERVE: 'NO_RESERVE' as const
+}
+
+export const enumSaleIdType = {
+   ID: 'ID' as const,
+   EXTERNAL_ID: 'EXTERNAL_ID' as const
+}
+
+export const enumSaleRegistrationSortByField = {
+   CREATED_AT: 'CREATED_AT' as const
+}
+
+export const enumSaleRegistrationStatus = {
+   PENDING: 'PENDING' as const,
+   ACCEPTED: 'ACCEPTED' as const,
+   REJECTED: 'REJECTED' as const
+}
+
+export const enumSaleRegistrationType = {
+   ONLINE: 'ONLINE' as const,
+   PHONE: 'PHONE' as const,
+   PADDLE: 'PADDLE' as const,
+   AGGREGATOR: 'AGGREGATOR' as const
 }
 
 export const enumSaleStatus = {
@@ -5315,6 +6669,11 @@ export const enumSpecificationType = {
    AUTOMOTIVE: 'AUTOMOTIVE' as const,
    FASHION: 'FASHION' as const,
    OTHER: 'OTHER' as const
+}
+
+export const enumUserIdType = {
+   USER_ID: 'USER_ID' as const,
+   IDENTITY_PROVIDER_ID: 'IDENTITY_PROVIDER_ID' as const
 }
 
 export const enumWeightUnit = {

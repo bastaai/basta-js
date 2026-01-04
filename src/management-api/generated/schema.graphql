@@ -17,6 +17,12 @@ directive @goField(forceResolver: String, name: String) on FIELD_DEFINITION | IN
 
 directive @hasPermission(permission: Permission!) on FIELD_DEFINITION
 
+"""Input for accepting a sale registration"""
+input AcceptSaleRegistrationInput {
+  """Registration ID to accept"""
+  registrationId: String!
+}
+
 """Account Information"""
 type Account {
   """ID of the account"""
@@ -75,6 +81,12 @@ type Account {
 
   """Auction Aggregators associated with the account"""
   aggregators: [Aggregator!]!
+
+  """Metafields associated with the account"""
+  metafields(input: GetMetafieldsInput!): [Metafield!]!
+
+  """Metafield associated with the account"""
+  metafield(input: GetMetafieldInput!): Metafield
 }
 
 type AccountFee implements Node {
@@ -279,6 +291,21 @@ enum ActionType {
 
   """Sent when a sale is updated"""
   SALE_UPDATED
+
+  """Sent when a sale registration is created"""
+  SALE_REGISTRATION_CREATED
+
+  """Sent when a sale registration is updated"""
+  SALE_REGISTRATION_UPDATED
+
+  """Sent when a sale registration is deleted"""
+  SALE_REGISTRATION_DELETED
+
+  """Sent when a sale item registration is created"""
+  SALE_ITEM_REGISTRATION_CREATED
+
+  """Sent when a sale item registration is deleted"""
+  SALE_ITEM_REGISTRATION_DELETED
 }
 
 input AddFairWarningNotificationToItemInput {
@@ -317,7 +344,6 @@ input AddItemToSaleInput {
 
   """
   Allowed BidTypes on the item.
-  Currently only a single BidType is allowed per item.
   Defaults to allowing only Max bids if not supplied.
   """
   allowedBidTypes: [BidType!]
@@ -344,6 +370,15 @@ input AddItemToSaleInput {
   If not provided it defaults to 120000ms (2 minutes).
   """
   closingTimeCountdown: Int
+
+  """
+  Unique external identifier, e.g. external system's id, inventory id, etc.
+  If set, this overrides the external_id for the sale item, but does not update the external_id on the underlying item itself. Setting this to an empty string will clear the external_id for the sale item.
+  """
+  externalId: String
+
+  """Optional lot display number."""
+  displayNumber: String
 }
 
 input AddLiveStreamToSaleInput {
@@ -567,6 +602,15 @@ type Bid {
   """Sale ID of the sale that includes the item in scope."""
   saleId: String!
 
+  """Item ID of the item that includes the bid in scope."""
+  itemId: String!
+
+  """Sale"""
+  sale: Sale!
+
+  """Item"""
+  saleItem: SaleItem!
+
   """Amount of the bid in minor currency unit."""
   amount: Int!
 
@@ -710,6 +754,18 @@ type BidPlacedSuccess {
   bidType: BidType!
 }
 
+"""Restrictions for bidding on a sale"""
+type BidRestrictions {
+  """Users need to have an accepted registration to bid on this sale"""
+  acceptedRegistrationRequired: Boolean!
+}
+
+"""Input object for restrictions for bidding on a sale"""
+input BidRestrictionsInput {
+  """Users need to have an accepted registration to bid on this sale"""
+  acceptedRegistrationRequired: Boolean!
+}
+
 """Bid statuses that calculates in what status the bid is."""
 enum BidStatus {
   """User is winning the item."""
@@ -851,6 +907,259 @@ input ContinueOnboardPaymentAccountInput {
   returnUrl: String!
 }
 
+"""ISO 3166-1 alpha-2 country codes"""
+enum Country {
+  AF
+  AL
+  AQ
+  DZ
+  AS
+  AD
+  AO
+  AG
+  AZ
+  AR
+  AU
+  AT
+  BS
+  BH
+  BD
+  AM
+  BB
+  BE
+  BM
+  BT
+  BO
+  BA
+  BW
+  BV
+  BR
+  BZ
+  IO
+  SB
+  VG
+  BN
+  BG
+  MM
+  BI
+  BY
+  KH
+  CM
+  CA
+  CV
+  KY
+  CF
+  LK
+  TD
+  CL
+  CN
+  TW
+  CX
+  CC
+  CO
+  KM
+  YT
+  CG
+  CD
+  CK
+  CR
+  HR
+  CU
+  CY
+  CZ
+  BJ
+  DK
+  DM
+  DO
+  EC
+  SV
+  GQ
+  ET
+  ER
+  EE
+  FO
+  FK
+  GS
+  FJ
+  FI
+  AX
+  FR
+  GF
+  PF
+  TF
+  DJ
+  GA
+  GE
+  GM
+  PS
+  DE
+  GH
+  GI
+  KI
+  GR
+  GL
+  GD
+  GP
+  GU
+  GT
+  GN
+  GY
+  HT
+  HM
+  VA
+  HN
+  HK
+  HU
+  IS
+  IN
+  ID
+  IR
+  IQ
+  IE
+  IL
+  IT
+  CI
+  JM
+  JP
+  KZ
+  JO
+  KE
+  KP
+  KR
+  KW
+  KG
+  LA
+  LB
+  LS
+  LV
+  LR
+  LY
+  LI
+  LT
+  LU
+  MO
+  MG
+  MW
+  MY
+  MV
+  ML
+  MT
+  MQ
+  MR
+  MU
+  MX
+  MC
+  MN
+  MD
+  ME
+  MS
+  MA
+  MZ
+  OM
+  NA
+  NR
+  NP
+  NL
+  CW
+  AW
+  SX
+  BQ
+  NC
+  VU
+  NZ
+  NI
+  NE
+  NG
+  NU
+  NF
+  NO
+  MP
+  UM
+  FM
+  MH
+  PW
+  PK
+  PA
+  PG
+  PY
+  PE
+  PH
+  PN
+  PL
+  PT
+  GW
+  TL
+  PR
+  QA
+  RE
+  RO
+  RU
+  RW
+  BL
+  SH
+  KN
+  AI
+  LC
+  MF
+  PM
+  VC
+  SM
+  ST
+  SA
+  SN
+  RS
+  SC
+  SL
+  SG
+  SK
+  VN
+  SI
+  SO
+  ZA
+  ZW
+  ES
+  SS
+  SD
+  EH
+  SR
+  SJ
+  SZ
+  SE
+  CH
+  SY
+  TJ
+  TH
+  TG
+  TK
+  TO
+  TT
+  AE
+  TN
+  TR
+  TM
+  TC
+  TV
+  UG
+  UA
+  MK
+  EG
+  GB
+  GG
+  JE
+  IM
+  TZ
+  US
+  VI
+  BF
+  UY
+  UZ
+  VE
+  WF
+  WS
+  YE
+  ZM
+}
+
 input CreateAccountFeeInput {
   name: String!
   type: AccountFeeType!
@@ -931,6 +1240,9 @@ input CreateItemInput {
   valuationCurrency: String
   lowEstimate: Int
   highEstimate: Int
+
+  """Location of the item"""
+  location: String
 }
 
 input CreateItemNoteInput {
@@ -943,6 +1255,60 @@ input CreateItemSchemaInput {
   metadataSchema: JSON!
 }
 
+input CreateOrderInput {
+  """SaleId that order belongs to"""
+  saleId: String!
+
+  """UserId of user that will pay for the order"""
+  userId: String!
+
+  """Order title"""
+  title: String!
+
+  """Currency for the order, optional to be backwards compatible."""
+  currency: Currency
+
+  """Billing address for the order"""
+  billingAddress: MailingAddressInput
+
+  """Shipping address for the order"""
+  shippingAddress: MailingAddressInput
+
+  """OrderLines"""
+  orderLines: [CreateOrderLineForOrderInput!]
+}
+
+input CreateOrderLineForOrderInput {
+  """ItemId that order line belongs to"""
+  itemId: String!
+
+  """Amount of the order line in minor currency unit"""
+  amount: Int!
+
+  """Description of the order line"""
+  description: String!
+
+  """Fees associated with the order line, e.g. Buyer's Premium."""
+  fees: [CreatePaymentOrderLineFeeInput!]
+}
+
+input CreateOrderLineInput {
+  """OrderId that order line belongs to"""
+  orderId: ID!
+
+  """ItemId that order line belongs to"""
+  itemId: String!
+
+  """Amount of the order line in minor currency unit"""
+  amount: Int!
+
+  """Description of the order line"""
+  description: String!
+
+  """Fees associated with the order line, e.g. Buyer's Premium."""
+  fees: [CreatePaymentOrderLineFeeInput!]
+}
+
 input CreatePaymentInput {
   """OrderId that payment belongs to"""
   orderId: ID!
@@ -953,16 +1319,38 @@ input CreatePaymentOrderInput {
   saleId: String!
 
   """ItemId that order belongs to"""
-  itemId: String!
+  itemId: String
 
   """UserId of user that will pay for the order"""
   userId: String!
 
   """OrderLines"""
   orderLines: [CreatePaymentOrderLineInput!]!
+
+  """Currency for the order, optional to be backwards compatible."""
+  currency: Currency
+
+  """Billing address for the order"""
+  billingAddress: MailingAddressInput
+
+  """Shipping address for the order"""
+  shippingAddress: MailingAddressInput
+}
+
+input CreatePaymentOrderLineFeeInput {
+  """Fee description"""
+  description: String!
+
+  """Fee amount in minor currency unit"""
+  amount: Int!
 }
 
 input CreatePaymentOrderLineInput {
+  """
+  ItemId that order line belongs to (optional to be backwards compatible)
+  """
+  itemId: String
+
   """Amount of the order line in minor currency unit"""
   amount: Int!
 
@@ -970,7 +1358,10 @@ input CreatePaymentOrderLineInput {
   description: String!
 
   """Type of the order line"""
-  orderLineType: OrderLineType!
+  orderLineType: OrderLineType
+
+  """Fees associated with the order line, e.g. Buyer's Premium."""
+  fees: [CreatePaymentOrderLineFeeInput!]
 }
 
 """Input for creating or modifying sales."""
@@ -1000,6 +1391,59 @@ input CreateSaleInput {
 
   """Sale Is Test"""
   isTestSale: Boolean
+
+  """Restrictions for bidding on a sale"""
+  bidRestrictions: BidRestrictionsInput
+
+  """
+  Unique external identifier, e.g. external system's id, inventory id, etc.
+  """
+  externalId: String
+
+  """Location of the sale"""
+  location: String
+}
+
+"""
+Input for creating a sale item registration.
+Creates Sale Registration for user-id and type if it doesn't exist
+"""
+input CreateSaleItemRegistrationInput {
+  """Sale ID that the item belongs to"""
+  saleId: String!
+
+  """Item ID that the user is registering for"""
+  itemId: String!
+
+  """User ID of the person registering"""
+  userId: String!
+
+  """Type of registration"""
+  type: SaleRegistrationType!
+
+  """Registration identifier"""
+  identifier: String
+
+  """Registration status (defaults to PENDING)"""
+  status: SaleRegistrationStatus = PENDING
+}
+
+"""Input for creating a sale registration"""
+input CreateSaleRegistrationInput {
+  """Sale ID that the user is registering for"""
+  saleId: String!
+
+  """User ID of the person registering"""
+  userId: String!
+
+  """Type of registration (online, phone, paddle, aggregator)"""
+  type: SaleRegistrationType!
+
+  """Registration identifier (phone number, paddle number, etc.)"""
+  identifier: String
+
+  """Initial status of the registration (defaults to PENDING)"""
+  status: SaleRegistrationStatus = PENDING
 }
 
 input CreateUploadUrlInput {
@@ -1017,6 +1461,9 @@ input CreateUploadUrlInput {
 
   """Conditional. Must be set if imageType is Item or SaleItem"""
   itemId: String
+
+  """Optional unique external identifier."""
+  externalId: String
 }
 
 enum Currency {
@@ -1077,6 +1524,26 @@ input DeleteLiveStreamFromSaleInput {
   saleId: String!
 }
 
+"""Input for deleting a single metafield"""
+input DeleteMetafieldInput {
+  """The type of entity the metafield is connected to"""
+  entityType: MetafieldEntityType!
+
+  """The ID of the entity the metafield is connected to"""
+  entityId: String!
+
+  """The key of the metafield to delete"""
+  key: String!
+}
+
+input DeleteOrderLineInput {
+  """OrderId that order line belongs to"""
+  orderId: ID!
+
+  """OrderLineId to delete"""
+  orderLineId: ID!
+}
+
 input DeletePaymentOrderInput {
   """OrderId to delete"""
   orderId: ID!
@@ -1085,6 +1552,18 @@ input DeletePaymentOrderInput {
 """Input object for when deleting a sale."""
 input DeleteSaleInput {
   saleId: String!
+}
+
+"""Input for deleting a sale item registration"""
+input DeleteSaleItemRegistrationInput {
+  """Item registration ID to delete"""
+  itemRegistrationId: String!
+}
+
+"""Input for deleting a sale registration"""
+input DeleteSaleRegistrationInput {
+  """Registration ID to delete"""
+  registrationId: String!
 }
 
 """Estimates for an item"""
@@ -1110,6 +1589,44 @@ type ExternalLiveStream {
   updated: String!
 }
 
+type FeeRule implements Node {
+  """ID of the fee rule record"""
+  id: ID!
+
+  """Name of the fee rule which is used in orders"""
+  name: String!
+
+  """Fee Rule type influences how the value is calculated"""
+  type: FeeRuleType!
+
+  """
+  Value of the fee rule interpreted based on the type
+  * 500 means 5% if type is percentage
+  * 1000 means $10 if type is amount
+  """
+  value: Int!
+
+  """
+  Upper limit of the fee rule.
+  If empty then there is no upper limit.
+  """
+  upperLteLimit: Int
+
+  """Lower limit of the fee rule."""
+  lowerLimit: Int!
+}
+
+enum FeeRuleType {
+  """Fee Rule type is not set"""
+  NOT_SET
+
+  """Fee Rule type is percentage"""
+  PERCENTAGE
+
+  """Fee Rule type is amount"""
+  AMOUNT
+}
+
 type GetItemInput {
   itemId: String
 }
@@ -1120,6 +1637,18 @@ input GetItemsInput {
   after: String
   direction: PaginationDirection = FORWARD
   itemsFilter: ItemsFilter!
+}
+
+"""Input for getting a single metafield connected to a specific entity"""
+input GetMetafieldInput {
+  key: String!
+}
+
+"""
+Input for getting multiple metafields connected to a specific entity, we return at max 10 metafields
+"""
+input GetMetafieldsInput {
+  keys: [String!]
 }
 
 """Information about the highest bid in a sale."""
@@ -1164,6 +1693,9 @@ type Image {
 
   """DisplayOrder for image"""
   order: Int!
+
+  """Optional unique external identifier."""
+  externalId: String
 }
 
 """Image reordering input"""
@@ -1250,6 +1782,15 @@ type Item implements Node {
 
   """Sale Id, if the item is linked to a sale"""
   saleId: String @deprecated(reason: "Will be removed in the future")
+
+  """Location of the item"""
+  location: String
+
+  """Metafields associated with the item"""
+  metafields(input: GetMetafieldsInput!): [Metafield!]!
+
+  """Metafield associated with the item"""
+  metafield(input: GetMetafieldInput!): Metafield
 }
 
 type ItemDates {
@@ -1562,6 +2103,30 @@ enum LiveStreamType {
   BASTA_LIVE
 }
 
+type MailingAddress {
+  name: String!
+  company: String!
+  phone: String!
+  line1: String!
+  line2: String!
+  city: String!
+  state: String!
+  postalCode: String!
+  country: Country!
+}
+
+input MailingAddressInput {
+  name: String!
+  company: String!
+  phone: String!
+  line1: String!
+  line2: String!
+  city: String!
+  state: String!
+  postalCode: String!
+  country: Country!
+}
+
 """Max bid on behalf of a user in a sale."""
 input MaxBidOnBehalfInput {
   """user id of the user that bid is being placed for."""
@@ -1585,6 +2150,29 @@ enum MeasurementUnit {
   NOT_SET
   CM
   INCH
+}
+
+"""Object for a metafield"""
+type Metafield {
+  id: String!
+  key: String!
+  value: String!
+  valueType: MetafieldValueType!
+  entityType: MetafieldEntityType!
+}
+
+"""Enum for the type of entity a metafield is connected to"""
+enum MetafieldEntityType {
+  METAFIELD_ENTITY_TYPE_SALE
+  METAFIELD_ENTITY_TYPE_ITEM
+  METAFIELD_ENTITY_TYPE_SALE_ITEM
+  METAFIELD_ENTITY_TYPE_ACCOUNT
+}
+
+"""Enum for the value type of a metafield"""
+enum MetafieldValueType {
+  METAFIELD_VALUE_TYPE_SINGLE_LINE_TEXT
+  METAFIELD_VALUE_TYPE_RICH_TEXT
 }
 
 type Mutation {
@@ -1845,16 +2433,34 @@ type Mutation {
   connectShopifyToAccount(accountId: String!, input: ConnectShopifyToAccountInput!): ShopifyConnection!
 
   """Create a payment order"""
-  createPaymentOrder(accountId: String!, input: CreatePaymentOrderInput!): PaymentOrder!
+  createPaymentOrder(accountId: String!, input: CreatePaymentOrderInput!): PaymentOrder! @deprecated(reason: "Use createOrder mutation")
+
+  """Create an order"""
+  createOrder(accountId: String!, input: CreateOrderInput!): PaymentOrder!
+
+  """Create an order line for a payment order"""
+  createOrderLine(accountId: String!, input: CreateOrderLineInput!): OrderLine!
+
+  """Update an order line for a payment order"""
+  updateOrderLine(accountId: String!, input: UpdateOrderLineInput!): OrderLine!
+
+  """Delete an order line for a payment order"""
+  deleteOrderLine(accountId: String!, input: DeleteOrderLineInput!): OrderLine!
 
   """Update a payment order"""
-  updatePaymentOrder(accountId: String!, input: UpdatePaymentOrderInput!): PaymentOrder!
+  updatePaymentOrder(accountId: String!, input: UpdatePaymentOrderInput!): PaymentOrder! @deprecated(reason: "Use updateOrder mutation")
+
+  """Update an order"""
+  updateOrder(accountId: String!, input: UpdateOrderInput!): PaymentOrder!
 
   """Delete a payment order, this will cancel order."""
   deletePaymentOrder(accountId: String!, input: DeletePaymentOrderInput!): PaymentOrder! @deprecated(reason: "Use cancelPaymentOrder mutation")
 
   """Cancel a payment order"""
   cancelPaymentOrder(accountId: String!, input: CancelPaymentOrderInput!): PaymentOrder!
+
+  """Publish a payment order"""
+  publishPaymentOrder(accountId: String!, input: PublishPaymentOrderInput!): PaymentOrder!
 
   """Create Invoice for order"""
   createInvoice(accountId: String!, input: CreateInvoiceInput!): Invoice!
@@ -1870,6 +2476,33 @@ type Mutation {
 
   """Delete an account fee"""
   deleteAccountFee(accountId: String!, input: DeleteAccountFeeInput!): ID!
+
+  """Create a sale registration"""
+  createSaleRegistration(accountId: String!, input: CreateSaleRegistrationInput!): SaleRegistration!
+
+  """Accept a sale registration"""
+  acceptSaleRegistration(accountId: String!, input: AcceptSaleRegistrationInput!): SaleRegistration!
+
+  """Reject a sale registration"""
+  rejectSaleRegistration(accountId: String!, input: RejectSaleRegistrationInput!): SaleRegistration!
+
+  """Delete a sale registration"""
+  deleteSaleRegistration(accountId: String!, input: DeleteSaleRegistrationInput!): ID!
+
+  """Create a sale item registration"""
+  createSaleItemRegistration(accountId: String!, input: CreateSaleItemRegistrationInput!): SaleItemRegistration!
+
+  """Delete a sale item registration"""
+  deleteSaleItemRegistration(accountId: String!, input: DeleteSaleItemRegistrationInput!): ID!
+
+  """
+  Set one or more metafields (create or update), 
+  you can at most set 10 metafields at a time for a single entity.
+  """
+  setMetafields(accountId: String!, metafields: [SetMetafieldInput!]!): [Metafield!]!
+
+  """Delete a metafield"""
+  deleteMetafield(accountId: String!, input: DeleteMetafieldInput!): Boolean!
 }
 
 interface Node {
@@ -1924,7 +2557,36 @@ type OrderLine {
   description: String!
 
   """Type of the order line"""
-  orderLineType: OrderLineType!
+  orderLineType: OrderLineType! @deprecated(reason: "will be removed in the future")
+
+  """Fees associated with the order line, e.g. Buyer's Premium."""
+  fees: [OrderLineFee!]!
+
+  """
+  Seller fees associated with the order line to be paid by the seller, e.g. Platform Fee.
+  """
+  sellerFees: [OrderLineFee!]!
+
+  """Item associated with the order line."""
+  item: SaleItemOrItem
+}
+
+"""Fee associated with an order line"""
+type OrderLineFee {
+  """Unique identifier for the fee."""
+  id: ID!
+
+  """Fee description."""
+  description: String!
+
+  """Fee name."""
+  name: String! @deprecated(reason: "use description")
+
+  """Fee amount in minor currency unit."""
+  amount: Int!
+
+  """Is system defined, cannot be edited."""
+  isSystemDefined: Boolean!
 }
 
 enum OrderLineType {
@@ -2064,6 +2726,12 @@ type PaymentOrder implements Node {
   """OrderID"""
   orderId: ID! @deprecated(reason: "use id")
 
+  """Title"""
+  title: String!
+
+  """Currency"""
+  currency: Currency!
+
   """SaleID"""
   saleId: String!
 
@@ -2086,7 +2754,13 @@ type PaymentOrder implements Node {
   orderLines: [OrderLine!]!
 
   """UserInfo for payment order"""
-  user: UserInfo
+  user: UserInfo @deprecated(reason: "use billing and/or shipping address")
+
+  """Billing address for the order"""
+  billingAddress: MailingAddress
+
+  """Shipping address for the order"""
+  shippingAddress: MailingAddress
 
   """Status of the order"""
   status: OrderStatus!
@@ -2133,10 +2807,18 @@ enum Permission {
   WRITE_CANCEL_BID
   WRITE_SHOPIFY_CONFIGURATION
   READ_ORDER
+  READ_USER
+  READ_METAFIELDS
+  WRITE_METAFIELDS
 }
 
 type PhoneBidOrigin {
   type: BidOriginType!
+}
+
+input PublishPaymentOrderInput {
+  """OrderId to publish"""
+  orderId: ID!
 }
 
 """Input object for when forcing sale to published."""
@@ -2157,10 +2839,13 @@ type Query {
   sales(accountId: String!, first: Int = 20, after: String, filter: SaleFilter): SaleConnection!
 
   """Get a single sale."""
-  sale(accountId: String!, id: ID!): Sale!
+  sale(accountId: String!, id: ID!, saleIdType: SaleIDType): Sale!
 
   """Get SaleItem"""
   saleItem(accountId: String!, saleId: String!, itemId: String!): SaleItem
+
+  """Get SaleItem by external id"""
+  saleItemByExternalId(accountId: String!, externalId: String!): SaleItem!
 
   """Get API Keys that have created."""
   apiKeys(accountId: String!, first: Int = 20, after: String): ApiKeyConnection!
@@ -2183,6 +2868,9 @@ type Query {
   """Fetch information about an Item"""
   item(accountId: String!, itemId: String!): Item!
 
+  """Fetch information about an Item by external identifier"""
+  itemByExternalId(accountId: String!, externalId: String!): Item!
+
   """
   Get all items for accountId
   
@@ -2193,10 +2881,25 @@ type Query {
 
   """User Bid Activity"""
   userBidActivity(accountId: String!, userId: String!, first: Int = 20, after: String, filter: UserBidActivityFilter, direction: PaginationDirection = BACKWARDS, orderBy: BidOrderByField = BID_DATE): UserBidActivityConnection!
+
+  """
+  Get a user node for a given account and user ID.
+  If idType is USER_ID_TYPE_IDENTITY_PROVIDER_ID, the user ID is an identity provider ID.
+  If idType is USER_ID_TYPE_USER_ID, the user ID is a user ID.
+  """
+  user(accountID: String!, userId: String!, idType: UserIdType!): User!
+
+  """Orders associated with an account"""
   orders(accountId: String!, first: Int, after: String, before: String, last: Int): OrderConnection!
 
   """Orders associated with a user"""
   userOrders(accountId: String!, userID: String!, first: Int, after: String, before: String, last: Int): OrderConnection!
+
+  """Get all sale registrations for a sale"""
+  saleRegistrations(accountId: String!, first: Int = 20, after: String, filter: SaleRegistrationsQueryFilter, direction: PaginationDirection = BACKWARDS, sortByField: SaleRegistrationSortByField = CREATED_AT): SaleRegistrationsConnection!
+
+  """Get all users for an account"""
+  users(accountId: String!, first: Int = 20, after: String): UsersConnection!
 }
 
 """
@@ -2250,6 +2953,15 @@ input RegisterUserPaddleInput {
 
   """User last name"""
   lastName: String!
+}
+
+"""Input for rejecting a sale registration"""
+input RejectSaleRegistrationInput {
+  """Registration ID to reject"""
+  registrationId: String!
+
+  """Reason for rejection"""
+  reason: String
 }
 
 input RemovePaddleFromSaleInput {
@@ -2450,6 +3162,29 @@ type Sale implements Node {
   Statistics for a sale providing insights into bidding activity, item performance, and auction dynamics.
   """
   statistics: SaleStatistics!
+
+  """Restrictions for bidding on a sale"""
+  bidRestrictions: BidRestrictions!
+
+  """Get list of registrations for this sale"""
+  registrations(first: Int = 20, after: String, filter: SaleRegistrationsForSaleFilter, direction: PaginationDirection = BACKWARDS, sortByField: SaleRegistrationSortByField = CREATED_AT): SaleRegistrationsConnection!
+
+  """All Orders associated with the sale."""
+  orders(first: Int, after: String, before: String, last: Int): OrderConnection!
+
+  """
+  Unique external identifier, e.g. external system's id, inventory id, etc.
+  """
+  externalId: String
+
+  """Location of the sale"""
+  location: String
+
+  """Metafields associated with the sale"""
+  metafields(input: GetMetafieldsInput!): [Metafield!]!
+
+  """Metafield associated with the sale"""
+  metafield(input: GetMetafieldInput!): Metafield
 }
 
 union SaleActivity = Sale | SaleItem
@@ -2495,6 +3230,11 @@ input SaleFilter {
   Show test sales filter: null = all sales, true = only test sales, false = only regular sales
   """
   showTestSales: Boolean
+}
+
+enum SaleIDType {
+  ID
+  EXTERNAL_ID
 }
 
 """A sale item (item that has been added to a sale)"""
@@ -2560,7 +3300,6 @@ type SaleItem {
 
   """
   Allowed BidTypes on the item.
-  Currently only a single BidType is allowed per item.
   Defaults to allowing only Max bids if not supplied.
   """
   allowedBidTypes: [BidType!]
@@ -2601,8 +3340,13 @@ type SaleItem {
   """Reserve status."""
   reserveStatus: ReserveStatus!
 
-  """External ID"""
+  """
+  Unique external identifier, e.g. external system's id, inventory id, etc.
+  """
   externalId: String
+
+  """Optional lot display number."""
+  displayNumber: String
 
   """Metadata associated with the item"""
   metadata: ItemMetadata
@@ -2612,6 +3356,24 @@ type SaleItem {
 
   """Item specifications"""
   specifications: ItemSpecifications
+
+  """Get list of registrations for this sale item"""
+  registrations(first: Int = 20, after: String, filter: SaleItemRegistrationFilter): SaleItemRegistrationsConnection!
+
+  """
+  Rules for account specific fees that should be applied to the item when sold.
+  e.g. Buyer's Premium.
+  """
+  feeRules: [FeeRule!]!
+
+  """Location of the item"""
+  location: String
+
+  """Metafields associated with the item"""
+  metafields(input: GetMetafieldsInput!): [Metafield!]!
+
+  """Metafield associated with the item"""
+  metafield(input: GetMetafieldInput!): Metafield
 }
 
 """Item filter for sale items."""
@@ -2623,7 +3385,10 @@ input SaleItemFilter {
   showHiddenItems: Boolean = true
 }
 
-"""Item input when creating an item"""
+"""
+Item input when creating an item
+Use for creating item and associating it with a sale.
+"""
 input SaleItemInput {
   """Id of the sale that is associated with the item."""
   saleId: String!
@@ -2664,7 +3429,6 @@ input SaleItemInput {
 
   """
   Allowed BidTypes on the item.
-  Currently only a single BidType is allowed per item.
   Defaults to allowing only Max bids if not supplied.
   """
   allowedBidTypes: [BidType!]
@@ -2697,6 +3461,59 @@ input SaleItemInput {
 
   """Item Specifications (dimensions, weight, type, etc.)"""
   specifications: ItemSpecificationsInput
+
+  """
+  Unique external identifier, e.g. external system's id, inventory id, etc.
+  Note: this will set the externalId on the underlying item itself.
+  """
+  externalId: String
+
+  """Optional lot display number."""
+  displayNumber: String
+}
+
+union SaleItemOrItem = SaleItem | Item
+
+"""Sale item registration for a specific item"""
+type SaleItemRegistration implements Node {
+  """Id of the SaleItem registration"""
+  id: ID!
+
+  """Sale registration ID this item registration belongs to"""
+  saleRegistration: SaleRegistration!
+
+  """Item that the user is registering for"""
+  saleItem: SaleItem!
+
+  """When the SaleItem registration was created"""
+  createdAt: String!
+}
+
+"""Sale item registration edge for connection"""
+type SaleItemRegistrationEdge {
+  """The item registration node"""
+  node: SaleItemRegistration!
+
+  """Cursor for pagination"""
+  cursor: String!
+}
+
+"""Filter for sale item registrations"""
+input SaleItemRegistrationFilter {
+  """Filter by registration type"""
+  types: [SaleRegistrationType!]
+
+  """Filter by user ID"""
+  userId: String
+}
+
+"""Sale item registration connection for pagination"""
+type SaleItemRegistrationsConnection {
+  """Sale item registration edges"""
+  edges: [SaleItemRegistrationEdge!]!
+
+  """Current page information"""
+  pageInfo: PageInfo!
 }
 
 type SaleItemsConnection {
@@ -2784,6 +3601,103 @@ type SaleMetrics {
 
   """Timestamp when the sale metrics were last calculated."""
   calculatedAt: String!
+}
+
+"""Sale registration for a user"""
+type SaleRegistration implements Node {
+  """Id of the registration"""
+  id: ID!
+
+  """Account ID associated with the registration"""
+  account: Account!
+
+  """Sale ID that the user is registering for"""
+  sale: Sale!
+
+  """User ID of the person registering"""
+  userId: String!
+
+  """Type of registration (online, phone, paddle, aggregator)"""
+  type: SaleRegistrationType!
+
+  """Registration identifier (phone number, paddle number, etc.)"""
+  identifier: String
+
+  """Current status of the registration"""
+  status: SaleRegistrationStatus!
+
+  """Reason for rejection if status is REJECTED"""
+  rejectedReason: String
+
+  """When the registration was created"""
+  createdAt: String!
+}
+
+"""Sale registration edge for connection"""
+type SaleRegistrationEdge {
+  """The registration node"""
+  node: SaleRegistration!
+
+  """Cursor for pagination"""
+  cursor: String!
+}
+
+enum SaleRegistrationSortByField {
+  """Created at"""
+  CREATED_AT
+}
+
+enum SaleRegistrationStatus {
+  """Registration is pending approval"""
+  PENDING
+
+  """Registration has been accepted"""
+  ACCEPTED
+
+  """Registration has been rejected"""
+  REJECTED
+}
+
+enum SaleRegistrationType {
+  """Online bidder registration"""
+  ONLINE
+
+  """Phone bidder registration"""
+  PHONE
+
+  """Paddle bidder registration"""
+  PADDLE
+
+  """Aggregator registration"""
+  AGGREGATOR
+}
+
+"""Sale registration connection for pagination"""
+type SaleRegistrationsConnection {
+  """Sale registration edges"""
+  edges: [SaleRegistrationEdge!]!
+
+  """Current page information"""
+  pageInfo: PageInfo!
+}
+
+"""Filter for sale registrations"""
+input SaleRegistrationsForSaleFilter {
+  """Filter by registration type"""
+  types: [SaleRegistrationType!]
+
+  """Filter by registration status"""
+  statuses: [SaleRegistrationStatus!]
+
+  """Filter by user ID"""
+  userId: String
+}
+
+input SaleRegistrationsQueryFilter {
+  saleIds: [String!]
+  userIds: [String!]
+  types: [SaleRegistrationType!]
+  statuses: [SaleRegistrationStatus!]
 }
 
 """Daily bid count data for a specific date in the sale."""
@@ -3002,6 +3916,24 @@ input SetItemWinnerInput {
   saleId: String!
   itemId: String!
   bidId: String!
+}
+
+"""Input for setting a single metafield connected to a specific entity"""
+input SetMetafieldInput {
+  """The type of entity the metafield is connected to"""
+  entityType: MetafieldEntityType!
+
+  """The ID of the entity the metafield is connected to"""
+  entityId: String!
+
+  """The key of the metafield"""
+  key: String!
+
+  """The value of the metafield"""
+  value: String!
+
+  """The value type of the metafield"""
+  valueType: MetafieldValueType!
 }
 
 """Input object for when setting sale item status"""
@@ -3323,11 +4255,44 @@ input UpdateItemInput {
   specifications: ItemSpecificationsInput
   valuationAmount: Int
   valuationCurrency: String
+
+  """Location of the item"""
+  location: String
 }
 
 input UpdateItemNumbersInput {
   saleId: String!
   itemNumberChanges: [ItemNumberChangeInput!]!
+}
+
+input UpdateOrderInput {
+  """Order identifier"""
+  id: ID!
+
+  """Order title"""
+  title: String
+
+  """Billing address for the order"""
+  billingAddress: MailingAddressInput
+
+  """Shipping address for the order"""
+  shippingAddress: MailingAddressInput
+}
+
+input UpdateOrderLineFeeInput {
+  """Fee description"""
+  description: String!
+
+  """Fee amount in minor currency unit"""
+  amount: Int!
+}
+
+input UpdateOrderLineInput {
+  id: ID!
+  orderId: ID!
+  amount: Int
+  description: String
+  fees: [UpdateOrderLineFeeInput!]
 }
 
 input UpdatePaymentOrderInput {
@@ -3392,6 +4357,17 @@ input UpdateSaleInput {
 
   """Sale Is Test"""
   isTestSale: Boolean
+
+  """Restrictions for bidding on a sale"""
+  bidRestrictions: BidRestrictionsInput
+
+  """
+  Unique external identifier, e.g. external system's id, inventory id, etc.
+  """
+  externalId: String
+
+  """Location of the sale"""
+  location: String
 }
 
 """
@@ -3434,7 +4410,7 @@ input UpdateSaleItemInput {
 
   """
   Allowed BidTypes on the item.
-  Currently only a single BidType is allowed per item.
+  
   Defaults to allowing only Max bids if not supplied.
   """
   allowedBidTypes: [BidType!]
@@ -3470,6 +4446,15 @@ input UpdateSaleItemInput {
 
   """Specifications for the sale item(dimensions, weight, type, etc.)"""
   specifications: ItemSpecificationsInput
+
+  """
+  Unique external identifier, e.g. external system's id, inventory id, etc.
+  Note: If set, this overrides the external_id for the sale item, but does not update the external_id on the underlying item itself. Setting this to an empty string will clear the external_id for the sale item.
+  """
+  externalId: String
+
+  """Optional lot display number."""
+  displayNumber: String
 }
 
 type UploadUrl {
@@ -3487,6 +4472,36 @@ type UploadUrl {
 
   """Order"""
   order: Int!
+
+  """Optional unique external identifier."""
+  externalId: String
+}
+
+"""
+The `User` type represents a user node in the system, including metadata such as account ID, user ID, creation and modification timestamps, and a profile from a connected identity provider.
+
+Unlike `UserInfo`, which contains only the profile information retrieved from an identity provider, `User` provides both system-level user metadata and the associated identity provider profile.
+
+Use `User` when you need to access user metadata and their identity provider profile together. Use `UserInfo` when you only need the profile details from the identity provider.
+"""
+type User implements Node {
+  """Id of the user node"""
+  id: ID!
+
+  """Account ID"""
+  accountId: String!
+
+  """UserId"""
+  userId: String!
+
+  """Created"""
+  created: String!
+
+  """Modified"""
+  modified: String!
+
+  """User Profile from connected identity provider"""
+  profile: UserInfo
 }
 
 type UserAddress {
@@ -3501,14 +4516,23 @@ type UserAddress {
 }
 
 type UserBidActivity {
+  """Account ID"""
+  accountId: String!
+
   """BidId UUID string"""
   bidId: String!
 
   """Sale ID of the sale that includes the item in scope."""
   saleId: String!
 
+  """Sale"""
+  sale: Sale!
+
   """ItemId"""
   itemId: String!
+
+  """Item"""
+  saleItem: SaleItem!
 
   """Amount of the bid in minor currency unit."""
   amount: Int!
@@ -3551,6 +4575,20 @@ input UserBidActivityFilter {
   itemId: String
 }
 
+type UserEdge {
+  """User"""
+  node: User!
+
+  """Cursor"""
+  cursor: String!
+}
+
+"""Type of user ID to get"""
+enum UserIdType {
+  USER_ID
+  IDENTITY_PROVIDER_ID
+}
+
 """The user info"""
 type UserInfo {
   """UserId"""
@@ -3584,6 +4622,15 @@ input UserTokenInput {
 
   """Time to live for the user token, represented as minutes"""
   ttlMinutes: Int!
+}
+
+"""Users connection for pagination"""
+type UsersConnection {
+  """User edges"""
+  edges: [UserEdge!]!
+
+  """Current page information"""
+  pageInfo: PageInfo!
 }
 
 """Weight unit enum"""
