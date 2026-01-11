@@ -25,11 +25,13 @@ export function createUrqlClientWithConfig(
       url: config.wsUrl,
       retryAttempts: Infinity,
       shouldRetry: () => true, // auto-reconnect on disconnect
-      connectionParams: config.wsConnectionParams || (() => {
-        // Default: pass HTTP headers as connection params
-        // This allows auth headers to work for WS connections
-        return config.headers || {};
-      }),
+      connectionParams:
+        config.wsConnectionParams ||
+        (() => {
+          // Default: pass HTTP headers as connection params
+          // This allows auth headers to work for WS connections
+          return config.headers || {};
+        }),
     });
 
     exchanges.push(

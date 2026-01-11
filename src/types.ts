@@ -25,7 +25,9 @@ export interface ApiConfig {
   url?: string;
   headers?: Record<string, string>;
   wsUrl?: string;
-  wsConnectionParams?: Record<string, unknown> | (() => Record<string, unknown>);
+  wsConnectionParams?:
+    | Record<string, unknown>
+    | (() => Record<string, unknown>);
 }
 
 // Type-safe wrapper for GraphqlOperation that preserves the field selection type
