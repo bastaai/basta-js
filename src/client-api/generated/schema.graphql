@@ -47,6 +47,22 @@ type Account {
 
   """Metafield associated with the account"""
   metafield(input: GetMetafieldInput!): Metafield
+
+  """
+  Departments of the account, ordered alphabetically by name.
+  Pass the previous page's endCursor as `after` to fetch the next page.
+  """
+  departments(
+    """Number of departments to return, at most 200."""
+    first: Int = 50
+    after: String
+  ): DepartmentConnection!
+}
+
+enum AddressType {
+  BILLING
+  SHIPPING
+  OTHER
 }
 
 type Aggregator {
@@ -95,10 +111,9 @@ type Bid {
   bidStatus: BidStatus
 
   """
-  User Identifier.
-  Controlled in ManagementAPI for the SaleItem owning the bid.
-  Can be userID, randomIdentifier or null.
-  Default null
+  Masked identifier for the bidder. By default a stable per-sale-item hash of the
+  bidder; for accounts configured to do so, the bidder's username. Null when it
+  cannot be computed.
   """
   bidderIdentifier: String
 
@@ -110,6 +125,12 @@ type Bid {
 
   """BidOrigin"""
   bidOrigin: BidOrigin!
+
+  """
+  Registration associated with this bid. Null when no registration ID
+  is present on the bid (e.g. pre-registration bids).
+  """
+  registration: UserSaleRegistration
 }
 
 """Error code when failing to place a bid on an item"""
@@ -175,6 +196,21 @@ type BidPlacedSuccess {
 
   """Bid Status of the bid"""
   bidStatus: BidStatus!
+
+  """
+  Registration associated with this bid placement. Null when no registration ID
+  is present on the bid (e.g. pre-registration bids).
+  """
+  registration: UserSaleRegistration
+}
+
+"""Restrictions for bidding on a sale"""
+type BidRestrictions {
+  """Users need to have an accepted registration to bid on this sale"""
+  acceptedRegistrationRequired: Boolean!
+
+  """When true, phone registrations are open/enabled for this sale"""
+  phoneRegistrationOpen: Boolean!
 }
 
 """Bid statuses that calculates in what status the bid is."""
@@ -214,7 +250,7 @@ enum BidType {
   MAX
 
   """Bid is an offer that the user commits to buying the item for."""
-  OFFER
+  OFFER @deprecated(reason: "no longer supported")
 }
 
 input BidderVerificationInput {
@@ -240,6 +276,24 @@ type BidderVerificationLink {
   clientSecret: String!
 }
 
+"""Card payment method"""
+type Card {
+  """Unique card id"""
+  id: String!
+
+  """Card brand, e.g. Visa, Mastercard, Amex"""
+  brand: String!
+
+  """Card expiration month"""
+  expirationMonth: Int!
+
+  """Card expiration year"""
+  expirationYear: Int!
+
+  """Last 4 digits of card number"""
+  last4: String!
+}
+
 """
 ClosingMethod represents how SaleItems are moved into CLOSING status and when they are CLOSED
 """
@@ -261,6 +315,26 @@ enum ClosingMethod {
   All items close at the same time as the sale
   """
   NONE
+}
+
+"""A consignor of an item — one of the parties selling it."""
+type Consignor {
+  """The consignor's Basta user id. Not interchangeable with Me.userId."""
+  userId: String!
+
+  """Whether this consignor is the main consignor — the seller."""
+  isMain: Boolean!
+
+  """The consignor's username. Null when not set."""
+  username: String
+}
+
+"""Input for the buyer countering an outstanding offer."""
+input CounterOfferInput {
+  offerId: ID!
+  amount: Int!
+  currency: String!
+  message: String
 }
 
 """ISO 3166-1 alpha-2 country codes"""
@@ -516,9 +590,342 @@ enum Country {
   ZM
 }
 
+"""Input for adding a phone number to the logged-in user."""
+input CreatePhoneInput {
+  """
+  Full phone number in E.164 format (e.g., +15551234567)
+  Includes country code, number, and optional extension using RFC 3966 format
+  Example: +1-555-123-4567;ext=1234
+  """
+  phoneNumber: String!
+
+  """Phone type (mobile, home, work, fax)"""
+  phoneType: PhoneType!
+
+  """
+  When true, this becomes the primary phone of its type, replacing any phone
+  that is currently primary for that type.
+  """
+  isPrimary: Boolean!
+
+  """Label"""
+  label: String
+}
+
+"""
+Input for registering the authenticated user for a single item in a sale.
+"""
+input CreateSaleItemRegistrationInput {
+  """Sale the item belongs to."""
+  saleId: String!
+
+  """Item to register for."""
+  itemId: String!
+
+  """Type of registration. ONLINE and PHONE are supported."""
+  type: SaleRegistrationType!
+
+  """
+  Phone number to call when bidding by phone. Only valid when type is PHONE.
+  """
+  identifier: String
+
+  """
+  Preferred phone number to call, referencing one of the authenticated user's
+  own phone numbers. Only valid when type is PHONE.
+  """
+  preferredPhoneNumberId: ID
+
+  """
+  Fallback phone numbers to call, referencing the authenticated user's own
+  phone numbers. Only valid when type is PHONE.
+  """
+  alternativePhoneNumberIds: [ID!]
+}
+
+"""Input for registering the authenticated user for a sale."""
+input CreateSaleRegistrationInput {
+  """Sale to register for."""
+  saleId: String!
+
+  """Type of registration. ONLINE and PHONE are supported."""
+  type: SaleRegistrationType!
+
+  """
+  Phone number to call when bidding by phone. Only valid when type is PHONE.
+  """
+  identifier: String
+
+  """
+  Preferred phone number to call, referencing one of the authenticated user's
+  own phone numbers. Only valid when type is PHONE.
+  """
+  preferredPhoneNumberId: ID
+
+  """
+  Fallback phone numbers to call, referencing the authenticated user's own
+  phone numbers. Only valid when type is PHONE.
+  """
+  alternativePhoneNumberIds: [ID!]
+}
+
 type CurrentItem {
   item: Item!
   cursor: String!
+}
+
+"""
+A department groups an account's sales, e.g. "Paintings" or "Jewellery".
+"""
+type Department implements Node {
+  """ID of the department. Use it to filter search results by department."""
+  id: ID!
+
+  """Display name of the department."""
+  name: String!
+
+  """URL-friendly identifier."""
+  slug: String!
+}
+
+type DepartmentConnection {
+  edges: [DepartmentEdge!]!
+  pageInfo: PageInfo!
+}
+
+type DepartmentEdge {
+  cursor: String!
+  node: Department!
+}
+
+"""
+The terminal non-auction sale of an item — an accepted offer or a buy-now.
+"""
+type DirectSell {
+  """Amount paid in minor currency units."""
+  amount: Int!
+
+  """ISO-4217 currency code."""
+  currency: String!
+
+  """How the sale was initiated."""
+  source: DirectSellSource!
+
+  """When the sale was recorded (RFC3339)."""
+  timestamp: String!
+}
+
+"""How a direct (non-auction) sale was initiated."""
+enum DirectSellSource {
+  OFFER
+  BUY
+}
+
+"""Relay-style connection of the authenticated buyer's direct sells."""
+type DirectSellsConnection {
+  edges: [DirectSellsEdge!]!
+  pageInfo: PageInfo!
+}
+
+"""Edge in a DirectSellsConnection."""
+type DirectSellsEdge {
+  cursor: String!
+  node: Item!
+}
+
+"""A bid accepted on a Dutch lot at the clock price at acceptance time."""
+type DutchBid {
+  id: ID!
+
+  """The clock price at which this bid was accepted."""
+  amount: Int!
+  placedAt: String!
+
+  """Whether this bid belongs to the requesting user."""
+  mine: Boolean!
+}
+
+type DutchBidConnection {
+  edges: [DutchBidEdge!]!
+  pageInfo: PageInfo!
+}
+
+type DutchBidEdge {
+  cursor: String!
+  node: DutchBid!
+}
+
+"""
+Why a Dutch bid was rejected. Exactly one code is returned per rejected bid.
+"""
+enum DutchBidErrorCode {
+  """The lot has not opened for bidding yet."""
+  NOT_OPEN
+
+  """The lot's bidding window has ended."""
+  ENDED
+
+  """Bidding is open but every unit has already been taken."""
+  SOLD_OUT
+
+  """You have reached the bid limit for this lot."""
+  BIDDER_LIMIT_REACHED
+
+  """The lot has been closed."""
+  CLOSED
+
+  """
+  The declared amount did not match the lot's current clock price. Re-read the price and retry.
+  """
+  PRICE_MISMATCH
+}
+
+union DutchBidPlaced = DutchBidPlacedSuccess | DutchBidPlacedError
+
+"""A rejected Dutch bid. errorCode says why the bid was not accepted."""
+type DutchBidPlacedError {
+  errorCode: DutchBidErrorCode!
+}
+
+"""
+A successfully placed Dutch bid. The price is the clock price at acceptance time; under a
+partial-fill policy quantityAllocated may be less than quantityRequested. To read the lot's
+remaining inventory after the bid, re-read the lot's DutchSaleItem.unitsRemaining.
+"""
+type DutchBidPlacedSuccess {
+  id: String!
+
+  """Clock price at which the bid was accepted (sale currency minor unit)."""
+  amount: Int!
+  quantityRequested: Int!
+
+  """
+  Units actually allocated; may be less than requested under a partial-fill policy.
+  """
+  quantityAllocated: Int!
+  placedAt: String!
+}
+
+"""DutchItemStatus is the lifecycle of a Dutch lot."""
+enum DutchItemStatus {
+  NOT_OPEN
+  OPEN
+  CLOSED
+}
+
+"""A single scheduled price drop on a Dutch lot."""
+type DutchNextDrop {
+  """The price after this drop, clamped to the floor."""
+  price: Int!
+
+  """When the drop happens (RFC3339)."""
+  at: String!
+}
+
+"""
+The live price for a Dutch lot: the current clock price and the next scheduled drop.
+"""
+type DutchPrice {
+  """The current clock price."""
+  current: Int!
+
+  """
+  The next scheduled drop, or null when the price is not descending — the lot has not
+  opened yet or has reached its floor.
+  """
+  nextDrop: DutchNextDrop
+}
+
+"""A single dated price drop in a Dutch lot's schedule."""
+type DutchPriceDrop {
+  """When the drop takes effect (RFC3339)."""
+  at: String!
+
+  """The price in effect from this drop until the next one (or the floor)."""
+  price: Int!
+}
+
+"""
+A Dutch (descending-clock) sale. Each lot's price drops on a fixed schedule until a
+bidder accepts.
+"""
+type DutchSale implements Node & SaleV2 {
+  id: ID!
+  accountId: String!
+  title: String
+  description: String
+  currency: String
+  status: SaleStatus!
+  dates: SaleDates!
+  saleFormat: SaleFormat!
+
+  """Images attached to the sale."""
+  images: [Image!]!
+
+  """The Dutch lots in this sale."""
+  items(first: Int = 20, after: String): DutchSaleItemConnection!
+}
+
+"""A Dutch lot, with its price schedule and live price."""
+type DutchSaleItem {
+  id: ID!
+  saleId: String!
+  status: DutchItemStatus!
+
+  """Total units offered for this lot, fixed at creation."""
+  availableUnits: Int!
+
+  """Units still available after all accepted bids."""
+  unitsRemaining: Int!
+
+  """Total number of accepted bids on this lot."""
+  totalBids: Int!
+  openTime: String
+  endTime: String
+
+  """The live price: current clock price and the next scheduled drop."""
+  price: DutchPrice!
+
+  """
+  The full price-drop schedule for this lot. Null when the schedule is not exposed to
+  clients — today it is always present.
+  """
+  schedule: DutchSchedule
+  title: String
+  subTitle: String
+  description: String
+
+  """Images attached to the lot."""
+  images: [Image!]!
+
+  """Accepted bids on this lot."""
+  bids(first: Int = 20, after: String): DutchBidConnection!
+}
+
+type DutchSaleItemConnection {
+  edges: [DutchSaleItemEdge!]!
+  pageInfo: PageInfo!
+}
+
+type DutchSaleItemEdge {
+  cursor: String!
+  node: DutchSaleItem!
+}
+
+"""
+The full descending-price schedule for a Dutch lot: the opening price and every dated
+drop from openTime onward. Nullable so the schedule can be withheld from clients in the
+future without a breaking schema change — today it is always populated.
+"""
+type DutchSchedule {
+  """The opening price, in effect from openTime until the first drop."""
+  startingAmount: Int!
+
+  """
+  The dated drops, ordered by time. Each is at or after openTime, strictly later than the
+  previous drop, and strictly lower in price.
+  """
+  drops: [DutchPriceDrop!]!
 }
 
 type Estimate {
@@ -579,7 +986,11 @@ type FacetStats {
 
 """Individual facet value and its count"""
 type FacetValue {
-  """The facet value (e.g., "OPEN", "Kitchenware", "true")"""
+  """
+  The value to filter by (pass it back in filterBy). Usually human-readable
+  (e.g. "OPEN", "EUR"), but for some facets it is an opaque id — e.g. the
+  departmentIds facet's value is a department id.
+  """
   value: String!
 
   """Number of items with this value"""
@@ -587,6 +998,104 @@ type FacetValue {
 
   """Highlighted value (may include search term highlighting)"""
   highlighted: String
+
+  """
+  A friendly value to render to clients. Equals value for most facets; it
+  differs only when value is an opaque id (e.g. the departmentIds facet resolves
+  each id to its department name). Render this, filter by value.
+  """
+  label: String
+}
+
+"""
+Determines how a fee rule is calculated. All brackets are evaluated against
+the bid/order-line amount. A bracket is active when the bid/order-line amount
+is strictly greater than lower_limit (amount > lower_limit, not >=).
+
+FLAT: the bracket must fully contain the bid (lower_limit < amount <=
+upper_lte_limit, or no upper_lte_limit). For Percentage fees the rate is
+applied to the entire bid/order-line amount. For Amount fees the fixed charge
+applies once when the bracket matches.
+
+PROGRESSIVE: every bracket is evaluated independently. For Percentage fees
+the rate applies only to the slice of the bid that falls within the bracket
+(min(amount, upper_lte_limit) - lower_limit). For Amount fees the fixed
+charge applies once whenever amount > lower_limit, regardless of upper_lte_limit.
+"""
+enum FeeCalculationType {
+  FLAT
+  PROGRESSIVE
+}
+
+type FeeRule implements Node {
+  """ID of the fee rule record"""
+  id: ID!
+
+  """Name of the fee rule which is used in orders"""
+  name: String!
+
+  """Fee Rule type influences how the value is calculated"""
+  type: FeeRuleType!
+
+  """
+  Value of the fee rule interpreted based on the type
+  * 500 means 5% if type is percentage
+  * 1000 means $10 if type is amount
+  """
+  value: Int!
+
+  """
+  Upper limit of the fee rule.
+  If empty then there is no upper limit.
+  """
+  upperLteLimit: Int
+
+  """Lower limit of the fee rule."""
+  lowerLimit: Int!
+
+  """
+  How this fee rule is calculated. FLAT applies the rate to the full amount.
+  PROGRESSIVE applies the rate only to the portion of the amount within each bracket.
+  """
+  calculationType: FeeCalculationType!
+}
+
+enum FeeRuleType {
+  """Fee Rule type is not set"""
+  NOT_SET
+
+  """Fee Rule type is percentage"""
+  PERCENTAGE
+
+  """Fee Rule type is amount"""
+  AMOUNT
+}
+
+"""
+Result of a follow/unfollow-consignor mutation. Idempotent; reflects the terminal follow state.
+consignorId is the consignor User's internal User.id.
+"""
+type FollowConsignorResult {
+  consignorId: ID!
+  following: Boolean!
+}
+
+"""
+A consignor (User) that the current bidder follows.
+consignorId is the consignor's internal User.id.
+"""
+type FollowedConsignor {
+  consignorId: ID!
+}
+
+type FollowedConsignorsConnection {
+  edges: [FollowedConsignorsEdge!]!
+  pageInfo: PageInfo!
+}
+
+type FollowedConsignorsEdge {
+  cursor: String!
+  node: FollowedConsignor!
 }
 
 """Input for getting a single metafield connected to a specific entity"""
@@ -608,9 +1117,35 @@ type GetUserBidsInput {
   after: String
 }
 
+"""A connection wrapper for highlighted items."""
+type HighlightedItemConnection {
+  """The list of highlighted item edges."""
+  edges: [HighlightedItemEdge!]!
+}
+
+"""
+An edge in the highlighted items connection, pairing an item with its display position.
+"""
+type HighlightedItemEdge {
+  """The item."""
+  node: Item!
+
+  """Display position of the highlighted item (lower numbers appear first)."""
+  position: Int!
+}
+
 enum IdType {
   ID
   URI
+}
+
+"""Identity verification status of the logged-in user."""
+type IdVerificationStatus {
+  """True when the user's identity has been verified."""
+  verified: Boolean!
+
+  """When the verification status was last modified, in RFC 3339 format."""
+  modifiedAt: String!
 }
 
 """Image object"""
@@ -641,6 +1176,9 @@ type Item implements Node {
 
   """Item title"""
   title: String
+
+  """Item sub-title"""
+  subTitle: String
 
   """Item Description"""
   description: String
@@ -679,7 +1217,10 @@ type Item implements Node {
   """Next 10 asks for the item in minor currency unit."""
   nextAsks(iterations: Int): [Int!]!
 
-  """Overridden increment table for the item."""
+  """
+  Effective bid increment table for this item — the item's override if set,
+  otherwise the parent sale's default, otherwise null.
+  """
   incrementTable: BidIncrementTable
 
   """
@@ -693,6 +1234,11 @@ type Item implements Node {
 
   """Status of the item"""
   status: ItemStatus!
+
+  """
+  Result of the item (sold or passed). Null if the item has not reached a terminal state.
+  """
+  itemResult: ItemResult
 
   """Starting bid of the item in minor currency unit."""
   startingBid: Int
@@ -715,6 +1261,15 @@ type Item implements Node {
   """Item number"""
   itemNumber: Int!
 
+  """Optional lot display number."""
+  displayNumber: String
+
+  """
+  Highlight configuration for featuring this item on the sale page.
+  Null if the item is not highlighted.
+  """
+  highlight: ItemHighlight
+
   """Item notifications if item is part of a live sale"""
   notifications: [ItemNotification!]!
 
@@ -727,8 +1282,16 @@ type Item implements Node {
   """Allowed BidTypes on the item."""
   allowedBidTypes: [BidType!]!
 
-  """Item specifications (dimensions, weight, type, etc.)"""
-  specifications: ItemSpecifications
+  """
+  Item specifications (dimensions, weight, type, etc.) - first specification only. Use specificationsV2 for full list.
+  """
+  specifications: ItemSpecifications @deprecated(reason: "Use specificationsV2")
+
+  """Item specifications v2 (list with id, quantity, diameter, etc.)"""
+  specificationsV2: [ItemSpecifications!]!
+
+  """Item packaging (boxed dimensions and weight)"""
+  packaging: [ItemPackaging!]!
 
   """Previous item"""
   prevItem(sortBy: ItemOrderField = ITEM_NUMBER): Item
@@ -753,6 +1316,77 @@ type Item implements Node {
 
   """Metafield associated with the item"""
   metafield(input: GetMetafieldInput!): Metafield
+
+  """Item registration for authenticated user"""
+  userItemRegistrations: [UserItemRegistration!]!
+
+  """Effective fee rules for this item."""
+  feeRules: [FeeRule!]!
+
+  """Whether the item is hidden from public view."""
+  hidden: Boolean!
+
+  """
+  Schema information associated with the item: the effective JSON Schema
+  definition, its identifier, and the user-supplied values matching it.
+  Read-only — set via managementapi. Null when no schema is linked to the
+  underlying sale-item content.
+  """
+  schema: ItemSchema
+
+  """Tags associated with the item."""
+  tags: [Tag!]!
+
+  """
+  Offers the currently authenticated buyer has made on this item.
+  Returns only the caller's own offers; other buyers' offers are never exposed.
+  An unauthenticated caller receives an empty connection.
+  """
+  offers(first: Int = 20, after: String, status: OfferStatus): OffersConnection!
+
+  """
+  Whether this item is accepting offers. False when offers are disabled or not configured.
+  """
+  offerEnabled: Boolean!
+
+  """
+  Whether this item can be bought outright at a fixed price. False when buy-now is
+  disabled or not configured.
+  """
+  buyNowEnabled: Boolean!
+
+  """
+  Fixed buy-now price in minor currency unit. Revealed only once the item has
+  closed unsold. Null while the auction is still open, once the item has sold, or
+  when buy-now is disabled or not configured.
+  """
+  buyNowPrice: Int
+
+  """
+  The terminal non-auction sale of this item (an accepted offer or a buy-now),
+  if any. Null when the item has no direct sell.
+  """
+  directSell: DirectSell
+
+  """
+  Consignors of this item. Returns null unless an account has explicitly opted in to have consignors visible. Empty when none are recorded.
+  """
+  consignors: [Consignor!]
+
+  """
+  The site this item currently resides at, if any. Read-through from the underlying item. Null when the item has no site.
+  """
+  site: Site
+
+  """
+  The location within its site this item currently resides at, if any. Read-through from the underlying item. Null when the item has no location.
+  """
+  siteLocation: SiteLocation
+
+  """
+  Section markers of this item's sale whose item-number range covers this item's item number.
+  """
+  sectionMarkers: [SectionMarker!]!
 }
 
 union ItemChanged = Item | ServerTime
@@ -774,6 +1408,15 @@ type ItemFairWarningNotification {
   date: String!
 }
 
+"""Configuration for highlighting an item on the sale page."""
+type ItemHighlight {
+  """Whether the item is highlighted."""
+  enabled: Boolean!
+
+  """Display position of the highlighted item (lower numbers appear first)."""
+  position: Int!
+}
+
 input ItemIdsFilter {
   itemIds: [ID!]
 }
@@ -792,7 +1435,35 @@ type ItemMessageNotification {
   date: String!
 }
 
-union ItemNotification = ItemMessageNotification | ItemFairWarningNotification
+union ItemNotification = ItemMessageNotification | ItemFairWarningNotification | ItemOfferPlacedNotification | ItemSoldNotification
+
+type ItemOfferPlacedNotification {
+  """Id of the notification"""
+  id: String!
+
+  """Offer amount in minor currency units."""
+  amount: Int!
+
+  """ISO-4217 currency code."""
+  currency: String!
+
+  """
+  offer_id of the placed offer. Match against ItemSoldNotification.referenceId
+  to know which offer became the sale.
+  """
+  referenceId: String!
+
+  """
+  Date timestamp when the offer was placed.
+  RFC3339 formatted string
+  """
+  date: String!
+
+  """
+  Masked identifier of the buyer. By default a stable per-sale-item hash (matches that buyer's Bid.bidderIdentifier on the same item); the buyer's username for accounts configured to expose it. Null when it cannot be computed.
+  """
+  buyerIdentifier: String
+}
 
 enum ItemOrderField {
   """Item Number"""
@@ -810,8 +1481,106 @@ input ItemOrderInput {
   direction: PaginationDirection! = FORWARD
 }
 
+"""Item packaging: boxed dimensions and weight for shipping."""
+type ItemPackaging {
+  """Unique identifier for the packaging record"""
+  id: String!
+
+  """Quantity of this packaging configuration"""
+  quantity: Int!
+
+  """Boxed height"""
+  boxedHeight: Float
+
+  """Boxed length"""
+  boxedLength: Float
+
+  """Boxed depth"""
+  boxedDepth: Float
+
+  """Unit of measurement for boxed dimensions"""
+  boxedMeasurementUnit: MeasurementUnit
+
+  """Boxed weight"""
+  boxedWeight: Float
+
+  """Unit of measurement for boxed weight"""
+  boxedWeightUnit: WeightUnit
+
+  """When the packaging was created (RFC3339)"""
+  created: String!
+
+  """When the packaging was last modified (RFC3339)"""
+  modified: String!
+}
+
+"""Result of an item after it has been sold or passed by the auctioneer."""
+enum ItemResult {
+  """Item was sold."""
+  WON
+
+  """Item was not sold."""
+  PASSED
+}
+
+"""
+Schema linkage for an Item. The definition is the effective JSON Schema
+(including inherited ancestors); data is the user-supplied values matching
+that schema.
+"""
+type ItemSchema {
+  """
+  Schema id referencing the schemas table. Use to dedupe schema definitions
+  across items that share the same schema.
+  """
+  id: ID!
+
+  """Effective JSON Schema definition (including inherited ancestors)."""
+  definition: JSON!
+
+  """
+  User-supplied JSON values matching the schema. Null when no values have
+  been set on the underlying sale-item content.
+  """
+  data: JSON
+}
+
+type ItemSoldNotification {
+  """Id of the notification"""
+  id: String!
+
+  """Sold amount in minor currency units."""
+  amount: Int!
+
+  """ISO-4217 currency code."""
+  currency: String!
+
+  """How the sale was initiated."""
+  source: DirectSellSource!
+
+  """
+  For an accepted offer, the offer_id; when the offer was placed pending, this matches that
+  offer's ItemOfferPlacedNotification.referenceId. For a buy-now, a generated id for the direct sell.
+  """
+  referenceId: String!
+
+  """
+  Date timestamp when the item was sold.
+  RFC3339 formatted string
+  """
+  date: String!
+
+  """
+  Masked identifier of the buyer. By default a stable per-sale-item hash (matches that buyer's Bid.bidderIdentifier on the same item); the buyer's username for accounts configured to expose it. Null when it cannot be computed.
+  """
+  buyerIdentifier: String
+}
+
 """Item specifications containing dimensions, weight, type, etc."""
 type ItemSpecifications {
+  """Unique identifier for the specification"""
+  id: String!
+
   """Type of specification (Art, Furniture, Jewelry, etc.)"""
   type: SpecificationType
 
@@ -827,6 +1596,9 @@ type ItemSpecifications {
   """Depth of the item"""
   depth: Float
 
+  """Diameter of the item"""
+  diameter: Float
+
   """Unit of measurement for dimensions"""
   measurementUnit: MeasurementUnit
 
@@ -835,6 +1607,15 @@ type ItemSpecifications {
 
   """Unit of measurement for weight"""
   weightUnit: WeightUnit
+
+  """Quantity"""
+  quantity: Int!
+
+  """When the specification was created (RFC3339)"""
+  created: String!
+
+  """When the specification was last modified (RFC3339)"""
+  modified: String!
 }
 
 """Item statuses for items in a sale"""
@@ -863,6 +1644,11 @@ type ItemsEdge {
   """Item node"""
   node: Item!
 }
+
+"""
+The JSON scalar type represents JSON data as describe in [ECMA-404](https://ecma-international.org/wp-content/uploads/ECMA-404.pdf).
+"""
+scalar JSON
 
 type Link {
   type: LinkType!
@@ -923,6 +1709,7 @@ union LiveVideoStream = ExternalLiveStream | BastaLiveStream
 
 """Mailing address"""
 type MailingAddress {
+  id: String!
   name: String!
   company: String!
   phone: String!
@@ -932,10 +1719,15 @@ type MailingAddress {
   state: String!
   postalCode: String!
   country: Country!
+  isPrimary: Boolean!
+  addressType: AddressType!
+  label: String
 }
 
 """Input for mailing address."""
 input MailingAddressInput {
+  """Address ID (optional for create, required for update)"""
+  id: String
   name: String!
   company: String!
   phone: String!
@@ -943,8 +1735,24 @@ input MailingAddressInput {
   line2: String!
   city: String!
   state: String!
-  postalCode: String!
+  postalCode: String
   country: Country!
+  isPrimary: Boolean
+  label: String
+}
+
+"""Input for making an offer on an item."""
+input MakeOfferInput {
+  itemId: String!
+  amount: Int!
+  currency: String!
+  message: String
+
+  """
+  Id of the sale the item belongs to. Carries the sale context so the offer is
+  scoped to the original auction and surfaces in that sale's bid feed.
+  """
+  saleId: String!
 }
 
 union MaxBidPlaced = MaxBidPlacedSuccess | BidPlacedError
@@ -968,15 +1776,53 @@ type MaxBidPlacedSuccess {
 
   """Server time of when the bid was placed."""
   date: String!
+
+  """
+  Registration associated with this max bid placement. Null when no registration ID
+  is present on the bid.
+  """
+  registration: UserSaleRegistration
 }
 
 """Me object keeps information about the logged in user."""
 type Me {
-  """Unique user id of the logged in user."""
+  """
+  Unique user id of the logged in user. Not interchangeable with Consignor.userId.
+  """
   userId: String!
+
+  """First name of the logged in user."""
+  firstName: String!
+
+  """Last name of the logged in user."""
+  lastName: String!
+
+  """Email of the logged in user."""
+  email: String!
+
+  """
+  Username of the logged in user. Null when the user has not set a username.
+  """
+  username: String
+
+  """Whether the logged in user's email has been verified."""
+  emailVerified: Boolean!
 
   """Get all bids that a user has placed on sales"""
   bids(first: Int!, after: String): UserBidsConnection!
+
+  """Offers the authenticated buyer has made, most recent first."""
+  offers(first: Int, after: String, status: OfferStatus): OffersConnection!
+
+  """
+  Items the authenticated buyer bought outside the auction (accepted offers / buy-nows), most recent purchase first.
+  """
+  directSells(first: Int = 20, after: String): DirectSellsConnection!
+
+  """
+  Consignors the logged in user follows. consignorId is the consignor's internal User.id.
+  """
+  followedConsignors(first: Int = 20, after: String): FollowedConsignorsConnection!
 
   """Accounts for logged in user"""
   accounts: [Account!]!
@@ -985,25 +1831,44 @@ type Me {
   verifiedAsBidder: Boolean!
 
   """
-  Sale that user has added to their watchlist.
-  Only works for users with Basta cookie and applications running on basta.app domain.
+  Sales the logged in user has added to their watchlist, most recently added first.
   """
-  saleSubscriptions: SaleConnection
+  saleSubscriptions(first: Int = 20, after: String): SaleConnection!
 
   """
-  SaleItems that user has added to their watchlist.
-  Only works for users with Basta cookie and applications running on basta.app domain.
+  Sale items the logged in user has added to their watchlist, most recently added first.
   """
-  saleItemSubscriptions: ItemsConnection
+  saleItemSubscriptions(first: Int = 20, after: String): ItemsConnection!
+
+  """Notification settings for the logged in user."""
+  notificationSettings: UserNotificationSettings!
 
   """Latest items that user has placed a bid on."""
   latestItemBids(first: Int): ItemsConnection!
 
-  """Billing address"""
-  billingAddress: MailingAddress!
+  """Primary Billing address"""
+  billingAddress: MailingAddress! @deprecated(reason: "use addresses")
 
-  """Shipping address"""
-  shippingAddress: MailingAddress!
+  """Primary Shipping address"""
+  shippingAddress: MailingAddress! @deprecated(reason: "use addresses")
+
+  """Addresses"""
+  addresses: [MailingAddress!]!
+
+  """Phones"""
+  phoneAddresses: [PhoneAddress!]!
+
+  """Default payment method"""
+  defaultPaymentMethod: PaymentMethod
+
+  """True if the logged-in user is blocked from participating in sales."""
+  blocked: Boolean!
+
+  """
+  Identity verification status of the logged-in user.
+  Null when the user has never submitted identity verification.
+  """
+  idVerificationStatus: IdVerificationStatus
 }
 
 """Measurement unit enum"""
@@ -1054,6 +1919,21 @@ type Mutation {
   bidOnItem(saleId: String!, itemId: String!, amount: Int!, type: BidType!): BidPlaced!
 
   """
+  Set the user's notification preferences for one account. Only the entries
+  given are changed. The returned list covers what the account sends on, so an
+  entry outside it is stored but not returned.
+  """
+  setMyNotificationPreferences(preferences: [UserNotificationPreferenceInput!]!): [UserNotificationPreference!]!
+
+  """
+  Place a bid on a Dutch lot, requesting `quantity` units at the declared per-unit `amount`.
+  `amount` must equal the lot's current clock price exactly; if the clock has ticked since the
+  client read it, the bid is rejected with PRICE_MISMATCH and the client should re-read the
+  current price and retry.
+  """
+  placeDutchBid(saleId: String!, itemId: String!, quantity: Int!, amount: Int!): DutchBidPlaced!
+
+  """
   DEPRECATED.
   Use BidOnItem with type input = MAX.
   Place max bid on a item for some amount.
@@ -1082,12 +1962,26 @@ type Mutation {
   unsubscribeFromAccount(accountId: String!): ID!
 
   """
-  Users with basta session can subscribe to individual sale items running on basta.app.
+  Follow a consignor (User). Idempotent. consignorId is the consignor's internal User.id.
   """
+  followConsignor(consignorId: ID!): FollowConsignorResult!
+
+  """
+  Unfollow a consignor. Idempotent. consignorId is the consignor's internal User.id.
+  """
+  unfollowConsignor(consignorId: ID!): FollowConsignorResult!
+
+  """Users can subscribe / favourite an item"""
   subsribeToItem(saleId: String!, itemId: String!): UserSaleItemSubscription!
 
   """Unsubscribe from item"""
   unsubscribeFromItem(saleId: String!, itemId: String!): ID!
+
+  """Users can subscribe / favourite a sale."""
+  subscribeToSale(saleId: String!): UserSaleSubscription!
+
+  """Unsubscribe from sale"""
+  unsubscribeFromSale(saleId: String!): ID!
 
   """
   Returns session credentials for selected payment provider, e.g. Stripe Customer Session
@@ -1097,11 +1991,170 @@ type Mutation {
 
   """Update user information."""
   updateUser(input: UpdateUserInput!): Me!
+
+  """Add a phone number to the logged-in user."""
+  createPhone(input: CreatePhoneInput!): PhoneAddress!
+
+  """Update one of the logged-in user's phone numbers."""
+  updatePhone(input: UpdatePhoneInput!): PhoneAddress!
+
+  """Delete one of the logged-in user's phone numbers."""
+  deletePhone(phoneId: String!): Boolean!
+
+  """Set default payment method"""
+  setDefaultPaymentMethod(input: SetDefaultPaymentMethodInput!): PaymentMethod!
+
+  """
+  Submit an offer on an item as the authenticated buyer. The buyer identity is
+  derived server-side from the session; it is never taken from client input.
+  """
+  makeOffer(input: MakeOfferInput!): Offer!
+
+  """Counter an outstanding offer as the buyer."""
+  counterOffer(input: CounterOfferInput!): Offer!
+
+  """Accept the seller's outstanding counter on an offer."""
+  acceptCounter(offerId: ID!): Offer!
+
+  """Withdraw an offer the authenticated buyer previously made."""
+  withdrawOffer(offerId: ID!): Offer!
+
+  """
+  Register the authenticated user for a sale. ONLINE and PHONE registrations
+  are supported. The resulting status is decided by the sale's registration
+  rules. If the user is already registered for the sale with the given type,
+  the existing registration is returned unchanged.
+  """
+  createSaleRegistration(input: CreateSaleRegistrationInput!): UserSaleRegistration!
+
+  """
+  Register the authenticated user for a single item in a sale. A sale
+  registration of the same type is created for the user when they do not have
+  one yet. If the user is already registered for the item with the given type,
+  the existing registration is returned unchanged.
+  """
+  createSaleItemRegistration(input: CreateSaleItemRegistrationInput!): UserItemRegistration!
 }
 
 interface Node {
   """Identification of the node."""
   id: ID!
+}
+
+"""Channel a notification can be delivered on."""
+enum NotificationChannel {
+  EMAIL
+  SMS
+}
+
+"""What a notification is about."""
+enum NotificationEvent {
+  BID_CONFIRMATION
+  BID_CONFIRMATION_OUTBID
+  OUTBID
+  AUTO_BID_PLACED
+  SALE_REGISTRATION_PENDING
+  SALE_REGISTRATION_ACCEPTED
+  SALE_REGISTRATION_REJECTED
+  SALE_ITEM_REGISTRATION_PHONE
+  SALE_ITEM_WON
+  CONSIGNOR_SALE_ITEM_OPENED
+  SALE_ABOUT_TO_CLOSE
+  BUY_NOW_PRICE_REDUCED
+  OFFER_PLACED_CONFIRMATION
+  OFFER_COUNTERED
+  OFFER_REJECTED
+  DIRECT_SELL_WON
+}
+
+"""
+A buyer offer on an item. This buyer-facing type never exposes other buyers'
+identities or the internal deciding user.
+"""
+type Offer {
+  """Offer id."""
+  id: ID!
+
+  """Id of the item the offer is on."""
+  itemId: String!
+
+  """Offer amount in minor currency units."""
+  amount: Int!
+
+  """ISO-4217 currency code."""
+  currency: String!
+
+  """Current status of the offer."""
+  status: OfferStatus!
+
+  """Optional buyer note attached to the offer."""
+  message: String
+
+  """
+  Whose turn it is to respond. Null when the offer is in a terminal state.
+  """
+  awaitingParty: OfferParty
+
+  """Negotiation history, oldest first."""
+  counters: [OfferCounter!]!
+
+  """Creation timestamp (RFC3339)."""
+  created: String!
+
+  """Last-modified timestamp (RFC3339)."""
+  modified: String!
+
+  """When the offer auto-expires (RFC3339). Null when the offer has no TTL."""
+  expiresAt: String
+}
+
+"""A single counter within an offer negotiation."""
+type OfferCounter {
+  """Counter id."""
+  id: ID!
+
+  """Party that made this counter."""
+  party: OfferParty!
+
+  """Counter amount in minor currency units."""
+  amount: Int!
+
+  """ISO-4217 currency code."""
+  currency: String!
+
+  """Optional note attached to the counter."""
+  message: String
+
+  """Creation timestamp (RFC3339)."""
+  created: String!
+}
+
+"""Party in an offer negotiation."""
+enum OfferParty {
+  BUYER
+  SELLER
+}
+
+"""Status of an offer."""
+enum OfferStatus {
+  OFFER_STATUS_PENDING
+  OFFER_STATUS_ACCEPTED
+  OFFER_STATUS_REJECTED
+  OFFER_STATUS_CANCELED
+  OFFER_STATUS_COUNTERED
+  OFFER_STATUS_EXPIRED
+}
+
+"""Relay-style connection of offers."""
+type OffersConnection {
+  edges: [OffersEdge!]!
+  pageInfo: PageInfo!
+}
+
+"""Edge in an OffersConnection."""
+type OffersEdge {
+  cursor: String!
+  node: Offer!
 }
 
 type OnlineBidOrigin {
@@ -1161,6 +2214,9 @@ type PaymentDetails {
   bidderPremium: Float!
 }
 
+"""Payment method union"""
+union PaymentMethod = Card
+
 """
 PaymentProviderSession is a union of all possible payment provider sessions.
 """
@@ -1203,8 +2259,43 @@ enum Permission {
   ACCESS_PRIVATE
 }
 
+type PhoneAddress {
+  """Phone ID"""
+  id: String!
+
+  """Phone type (mobile, home, work, fax)"""
+  phoneType: PhoneType!
+
+  """
+  Full phone number in E.164 format (e.g., +15551234567)
+  Includes country code, number, and optional extension using RFC 3966 format
+  Example: +1-555-123-4567;ext=1234
+  """
+  phoneNumber: String!
+
+  """Label"""
+  label: String
+
+  """Is primary phone"""
+  isPrimary: Boolean!
+
+  """
+  When this number was confirmed to belong to the account holder (RFC3339).
+  Null means it has not been confirmed. Read-only.
+  """
+  verifiedAt: String
+}
+
 type PhoneBidOrigin {
   type: BidOriginType!
+}
+
+enum PhoneType {
+  UNSPECIFIED
+  MOBILE
+  HOME
+  WORK
+  FAX
 }
 
 type Query {
@@ -1216,6 +2307,15 @@ type Query {
 
   """Get information about an sale."""
   sale(id: String!, idType: IdType): Sale!
+
+  """
+  Get information about a sale of any auction format (English or Dutch).
+  Use an inline fragment (e.g. `... on DutchSale`) to read format-specific fields.
+  """
+  saleV2(id: String!, idType: IdType): SaleV2!
+
+  """Get all sales of any auction format for an account."""
+  salesV2(accountId: String!, first: Int = 20, after: String, filter: SaleFilter, idType: IdType): SaleV2Connection!
 
   """Get item information."""
   saleItem(saleId: String!, itemId: String!): Item!
@@ -1236,6 +2336,16 @@ type Query {
   """Get information about the logged in user."""
   me: Me!
 
+  """
+  Whether the current bidder follows the given consignor. consignorId is the consignor's internal User.id.
+  """
+  isFollowingConsignor(consignorId: ID!): Boolean!
+
+  """
+  Public follower count for a consignor. consignorId is the consignor's internal User.id.
+  """
+  consignorFollowerCount(accountId: String!, consignorId: ID!): Int!
+
   """Get current server time."""
   serverTime: ServerTime!
 
@@ -1245,18 +2355,22 @@ type Query {
   paymentSession(input: PaymentSessionInput): PaymentSession!
 
   """
-  Search across different node types in the graph (items).
+  Search across different node types in the graph (items and sales).
   
   Using search uses a search index that is eventually consistent, this means we cannot guarantee that the results are always up to date, even though the search index is updated in almost real time.
   
+  SALE search only ever returns public sales — hidden and unpublished sales are excluded server-side and cannot be surfaced via any filter.
+  
   Example queries:
     - Search for items: search(type: ITEM, query: "vintage watch", first: 20)
+    - Search for sales: search(type: SALE, query: "estate auction", first: 20)
+    - Next 5 upcoming live sales: search(type: SALE, query: "", filterBy: "status:=PUBLISHED && liveDateEpoch:>1718726400", orderBy: "liveDateEpoch:asc", first: 5)
   """
   search(
     """Account ID to search within."""
     accountId: String!
 
-    """The type of node to search for (ITEM)"""
+    """The type of node to search for (ITEM or SALE)"""
     type: SearchType!
 
     """Search query text"""
@@ -1272,6 +2386,7 @@ type Query {
     Fields to search in. If not specified, searches across default fields for the type.
     
     For ITEM: title, description, tags
+    For SALE: saleTitle, description
     """
     queryBy: [String!]
 
@@ -1279,6 +2394,10 @@ type Query {
     Sort results by field and direction.
     Format: "field:direction" (e.g., "title:asc", "createdAt:desc")
     If not provided, results are sorted by relevance.
+    
+    For SALE, sort on the epoch (Unix-seconds) date fields, not the display date strings:
+    "liveDateEpoch:asc", "openDateEpoch:asc", "closingDateEpoch:desc", "createdTimestamp:desc".
+    Use "effectiveClosingDateEpoch:asc" to order a mixed list of all sale types by their unified closing date.
     """
     orderBy: String
 
@@ -1290,10 +2409,30 @@ type Query {
       - "reserveMet:true"
       - "currentBid:>= 10000"
     
-    Multiple conditions can be combined with AND using &&
+    For SALE filters, examples:
+      - "status:=PUBLISHED"                  (sale status vocabulary: LIVE, PUBLISHED, OPENED, CLOSING, CLOSED, PAUSED, PROCESSING — NOT the ITEM_* item statuses)
+      - "liveDateEpoch:>1718726400"          (date filters use epoch seconds, not the display date strings)
+      - "effectiveClosingDateEpoch:>1718726400" (unified closing date across sale types, e.g. upcoming only)
+      - "watchedByUserIds:=[user-id]"        (sales on a user's watchlist)
+    
+    Multiple conditions can be combined with AND using &&.
+    Note: filtering on hidden/accountId and the || operator are rejected. For SALE, visibility (public-only) is enforced server-side and cannot be widened via filterBy.
     """
     filterBy: String
+
+    """
+    Facet fields to compute counts for. Only used when the `facets` field is selected.
+    If omitted, the server facets on its full default allowlist for the type.
+    Naming a subset narrows faceting to those fields; fields outside the allowlist are ignored.
+    """
+    facetBy: [String!]
   ): SearchResultConnection!
+
+  """
+  Get a single offer by id. Returns null when the offer does not belong to the
+  authenticated caller.
+  """
+  offer(id: ID!): Offer
 }
 
 """
@@ -1333,7 +2472,7 @@ enum ReserveStatus {
 }
 
 """Sale"""
-type Sale implements Node {
+type Sale implements Node & SaleV2 {
   """Sale ID"""
   id: ID!
 
@@ -1349,13 +2488,7 @@ type Sale implements Node {
   """Sale Description"""
   description: String
 
-  """
-  Currency of the sale as capitalized string
-  Currently supported currencies:
-    - "USD"
-    - "ISK"
-    - "EUR"
-  """
+  """Currency of the sale as a capitalized ISO-4217 code (e.g. "USD")."""
   currency: String
 
   """Sale status."""
@@ -1379,6 +2512,9 @@ type Sale implements Node {
 
   """Sale Dates"""
   dates: SaleDates!
+
+  """Sale format of this sale. Always ENGLISH for this type."""
+  saleFormat: SaleFormat!
 
   """Closing method."""
   closingMethod: ClosingMethod!
@@ -1422,6 +2558,9 @@ type Sale implements Node {
   """Sale registration for authenticated user"""
   userSaleRegistrations: [UserSaleRegistration!]!
 
+  """True if user has subscribed/favourited the sale"""
+  isUserSubscribed: Boolean!
+
   """
   Unique external identifier for the sale, typically utilized for integration with third-party systems.
   """
@@ -1435,9 +2574,41 @@ type Sale implements Node {
 
   """Metafield associated with the sale"""
   metafield(input: GetMetafieldInput!): Metafield
+
+  """Restrictions for bidding on a sale"""
+  bidRestrictions: BidRestrictions!
+
+  """Items that are highlighted for this sale, ordered by position."""
+  highlighted: HighlightedItemConnection!
+
+  """Effective fee rules for this sale."""
+  feeRules: [FeeRule!]!
+
+  """
+  Section markers for this sale, ordered by fromItemNumber. Ranges may overlap.
+  """
+  sectionMarkers: [SectionMarker!]!
+
+  """The site the sale is held at, if any."""
+  site: Site
+
+  """Viewing times for the sale. Rich text encoded by the client."""
+  viewingTimes: String
+
+  """Buyers notes for the sale. Rich text encoded by the client."""
+  buyersNotes: String
+
+  """Fees-apply information for the sale. Rich text encoded by the client."""
+  feesApplyInfo: String
 }
 
 union SaleActivity = Sale | Item
+
+"""
+Polymorphic successor to SaleActivity. Serves both English and Dutch sales keyed by saleId:
+English sales emit Sale | Item, Dutch sales emit DutchSale | DutchSaleItem.
+"""
+union SaleActivityV2 = Sale | Item | DutchSale | DutchSaleItem
 
 union SaleChanged = Sale | ServerTime
 
@@ -1459,12 +2630,28 @@ type SaleDates {
 
   """Date of when the sale is supposed to be live."""
   liveDate: String
+
+  """
+  Unified closing date across sale types (liveDate for Live, closingDate for Online Timed). Sort/filter with the "effectiveClosingDateEpoch" epoch field.
+  """
+  effectiveClosingDate: String
 }
 
 """Sale filter for sales."""
 input SaleFilter {
   """Filter by sale status"""
   statuses: [SaleStatus!]!
+}
+
+"""The format a sale runs under."""
+enum SaleFormat {
+  """Ascending-bid (English) auction. The default classic format."""
+  ENGLISH
+
+  """
+  Descending-clock (Dutch) auction. Price drops over time until accepted.
+  """
+  DUTCH
 }
 
 """Item filter for sale items."""
@@ -1474,6 +2661,18 @@ input SaleItemFilter {
 
   """Item IDs"""
   itemIds: [String!]
+}
+
+"""Sale Registration Policy result"""
+type SaleRegistrationPolicyResult {
+  """Policy code"""
+  code: String!
+
+  """Policy passed"""
+  passed: Boolean!
+
+  """Policy description"""
+  description: String!
 }
 
 enum SaleRegistrationStatus {
@@ -1537,6 +2736,31 @@ enum SaleType {
 
   """Sale is a online timed auction"""
   ONLINE_TIMED
+}
+
+"""
+SaleV2 is the polymorphic sale interface spanning every auction format. Use an
+inline fragment (e.g. `... on DutchSale`) to read format-specific fields.
+"""
+interface SaleV2 {
+  id: ID!
+  accountId: String!
+  title: String
+  description: String
+  currency: String
+  status: SaleStatus!
+  dates: SaleDates!
+  saleFormat: SaleFormat!
+}
+
+type SaleV2Connection {
+  edges: [SaleV2Edge!]!
+  pageInfo: PageInfo!
+}
+
+type SaleV2Edge {
+  cursor: String!
+  node: SaleV2!
 }
 
 type SalesEdge {
@@ -1605,11 +2829,100 @@ union SearchResultItem = Item | Sale
 enum SearchType {
   """Search for items across all sales"""
   ITEM
+
+  """Search for sales across the account"""
+  SALE
+}
+
+"""
+A section marker within a sale. isFeaturedSelection distinguishes a featured
+selection (summary and an inclusive item-number range) from an editorial
+section card (may carry an image and an open-ended range).
+"""
+type SectionMarker {
+  """Marker identifier."""
+  id: ID!
+
+  """Display title."""
+  title: String!
+
+  """Optional rich-text summary. Null when unset."""
+  summary: String
+
+  """Lowest item number covered, inclusive."""
+  fromItemNumber: Int!
+
+  """Highest item number covered, inclusive. Null when open-ended."""
+  toItemNumber: Int
+
+  """Asset id of the marker image, if any."""
+  imageAssetId: String
+
+  """URL of the marker image, if any."""
+  imageUrl: String
+
+  """True for a featured selection, false for an editorial section card."""
+  isFeaturedSelection: Boolean!
 }
 
 type ServerTime {
   """Current Time"""
   currentTime: Int!
+}
+
+"""Input for setting default payment method."""
+input SetDefaultPaymentMethodInput {
+  """Payment method identifier."""
+  paymentMethodId: String!
+}
+
+"""
+A physical site where an item resides, exposed to buyers for arranging collection.
+"""
+type Site {
+  """Display name of the site."""
+  name: String!
+
+  """First line of the site address. Null when not set."""
+  addressLine1: String
+
+  """Second line of the site address. Null when not set."""
+  addressLine2: String
+
+  """City of the site address. Null when not set."""
+  addressCity: String
+
+  """Postal code of the site address. Null when not set."""
+  addressPostalCode: String
+
+  """ISO country code of the site address. Null when not set."""
+  addressCountryIso: String
+
+  """
+  State, province, region, or area of the site address. Null when not set.
+  """
+  addressState: String
+
+  """Free-text opening hours of the site. Null when not set."""
+  openingHours: String
+
+  """Whether an appointment is required before collecting from the site."""
+  appointmentRequired: Boolean!
+
+  """
+  Case-sensitive canonical IANA timezone name of the site (e.g. Europe/London,
+  not europe/london). Null when not set.
+  """
+  timezone: String
+}
+
+"""A location within a site where an item resides."""
+type SiteLocation {
+  """Location id."""
+  id: ID!
+
+  """Display name of the location."""
+  name: String!
 }
 
 """Specification sub-type enum"""
@@ -1640,6 +2953,7 @@ enum SpecificationSubType {
   NEON
   TAPESTRY
   OTHER_ART
+  GLASS_SCULPTURE
   TABLE
   CHAIR
   SOFA_LOVESEAT_CHAISE
@@ -1660,6 +2974,8 @@ enum SpecificationSubType {
   DESK_VANITY
   MEDIA_CONSOLE
   OTHER_FURNITURE
+  FOLDING_SCREEN
+  LIGHTING_FIXTURE
   EARRINGS
   NECKLACE
   BRACELET
@@ -1697,6 +3013,11 @@ enum SpecificationSubType {
   MEMORABILIA
   CAMERA_ELECTRICAL
   OTHER_COLLECTIBLES
+  DECOY
+  TRADING_CARD
+  FOSSIL
+  MINERAL
+  COLLECTIBLE_APPAREL
   WINE_BOTTLE
   SPIRITS_BOTTLE
   BEER_BOTTLE
@@ -1726,6 +3047,7 @@ enum SpecificationSubType {
   HUNTING_FISHING
   MEDICAL_EQUIPMENT
   OTHER
+  PREPACKED_BOX
 }
 
 """Specification type enum"""
@@ -1740,6 +3062,7 @@ enum SpecificationType {
   AUTOMOTIVE
   FASHION
   OTHER
+  CLIENT_PACKAGE
 }
 
 """
@@ -1782,18 +3105,67 @@ type Subscription {
   saleActivity(saleId: ID!, itemIdFilter: ItemIdsFilter): SaleActivity
 
   """
+  Subscription for Sale and Item updates, supporting both English and Dutch sales.
+  English sales emit Sale | Item; Dutch sales emit DutchSale | DutchSaleItem.
+  """
+  saleActivityV2(saleId: ID!, itemIdFilter: ItemIdsFilter): SaleActivityV2
+
+  """
   Periodic server time updates to syncronize clocks in applications using Basta.
   """
   serverTimeChanged: ServerTime!
 }
 
+"""A tag associated with an item."""
+type Tag {
+  """id of tag"""
+  id: ID!
+
+  """Tag name"""
+  name: String!
+}
+
+"""Input for updating one of the logged-in user's phone numbers."""
+input UpdatePhoneInput {
+  """ID of the phone to update"""
+  id: String!
+
+  """
+  Full phone number in E.164 format (e.g., +15551234567)
+  Includes country code, number, and optional extension using RFC 3966 format
+  Example: +1-555-123-4567;ext=1234
+  """
+  phoneNumber: String!
+
+  """Phone type (mobile, home, work, fax)"""
+  phoneType: PhoneType!
+
+  """
+  When true, this becomes the primary phone of its type, replacing any phone
+  that is currently primary for that type.
+  """
+  isPrimary: Boolean!
+
+  """Label"""
+  label: String
+}
+
 """Input for updating user information."""
 input UpdateUserInput {
-  """Billing address"""
+  """Set Primary Billing address"""
   billingAddress: MailingAddressInput
 
-  """Shipping address"""
+  """Set Primary Shipping address"""
   shippingAddress: MailingAddressInput
+
+  """Update the signed-in user's primary mobile phone number."""
+  phone: String
+
+  """Update first name. B2B-only; must be supplied together with lastName."""
+  firstName: String
+
+  """Update last name. B2B-only; must be supplied together with firstName."""
+  lastName: String
 }
 
 type UserAccountSubscription {
@@ -1811,6 +3183,12 @@ type UserBid implements Node {
   maxAmount: Int!
   bidDate: String!
   reactiveBid: Boolean!
+
+  """
+  Registration associated with this bid. Null when no registration ID
+  is present on the bid (e.g. pre-registration bids).
+  """
+  registration: UserSaleRegistration
 }
 
 type UserBidsConnection {
@@ -1827,6 +3205,45 @@ type UserBidsEdge {
 
   """UserBid node"""
   node: UserBid!
+}
+
+"""Item registration"""
+type UserItemRegistration {
+  """Id of the item registration"""
+  id: ID!
+
+  """Sale registration ID this item registration belongs to"""
+  saleRegistration: UserSaleRegistration!
+
+  """Preferred phonenumber for the registration of type PHONE"""
+  preferredPhoneNumber: PhoneAddress
+
+  """Alternative phonenumbers for the registration of type PHONE"""
+  alternativePhoneNumbers: [PhoneAddress!]
+}
+
+"""
+Whether the user has opted in to one notification on one delivery channel.
+"""
+type UserNotificationPreference {
+  notification: NotificationEvent!
+  channel: NotificationChannel!
+  optedIn: Boolean!
+}
+
+input UserNotificationPreferenceInput {
+  notification: NotificationEvent!
+  channel: NotificationChannel!
+  optedIn: Boolean!
+}
+
+"""Notification settings for the logged in user."""
+type UserNotificationSettings {
+  """
+  One preference per notification and delivery channel the account sends on.
+  Empty when preferences do not apply to this user.
+  """
+  preferences: [UserNotificationPreference!]!
 }
 
 type UserSaleItemSubscription {
@@ -1851,6 +3268,27 @@ type UserSaleRegistration {
 
   """Status of the registration"""
   status: SaleRegistrationStatus!
+
+  """Policy results"""
+  policyResults: [SaleRegistrationPolicyResult!]!
+
+  """Preferred phonenumber for the registration of type PHONE"""
+  preferredPhoneNumber: PhoneAddress
+
+  """Alternative phonenumbers for the registration of type PHONE"""
+  alternativePhoneNumbers: [PhoneAddress!]
+
+  """
+  Registration identifier. Paddle number for paddle registrations,
+  assigned identifier for online/phone/aggregator registrations.
+  """
+  identifier: String
+}
+
+type UserSaleSubscription {
+  accountId: String!
+  saleId: String!
+  userId: String!
 }
 
 """Weight unit enum"""
