@@ -28,6 +28,11 @@ export interface Account {
     /** Indicates whether account is using basta's bid client */
     bastaBidClient: Scalars['Boolean']
     /**
+     * When true, only logged-in clients can request condition reports, and the website shows
+     * reports only to logged-in clients.
+     */
+    conditionReportsRequireLogin: Scalars['Boolean']
+    /**
      * Is logged-in user subscribed to account ?
      * Only applies to sales running on basta.app (false for all api clients)
      */
@@ -43,6 +48,11 @@ export interface Account {
      * Pass the previous page's endCursor as `after` to fetch the next page.
      */
     departments: DepartmentConnection
+    /**
+     * Visible staff of the account, ordered by name.
+     * Pass the previous page's endCursor as `after` to fetch the next page.
+     */
+    staffProfiles: StaffProfileConnection
     __typename: 'Account'
 }
 
@@ -52,6 +62,97 @@ export interface Aggregator {
     name: Scalars['String']
     type: BidOriginType
     __typename: 'Aggregator'
+}
+
+
+/** An appointment the logged-in user requested at an auction house site. */
+export interface Appointment {
+    id: Scalars['ID']
+    type: AppointmentType
+    status: AppointmentStatus
+    /** Null when the site no longer exists. */
+    site: (Site | null)
+    /** The start the user asked for (RFC3339). */
+    preferredStart: Scalars['String']
+    /** The end the user asked for (RFC3339). Null when not given. */
+    preferredEnd: (Scalars['String'] | null)
+    /** The start the house confirmed (RFC3339). Null until confirmed. */
+    scheduledStart: (Scalars['String'] | null)
+    /** The end the house confirmed (RFC3339). Null when not set. */
+    scheduledEnd: (Scalars['String'] | null)
+    /** The user's note to the house. Null when not given. */
+    note: (Scalars['String'] | null)
+    /** True when the house cancelled, false when the user did. Null unless cancelled. */
+    cancelledByHouse: (Scalars['Boolean'] | null)
+    /** Why the appointment was cancelled. Null when no reason was given. */
+    cancellationReason: (Scalars['String'] | null)
+    /** The invoices and statements the appointment is for. Empty for a valuation. */
+    documents: AppointmentDocument[]
+    /** When the appointment was requested (RFC3339). */
+    created: Scalars['String']
+    __typename: 'Appointment'
+}
+
+
+/** What the logged-in user can book at this auction house. */
+export interface AppointmentBookingOptions {
+    /** Whether the house takes appointment requests. */
+    enabled: Scalars['Boolean']
+    /** The sites an appointment can be requested at. Empty when enabled is false. */
+    sites: Site[]
+    /** The earliest preferredStart the house accepts (RFC3339). Null when enabled is false. */
+    earliestStart: (Scalars['String'] | null)
+    /** The latest preferredStart the house accepts (RFC3339). Null when enabled is false. */
+    latestStart: (Scalars['String'] | null)
+    __typename: 'AppointmentBookingOptions'
+}
+
+
+/** Pass pageInfo.endCursor as after to get the next page. */
+export interface AppointmentConnection {
+    edges: AppointmentEdge[]
+    pageInfo: PageInfo
+    __typename: 'AppointmentConnection'
+}
+
+
+/** An invoice or statement an appointment is for, as it was when the appointment was requested. */
+export interface AppointmentDocument {
+    type: AppointmentDocumentType
+    documentId: Scalars['ID']
+    /** The document's number. Null when it has none. */
+    number: (Scalars['String'] | null)
+    saleId: Scalars['ID']
+    /** The items to collect. Empty means every item on the document. */
+    itemIds: Scalars['ID'][]
+    __typename: 'AppointmentDocument'
+}
+
+export type AppointmentDocumentType = 'INVOICE' | 'STATEMENT'
+
+export interface AppointmentEdge {
+    /** Pass as after to get the appointments that follow this one. */
+    cursor: Scalars['String']
+    node: Appointment
+    __typename: 'AppointmentEdge'
+}
+
+export type AppointmentStatus = 'REQUESTED' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED'
+
+export type AppointmentType = 'COLLECTION' | 'VALUATION'
+
+
+/** A consignor's payout bank account. */
+export interface BankDetails {
+    /** Account holder name. */
+    accountName: Scalars['String']
+    /** 8-digit account number. */
+    accountNumber: Scalars['String']
+    /** 6-digit sort code. */
+    sortCode: Scalars['String']
+    /** ISO 3166-1 alpha-2 country of the account (e.g. "GB"). */
+    country: Scalars['String']
+    __typename: 'BankDetails'
 }
 
 export interface BastaLiveStream {
@@ -164,8 +265,13 @@ export interface BidPlacedSuccess {
 export interface BidRestrictions {
     /** Users need to have an accepted registration to bid on this sale */
     acceptedRegistrationRequired: Scalars['Boolean']
-    /** When true, phone registrations are open/enabled for this sale */
+    /** Whether you can request phone bidding for this sale. False once phoneRegistrationClosesAt has passed. */
     phoneRegistrationOpen: Scalars['Boolean']
+    /**
+     * When phone registrations close, as an RFC3339 timestamp: a set number of hours before the live start
+     * (live sales) or before the first item starts closing (timed sales). Null when there is no cut-off.
+     */
+    phoneRegistrationClosesAt: (Scalars['String'] | null)
     __typename: 'BidRestrictions'
 }
 
@@ -183,6 +289,47 @@ export interface BidderVerificationLink {
     /** Client secret for embaddable ui */
     clientSecret: Scalars['String']
     __typename: 'BidderVerificationLink'
+}
+
+
+/** A premium a buyer pays on top of the hammer price, made of one or more bands. */
+export interface BuyerPremium {
+    /** ID of the buyer premium */
+    id: Scalars['ID']
+    /** Name of the buyer premium as shown on orders */
+    name: Scalars['String']
+    /** ISO 4217 currency code of the premium's amounts */
+    currency: Scalars['String']
+    /** How the bands are applied to the amount. See FeeCalculationType. */
+    calculationType: FeeCalculationType
+    /** Smallest premium charged, in minor currency units. 0 means no floor. */
+    minimum: Scalars['Int']
+    /** Largest premium charged, in minor currency units. 0 means no cap. */
+    maximum: Scalars['Int']
+    /** Bands of the premium, ordered by lowerLimit. */
+    bands: BuyerPremiumBand[]
+    __typename: 'BuyerPremium'
+}
+
+
+/** One price bracket of a buyer premium. */
+export interface BuyerPremiumBand {
+    /** Lower limit of the band. */
+    lowerLimit: Scalars['Int']
+    /**
+     * Upper limit of the band.
+     * If empty then there is no upper limit.
+     */
+    upperLteLimit: (Scalars['Int'] | null)
+    /** Band type influences how the value is calculated */
+    type: FeeRuleType
+    /**
+     * Value of the band interpreted based on the type
+     * * 500 means 5% if type is percentage
+     * * 1000 means $10 if type is amount
+     */
+    value: Scalars['Int']
+    __typename: 'BuyerPremiumBand'
 }
 
 
@@ -206,6 +353,41 @@ export interface Card {
 export type ClosingMethod = 'ONE_BY_ONE' | 'OVERLAPPING' | 'NONE'
 
 
+/** A lot's condition write-up. */
+export interface ConditionReport {
+    /**
+     * Portable Text. Inline images carry url, content_type, size and filename. An empty document ([])
+     * when the report has images but no text.
+     */
+    text: Scalars['JSON']
+    /** Condition images in display order. */
+    images: Image[]
+    __typename: 'ConditionReport'
+}
+
+
+/** A consignment contract awaiting the consignor's electronic signature. */
+export interface ConsignmentContractSigning {
+    /** Name of the consignor the contract was sent to. */
+    consignorName: Scalars['String']
+    /** Name of the auction house. */
+    houseName: Scalars['String']
+    /** Public URL of the auction house's logo. Null when the house has none. */
+    houseLogoUrl: (Scalars['String'] | null)
+    /** The consignment's human-facing reference. Null when unavailable. */
+    consignmentReference: (Scalars['String'] | null)
+    /** Revision number of the contract. */
+    revision: Scalars['Int']
+    /** Short-lived URL of the contract PDF to sign. */
+    documentUrl: Scalars['String']
+    /** When documentUrl stops working (RFC3339). Query again for a fresh URL. */
+    documentUrlExpiresAt: Scalars['String']
+    /** When the signing link expires (RFC3339). */
+    expiresAt: Scalars['String']
+    __typename: 'ConsignmentContractSigning'
+}
+
+
 /** A consignor of an item — one of the parties selling it. */
 export interface Consignor {
     /** The consignor's Basta user id. Not interchangeable with Me.userId. */
@@ -218,8 +400,97 @@ export interface Consignor {
 }
 
 
+/** A pre-sale advice: the letter listing a consignor's items in a sale. */
+export interface ConsignorPresaleAdvice {
+    id: Scalars['ID']
+    saleId: Scalars['String']
+    /** Title of the sale. Null when the sale has no title. */
+    saleTitle: (Scalars['String'] | null)
+    /**
+     * The live date of a live sale, else the closing date, else the open date (RFC3339). Null
+     * when none is set or the sale is not visible.
+     */
+    saleDate: (Scalars['String'] | null)
+    /** When the advice was emailed (RFC3339). */
+    sentAt: Scalars['String']
+    /** A short-lived link to download the advice document. */
+    download: (DocumentDownload | null)
+    __typename: 'ConsignorPresaleAdvice'
+}
+
+
+/** Pass pageInfo.endCursor as after to get the next page. */
+export interface ConsignorPresaleAdviceConnection {
+    edges: ConsignorPresaleAdviceEdge[]
+    pageInfo: PageInfo
+    __typename: 'ConsignorPresaleAdviceConnection'
+}
+
+export interface ConsignorPresaleAdviceEdge {
+    /** Pass as after to get the advices that follow this one. */
+    cursor: Scalars['String']
+    node: ConsignorPresaleAdvice
+    __typename: 'ConsignorPresaleAdviceEdge'
+}
+
+
 /** ISO 3166-1 alpha-2 country codes */
 export type Country = 'AF' | 'AL' | 'AQ' | 'DZ' | 'AS' | 'AD' | 'AO' | 'AG' | 'AZ' | 'AR' | 'AU' | 'AT' | 'BS' | 'BH' | 'BD' | 'AM' | 'BB' | 'BE' | 'BM' | 'BT' | 'BO' | 'BA' | 'BW' | 'BV' | 'BR' | 'BZ' | 'IO' | 'SB' | 'VG' | 'BN' | 'BG' | 'MM' | 'BI' | 'BY' | 'KH' | 'CM' | 'CA' | 'CV' | 'KY' | 'CF' | 'LK' | 'TD' | 'CL' | 'CN' | 'TW' | 'CX' | 'CC' | 'CO' | 'KM' | 'YT' | 'CG' | 'CD' | 'CK' | 'CR' | 'HR' | 'CU' | 'CY' | 'CZ' | 'BJ' | 'DK' | 'DM' | 'DO' | 'EC' | 'SV' | 'GQ' | 'ET' | 'ER' | 'EE' | 'FO' | 'FK' | 'GS' | 'FJ' | 'FI' | 'AX' | 'FR' | 'GF' | 'PF' | 'TF' | 'DJ' | 'GA' | 'GE' | 'GM' | 'PS' | 'DE' | 'GH' | 'GI' | 'KI' | 'GR' | 'GL' | 'GD' | 'GP' | 'GU' | 'GT' | 'GN' | 'GY' | 'HT' | 'HM' | 'VA' | 'HN' | 'HK' | 'HU' | 'IS' | 'IN' | 'ID' | 'IR' | 'IQ' | 'IE' | 'IL' | 'IT' | 'CI' | 'JM' | 'JP' | 'KZ' | 'JO' | 'KE' | 'KP' | 'KR' | 'KW' | 'KG' | 'LA' | 'LB' | 'LS' | 'LV' | 'LR' | 'LY' | 'LI' | 'LT' | 'LU' | 'MO' | 'MG' | 'MW' | 'MY' | 'MV' | 'ML' | 'MT' | 'MQ' | 'MR' | 'MU' | 'MX' | 'MC' | 'MN' | 'MD' | 'ME' | 'MS' | 'MA' | 'MZ' | 'OM' | 'NA' | 'NR' | 'NP' | 'NL' | 'CW' | 'AW' | 'SX' | 'BQ' | 'NC' | 'VU' | 'NZ' | 'NI' | 'NE' | 'NG' | 'NU' | 'NF' | 'NO' | 'MP' | 'UM' | 'FM' | 'MH' | 'PW' | 'PK' | 'PA' | 'PG' | 'PY' | 'PE' | 'PH' | 'PN' | 'PL' | 'PT' | 'GW' | 'TL' | 'PR' | 'QA' | 'RE' | 'RO' | 'RU' | 'RW' | 'BL' | 'SH' | 'KN' | 'AI' | 'LC' | 'MF' | 'PM' | 'VC' | 'SM' | 'ST' | 'SA' | 'SN' | 'RS' | 'SC' | 'SL' | 'SG' | 'SK' | 'VN' | 'SI' | 'SO' | 'ZA' | 'ZW' | 'ES' | 'SS' | 'SD' | 'EH' | 'SR' | 'SJ' | 'SZ' | 'SE' | 'CH' | 'SY' | 'TJ' | 'TH' | 'TG' | 'TK' | 'TO' | 'TT' | 'AE' | 'TN' | 'TR' | 'TM' | 'TC' | 'TV' | 'UG' | 'UA' | 'MK' | 'EG' | 'GB' | 'GG' | 'JE' | 'IM' | 'TZ' | 'US' | 'VI' | 'BF' | 'UY' | 'UZ' | 'VE' | 'WF' | 'WS' | 'YE' | 'ZM'
+
+
+/**
+ * A creator is a maker or artist an account can attribute items to. Creators may be
+ * nested (e.g. a manufacturer with model lines); the hierarchy is navigable via
+ * `parent` and `children`.
+ */
+export interface Creator {
+    /** ID of the creator. */
+    id: Scalars['ID']
+    /** Display name of the creator. */
+    name: Scalars['String']
+    /** URL-friendly slug, unique within the account's creator tree level. */
+    slug: Scalars['String']
+    /** Parent creator's id, if this creator is nested. Null for a top-level creator. */
+    parentId: (Scalars['ID'] | null)
+    /** Parent creator, if this creator is nested. Null for a top-level creator. */
+    parent: (Creator | null)
+    /** Direct child creators. Empty when this creator is a leaf. */
+    children: Creator[]
+    /**
+     * Kind of creator. Nested creators inherit their root's type. Null only when the
+     * creator's ancestry cannot be resolved.
+     */
+    type: (CreatorType | null)
+    /**
+     * Root-to-leaf slug path joined with "/", e.g. "studio/picasso". Matches the
+     * `creatorPaths` value that item search filters on, so a facet value maps to this
+     * creator by name.
+     */
+    path: Scalars['String']
+    /** Year the creator started, as free text (e.g. "1881", "c. 1900"). Null when not set. */
+    yearFrom: (Scalars['String'] | null)
+    /** Year the creator ended, as free text (e.g. "1973", "present"). Null when not set. */
+    yearTo: (Scalars['String'] | null)
+    /** Nationality of the creator, as free text. Null when not set. */
+    nationality: (Scalars['String'] | null)
+    /** Sanitised rich-text HTML biography. Null when not set. */
+    biography: (Scalars['String'] | null)
+    __typename: 'Creator'
+}
+
+export interface CreatorConnection {
+    edges: CreatorEdge[]
+    pageInfo: PageInfo
+    __typename: 'CreatorConnection'
+}
+
+export interface CreatorEdge {
+    cursor: Scalars['String']
+    node: Creator
+    __typename: 'CreatorEdge'
+}
+
+export type CreatorType = 'ARTIST' | 'PHOTOGRAPHER' | 'SCULPTOR' | 'POTTER' | 'JEWELER' | 'TEXTILE_ARTIST' | 'GLASS_ARTIST' | 'FURNITURE_DESIGNER' | 'MANUFACTURER'
 
 export interface CurrentItem {
     item: Item
@@ -283,6 +554,15 @@ export interface DirectSellsEdge {
     cursor: Scalars['String']
     node: Item
     __typename: 'DirectSellsEdge'
+}
+
+
+/** A short-lived link to a document. Treat the url as a secret. */
+export interface DocumentDownload {
+    url: Scalars['String']
+    /** When the link stops working (RFC3339). */
+    expiresAt: Scalars['String']
+    __typename: 'DocumentDownload'
 }
 
 
@@ -420,6 +700,8 @@ export interface DutchSaleItem {
     schedule: (DutchSchedule | null)
     title: (Scalars['String'] | null)
     subTitle: (Scalars['String'] | null)
+    /** Condition report for the lot. Null when the lot has no condition text and no condition images. */
+    conditionReport: (ConditionReport | null)
     description: (Scalars['String'] | null)
     /** Images attached to the lot. */
     images: Image[]
@@ -635,7 +917,19 @@ export interface HighlightedItemEdge {
     __typename: 'HighlightedItemEdge'
 }
 
+
+/** HttpHeader is one header key-value pair. */
+export interface HttpHeader {
+    key: Scalars['String']
+    value: Scalars['String']
+    __typename: 'HttpHeader'
+}
+
 export type IdType = 'ID' | 'URI'
+
+
+/** Stage of a user's identity verification. */
+export type IdVerificationState = 'NONE' | 'REQUESTED' | 'PROCESSING' | 'VERIFIED' | 'FAILED' | 'CANCELED'
 
 
 /** Identity verification status of the logged-in user. */
@@ -644,8 +938,22 @@ export interface IdVerificationStatus {
     verified: Scalars['Boolean']
     /** When the verification status was last modified, in RFC 3339 format. */
     modifiedAt: Scalars['String']
+    /** Current stage of the user's identity verification. */
+    status: IdVerificationState
+    /**
+     * Why the last verification attempt failed, suitable for showing to the user.
+     * Null unless the last attempt failed.
+     */
+    failureReason: (Scalars['String'] | null)
     __typename: 'IdVerificationStatus'
 }
+
+
+/**
+ * A started identity verification for the logged-in user. The concrete type tells the
+ * browser which verification flow to open.
+ */
+export type IdentityVerificationSession = (StripeIdentityVerificationSession) & { __isUnion?: true }
 
 
 /** Image object */
@@ -657,6 +965,33 @@ export interface Image {
     /** DisplayOrder for image */
     order: Scalars['Int']
     __typename: 'Image'
+}
+
+
+/** One issued revision of the order's invoice, printed as invoiceNumber-revision, for example INV-0042-2. */
+export interface Invoice {
+    revision: Scalars['Int']
+    /** UTC RFC3339 date and time this revision was issued. */
+    issuedAt: Scalars['String']
+    /** YYYY-MM-DD printed on the invoice. */
+    dueDate: Scalars['String']
+    /** The PDF. Null for a moment after issue while it renders. */
+    download: (DocumentDownload | null)
+    __typename: 'Invoice'
+}
+
+
+/** The VAT shown on an invoice at one rate. */
+export interface InvoiceTaxBand {
+    /** As printed, for example Standard rate. */
+    name: Scalars['String']
+    /** In basis points: 2000 is 20%. */
+    rateBps: Scalars['Int']
+    /** The amount taxed at this rate, in minor units. */
+    basisTotal: Scalars['Int']
+    /** The VAT on it, in minor units. */
+    taxTotal: Scalars['Int']
+    __typename: 'InvoiceTaxBand'
 }
 
 
@@ -674,6 +1009,8 @@ export interface Item {
     title: (Scalars['String'] | null)
     /** Item sub-title */
     subTitle: (Scalars['String'] | null)
+    /** Condition report for the lot. Null when the lot has no condition text and no condition images. */
+    conditionReport: (ConditionReport | null)
     /** Item Description */
     description: (Scalars['String'] | null)
     /** Currency. Capitalized string */
@@ -750,6 +1087,8 @@ export interface Item {
      * Only applies to sales running on basta.app (false for all api clients)
      */
     isUserSubscribed: Scalars['Boolean']
+    /** Number of users subscribed to (following) this item. */
+    subscriberCount: Scalars['Int']
     /** Allowed BidTypes on the item. */
     allowedBidTypes: BidType[]
     /**
@@ -780,8 +1119,13 @@ export interface Item {
     metafield: (Metafield | null)
     /** Item registration for authenticated user */
     userItemRegistrations: UserItemRegistration[]
-    /** Effective fee rules for this item. */
+    /**
+     * @deprecated Use buyerPremiums.
+     * Effective fee rules for this item.
+     */
     feeRules: FeeRule[]
+    /** The premiums a buyer pays on this lot, on top of the hammer price. Fixed once the lot closes. */
+    buyerPremiums: BuyerPremium[]
     /** Whether the item is hidden from public view. */
     hidden: Scalars['Boolean']
     /**
@@ -825,6 +1169,10 @@ export interface Item {
     siteLocation: (SiteLocation | null)
     /** Section markers of this item's sale whose item-number range covers this item's item number. */
     sectionMarkers: SectionMarker[]
+    /** CITES licence number for this item, when subject to CITES regulations. */
+    citesLicenceNumber: (Scalars['String'] | null)
+    /** Creators (makers/artists) of this item, by name. Empty when none are recorded. */
+    creators: Creator[]
     __typename: 'Item'
 }
 
@@ -1164,6 +1512,32 @@ export interface Me {
      * Null when the user has never submitted identity verification.
      */
     idVerificationStatus: (IdVerificationStatus | null)
+    /** The logged-in user's payout bank details. Null when none are on file. */
+    bankDetails: (BankDetails | null)
+    /**
+     * Pre-sale advices the auction house has emailed to the logged-in user as a consignor: the
+     * latest sent revision of each, most recently sent first. Empty when not logged in.
+     */
+    presaleAdvices: ConsignorPresaleAdviceConnection
+    /**
+     * The logged-in user's appointments at this auction house, most recently requested first. With
+     * upcomingOnly, only requested and confirmed appointments that have not started, soonest first.
+     * Empty when not logged in.
+     */
+    appointments: AppointmentConnection
+    /**
+     * Whether and where the logged-in user can request an appointment at this auction house.
+     * enabled is false when not logged in.
+     */
+    appointmentBookingOptions: AppointmentBookingOptions
+    /**
+     * The logged-in user's orders at this auction house, newest first. An order
+     * appears once the house has published it. Empty when not logged in. Page
+     * with pageInfo.endCursor as after; at most 20 per page.
+     */
+    orders: OrderConnection
+    /** One of the logged-in user's orders. Null when there is no such order. */
+    order: (Order | null)
     __typename: 'Me'
 }
 
@@ -1235,6 +1609,15 @@ export interface Mutation {
      */
     createBidderVerification: BidderVerificationLink
     /**
+     * Starts identity verification for the logged-in user, or resumes the one they
+     * have not finished yet. Open the verification in the browser with the handoff
+     * field that matches the returned provider, then read me.idVerificationStatus
+     * to follow its progress.
+     * Fails when identity verification is not enabled for the account, when the user
+     * is already verified, or while a submitted verification is still being checked.
+     */
+    createIdentityVerificationSession: IdentityVerificationSession
+    /**
      * AcceptBidderTerms.
      * This method is only available to basta users and front ends written by Basta.
      * Returns a RFC3339 timestamp of when bidder terms were accepted.
@@ -1263,6 +1646,16 @@ export interface Mutation {
     createPaymentProviderSession: PaymentProviderSession
     /** Update user information. */
     updateUser: Me
+    /**
+     * Set the logged-in user's payout bank details. All three fields are required and
+     * replace the stored set.
+     */
+    updateMyBankDetails: BankDetails
+    /**
+     * Remove the logged-in user's payout bank details. Idempotent — returns true even
+     * when none were on file.
+     */
+    deleteMyBankDetails: Scalars['Boolean']
     /** Add a phone number to the logged-in user. */
     createPhone: PhoneAddress
     /** Update one of the logged-in user's phone numbers. */
@@ -1296,10 +1689,60 @@ export interface Mutation {
      * the existing registration is returned unchanged.
      */
     createSaleItemRegistration: UserItemRegistration
+    /**
+     * Sign a consignment contract with the code from its signing link. Needs no login. Pass the
+     * code as a variable. Fails with code CONTRACT_SIGNING_UNAVAILABLE for any code that cannot
+     * be used, whether unknown, expired, cancelled or already signed.
+     */
+    signConsignmentContract: SignConsignmentContractPayload
+    /**
+     * A signed URL to upload one photo for a valuation request. Needs no login. Fails with code
+     * VALUATION_REQUESTS_UNAVAILABLE when the house does not accept valuation requests, and with
+     * BAD_USER_INPUT for a content type or size that is not allowed.
+     */
+    createValuationPhotoUploadUrl: ValuationPhotoUploadUrl
+    /**
+     * Send a valuation request to an auction house. Needs no login. Fails with code
+     * VALUATION_REQUESTS_UNAVAILABLE when the house does not accept valuation requests, and with
+     * BAD_USER_INPUT when the input does not fit the house's form.
+     */
+    submitValuationRequest: SubmitValuationRequestPayload
+    /**
+     * Request an appointment at one of the auction house's sites. Needs login. The house confirms
+     * the time. Fails with code APPOINTMENTS_UNAVAILABLE when the house does not take appointments,
+     * APPOINTMENT_LIMIT_REACHED when the user has too many requested or confirmed appointments, and
+     * BAD_USER_INPUT when the input is not valid, including a document that is not the user's own.
+     * 
+     * Safe to retry: sending the same appointmentId again returns the appointment it created, even
+     * if the first response was lost, so a double click or a retry never books twice.
+     */
+    requestAppointment: Appointment
+    /**
+     * Cancel one of the logged-in user's requested or confirmed appointments. Needs login. Fails
+     * with code NOT_FOUND when the user has no such appointment and APPOINTMENT_NOT_CANCELLABLE when
+     * it is already cancelled or completed.
+     */
+    cancelAppointment: Appointment
+    /**
+     * Ask the auction house for a lot's condition report. Needs login only when the house's
+     * Account.conditionReportsRequireLogin is true; a login for another house counts as no login.
+     * A logged-in user may leave out name and email, which then come from their profile.
+     * 
+     * Fails with code UNAUTHENTICATED when the house requires login and there is none, NOT_FOUND
+     * when the lot is not shown on the house's website, CONDITION_REPORT_REQUESTS_UNAVAILABLE when
+     * the lot or its sale has closed or the house does not exist, BAD_USER_INPUT when the input is
+     * not valid, REQUEST_ID_IN_USE when requestId was already sent for another lot or email, and
+     * RATE_LIMITED after too many requests.
+     * 
+     * Safe to retry while the lot is open: sending the same requestId again returns the first result. Asking again about
+     * the same lot with the same email, while the house has not yet replied, adds to the first
+     * request instead of making a new one.
+     */
+    requestConditionReport: RequestConditionReportPayload
     __typename: 'Mutation'
 }
 
-export type Node = (Department | DutchSale | FeeRule | Item | Metafield | Sale | UserBid) & { __isUnion?: true }
+export type Node = (Department | DutchSale | FeeRule | Item | Metafield | Sale | StaffProfile | UserBid) & { __isUnion?: true }
 
 
 /** Channel a notification can be delivered on. */
@@ -1387,6 +1830,67 @@ export interface OnlineBidOrigin {
     __typename: 'OnlineBidOrigin'
 }
 
+export interface Order {
+    id: Scalars['ID']
+    saleId: Scalars['ID']
+    /** The order's title, else the sale's. */
+    title: (Scalars['String'] | null)
+    /** ISO 4217. */
+    currency: Scalars['String']
+    status: OrderStatus
+    lines: OrderLine[]
+    billingAddress: (MailingAddress | null)
+    shippingAddress: (MailingAddress | null)
+    /** Hammer plus fees over all lines, in minor units. */
+    total: Scalars['Int']
+    amountPaid: Scalars['Int']
+    amountDue: Scalars['Int']
+    /** The VAT shown on the order's invoice, in minor units. Zero until an invoice is issued through Basta and when no VAT is shown. */
+    taxTotal: Scalars['Int']
+    /** The VAT shown on the order's invoice, one entry per rate. Empty when none is shown. */
+    taxBands: InvoiceTaxBand[]
+    /** YYYY-MM-DD the order asks to be paid by. */
+    dueAt: (Scalars['String'] | null)
+    /** INV-0042: the order's invoice number once the house has issued one. */
+    invoiceNumber: (Scalars['String'] | null)
+    /** The invoice issued through Basta. Null for a house that invoices outside it. */
+    invoice: (Invoice | null)
+    created: Scalars['String']
+    __typename: 'Order'
+}
+
+export interface OrderConnection {
+    edges: OrderEdge[]
+    pageInfo: PageInfo
+    __typename: 'OrderConnection'
+}
+
+export interface OrderEdge {
+    cursor: Scalars['String']
+    node: Order
+    __typename: 'OrderEdge'
+}
+
+export interface OrderLine {
+    itemId: Scalars['ID']
+    description: Scalars['String']
+    /** Hammer price in minor units. */
+    hammer: Scalars['Int']
+    fees: OrderLineFee[]
+    /** Hammer plus fees. */
+    total: Scalars['Int']
+    __typename: 'OrderLine'
+}
+
+export interface OrderLineFee {
+    /** As printed, for example Buyer's premium. */
+    name: Scalars['String']
+    amount: Scalars['Int']
+    __typename: 'OrderLineFee'
+}
+
+export type OrderStatus = 'PENDING_PAYMENT' | 'PAID' | 'CANCELLED'
+
 
 /** Paddle represent a paddle in a sale */
 export interface Paddle {
@@ -1457,9 +1961,9 @@ export interface PhoneAddress {
     /** Phone type (mobile, home, work, fax) */
     phoneType: PhoneType
     /**
-     * Full phone number in E.164 format (e.g., +15551234567)
+     * Full phone number in E.164 format (e.g., +12015550123)
      * Includes country code, number, and optional extension using RFC 3966 format
-     * Example: +1-555-123-4567;ext=1234
+     * Example: +1-201-555-0123;ext=1234
      */
     phoneNumber: Scalars['String']
     /** Label */
@@ -1503,6 +2007,12 @@ export interface Query {
      * Max allowed batch size is 50. Anything above that will be downgraded to 20 items.
      */
     accountSaleItems: ItemsConnection
+    /**
+     * Creators (makers/artists) of an account. Top-level creators by default; pass a
+     * parentId for its direct children, or includeChildren with no parentId to list
+     * the whole tree flat. Pass the previous page's endCursor as `after`.
+     */
+    creators: CreatorConnection
     /** Get item information by URI. */
     saleItemByURI: Item
     /**
@@ -1538,6 +2048,17 @@ export interface Query {
      * authenticated caller.
      */
     offer: (Offer | null)
+    /**
+     * The consignment contract a signing link was sent for. Needs no login: the code from the
+     * link is the credential. Pass the code as a variable. Returns null for any code that cannot
+     * be used, whether unknown, expired, cancelled or already signed.
+     */
+    consignmentContractSigning: (ConsignmentContractSigning | null)
+    /**
+     * The public valuation request form of an auction house. Needs no login. Null when the house
+     * does not accept valuation requests or the account does not exist.
+     */
+    valuationForm: (ValuationForm | null)
     __typename: 'Query'
 }
 
@@ -1559,6 +2080,17 @@ export interface RangeRule {
 }
 
 export type RenderMode = 'REDIRECT' | 'EMBED'
+
+export interface RequestConditionReportPayload {
+    /**
+     * Short reference for this ask, to quote when contacting the house. Each ask has its own
+     * reference, even when it adds to an earlier request.
+     */
+    reference: Scalars['String']
+    /** When this ask was received (RFC3339). */
+    submittedAt: Scalars['String']
+    __typename: 'RequestConditionReportPayload'
+}
 
 export type ReserveStatus = 'NOT_MET' | 'MET' | 'NO_RESERVE'
 
@@ -1592,6 +2124,13 @@ export interface Sale {
     incrementTable: (BidIncrementTable | null)
     /** Sequence number of this sale. */
     sequenceNumber: Scalars['Int']
+    /**
+     * @deprecated Use saleCode.
+     * The sale code as a number. Null when the code is not a plain number, e.g. "021226".
+     */
+    saleNumber: (Scalars['Int'] | null)
+    /** The sale's code in lowercase, e.g. "6622" or "021226". Unique within the auction house. */
+    saleCode: (Scalars['String'] | null)
     /** Sale Dates */
     dates: SaleDates
     /** Sale format of this sale. Always ENGLISH for this type. */
@@ -1644,7 +2183,10 @@ export interface Sale {
     bidRestrictions: BidRestrictions
     /** Items that are highlighted for this sale, ordered by position. */
     highlighted: HighlightedItemConnection
-    /** Effective fee rules for this sale. */
+    /**
+     * @deprecated Use buyerPremiums.
+     * Effective fee rules for this sale.
+     */
     feeRules: FeeRule[]
     /** Section markers for this sale, ordered by fromItemNumber. Ranges may overlap. */
     sectionMarkers: SectionMarker[]
@@ -1656,6 +2198,11 @@ export interface Sale {
     buyersNotes: (Scalars['String'] | null)
     /** Fees-apply information for the sale. Rich text encoded by the client. */
     feesApplyInfo: (Scalars['String'] | null)
+    /**
+     * The staff member to contact about this sale, if one is set. Null when no
+     * contact is set or the contact's identity cannot be resolved.
+     */
+    saleContact: (SaleContact | null)
     __typename: 'Sale'
 }
 
@@ -1676,6 +2223,19 @@ export interface SaleConnection {
     /** Current page information */
     pageInfo: PageInfo
     __typename: 'SaleConnection'
+}
+
+
+/**
+ * A staff member buyers can contact about a sale. Fields are individually
+ * nullable when the underlying identity does not provide them.
+ */
+export interface SaleContact {
+    /** The contact's display name. */
+    name: (Scalars['String'] | null)
+    /** The contact's email address. */
+    email: (Scalars['String'] | null)
+    __typename: 'SaleContact'
 }
 
 
@@ -1714,7 +2274,7 @@ export type SaleRegistrationType = 'ONLINE' | 'PHONE' | 'PADDLE' | 'AGGREGATOR'
 
 
 /** Sale Status represent what status an sale is currently running in. */
-export type SaleStatus = 'UNPUBLISHED' | 'PUBLISHED' | 'OPENED' | 'CLOSED' | 'CLOSING' | 'PAUSED' | 'PROCESSING' | 'LIVE'
+export type SaleStatus = 'UNPUBLISHED' | 'PREVIEW' | 'PUBLISHED' | 'OPENED' | 'CLOSED' | 'CLOSING' | 'PAUSED' | 'PROCESSING' | 'LIVE'
 
 
 /** SaleType represents the type of sale */
@@ -1836,9 +2396,17 @@ export interface ServerTime {
     __typename: 'ServerTime'
 }
 
+export interface SignConsignmentContractPayload {
+    /** When the contract was signed (RFC3339). */
+    signedAt: Scalars['String']
+    __typename: 'SignConsignmentContractPayload'
+}
+
 
 /** A physical site where an item resides, exposed to buyers for arranging collection. */
 export interface Site {
+    /** Site id. Pass as siteId when requesting an appointment. */
+    id: Scalars['ID']
     /** Display name of the site. */
     name: Scalars['String']
     /** First line of the site address. Null when not set. */
@@ -1862,7 +2430,30 @@ export interface Site {
      * not europe/london). Null when not set.
      */
     timezone: (Scalars['String'] | null)
+    /**
+     * When clients can request an appointment start at this site, in the site's
+     * timezone. Null means any time between earliestStart and latestStart.
+     */
+    bookingHours: (SiteBookingHours | null)
     __typename: 'Site'
+}
+
+
+/**
+ * One daily window, in the site's timezone, during which clients can request an
+ * appointment start. Applies to each listed weekday.
+ */
+export interface SiteBookingHours {
+    /** Days the window applies to, Monday first. */
+    weekdays: Weekday[]
+    /** Opening time, HH:MM 24-hour, inclusive. */
+    opens: Scalars['String']
+    /**
+     * Closing time, HH:MM 24-hour. A requested start must be before it and a
+     * requested end at or before it.
+     */
+    closes: Scalars['String']
+    __typename: 'SiteBookingHours'
 }
 
 
@@ -1884,6 +2475,49 @@ export type SpecificationSubType = 'NOT_SET' | 'PAINTING_UNFRAMED' | 'PAINTING_F
 export type SpecificationType = 'NOT_SET' | 'ART' | 'FURNITURE' | 'JEWELRY' | 'DECORATIVE_ARTS' | 'COLLECTIBLES' | 'ALCOHOL' | 'AUTOMOTIVE' | 'FASHION' | 'OTHER' | 'CLIENT_PACKAGE'
 
 
+/** A member of the auction house's staff. */
+export interface StaffProfile {
+    /** ID of the staff profile. */
+    id: Scalars['ID']
+    /** Display name. */
+    name: Scalars['String']
+    /** Profile photo, if one is set. */
+    photo: (Image | null)
+    /** Departments the staff member belongs to. */
+    departments: Department[]
+    /** Public field values; fields marked private in the schema are omitted. */
+    attributes: (Scalars['JSON'] | null)
+    /** Public JSON Schema for attributes (private properties removed). */
+    effectiveSchema: (Scalars['JSON'] | null)
+    __typename: 'StaffProfile'
+}
+
+export interface StaffProfileConnection {
+    edges: StaffProfileEdge[]
+    pageInfo: PageInfo
+    __typename: 'StaffProfileConnection'
+}
+
+export interface StaffProfileEdge {
+    cursor: Scalars['String']
+    node: StaffProfile
+    __typename: 'StaffProfileEdge'
+}
+
+
+/** A verification run by Stripe Identity, as the browser needs it to open the Stripe.js flow. */
+export interface StripeIdentityVerificationSession {
+    /**
+     * Secret that opens this verification in Stripe.js.
+     * Valid only for this verification; do not store or log it.
+     */
+    clientSecret: Scalars['String']
+    /** Publishable key to initialize Stripe.js with. */
+    publishableKey: Scalars['String']
+    __typename: 'StripeIdentityVerificationSession'
+}
+
+
 /**
  * StripePaymentProviderSession provides credentials for client-side Stripe integration.
  * A Customer Session allows you to grant Stripe’s frontend SDKs (like Stripe.js) client-side access control over a Customer.
@@ -1896,6 +2530,14 @@ export interface StripePaymentProviderSession {
     /** Setup Intent Client Secret */
     setupIntentClientSecret: Scalars['String']
     __typename: 'StripePaymentProviderSession'
+}
+
+export interface SubmitValuationRequestPayload {
+    /** Short reference to quote when contacting the house. */
+    reference: Scalars['String']
+    /** When the request was received (RFC3339). */
+    submittedAt: Scalars['String']
+    __typename: 'SubmitValuationRequestPayload'
 }
 
 export interface Subscription {
@@ -2055,6 +2697,47 @@ export interface UserSaleSubscription {
 }
 
 
+/** The public valuation request form of an auction house. */
+export interface ValuationForm {
+    accountId: Scalars['ID']
+    houseName: Scalars['String']
+    houseLogoUrl: (Scalars['String'] | null)
+    /** Fewest photos each item must include. */
+    requiredPhotoCount: Scalars['Int']
+    /** Most photos each item may include. */
+    maxPhotoCount: Scalars['Int']
+    /** Most items one request may include. */
+    maxItemCount: Scalars['Int']
+    /** The house's top-level item types, in the house's order. May be empty. */
+    itemTypes: ValuationItemType[]
+    __typename: 'ValuationForm'
+}
+
+
+/** An item type a valuation request can be about. */
+export interface ValuationItemType {
+    id: Scalars['ID']
+    name: Scalars['String']
+    /** JSON Schema of the fields to collect for this item type. Every field is optional. */
+    schema: Scalars['JSON']
+    __typename: 'ValuationItemType'
+}
+
+export interface ValuationPhotoUploadUrl {
+    /** Pass this id in photoIds when submitting. */
+    photoId: Scalars['ID']
+    /** Signed URL to PUT the file to. Expires 15 minutes after issuance. */
+    uploadUrl: Scalars['String']
+    /** Headers the PUT must send. */
+    headers: HttpHeader[]
+    __typename: 'ValuationPhotoUploadUrl'
+}
+
+
+/** Day of the week. */
+export type Weekday = 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY'
+
+
 /** Weight unit enum */
 export type WeightUnit = 'NOT_SET' | 'KG' | 'LB'
 
@@ -2074,6 +2757,11 @@ export interface AccountGenqlSelection{
     /** Indicates whether account is using basta's bid client */
     bastaBidClient?: boolean | number
     /**
+     * When true, only logged-in clients can request condition reports, and the website shows
+     * reports only to logged-in clients.
+     */
+    conditionReportsRequireLogin?: boolean | number
+    /**
      * Is logged-in user subscribed to account ?
      * Only applies to sales running on basta.app (false for all api clients)
      */
@@ -2091,6 +2779,15 @@ export interface AccountGenqlSelection{
     departments?: (DepartmentConnectionGenqlSelection & { __args?: {
     /** Number of departments to return, at most 200. */
     first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null)} })
+    /**
+     * Visible staff of the account, ordered by name.
+     * Pass the previous page's endCursor as `after` to fetch the next page.
+     */
+    staffProfiles?: (StaffProfileConnectionGenqlSelection & { __args?: {
+    /** Number of staff profiles to return, at most 200. */
+    first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), 
+    /** Only staff in this department. */
+    departmentId?: (Scalars['ID'] | null)} })
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -2101,6 +2798,112 @@ export interface AggregatorGenqlSelection{
     __typename?: boolean | number
     __scalar?: boolean | number
 }
+
+
+/** An appointment the logged-in user requested at an auction house site. */
+export interface AppointmentGenqlSelection{
+    id?: boolean | number
+    type?: boolean | number
+    status?: boolean | number
+    /** Null when the site no longer exists. */
+    site?: SiteGenqlSelection
+    /** The start the user asked for (RFC3339). */
+    preferredStart?: boolean | number
+    /** The end the user asked for (RFC3339). Null when not given. */
+    preferredEnd?: boolean | number
+    /** The start the house confirmed (RFC3339). Null until confirmed. */
+    scheduledStart?: boolean | number
+    /** The end the house confirmed (RFC3339). Null when not set. */
+    scheduledEnd?: boolean | number
+    /** The user's note to the house. Null when not given. */
+    note?: boolean | number
+    /** True when the house cancelled, false when the user did. Null unless cancelled. */
+    cancelledByHouse?: boolean | number
+    /** Why the appointment was cancelled. Null when no reason was given. */
+    cancellationReason?: boolean | number
+    /** The invoices and statements the appointment is for. Empty for a valuation. */
+    documents?: AppointmentDocumentGenqlSelection
+    /** When the appointment was requested (RFC3339). */
+    created?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** What the logged-in user can book at this auction house. */
+export interface AppointmentBookingOptionsGenqlSelection{
+    /** Whether the house takes appointment requests. */
+    enabled?: boolean | number
+    /** The sites an appointment can be requested at. Empty when enabled is false. */
+    sites?: SiteGenqlSelection
+    /** The earliest preferredStart the house accepts (RFC3339). Null when enabled is false. */
+    earliestStart?: boolean | number
+    /** The latest preferredStart the house accepts (RFC3339). Null when enabled is false. */
+    latestStart?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Pass pageInfo.endCursor as after to get the next page. */
+export interface AppointmentConnectionGenqlSelection{
+    edges?: AppointmentEdgeGenqlSelection
+    pageInfo?: PageInfoGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** An invoice or statement an appointment is for, as it was when the appointment was requested. */
+export interface AppointmentDocumentGenqlSelection{
+    type?: boolean | number
+    documentId?: boolean | number
+    /** The document's number. Null when it has none. */
+    number?: boolean | number
+    saleId?: boolean | number
+    /** The items to collect. Empty means every item on the document. */
+    itemIds?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface AppointmentDocumentInput {type: AppointmentDocumentType,
+/** The invoice or statement id. Must be the user's own: an invoice billed to them, or an issued statement addressed to them. */
+documentId: Scalars['ID'],
+/** Items on the document to collect. Omit or leave empty to collect every item on it. */
+itemIds?: (Scalars['ID'][] | null)}
+
+export interface AppointmentEdgeGenqlSelection{
+    /** Pass as after to get the appointments that follow this one. */
+    cursor?: boolean | number
+    node?: AppointmentGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** A consignor's payout bank account. */
+export interface BankDetailsGenqlSelection{
+    /** Account holder name. */
+    accountName?: boolean | number
+    /** 8-digit account number. */
+    accountNumber?: boolean | number
+    /** 6-digit sort code. */
+    sortCode?: boolean | number
+    /** ISO 3166-1 alpha-2 country of the account (e.g. "GB"). */
+    country?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/**
+ * Payout bank details to set. Name/account/sort are required and replace the stored
+ * set. Shape is validated server-side (8-digit account number, 6-digit sort code).
+ */
+export interface BankDetailsInput {accountName: Scalars['String'],accountNumber: Scalars['String'],sortCode: Scalars['String'],
+/** ISO 3166-1 alpha-2 country. Optional; defaults to "GB". Only GB is supported for now. */
+country?: (Scalars['String'] | null)}
 
 export interface BastaLiveStreamGenqlSelection{
     /** Is live stream enabled */
@@ -2222,8 +3025,13 @@ export interface BidPlacedSuccessGenqlSelection{
 export interface BidRestrictionsGenqlSelection{
     /** Users need to have an accepted registration to bid on this sale */
     acceptedRegistrationRequired?: boolean | number
-    /** When true, phone registrations are open/enabled for this sale */
+    /** Whether you can request phone bidding for this sale. False once phoneRegistrationClosesAt has passed. */
     phoneRegistrationOpen?: boolean | number
+    /**
+     * When phone registrations close, as an RFC3339 timestamp: a set number of hours before the live start
+     * (live sales) or before the first item starts closing (timed sales). Null when there is no cut-off.
+     */
+    phoneRegistrationClosesAt?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -2246,6 +3054,53 @@ export interface BidderVerificationLinkGenqlSelection{
 }
 
 
+/** A premium a buyer pays on top of the hammer price, made of one or more bands. */
+export interface BuyerPremiumGenqlSelection{
+    /** ID of the buyer premium */
+    id?: boolean | number
+    /** Name of the buyer premium as shown on orders */
+    name?: boolean | number
+    /** ISO 4217 currency code of the premium's amounts */
+    currency?: boolean | number
+    /** How the bands are applied to the amount. See FeeCalculationType. */
+    calculationType?: boolean | number
+    /** Smallest premium charged, in minor currency units. 0 means no floor. */
+    minimum?: boolean | number
+    /** Largest premium charged, in minor currency units. 0 means no cap. */
+    maximum?: boolean | number
+    /** Bands of the premium, ordered by lowerLimit. */
+    bands?: BuyerPremiumBandGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** One price bracket of a buyer premium. */
+export interface BuyerPremiumBandGenqlSelection{
+    /** Lower limit of the band. */
+    lowerLimit?: boolean | number
+    /**
+     * Upper limit of the band.
+     * If empty then there is no upper limit.
+     */
+    upperLteLimit?: boolean | number
+    /** Band type influences how the value is calculated */
+    type?: boolean | number
+    /**
+     * Value of the band interpreted based on the type
+     * * 500 means 5% if type is percentage
+     * * 1000 means $10 if type is amount
+     */
+    value?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface CancelAppointmentInput {appointmentId: Scalars['ID'],
+/** At most 1000 characters. */
+reason?: (Scalars['String'] | null)}
+
+
 /** Card payment method */
 export interface CardGenqlSelection{
     /** Unique card id */
@@ -2258,6 +3113,43 @@ export interface CardGenqlSelection{
     expirationYear?: boolean | number
     /** Last 4 digits of card number */
     last4?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** A lot's condition write-up. */
+export interface ConditionReportGenqlSelection{
+    /**
+     * Portable Text. Inline images carry url, content_type, size and filename. An empty document ([])
+     * when the report has images but no text.
+     */
+    text?: boolean | number
+    /** Condition images in display order. */
+    images?: ImageGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** A consignment contract awaiting the consignor's electronic signature. */
+export interface ConsignmentContractSigningGenqlSelection{
+    /** Name of the consignor the contract was sent to. */
+    consignorName?: boolean | number
+    /** Name of the auction house. */
+    houseName?: boolean | number
+    /** Public URL of the auction house's logo. Null when the house has none. */
+    houseLogoUrl?: boolean | number
+    /** The consignment's human-facing reference. Null when unavailable. */
+    consignmentReference?: boolean | number
+    /** Revision number of the contract. */
+    revision?: boolean | number
+    /** Short-lived URL of the contract PDF to sign. */
+    documentUrl?: boolean | number
+    /** When documentUrl stops working (RFC3339). Query again for a fresh URL. */
+    documentUrlExpiresAt?: boolean | number
+    /** When the signing link expires (RFC3339). */
+    expiresAt?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -2276,6 +3168,43 @@ export interface ConsignorGenqlSelection{
 }
 
 
+/** A pre-sale advice: the letter listing a consignor's items in a sale. */
+export interface ConsignorPresaleAdviceGenqlSelection{
+    id?: boolean | number
+    saleId?: boolean | number
+    /** Title of the sale. Null when the sale has no title. */
+    saleTitle?: boolean | number
+    /**
+     * The live date of a live sale, else the closing date, else the open date (RFC3339). Null
+     * when none is set or the sale is not visible.
+     */
+    saleDate?: boolean | number
+    /** When the advice was emailed (RFC3339). */
+    sentAt?: boolean | number
+    /** A short-lived link to download the advice document. */
+    download?: DocumentDownloadGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Pass pageInfo.endCursor as after to get the next page. */
+export interface ConsignorPresaleAdviceConnectionGenqlSelection{
+    edges?: ConsignorPresaleAdviceEdgeGenqlSelection
+    pageInfo?: PageInfoGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface ConsignorPresaleAdviceEdgeGenqlSelection{
+    /** Pass as after to get the advices that follow this one. */
+    cursor?: boolean | number
+    node?: ConsignorPresaleAdviceGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
 /** Input for the buyer countering an outstanding offer. */
 export interface CounterOfferInput {offerId: Scalars['ID'],amount: Scalars['Int'],currency: Scalars['String'],message?: (Scalars['String'] | null)}
 
@@ -2283,9 +3212,9 @@ export interface CounterOfferInput {offerId: Scalars['ID'],amount: Scalars['Int'
 /** Input for adding a phone number to the logged-in user. */
 export interface CreatePhoneInput {
 /**
- * Full phone number in E.164 format (e.g., +15551234567)
+ * Full phone number in E.164 format (e.g., +12015550123)
  * Includes country code, number, and optional extension using RFC 3966 format
- * Example: +1-555-123-4567;ext=1234
+ * Example: +1-201-555-0123;ext=1234
  */
 phoneNumber: Scalars['String'],
 /** Phone type (mobile, home, work, fax) */
@@ -2339,6 +3268,68 @@ preferredPhoneNumberId?: (Scalars['ID'] | null),
  * phone numbers. Only valid when type is PHONE.
  */
 alternativePhoneNumberIds?: (Scalars['ID'][] | null)}
+
+export interface CreateValuationPhotoUploadUrlInput {accountId: Scalars['ID'],
+/** image/jpeg, image/png, image/webp, image/heic or image/heif. */
+contentType: Scalars['String'],filename: Scalars['String'],
+/** File size in bytes, at most 20 MiB. The upload must send exactly this many bytes. */
+size: Scalars['Int']}
+
+
+/**
+ * A creator is a maker or artist an account can attribute items to. Creators may be
+ * nested (e.g. a manufacturer with model lines); the hierarchy is navigable via
+ * `parent` and `children`.
+ */
+export interface CreatorGenqlSelection{
+    /** ID of the creator. */
+    id?: boolean | number
+    /** Display name of the creator. */
+    name?: boolean | number
+    /** URL-friendly slug, unique within the account's creator tree level. */
+    slug?: boolean | number
+    /** Parent creator's id, if this creator is nested. Null for a top-level creator. */
+    parentId?: boolean | number
+    /** Parent creator, if this creator is nested. Null for a top-level creator. */
+    parent?: CreatorGenqlSelection
+    /** Direct child creators. Empty when this creator is a leaf. */
+    children?: CreatorGenqlSelection
+    /**
+     * Kind of creator. Nested creators inherit their root's type. Null only when the
+     * creator's ancestry cannot be resolved.
+     */
+    type?: boolean | number
+    /**
+     * Root-to-leaf slug path joined with "/", e.g. "studio/picasso". Matches the
+     * `creatorPaths` value that item search filters on, so a facet value maps to this
+     * creator by name.
+     */
+    path?: boolean | number
+    /** Year the creator started, as free text (e.g. "1881", "c. 1900"). Null when not set. */
+    yearFrom?: boolean | number
+    /** Year the creator ended, as free text (e.g. "1973", "present"). Null when not set. */
+    yearTo?: boolean | number
+    /** Nationality of the creator, as free text. Null when not set. */
+    nationality?: boolean | number
+    /** Sanitised rich-text HTML biography. Null when not set. */
+    biography?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface CreatorConnectionGenqlSelection{
+    edges?: CreatorEdgeGenqlSelection
+    pageInfo?: PageInfoGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface CreatorEdgeGenqlSelection{
+    cursor?: boolean | number
+    node?: CreatorGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
 
 export interface CurrentItemGenqlSelection{
     item?: ItemGenqlSelection
@@ -2403,6 +3394,16 @@ export interface DirectSellsConnectionGenqlSelection{
 export interface DirectSellsEdgeGenqlSelection{
     cursor?: boolean | number
     node?: ItemGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** A short-lived link to a document. Treat the url as a secret. */
+export interface DocumentDownloadGenqlSelection{
+    url?: boolean | number
+    /** When the link stops working (RFC3339). */
+    expiresAt?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -2547,6 +3548,8 @@ export interface DutchSaleItemGenqlSelection{
     schedule?: DutchScheduleGenqlSelection
     title?: boolean | number
     subTitle?: boolean | number
+    /** Condition report for the lot. Null when the lot has no condition text and no condition images. */
+    conditionReport?: ConditionReportGenqlSelection
     description?: boolean | number
     /** Images attached to the lot. */
     images?: ImageGenqlSelection
@@ -2768,14 +3771,40 @@ export interface HighlightedItemEdgeGenqlSelection{
 }
 
 
+/** HttpHeader is one header key-value pair. */
+export interface HttpHeaderGenqlSelection{
+    key?: boolean | number
+    value?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
 /** Identity verification status of the logged-in user. */
 export interface IdVerificationStatusGenqlSelection{
     /** True when the user's identity has been verified. */
     verified?: boolean | number
     /** When the verification status was last modified, in RFC 3339 format. */
     modifiedAt?: boolean | number
+    /** Current stage of the user's identity verification. */
+    status?: boolean | number
+    /**
+     * Why the last verification attempt failed, suitable for showing to the user.
+     * Null unless the last attempt failed.
+     */
+    failureReason?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
+}
+
+
+/**
+ * A started identity verification for the logged-in user. The concrete type tells the
+ * browser which verification flow to open.
+ */
+export interface IdentityVerificationSessionGenqlSelection{
+    on_StripeIdentityVerificationSession?:StripeIdentityVerificationSessionGenqlSelection,
+    __typename?: boolean | number
 }
 
 
@@ -2787,6 +3816,35 @@ export interface ImageGenqlSelection{
     url?: boolean | number
     /** DisplayOrder for image */
     order?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** One issued revision of the order's invoice, printed as invoiceNumber-revision, for example INV-0042-2. */
+export interface InvoiceGenqlSelection{
+    revision?: boolean | number
+    /** UTC RFC3339 date and time this revision was issued. */
+    issuedAt?: boolean | number
+    /** YYYY-MM-DD printed on the invoice. */
+    dueDate?: boolean | number
+    /** The PDF. Null for a moment after issue while it renders. */
+    download?: DocumentDownloadGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** The VAT shown on an invoice at one rate. */
+export interface InvoiceTaxBandGenqlSelection{
+    /** As printed, for example Standard rate. */
+    name?: boolean | number
+    /** In basis points: 2000 is 20%. */
+    rateBps?: boolean | number
+    /** The amount taxed at this rate, in minor units. */
+    basisTotal?: boolean | number
+    /** The VAT on it, in minor units. */
+    taxTotal?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -2806,6 +3864,8 @@ export interface ItemGenqlSelection{
     title?: boolean | number
     /** Item sub-title */
     subTitle?: boolean | number
+    /** Condition report for the lot. Null when the lot has no condition text and no condition images. */
+    conditionReport?: ConditionReportGenqlSelection
     /** Item Description */
     description?: boolean | number
     /** Currency. Capitalized string */
@@ -2882,6 +3942,8 @@ export interface ItemGenqlSelection{
      * Only applies to sales running on basta.app (false for all api clients)
      */
     isUserSubscribed?: boolean | number
+    /** Number of users subscribed to (following) this item. */
+    subscriberCount?: boolean | number
     /** Allowed BidTypes on the item. */
     allowedBidTypes?: boolean | number
     /**
@@ -2912,8 +3974,13 @@ export interface ItemGenqlSelection{
     metafield?: (MetafieldGenqlSelection & { __args: {input: GetMetafieldInput} })
     /** Item registration for authenticated user */
     userItemRegistrations?: UserItemRegistrationGenqlSelection
-    /** Effective fee rules for this item. */
+    /**
+     * @deprecated Use buyerPremiums.
+     * Effective fee rules for this item.
+     */
     feeRules?: FeeRuleGenqlSelection
+    /** The premiums a buyer pays on this lot, on top of the hammer price. Fixed once the lot closes. */
+    buyerPremiums?: BuyerPremiumGenqlSelection
     /** Whether the item is hidden from public view. */
     hidden?: boolean | number
     /**
@@ -2957,6 +4024,10 @@ export interface ItemGenqlSelection{
     siteLocation?: SiteLocationGenqlSelection
     /** Section markers of this item's sale whose item-number range covers this item's item number. */
     sectionMarkers?: SectionMarkerGenqlSelection
+    /** CITES licence number for this item, when subject to CITES regulations. */
+    citesLicenceNumber?: boolean | number
+    /** Creators (makers/artists) of this item, by name. Empty when none are recorded. */
+    creators?: CreatorGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -3339,6 +4410,32 @@ export interface MeGenqlSelection{
      * Null when the user has never submitted identity verification.
      */
     idVerificationStatus?: IdVerificationStatusGenqlSelection
+    /** The logged-in user's payout bank details. Null when none are on file. */
+    bankDetails?: BankDetailsGenqlSelection
+    /**
+     * Pre-sale advices the auction house has emailed to the logged-in user as a consignor: the
+     * latest sent revision of each, most recently sent first. Empty when not logged in.
+     */
+    presaleAdvices?: (ConsignorPresaleAdviceConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null)} })
+    /**
+     * The logged-in user's appointments at this auction house, most recently requested first. With
+     * upcomingOnly, only requested and confirmed appointments that have not started, soonest first.
+     * Empty when not logged in.
+     */
+    appointments?: (AppointmentConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), upcomingOnly?: (Scalars['Boolean'] | null)} })
+    /**
+     * Whether and where the logged-in user can request an appointment at this auction house.
+     * enabled is false when not logged in.
+     */
+    appointmentBookingOptions?: AppointmentBookingOptionsGenqlSelection
+    /**
+     * The logged-in user's orders at this auction house, newest first. An order
+     * appears once the house has published it. Empty when not logged in. Page
+     * with pageInfo.endCursor as after; at most 20 per page.
+     */
+    orders?: (OrderConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null)} })
+    /** One of the logged-in user's orders. Null when there is no such order. */
+    order?: (OrderGenqlSelection & { __args: {id: Scalars['ID']} })
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -3406,6 +4503,15 @@ export interface MutationGenqlSelection{
      */
     createBidderVerification?: (BidderVerificationLinkGenqlSelection & { __args?: {input?: (BidderVerificationInput | null)} })
     /**
+     * Starts identity verification for the logged-in user, or resumes the one they
+     * have not finished yet. Open the verification in the browser with the handoff
+     * field that matches the returned provider, then read me.idVerificationStatus
+     * to follow its progress.
+     * Fails when identity verification is not enabled for the account, when the user
+     * is already verified, or while a submitted verification is still being checked.
+     */
+    createIdentityVerificationSession?: IdentityVerificationSessionGenqlSelection
+    /**
      * AcceptBidderTerms.
      * This method is only available to basta users and front ends written by Basta.
      * Returns a RFC3339 timestamp of when bidder terms were accepted.
@@ -3434,6 +4540,16 @@ export interface MutationGenqlSelection{
     createPaymentProviderSession?: (PaymentProviderSessionGenqlSelection & { __args: {input: PaymentProviderSessionInput} })
     /** Update user information. */
     updateUser?: (MeGenqlSelection & { __args: {input: UpdateUserInput} })
+    /**
+     * Set the logged-in user's payout bank details. All three fields are required and
+     * replace the stored set.
+     */
+    updateMyBankDetails?: (BankDetailsGenqlSelection & { __args: {input: BankDetailsInput} })
+    /**
+     * Remove the logged-in user's payout bank details. Idempotent — returns true even
+     * when none were on file.
+     */
+    deleteMyBankDetails?: boolean | number
     /** Add a phone number to the logged-in user. */
     createPhone?: (PhoneAddressGenqlSelection & { __args: {input: CreatePhoneInput} })
     /** Update one of the logged-in user's phone numbers. */
@@ -3467,6 +4583,56 @@ export interface MutationGenqlSelection{
      * the existing registration is returned unchanged.
      */
     createSaleItemRegistration?: (UserItemRegistrationGenqlSelection & { __args: {input: CreateSaleItemRegistrationInput} })
+    /**
+     * Sign a consignment contract with the code from its signing link. Needs no login. Pass the
+     * code as a variable. Fails with code CONTRACT_SIGNING_UNAVAILABLE for any code that cannot
+     * be used, whether unknown, expired, cancelled or already signed.
+     */
+    signConsignmentContract?: (SignConsignmentContractPayloadGenqlSelection & { __args: {input: SignConsignmentContractInput} })
+    /**
+     * A signed URL to upload one photo for a valuation request. Needs no login. Fails with code
+     * VALUATION_REQUESTS_UNAVAILABLE when the house does not accept valuation requests, and with
+     * BAD_USER_INPUT for a content type or size that is not allowed.
+     */
+    createValuationPhotoUploadUrl?: (ValuationPhotoUploadUrlGenqlSelection & { __args: {input: CreateValuationPhotoUploadUrlInput} })
+    /**
+     * Send a valuation request to an auction house. Needs no login. Fails with code
+     * VALUATION_REQUESTS_UNAVAILABLE when the house does not accept valuation requests, and with
+     * BAD_USER_INPUT when the input does not fit the house's form.
+     */
+    submitValuationRequest?: (SubmitValuationRequestPayloadGenqlSelection & { __args: {input: SubmitValuationRequestInput} })
+    /**
+     * Request an appointment at one of the auction house's sites. Needs login. The house confirms
+     * the time. Fails with code APPOINTMENTS_UNAVAILABLE when the house does not take appointments,
+     * APPOINTMENT_LIMIT_REACHED when the user has too many requested or confirmed appointments, and
+     * BAD_USER_INPUT when the input is not valid, including a document that is not the user's own.
+     * 
+     * Safe to retry: sending the same appointmentId again returns the appointment it created, even
+     * if the first response was lost, so a double click or a retry never books twice.
+     */
+    requestAppointment?: (AppointmentGenqlSelection & { __args: {input: RequestAppointmentInput} })
+    /**
+     * Cancel one of the logged-in user's requested or confirmed appointments. Needs login. Fails
+     * with code NOT_FOUND when the user has no such appointment and APPOINTMENT_NOT_CANCELLABLE when
+     * it is already cancelled or completed.
+     */
+    cancelAppointment?: (AppointmentGenqlSelection & { __args: {input: CancelAppointmentInput} })
+    /**
+     * Ask the auction house for a lot's condition report. Needs login only when the house's
+     * Account.conditionReportsRequireLogin is true; a login for another house counts as no login.
+     * A logged-in user may leave out name and email, which then come from their profile.
+     * 
+     * Fails with code UNAUTHENTICATED when the house requires login and there is none, NOT_FOUND
+     * when the lot is not shown on the house's website, CONDITION_REPORT_REQUESTS_UNAVAILABLE when
+     * the lot or its sale has closed or the house does not exist, BAD_USER_INPUT when the input is
+     * not valid, REQUEST_ID_IN_USE when requestId was already sent for another lot or email, and
+     * RATE_LIMITED after too many requests.
+     * 
+     * Safe to retry while the lot is open: sending the same requestId again returns the first result. Asking again about
+     * the same lot with the same email, while the house has not yet replied, adds to the first
+     * request instead of making a new one.
+     */
+    requestConditionReport?: (RequestConditionReportPayloadGenqlSelection & { __args: {input: RequestConditionReportInput} })
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -3480,6 +4646,7 @@ export interface NodeGenqlSelection{
     on_Item?: ItemGenqlSelection
     on_Metafield?: MetafieldGenqlSelection
     on_Sale?: SaleGenqlSelection
+    on_StaffProfile?: StaffProfileGenqlSelection
     on_UserBid?: UserBidGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
@@ -3556,6 +4723,70 @@ export interface OffersEdgeGenqlSelection{
 
 export interface OnlineBidOriginGenqlSelection{
     type?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface OrderGenqlSelection{
+    id?: boolean | number
+    saleId?: boolean | number
+    /** The order's title, else the sale's. */
+    title?: boolean | number
+    /** ISO 4217. */
+    currency?: boolean | number
+    status?: boolean | number
+    lines?: OrderLineGenqlSelection
+    billingAddress?: MailingAddressGenqlSelection
+    shippingAddress?: MailingAddressGenqlSelection
+    /** Hammer plus fees over all lines, in minor units. */
+    total?: boolean | number
+    amountPaid?: boolean | number
+    amountDue?: boolean | number
+    /** The VAT shown on the order's invoice, in minor units. Zero until an invoice is issued through Basta and when no VAT is shown. */
+    taxTotal?: boolean | number
+    /** The VAT shown on the order's invoice, one entry per rate. Empty when none is shown. */
+    taxBands?: InvoiceTaxBandGenqlSelection
+    /** YYYY-MM-DD the order asks to be paid by. */
+    dueAt?: boolean | number
+    /** INV-0042: the order's invoice number once the house has issued one. */
+    invoiceNumber?: boolean | number
+    /** The invoice issued through Basta. Null for a house that invoices outside it. */
+    invoice?: InvoiceGenqlSelection
+    created?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface OrderConnectionGenqlSelection{
+    edges?: OrderEdgeGenqlSelection
+    pageInfo?: PageInfoGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface OrderEdgeGenqlSelection{
+    cursor?: boolean | number
+    node?: OrderGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface OrderLineGenqlSelection{
+    itemId?: boolean | number
+    description?: boolean | number
+    /** Hammer price in minor units. */
+    hammer?: boolean | number
+    fees?: OrderLineFeeGenqlSelection
+    /** Hammer plus fees. */
+    total?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface OrderLineFeeGenqlSelection{
+    /** As printed, for example Buyer's premium. */
+    name?: boolean | number
+    amount?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -3639,9 +4870,9 @@ export interface PhoneAddressGenqlSelection{
     /** Phone type (mobile, home, work, fax) */
     phoneType?: boolean | number
     /**
-     * Full phone number in E.164 format (e.g., +15551234567)
+     * Full phone number in E.164 format (e.g., +12015550123)
      * Includes country code, number, and optional extension using RFC 3966 format
-     * Example: +1-555-123-4567;ext=1234
+     * Example: +1-201-555-0123;ext=1234
      */
     phoneNumber?: boolean | number
     /** Label */
@@ -3685,6 +4916,12 @@ export interface QueryGenqlSelection{
      * Max allowed batch size is 50. Anything above that will be downgraded to 20 items.
      */
     accountSaleItems?: (ItemsConnectionGenqlSelection & { __args: {accountId: Scalars['String'], first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), filter?: (SaleItemFilter | null)} })
+    /**
+     * Creators (makers/artists) of an account. Top-level creators by default; pass a
+     * parentId for its direct children, or includeChildren with no parentId to list
+     * the whole tree flat. Pass the previous page's endCursor as `after`.
+     */
+    creators?: (CreatorConnectionGenqlSelection & { __args: {accountId: Scalars['String'], parentId?: (Scalars['ID'] | null), includeChildren?: (Scalars['Boolean'] | null), first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null)} })
     /** Get item information by URI. */
     saleItemByURI?: (ItemGenqlSelection & { __args: {uri: Scalars['String']} })
     /**
@@ -3771,6 +5008,17 @@ export interface QueryGenqlSelection{
      * authenticated caller.
      */
     offer?: (OfferGenqlSelection & { __args: {id: Scalars['ID']} })
+    /**
+     * The consignment contract a signing link was sent for. Needs no login: the code from the
+     * link is the credential. Pass the code as a variable. Returns null for any code that cannot
+     * be used, whether unknown, expired, cancelled or already signed.
+     */
+    consignmentContractSigning?: (ConsignmentContractSigningGenqlSelection & { __args: {code: Scalars['String']} })
+    /**
+     * The public valuation request form of an auction house. Needs no login. Null when the house
+     * does not accept valuation requests or the account does not exist.
+     */
+    valuationForm?: (ValuationFormGenqlSelection & { __args: {accountId: Scalars['ID']} })
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -3789,6 +5037,53 @@ export interface RangeRuleGenqlSelection{
     lowRange?: boolean | number
     /** Step of the rule */
     step?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface RequestAppointmentInput {
+/**
+ * The id of the new appointment, chosen by the client. Generate one UUID (for example with
+ * crypto.randomUUID()) when the form opens and send it on every submit of that form. A repeated
+ * id returns the appointment already created with it; the rest of the input is ignored. Use a
+ * new id for each new booking.
+ */
+appointmentId: Scalars['ID'],type: AppointmentType,
+/** One of AppointmentBookingOptions.sites. */
+siteId: Scalars['ID'],
+/** Between AppointmentBookingOptions.earliestStart and latestStart (RFC3339). */
+preferredStart: Scalars['String'],
+/** After preferredStart (RFC3339). */
+preferredEnd?: (Scalars['String'] | null),
+/** A note to the house, at most 2000 characters. */
+note?: (Scalars['String'] | null),
+/** Required for a COLLECTION, at most 10. Must be empty for a VALUATION. */
+documents?: (AppointmentDocumentInput[] | null)}
+
+export interface RequestConditionReportInput {accountId: Scalars['ID'],
+/** A UUID the client generates once per request. Resending the same id returns the first result. */
+requestId: Scalars['ID'],
+/** The lot's sale. */
+saleId: Scalars['ID'],
+/** The lot's item. */
+itemId: Scalars['ID'],
+/** At most 200 characters. Required unless logged in, when it defaults to the profile's name. */
+name?: (Scalars['String'] | null),
+/** At most 200 characters. Required unless logged in, when it defaults to the profile's email. */
+email?: (Scalars['String'] | null),
+/** At most 200 characters. */
+phone?: (Scalars['String'] | null),
+/** What the requester wants to know, at most 2,000 characters. */
+message?: (Scalars['String'] | null)}
+
+export interface RequestConditionReportPayloadGenqlSelection{
+    /**
+     * Short reference for this ask, to quote when contacting the house. Each ask has its own
+     * reference, even when it adds to an earlier request.
+     */
+    reference?: boolean | number
+    /** When this ask was received (RFC3339). */
+    submittedAt?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -3823,6 +5118,13 @@ export interface SaleGenqlSelection{
     incrementTable?: BidIncrementTableGenqlSelection
     /** Sequence number of this sale. */
     sequenceNumber?: boolean | number
+    /**
+     * @deprecated Use saleCode.
+     * The sale code as a number. Null when the code is not a plain number, e.g. "021226".
+     */
+    saleNumber?: boolean | number
+    /** The sale's code in lowercase, e.g. "6622" or "021226". Unique within the auction house. */
+    saleCode?: boolean | number
     /** Sale Dates */
     dates?: SaleDatesGenqlSelection
     /** Sale format of this sale. Always ENGLISH for this type. */
@@ -3875,7 +5177,10 @@ export interface SaleGenqlSelection{
     bidRestrictions?: BidRestrictionsGenqlSelection
     /** Items that are highlighted for this sale, ordered by position. */
     highlighted?: HighlightedItemConnectionGenqlSelection
-    /** Effective fee rules for this sale. */
+    /**
+     * @deprecated Use buyerPremiums.
+     * Effective fee rules for this sale.
+     */
     feeRules?: FeeRuleGenqlSelection
     /** Section markers for this sale, ordered by fromItemNumber. Ranges may overlap. */
     sectionMarkers?: SectionMarkerGenqlSelection
@@ -3887,6 +5192,11 @@ export interface SaleGenqlSelection{
     buyersNotes?: boolean | number
     /** Fees-apply information for the sale. Rich text encoded by the client. */
     feesApplyInfo?: boolean | number
+    /**
+     * The staff member to contact about this sale, if one is set. Null when no
+     * contact is set or the contact's identity cannot be resolved.
+     */
+    saleContact?: SaleContactGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -3927,6 +5237,20 @@ export interface SaleConnectionGenqlSelection{
     edges?: SalesEdgeGenqlSelection
     /** Current page information */
     pageInfo?: PageInfoGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/**
+ * A staff member buyers can contact about a sale. Fields are individually
+ * nullable when the underlying identity does not provide them.
+ */
+export interface SaleContactGenqlSelection{
+    /** The contact's display name. */
+    name?: boolean | number
+    /** The contact's email address. */
+    email?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -4118,9 +5442,26 @@ export interface SetDefaultPaymentMethodInput {
 /** Payment method identifier. */
 paymentMethodId: Scalars['String']}
 
+export interface SignConsignmentContractInput {
+/** The code from the signing link. */
+code: Scalars['String'],
+/** The signer's full name, 1 to 200 characters with no control characters. */
+fullName: Scalars['String'],
+/** Must be true: the signer agrees to sign electronically. */
+consent: Scalars['Boolean']}
+
+export interface SignConsignmentContractPayloadGenqlSelection{
+    /** When the contract was signed (RFC3339). */
+    signedAt?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
 
 /** A physical site where an item resides, exposed to buyers for arranging collection. */
 export interface SiteGenqlSelection{
+    /** Site id. Pass as siteId when requesting an appointment. */
+    id?: boolean | number
     /** Display name of the site. */
     name?: boolean | number
     /** First line of the site address. Null when not set. */
@@ -4144,6 +5485,30 @@ export interface SiteGenqlSelection{
      * not europe/london). Null when not set.
      */
     timezone?: boolean | number
+    /**
+     * When clients can request an appointment start at this site, in the site's
+     * timezone. Null means any time between earliestStart and latestStart.
+     */
+    bookingHours?: SiteBookingHoursGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/**
+ * One daily window, in the site's timezone, during which clients can request an
+ * appointment start. Applies to each listed weekday.
+ */
+export interface SiteBookingHoursGenqlSelection{
+    /** Days the window applies to, Monday first. */
+    weekdays?: boolean | number
+    /** Opening time, HH:MM 24-hour, inclusive. */
+    opens?: boolean | number
+    /**
+     * Closing time, HH:MM 24-hour. A requested start must be before it and a
+     * requested end at or before it.
+     */
+    closes?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -4160,6 +5525,53 @@ export interface SiteLocationGenqlSelection{
 }
 
 
+/** A member of the auction house's staff. */
+export interface StaffProfileGenqlSelection{
+    /** ID of the staff profile. */
+    id?: boolean | number
+    /** Display name. */
+    name?: boolean | number
+    /** Profile photo, if one is set. */
+    photo?: ImageGenqlSelection
+    /** Departments the staff member belongs to. */
+    departments?: DepartmentGenqlSelection
+    /** Public field values; fields marked private in the schema are omitted. */
+    attributes?: boolean | number
+    /** Public JSON Schema for attributes (private properties removed). */
+    effectiveSchema?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface StaffProfileConnectionGenqlSelection{
+    edges?: StaffProfileEdgeGenqlSelection
+    pageInfo?: PageInfoGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface StaffProfileEdgeGenqlSelection{
+    cursor?: boolean | number
+    node?: StaffProfileGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** A verification run by Stripe Identity, as the browser needs it to open the Stripe.js flow. */
+export interface StripeIdentityVerificationSessionGenqlSelection{
+    /**
+     * Secret that opens this verification in Stripe.js.
+     * Valid only for this verification; do not store or log it.
+     */
+    clientSecret?: boolean | number
+    /** Publishable key to initialize Stripe.js with. */
+    publishableKey?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
 /**
  * StripePaymentProviderSession provides credentials for client-side Stripe integration.
  * A Customer Session allows you to grant Stripe’s frontend SDKs (like Stripe.js) client-side access control over a Customer.
@@ -4171,6 +5583,37 @@ export interface StripePaymentProviderSessionGenqlSelection{
     customerSessionClientSecret?: boolean | number
     /** Setup Intent Client Secret */
     setupIntentClientSecret?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface SubmitValuationRequestInput {accountId: Scalars['ID'],
+/** A UUID the client generates once per form. Resubmitting with the same id returns the first result. */
+requestId: Scalars['ID'],name: Scalars['String'],email: Scalars['String'],phone?: (Scalars['String'] | null),
+/** The items to value, 1 to ValuationForm.maxItemCount, in display order. */
+items: SubmitValuationRequestItemInput[]}
+
+
+/** One item in a valuation request. */
+export interface SubmitValuationRequestItemInput {
+/** One of ValuationForm.itemTypes. Required when the form lists any item type. */
+itemTypeId?: (Scalars['ID'] | null),
+/** Values for the item type's fields, conforming to its schema. */
+fields?: (Scalars['JSON'] | null),
+/** Must not be blank. */
+description: Scalars['String'],
+/**
+ * Photos from createValuationPhotoUploadUrl, in display order. Between
+ * ValuationForm.requiredPhotoCount and ValuationForm.maxPhotoCount. A photo may appear only once
+ * in the whole request.
+ */
+photoIds: Scalars['ID'][]}
+
+export interface SubmitValuationRequestPayloadGenqlSelection{
+    /** Short reference to quote when contacting the house. */
+    reference?: boolean | number
+    /** When the request was received (RFC3339). */
+    submittedAt?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -4224,9 +5667,9 @@ export interface UpdatePhoneInput {
 /** ID of the phone to update */
 id: Scalars['String'],
 /**
- * Full phone number in E.164 format (e.g., +15551234567)
+ * Full phone number in E.164 format (e.g., +12015550123)
  * Includes country code, number, and optional extension using RFC 3966 format
- * Example: +1-555-123-4567;ext=1234
+ * Example: +1-201-555-0123;ext=1234
  */
 phoneNumber: Scalars['String'],
 /** Phone type (mobile, home, work, fax) */
@@ -4381,6 +5824,46 @@ export interface UserSaleSubscriptionGenqlSelection{
 }
 
 
+/** The public valuation request form of an auction house. */
+export interface ValuationFormGenqlSelection{
+    accountId?: boolean | number
+    houseName?: boolean | number
+    houseLogoUrl?: boolean | number
+    /** Fewest photos each item must include. */
+    requiredPhotoCount?: boolean | number
+    /** Most photos each item may include. */
+    maxPhotoCount?: boolean | number
+    /** Most items one request may include. */
+    maxItemCount?: boolean | number
+    /** The house's top-level item types, in the house's order. May be empty. */
+    itemTypes?: ValuationItemTypeGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** An item type a valuation request can be about. */
+export interface ValuationItemTypeGenqlSelection{
+    id?: boolean | number
+    name?: boolean | number
+    /** JSON Schema of the fields to collect for this item type. Every field is optional. */
+    schema?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface ValuationPhotoUploadUrlGenqlSelection{
+    /** Pass this id in photoIds when submitting. */
+    photoId?: boolean | number
+    /** Signed URL to PUT the file to. Expires 15 minutes after issuance. */
+    uploadUrl?: boolean | number
+    /** Headers the PUT must send. */
+    headers?: HttpHeaderGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
     const Account_possibleTypes: string[] = ['Account']
     export const isAccount = (obj?: { __typename?: any } | null): obj is Account => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isAccount"')
@@ -4393,6 +5876,54 @@ export interface UserSaleSubscriptionGenqlSelection{
     export const isAggregator = (obj?: { __typename?: any } | null): obj is Aggregator => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isAggregator"')
       return Aggregator_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const Appointment_possibleTypes: string[] = ['Appointment']
+    export const isAppointment = (obj?: { __typename?: any } | null): obj is Appointment => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAppointment"')
+      return Appointment_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AppointmentBookingOptions_possibleTypes: string[] = ['AppointmentBookingOptions']
+    export const isAppointmentBookingOptions = (obj?: { __typename?: any } | null): obj is AppointmentBookingOptions => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAppointmentBookingOptions"')
+      return AppointmentBookingOptions_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AppointmentConnection_possibleTypes: string[] = ['AppointmentConnection']
+    export const isAppointmentConnection = (obj?: { __typename?: any } | null): obj is AppointmentConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAppointmentConnection"')
+      return AppointmentConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AppointmentDocument_possibleTypes: string[] = ['AppointmentDocument']
+    export const isAppointmentDocument = (obj?: { __typename?: any } | null): obj is AppointmentDocument => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAppointmentDocument"')
+      return AppointmentDocument_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AppointmentEdge_possibleTypes: string[] = ['AppointmentEdge']
+    export const isAppointmentEdge = (obj?: { __typename?: any } | null): obj is AppointmentEdge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAppointmentEdge"')
+      return AppointmentEdge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const BankDetails_possibleTypes: string[] = ['BankDetails']
+    export const isBankDetails = (obj?: { __typename?: any } | null): obj is BankDetails => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isBankDetails"')
+      return BankDetails_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -4469,6 +6000,22 @@ export interface UserSaleSubscriptionGenqlSelection{
     
 
 
+    const BuyerPremium_possibleTypes: string[] = ['BuyerPremium']
+    export const isBuyerPremium = (obj?: { __typename?: any } | null): obj is BuyerPremium => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isBuyerPremium"')
+      return BuyerPremium_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const BuyerPremiumBand_possibleTypes: string[] = ['BuyerPremiumBand']
+    export const isBuyerPremiumBand = (obj?: { __typename?: any } | null): obj is BuyerPremiumBand => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isBuyerPremiumBand"')
+      return BuyerPremiumBand_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const Card_possibleTypes: string[] = ['Card']
     export const isCard = (obj?: { __typename?: any } | null): obj is Card => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isCard"')
@@ -4477,10 +6024,74 @@ export interface UserSaleSubscriptionGenqlSelection{
     
 
 
+    const ConditionReport_possibleTypes: string[] = ['ConditionReport']
+    export const isConditionReport = (obj?: { __typename?: any } | null): obj is ConditionReport => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isConditionReport"')
+      return ConditionReport_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const ConsignmentContractSigning_possibleTypes: string[] = ['ConsignmentContractSigning']
+    export const isConsignmentContractSigning = (obj?: { __typename?: any } | null): obj is ConsignmentContractSigning => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isConsignmentContractSigning"')
+      return ConsignmentContractSigning_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const Consignor_possibleTypes: string[] = ['Consignor']
     export const isConsignor = (obj?: { __typename?: any } | null): obj is Consignor => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isConsignor"')
       return Consignor_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const ConsignorPresaleAdvice_possibleTypes: string[] = ['ConsignorPresaleAdvice']
+    export const isConsignorPresaleAdvice = (obj?: { __typename?: any } | null): obj is ConsignorPresaleAdvice => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isConsignorPresaleAdvice"')
+      return ConsignorPresaleAdvice_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const ConsignorPresaleAdviceConnection_possibleTypes: string[] = ['ConsignorPresaleAdviceConnection']
+    export const isConsignorPresaleAdviceConnection = (obj?: { __typename?: any } | null): obj is ConsignorPresaleAdviceConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isConsignorPresaleAdviceConnection"')
+      return ConsignorPresaleAdviceConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const ConsignorPresaleAdviceEdge_possibleTypes: string[] = ['ConsignorPresaleAdviceEdge']
+    export const isConsignorPresaleAdviceEdge = (obj?: { __typename?: any } | null): obj is ConsignorPresaleAdviceEdge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isConsignorPresaleAdviceEdge"')
+      return ConsignorPresaleAdviceEdge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const Creator_possibleTypes: string[] = ['Creator']
+    export const isCreator = (obj?: { __typename?: any } | null): obj is Creator => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isCreator"')
+      return Creator_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const CreatorConnection_possibleTypes: string[] = ['CreatorConnection']
+    export const isCreatorConnection = (obj?: { __typename?: any } | null): obj is CreatorConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isCreatorConnection"')
+      return CreatorConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const CreatorEdge_possibleTypes: string[] = ['CreatorEdge']
+    export const isCreatorEdge = (obj?: { __typename?: any } | null): obj is CreatorEdge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isCreatorEdge"')
+      return CreatorEdge_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -4537,6 +6148,14 @@ export interface UserSaleSubscriptionGenqlSelection{
     export const isDirectSellsEdge = (obj?: { __typename?: any } | null): obj is DirectSellsEdge => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isDirectSellsEdge"')
       return DirectSellsEdge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const DocumentDownload_possibleTypes: string[] = ['DocumentDownload']
+    export const isDocumentDownload = (obj?: { __typename?: any } | null): obj is DocumentDownload => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isDocumentDownload"')
+      return DocumentDownload_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -4757,6 +6376,14 @@ export interface UserSaleSubscriptionGenqlSelection{
     
 
 
+    const HttpHeader_possibleTypes: string[] = ['HttpHeader']
+    export const isHttpHeader = (obj?: { __typename?: any } | null): obj is HttpHeader => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isHttpHeader"')
+      return HttpHeader_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const IdVerificationStatus_possibleTypes: string[] = ['IdVerificationStatus']
     export const isIdVerificationStatus = (obj?: { __typename?: any } | null): obj is IdVerificationStatus => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isIdVerificationStatus"')
@@ -4765,10 +6392,34 @@ export interface UserSaleSubscriptionGenqlSelection{
     
 
 
+    const IdentityVerificationSession_possibleTypes: string[] = ['StripeIdentityVerificationSession']
+    export const isIdentityVerificationSession = (obj?: { __typename?: any } | null): obj is IdentityVerificationSession => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isIdentityVerificationSession"')
+      return IdentityVerificationSession_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const Image_possibleTypes: string[] = ['Image']
     export const isImage = (obj?: { __typename?: any } | null): obj is Image => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isImage"')
       return Image_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const Invoice_possibleTypes: string[] = ['Invoice']
+    export const isInvoice = (obj?: { __typename?: any } | null): obj is Invoice => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isInvoice"')
+      return Invoice_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const InvoiceTaxBand_possibleTypes: string[] = ['InvoiceTaxBand']
+    export const isInvoiceTaxBand = (obj?: { __typename?: any } | null): obj is InvoiceTaxBand => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isInvoiceTaxBand"')
+      return InvoiceTaxBand_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -4981,7 +6632,7 @@ export interface UserSaleSubscriptionGenqlSelection{
     
 
 
-    const Node_possibleTypes: string[] = ['Department','DutchSale','FeeRule','Item','Metafield','Sale','UserBid']
+    const Node_possibleTypes: string[] = ['Department','DutchSale','FeeRule','Item','Metafield','Sale','StaffProfile','UserBid']
     export const isNode = (obj?: { __typename?: any } | null): obj is Node => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isNode"')
       return Node_possibleTypes.includes(obj.__typename)
@@ -5025,6 +6676,46 @@ export interface UserSaleSubscriptionGenqlSelection{
     export const isOnlineBidOrigin = (obj?: { __typename?: any } | null): obj is OnlineBidOrigin => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isOnlineBidOrigin"')
       return OnlineBidOrigin_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const Order_possibleTypes: string[] = ['Order']
+    export const isOrder = (obj?: { __typename?: any } | null): obj is Order => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isOrder"')
+      return Order_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const OrderConnection_possibleTypes: string[] = ['OrderConnection']
+    export const isOrderConnection = (obj?: { __typename?: any } | null): obj is OrderConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isOrderConnection"')
+      return OrderConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const OrderEdge_possibleTypes: string[] = ['OrderEdge']
+    export const isOrderEdge = (obj?: { __typename?: any } | null): obj is OrderEdge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isOrderEdge"')
+      return OrderEdge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const OrderLine_possibleTypes: string[] = ['OrderLine']
+    export const isOrderLine = (obj?: { __typename?: any } | null): obj is OrderLine => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isOrderLine"')
+      return OrderLine_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const OrderLineFee_possibleTypes: string[] = ['OrderLineFee']
+    export const isOrderLineFee = (obj?: { __typename?: any } | null): obj is OrderLineFee => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isOrderLineFee"')
+      return OrderLineFee_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -5117,6 +6808,14 @@ export interface UserSaleSubscriptionGenqlSelection{
     
 
 
+    const RequestConditionReportPayload_possibleTypes: string[] = ['RequestConditionReportPayload']
+    export const isRequestConditionReportPayload = (obj?: { __typename?: any } | null): obj is RequestConditionReportPayload => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isRequestConditionReportPayload"')
+      return RequestConditionReportPayload_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const Sale_possibleTypes: string[] = ['Sale']
     export const isSale = (obj?: { __typename?: any } | null): obj is Sale => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isSale"')
@@ -5153,6 +6852,14 @@ export interface UserSaleSubscriptionGenqlSelection{
     export const isSaleConnection = (obj?: { __typename?: any } | null): obj is SaleConnection => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isSaleConnection"')
       return SaleConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const SaleContact_possibleTypes: string[] = ['SaleContact']
+    export const isSaleContact = (obj?: { __typename?: any } | null): obj is SaleContact => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isSaleContact"')
+      return SaleContact_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -5253,10 +6960,26 @@ export interface UserSaleSubscriptionGenqlSelection{
     
 
 
+    const SignConsignmentContractPayload_possibleTypes: string[] = ['SignConsignmentContractPayload']
+    export const isSignConsignmentContractPayload = (obj?: { __typename?: any } | null): obj is SignConsignmentContractPayload => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isSignConsignmentContractPayload"')
+      return SignConsignmentContractPayload_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const Site_possibleTypes: string[] = ['Site']
     export const isSite = (obj?: { __typename?: any } | null): obj is Site => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isSite"')
       return Site_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const SiteBookingHours_possibleTypes: string[] = ['SiteBookingHours']
+    export const isSiteBookingHours = (obj?: { __typename?: any } | null): obj is SiteBookingHours => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isSiteBookingHours"')
+      return SiteBookingHours_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -5269,10 +6992,50 @@ export interface UserSaleSubscriptionGenqlSelection{
     
 
 
+    const StaffProfile_possibleTypes: string[] = ['StaffProfile']
+    export const isStaffProfile = (obj?: { __typename?: any } | null): obj is StaffProfile => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isStaffProfile"')
+      return StaffProfile_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const StaffProfileConnection_possibleTypes: string[] = ['StaffProfileConnection']
+    export const isStaffProfileConnection = (obj?: { __typename?: any } | null): obj is StaffProfileConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isStaffProfileConnection"')
+      return StaffProfileConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const StaffProfileEdge_possibleTypes: string[] = ['StaffProfileEdge']
+    export const isStaffProfileEdge = (obj?: { __typename?: any } | null): obj is StaffProfileEdge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isStaffProfileEdge"')
+      return StaffProfileEdge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const StripeIdentityVerificationSession_possibleTypes: string[] = ['StripeIdentityVerificationSession']
+    export const isStripeIdentityVerificationSession = (obj?: { __typename?: any } | null): obj is StripeIdentityVerificationSession => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isStripeIdentityVerificationSession"')
+      return StripeIdentityVerificationSession_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const StripePaymentProviderSession_possibleTypes: string[] = ['StripePaymentProviderSession']
     export const isStripePaymentProviderSession = (obj?: { __typename?: any } | null): obj is StripePaymentProviderSession => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isStripePaymentProviderSession"')
       return StripePaymentProviderSession_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const SubmitValuationRequestPayload_possibleTypes: string[] = ['SubmitValuationRequestPayload']
+    export const isSubmitValuationRequestPayload = (obj?: { __typename?: any } | null): obj is SubmitValuationRequestPayload => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isSubmitValuationRequestPayload"')
+      return SubmitValuationRequestPayload_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -5372,10 +7135,51 @@ export interface UserSaleSubscriptionGenqlSelection{
     }
     
 
+
+    const ValuationForm_possibleTypes: string[] = ['ValuationForm']
+    export const isValuationForm = (obj?: { __typename?: any } | null): obj is ValuationForm => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isValuationForm"')
+      return ValuationForm_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const ValuationItemType_possibleTypes: string[] = ['ValuationItemType']
+    export const isValuationItemType = (obj?: { __typename?: any } | null): obj is ValuationItemType => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isValuationItemType"')
+      return ValuationItemType_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const ValuationPhotoUploadUrl_possibleTypes: string[] = ['ValuationPhotoUploadUrl']
+    export const isValuationPhotoUploadUrl = (obj?: { __typename?: any } | null): obj is ValuationPhotoUploadUrl => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isValuationPhotoUploadUrl"')
+      return ValuationPhotoUploadUrl_possibleTypes.includes(obj.__typename)
+    }
+    
+
 export const enumAddressType = {
    BILLING: 'BILLING' as const,
    SHIPPING: 'SHIPPING' as const,
    OTHER: 'OTHER' as const
+}
+
+export const enumAppointmentDocumentType = {
+   INVOICE: 'INVOICE' as const,
+   STATEMENT: 'STATEMENT' as const
+}
+
+export const enumAppointmentStatus = {
+   REQUESTED: 'REQUESTED' as const,
+   CONFIRMED: 'CONFIRMED' as const,
+   CANCELLED: 'CANCELLED' as const,
+   COMPLETED: 'COMPLETED' as const
+}
+
+export const enumAppointmentType = {
+   COLLECTION: 'COLLECTION' as const,
+   VALUATION: 'VALUATION' as const
 }
 
 export const enumBidErrorCode = {
@@ -5677,6 +7481,18 @@ export const enumCountry = {
    ZM: 'ZM' as const
 }
 
+export const enumCreatorType = {
+   ARTIST: 'ARTIST' as const,
+   PHOTOGRAPHER: 'PHOTOGRAPHER' as const,
+   SCULPTOR: 'SCULPTOR' as const,
+   POTTER: 'POTTER' as const,
+   JEWELER: 'JEWELER' as const,
+   TEXTILE_ARTIST: 'TEXTILE_ARTIST' as const,
+   GLASS_ARTIST: 'GLASS_ARTIST' as const,
+   FURNITURE_DESIGNER: 'FURNITURE_DESIGNER' as const,
+   MANUFACTURER: 'MANUFACTURER' as const
+}
+
 export const enumDirectSellSource = {
    OFFER: 'OFFER' as const,
    BUY: 'BUY' as const
@@ -5711,6 +7527,15 @@ export const enumFeeRuleType = {
 export const enumIdType = {
    ID: 'ID' as const,
    URI: 'URI' as const
+}
+
+export const enumIdVerificationState = {
+   NONE: 'NONE' as const,
+   REQUESTED: 'REQUESTED' as const,
+   PROCESSING: 'PROCESSING' as const,
+   VERIFIED: 'VERIFIED' as const,
+   FAILED: 'FAILED' as const,
+   CANCELED: 'CANCELED' as const
 }
 
 export const enumItemOrderField = {
@@ -5798,6 +7623,12 @@ export const enumOfferStatus = {
    OFFER_STATUS_EXPIRED: 'OFFER_STATUS_EXPIRED' as const
 }
 
+export const enumOrderStatus = {
+   PENDING_PAYMENT: 'PENDING_PAYMENT' as const,
+   PAID: 'PAID' as const,
+   CANCELLED: 'CANCELLED' as const
+}
+
 export const enumPaddleType = {
    NOT_SET: 'NOT_SET' as const,
    IN_ROOM: 'IN_ROOM' as const,
@@ -5861,6 +7692,7 @@ export const enumSaleRegistrationType = {
 
 export const enumSaleStatus = {
    UNPUBLISHED: 'UNPUBLISHED' as const,
+   PREVIEW: 'PREVIEW' as const,
    PUBLISHED: 'PUBLISHED' as const,
    OPENED: 'OPENED' as const,
    CLOSED: 'CLOSED' as const,
@@ -6016,6 +7848,16 @@ export const enumSpecificationType = {
    FASHION: 'FASHION' as const,
    OTHER: 'OTHER' as const,
    CLIENT_PACKAGE: 'CLIENT_PACKAGE' as const
+}
+
+export const enumWeekday = {
+   MONDAY: 'MONDAY' as const,
+   TUESDAY: 'TUESDAY' as const,
+   WEDNESDAY: 'WEDNESDAY' as const,
+   THURSDAY: 'THURSDAY' as const,
+   FRIDAY: 'FRIDAY' as const,
+   SATURDAY: 'SATURDAY' as const,
+   SUNDAY: 'SUNDAY' as const
 }
 
 export const enumWeightUnit = {

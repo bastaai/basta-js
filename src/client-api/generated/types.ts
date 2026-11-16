@@ -1,1708 +1,2198 @@
 export default {
     "scalars": [
         1,
-        5,
         8,
-        13,
-        14,
-        17,
+        10,
+        11,
+        16,
         19,
-        22,
-        31,
-        37,
+        24,
+        25,
+        28,
+        33,
         41,
+        49,
         55,
-        57,
-        58,
-        68,
-        69,
-        72,
+        62,
+        66,
+        80,
         82,
-        85,
-        89,
-        92,
+        83,
         94,
-        97,
-        105,
-        107,
+        95,
+        96,
+        100,
         112,
-        113,
-        116,
-        117,
-        123,
-        125,
-        132,
-        133,
-        136,
-        139,
-        140,
-        148,
-        151,
-        152,
-        153,
-        154,
-        163,
+        115,
+        119,
+        122,
+        124,
+        127,
+        135,
+        137,
+        142,
+        143,
+        146,
+        147,
+        156,
+        159,
+        161,
+        168,
         169,
-        170,
-        171,
-        188
+        172,
+        175,
+        179,
+        188,
+        191,
+        192,
+        193,
+        194,
+        203,
+        212,
+        213,
+        217,
+        241,
+        242
     ],
     "types": {
         "Account": {
             "id": [
-                68
+                94
             ],
             "name": [
-                171
+                217
             ],
             "handle": [
-                171
+                217
             ],
             "description": [
-                171
+                217
             ],
             "imageUrl": [
-                171
+                217
             ],
             "links": [
-                93
+                123
             ],
             "bastaBidClient": [
-                17
+                28
+            ],
+            "conditionReportsRequireLogin": [
+                28
             ],
             "isUserSubscribed": [
-                17
+                28
             ],
             "paymentDetails": [
-                126
+                162
             ],
             "metafields": [
-                108,
+                138,
                 {
                     "input": [
-                        64
+                        89
                     ]
                 }
             ],
             "metafield": [
-                106,
+                136,
                 {
                     "input": [
-                        63,
+                        88,
                         "GetMetafieldInput!"
                     ]
                 }
             ],
             "departments": [
-                28,
+                52,
                 {
                     "first": [
-                        72
+                        100
                     ],
                     "after": [
-                        171
+                        217
+                    ]
+                }
+            ],
+            "staffProfiles": [
+                215,
+                {
+                    "first": [
+                        100
+                    ],
+                    "after": [
+                        217
+                    ],
+                    "departmentId": [
+                        94
                     ]
                 }
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "AddressType": {},
         "Aggregator": {
             "name": [
-                171
+                217
             ],
+            "type": [
+                19
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "Appointment": {
+            "id": [
+                94
+            ],
+            "type": [
+                11
+            ],
+            "status": [
+                10
+            ],
+            "site": [
+                209
+            ],
+            "preferredStart": [
+                217
+            ],
+            "preferredEnd": [
+                217
+            ],
+            "scheduledStart": [
+                217
+            ],
+            "scheduledEnd": [
+                217
+            ],
+            "note": [
+                217
+            ],
+            "cancelledByHouse": [
+                28
+            ],
+            "cancellationReason": [
+                217
+            ],
+            "documents": [
+                6
+            ],
+            "created": [
+                217
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "AppointmentBookingOptions": {
+            "enabled": [
+                28
+            ],
+            "sites": [
+                209
+            ],
+            "earliestStart": [
+                217
+            ],
+            "latestStart": [
+                217
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "AppointmentConnection": {
+            "edges": [
+                9
+            ],
+            "pageInfo": [
+                160
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "AppointmentDocument": {
             "type": [
                 8
             ],
+            "documentId": [
+                94
+            ],
+            "number": [
+                217
+            ],
+            "saleId": [
+                94
+            ],
+            "itemIds": [
+                94
+            ],
             "__typename": [
-                171
+                217
+            ]
+        },
+        "AppointmentDocumentInput": {
+            "type": [
+                8
+            ],
+            "documentId": [
+                94
+            ],
+            "itemIds": [
+                94
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "AppointmentDocumentType": {},
+        "AppointmentEdge": {
+            "cursor": [
+                217
+            ],
+            "node": [
+                3
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "AppointmentStatus": {},
+        "AppointmentType": {},
+        "BankDetails": {
+            "accountName": [
+                217
+            ],
+            "accountNumber": [
+                217
+            ],
+            "sortCode": [
+                217
+            ],
+            "country": [
+                217
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "BankDetailsInput": {
+            "accountName": [
+                217
+            ],
+            "accountNumber": [
+                217
+            ],
+            "sortCode": [
+                217
+            ],
+            "country": [
+                217
+            ],
+            "__typename": [
+                217
             ]
         },
         "BastaLiveStream": {
             "enabled": [
-                17
+                28
             ],
             "channelId": [
-                171
+                217
             ],
             "publicUrl": [
-                171
+                217
             ],
             "isLive": [
-                17
+                28
             ],
             "currentViewers": [
-                72
+                100
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "Bid": {
             "id": [
-                68
+                94
             ],
             "saleId": [
-                171
+                217
             ],
             "itemId": [
-                171
+                217
             ],
             "amount": [
-                72
+                100
             ],
             "maxAmount": [
-                72
+                100
             ],
             "date": [
-                171
+                217
             ],
             "bidStatus": [
-                13
+                24
             ],
             "bidderIdentifier": [
-                171
+                217
             ],
             "paddle": [
-                121
+                157
             ],
             "reactiveBid": [
-                17
+                28
             ],
             "bidOrigin": [
-                7
+                18
             ],
             "registration": [
-                186
+                236
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "BidErrorCode": {},
         "BidIncrementTable": {
             "rangeRules": [
-                138
+                174
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "BidOrigin": {
             "on_OnlineBidOrigin": [
-                120
+                150
             ],
             "on_PaddleBidOrigin": [
-                122
+                158
             ],
             "on_PhoneBidOrigin": [
-                135
+                171
             ],
             "on_Aggregator": [
                 2
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "BidOriginType": {},
         "BidPlaced": {
             "on_BidPlacedSuccess": [
-                11
+                22
             ],
             "on_MaxBidPlacedSuccess": [
-                103
+                133
             ],
             "on_BidPlacedError": [
-                10
+                21
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "BidPlacedError": {
             "error": [
-                171
+                217
             ],
             "errorCode": [
-                5
+                16
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "BidPlacedSuccess": {
             "id": [
-                171
+                217
             ],
             "amount": [
-                72
+                100
             ],
             "date": [
-                171
+                217
             ],
             "bidStatus": [
-                13
+                24
             ],
             "registration": [
-                186
+                236
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "BidRestrictions": {
             "acceptedRegistrationRequired": [
-                17
+                28
             ],
             "phoneRegistrationOpen": [
-                17
+                28
+            ],
+            "phoneRegistrationClosesAt": [
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "BidStatus": {},
         "BidType": {},
         "BidderVerificationInput": {
             "successUrl": [
-                171
+                217
             ],
             "cancelUrl": [
-                171
+                217
             ],
             "renderMode": [
-                139
+                175
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "BidderVerificationLink": {
             "url": [
-                171
+                217
             ],
             "clientSecret": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "Boolean": {},
-        "Card": {
+        "BuyerPremium": {
             "id": [
-                171
+                94
             ],
-            "brand": [
-                171
+            "name": [
+                217
             ],
-            "expirationMonth": [
-                72
+            "currency": [
+                217
             ],
-            "expirationYear": [
-                72
+            "calculationType": [
+                80
             ],
-            "last4": [
-                171
+            "minimum": [
+                100
+            ],
+            "maximum": [
+                100
+            ],
+            "bands": [
+                30
             ],
             "__typename": [
-                171
+                217
+            ]
+        },
+        "BuyerPremiumBand": {
+            "lowerLimit": [
+                100
+            ],
+            "upperLteLimit": [
+                100
+            ],
+            "type": [
+                82
+            ],
+            "value": [
+                100
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "CancelAppointmentInput": {
+            "appointmentId": [
+                94
+            ],
+            "reason": [
+                217
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "Card": {
+            "id": [
+                217
+            ],
+            "brand": [
+                217
+            ],
+            "expirationMonth": [
+                100
+            ],
+            "expirationYear": [
+                100
+            ],
+            "last4": [
+                217
+            ],
+            "__typename": [
+                217
             ]
         },
         "ClosingMethod": {},
-        "Consignor": {
-            "userId": [
-                171
+        "ConditionReport": {
+            "text": [
+                122
             ],
-            "isMain": [
-                17
-            ],
-            "username": [
-                171
+            "images": [
+                99
             ],
             "__typename": [
-                171
+                217
+            ]
+        },
+        "ConsignmentContractSigning": {
+            "consignorName": [
+                217
+            ],
+            "houseName": [
+                217
+            ],
+            "houseLogoUrl": [
+                217
+            ],
+            "consignmentReference": [
+                217
+            ],
+            "revision": [
+                100
+            ],
+            "documentUrl": [
+                217
+            ],
+            "documentUrlExpiresAt": [
+                217
+            ],
+            "expiresAt": [
+                217
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "Consignor": {
+            "userId": [
+                217
+            ],
+            "isMain": [
+                28
+            ],
+            "username": [
+                217
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "ConsignorPresaleAdvice": {
+            "id": [
+                94
+            ],
+            "saleId": [
+                217
+            ],
+            "saleTitle": [
+                217
+            ],
+            "saleDate": [
+                217
+            ],
+            "sentAt": [
+                217
+            ],
+            "download": [
+                58
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "ConsignorPresaleAdviceConnection": {
+            "edges": [
+                39
+            ],
+            "pageInfo": [
+                160
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "ConsignorPresaleAdviceEdge": {
+            "cursor": [
+                217
+            ],
+            "node": [
+                37
+            ],
+            "__typename": [
+                217
             ]
         },
         "CounterOfferInput": {
             "offerId": [
-                68
+                94
             ],
             "amount": [
-                72
+                100
             ],
             "currency": [
-                171
+                217
             ],
             "message": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "Country": {},
         "CreatePhoneInput": {
             "phoneNumber": [
-                171
+                217
             ],
             "phoneType": [
-                136
+                172
             ],
             "isPrimary": [
-                17
+                28
             ],
             "label": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "CreateSaleItemRegistrationInput": {
             "saleId": [
-                171
+                217
             ],
             "itemId": [
-                171
+                217
             ],
             "type": [
-                152
+                192
             ],
             "identifier": [
-                171
+                217
             ],
             "preferredPhoneNumberId": [
-                68
+                94
             ],
             "alternativePhoneNumberIds": [
-                68
+                94
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "CreateSaleRegistrationInput": {
             "saleId": [
-                171
+                217
             ],
             "type": [
-                152
+                192
             ],
             "identifier": [
-                171
+                217
             ],
             "preferredPhoneNumberId": [
-                68
+                94
             ],
             "alternativePhoneNumberIds": [
-                68
+                94
             ],
             "__typename": [
-                171
+                217
             ]
         },
-        "CurrentItem": {
-            "item": [
-                73
+        "CreateValuationPhotoUploadUrlInput": {
+            "accountId": [
+                94
             ],
-            "cursor": [
-                171
+            "contentType": [
+                217
+            ],
+            "filename": [
+                217
+            ],
+            "size": [
+                100
             ],
             "__typename": [
-                171
+                217
             ]
         },
-        "Department": {
+        "Creator": {
             "id": [
-                68
+                94
             ],
             "name": [
-                171
+                217
             ],
             "slug": [
-                171
+                217
             ],
-            "__typename": [
-                171
-            ]
-        },
-        "DepartmentConnection": {
-            "edges": [
-                29
+            "parentId": [
+                94
             ],
-            "pageInfo": [
-                124
+            "parent": [
+                46
             ],
-            "__typename": [
-                171
-            ]
-        },
-        "DepartmentEdge": {
-            "cursor": [
-                171
+            "children": [
+                46
             ],
-            "node": [
-                27
-            ],
-            "__typename": [
-                171
-            ]
-        },
-        "DirectSell": {
-            "amount": [
-                72
-            ],
-            "currency": [
-                171
-            ],
-            "source": [
-                31
-            ],
-            "timestamp": [
-                171
-            ],
-            "__typename": [
-                171
-            ]
-        },
-        "DirectSellSource": {},
-        "DirectSellsConnection": {
-            "edges": [
-                33
-            ],
-            "pageInfo": [
-                124
-            ],
-            "__typename": [
-                171
-            ]
-        },
-        "DirectSellsEdge": {
-            "cursor": [
-                171
-            ],
-            "node": [
-                73
-            ],
-            "__typename": [
-                171
-            ]
-        },
-        "DutchBid": {
-            "id": [
-                68
-            ],
-            "amount": [
-                72
-            ],
-            "placedAt": [
-                171
-            ],
-            "mine": [
-                17
-            ],
-            "__typename": [
-                171
-            ]
-        },
-        "DutchBidConnection": {
-            "edges": [
-                36
-            ],
-            "pageInfo": [
-                124
-            ],
-            "__typename": [
-                171
-            ]
-        },
-        "DutchBidEdge": {
-            "cursor": [
-                171
-            ],
-            "node": [
-                34
-            ],
-            "__typename": [
-                171
-            ]
-        },
-        "DutchBidErrorCode": {},
-        "DutchBidPlaced": {
-            "on_DutchBidPlacedSuccess": [
-                40
-            ],
-            "on_DutchBidPlacedError": [
-                39
-            ],
-            "__typename": [
-                171
-            ]
-        },
-        "DutchBidPlacedError": {
-            "errorCode": [
-                37
-            ],
-            "__typename": [
-                171
-            ]
-        },
-        "DutchBidPlacedSuccess": {
-            "id": [
-                171
-            ],
-            "amount": [
-                72
-            ],
-            "quantityRequested": [
-                72
-            ],
-            "quantityAllocated": [
-                72
-            ],
-            "placedAt": [
-                171
-            ],
-            "__typename": [
-                171
-            ]
-        },
-        "DutchItemStatus": {},
-        "DutchNextDrop": {
-            "price": [
-                72
-            ],
-            "at": [
-                171
-            ],
-            "__typename": [
-                171
-            ]
-        },
-        "DutchPrice": {
-            "current": [
-                72
-            ],
-            "nextDrop": [
-                42
-            ],
-            "__typename": [
-                171
-            ]
-        },
-        "DutchPriceDrop": {
-            "at": [
-                171
-            ],
-            "price": [
-                72
-            ],
-            "__typename": [
-                171
-            ]
-        },
-        "DutchSale": {
-            "id": [
-                68
-            ],
-            "accountId": [
-                171
-            ],
-            "title": [
-                171
-            ],
-            "description": [
-                171
-            ],
-            "currency": [
-                171
-            ],
-            "status": [
-                153
-            ],
-            "dates": [
-                146
-            ],
-            "saleFormat": [
-                148
-            ],
-            "images": [
-                71
-            ],
-            "items": [
-                47,
-                {
-                    "first": [
-                        72
-                    ],
-                    "after": [
-                        171
-                    ]
-                }
-            ],
-            "__typename": [
-                171
-            ]
-        },
-        "DutchSaleItem": {
-            "id": [
-                68
-            ],
-            "saleId": [
-                171
-            ],
-            "status": [
-                41
-            ],
-            "availableUnits": [
-                72
-            ],
-            "unitsRemaining": [
-                72
-            ],
-            "totalBids": [
-                72
-            ],
-            "openTime": [
-                171
-            ],
-            "endTime": [
-                171
-            ],
-            "price": [
-                43
-            ],
-            "schedule": [
+            "type": [
                 49
             ],
-            "title": [
-                171
+            "path": [
+                217
             ],
-            "subTitle": [
-                171
+            "yearFrom": [
+                217
             ],
-            "description": [
-                171
+            "yearTo": [
+                217
             ],
-            "images": [
-                71
+            "nationality": [
+                217
             ],
-            "bids": [
-                35,
-                {
-                    "first": [
-                        72
-                    ],
-                    "after": [
-                        171
-                    ]
-                }
+            "biography": [
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
-        "DutchSaleItemConnection": {
+        "CreatorConnection": {
             "edges": [
                 48
             ],
             "pageInfo": [
-                124
+                160
             ],
             "__typename": [
-                171
+                217
             ]
         },
-        "DutchSaleItemEdge": {
+        "CreatorEdge": {
             "cursor": [
-                171
+                217
             ],
             "node": [
                 46
             ],
             "__typename": [
-                171
+                217
+            ]
+        },
+        "CreatorType": {},
+        "CurrentItem": {
+            "item": [
+                103
+            ],
+            "cursor": [
+                217
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "Department": {
+            "id": [
+                94
+            ],
+            "name": [
+                217
+            ],
+            "slug": [
+                217
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "DepartmentConnection": {
+            "edges": [
+                53
+            ],
+            "pageInfo": [
+                160
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "DepartmentEdge": {
+            "cursor": [
+                217
+            ],
+            "node": [
+                51
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "DirectSell": {
+            "amount": [
+                100
+            ],
+            "currency": [
+                217
+            ],
+            "source": [
+                55
+            ],
+            "timestamp": [
+                217
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "DirectSellSource": {},
+        "DirectSellsConnection": {
+            "edges": [
+                57
+            ],
+            "pageInfo": [
+                160
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "DirectSellsEdge": {
+            "cursor": [
+                217
+            ],
+            "node": [
+                103
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "DocumentDownload": {
+            "url": [
+                217
+            ],
+            "expiresAt": [
+                217
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "DutchBid": {
+            "id": [
+                94
+            ],
+            "amount": [
+                100
+            ],
+            "placedAt": [
+                217
+            ],
+            "mine": [
+                28
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "DutchBidConnection": {
+            "edges": [
+                61
+            ],
+            "pageInfo": [
+                160
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "DutchBidEdge": {
+            "cursor": [
+                217
+            ],
+            "node": [
+                59
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "DutchBidErrorCode": {},
+        "DutchBidPlaced": {
+            "on_DutchBidPlacedSuccess": [
+                65
+            ],
+            "on_DutchBidPlacedError": [
+                64
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "DutchBidPlacedError": {
+            "errorCode": [
+                62
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "DutchBidPlacedSuccess": {
+            "id": [
+                217
+            ],
+            "amount": [
+                100
+            ],
+            "quantityRequested": [
+                100
+            ],
+            "quantityAllocated": [
+                100
+            ],
+            "placedAt": [
+                217
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "DutchItemStatus": {},
+        "DutchNextDrop": {
+            "price": [
+                100
+            ],
+            "at": [
+                217
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "DutchPrice": {
+            "current": [
+                100
+            ],
+            "nextDrop": [
+                67
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "DutchPriceDrop": {
+            "at": [
+                217
+            ],
+            "price": [
+                100
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "DutchSale": {
+            "id": [
+                94
+            ],
+            "accountId": [
+                217
+            ],
+            "title": [
+                217
+            ],
+            "description": [
+                217
+            ],
+            "currency": [
+                217
+            ],
+            "status": [
+                193
+            ],
+            "dates": [
+                186
+            ],
+            "saleFormat": [
+                188
+            ],
+            "images": [
+                99
+            ],
+            "items": [
+                72,
+                {
+                    "first": [
+                        100
+                    ],
+                    "after": [
+                        217
+                    ]
+                }
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "DutchSaleItem": {
+            "id": [
+                94
+            ],
+            "saleId": [
+                217
+            ],
+            "status": [
+                66
+            ],
+            "availableUnits": [
+                100
+            ],
+            "unitsRemaining": [
+                100
+            ],
+            "totalBids": [
+                100
+            ],
+            "openTime": [
+                217
+            ],
+            "endTime": [
+                217
+            ],
+            "price": [
+                68
+            ],
+            "schedule": [
+                74
+            ],
+            "title": [
+                217
+            ],
+            "subTitle": [
+                217
+            ],
+            "conditionReport": [
+                34
+            ],
+            "description": [
+                217
+            ],
+            "images": [
+                99
+            ],
+            "bids": [
+                60,
+                {
+                    "first": [
+                        100
+                    ],
+                    "after": [
+                        217
+                    ]
+                }
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "DutchSaleItemConnection": {
+            "edges": [
+                73
+            ],
+            "pageInfo": [
+                160
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "DutchSaleItemEdge": {
+            "cursor": [
+                217
+            ],
+            "node": [
+                71
+            ],
+            "__typename": [
+                217
             ]
         },
         "DutchSchedule": {
             "startingAmount": [
-                72
+                100
             ],
             "drops": [
-                44
+                69
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "Estimate": {
             "low": [
-                72
+                100
             ],
             "high": [
-                72
+                100
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "ExternalLiveStream": {
             "url": [
-                171
+                217
             ],
             "type": [
-                97
+                127
             ],
             "created": [
-                171
+                217
             ],
             "updated": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "FacetCount": {
             "fieldName": [
-                171
+                217
             ],
             "counts": [
-                54
+                79
             ],
             "stats": [
-                53
+                78
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "FacetStats": {
             "avg": [
-                58
+                83
             ],
             "max": [
-                58
+                83
             ],
             "min": [
-                58
+                83
             ],
             "sum": [
-                58
+                83
             ],
             "totalValues": [
-                72
+                100
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "FacetValue": {
             "value": [
-                171
+                217
             ],
             "count": [
-                72
+                100
             ],
             "highlighted": [
-                171
+                217
             ],
             "label": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "FeeCalculationType": {},
         "FeeRule": {
             "id": [
-                68
+                94
             ],
             "name": [
-                171
+                217
             ],
             "type": [
-                57
+                82
             ],
             "value": [
-                72
+                100
             ],
             "upperLteLimit": [
-                72
+                100
             ],
             "lowerLimit": [
-                72
+                100
             ],
             "calculationType": [
-                55
+                80
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "FeeRuleType": {},
         "Float": {},
         "FollowConsignorResult": {
             "consignorId": [
-                68
+                94
             ],
             "following": [
-                17
+                28
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "FollowedConsignor": {
             "consignorId": [
-                68
+                94
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "FollowedConsignorsConnection": {
             "edges": [
-                62
+                87
             ],
             "pageInfo": [
-                124
+                160
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "FollowedConsignorsEdge": {
             "cursor": [
-                171
+                217
             ],
             "node": [
-                60
+                85
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "GetMetafieldInput": {
             "key": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "GetMetafieldsInput": {
             "keys": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "GetUserBidsInput": {
             "userId": [
-                171
+                217
             ],
             "first": [
-                72
+                100
             ],
             "after": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "HighlightedItemConnection": {
             "edges": [
-                67
+                92
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "HighlightedItemEdge": {
             "node": [
-                73
+                103
             ],
             "position": [
-                72
+                100
             ],
             "__typename": [
-                171
+                217
+            ]
+        },
+        "HttpHeader": {
+            "key": [
+                217
+            ],
+            "value": [
+                217
+            ],
+            "__typename": [
+                217
             ]
         },
         "ID": {},
         "IdType": {},
+        "IdVerificationState": {},
         "IdVerificationStatus": {
             "verified": [
-                17
+                28
             ],
             "modifiedAt": [
-                171
+                217
+            ],
+            "status": [
+                96
+            ],
+            "failureReason": [
+                217
             ],
             "__typename": [
-                171
+                217
+            ]
+        },
+        "IdentityVerificationSession": {
+            "on_StripeIdentityVerificationSession": [
+                218
+            ],
+            "__typename": [
+                217
             ]
         },
         "Image": {
             "id": [
-                171
+                217
             ],
             "url": [
-                171
+                217
             ],
             "order": [
-                72
+                100
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "Int": {},
+        "Invoice": {
+            "revision": [
+                100
+            ],
+            "issuedAt": [
+                217
+            ],
+            "dueDate": [
+                217
+            ],
+            "download": [
+                58
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "InvoiceTaxBand": {
+            "name": [
+                217
+            ],
+            "rateBps": [
+                100
+            ],
+            "basisTotal": [
+                100
+            ],
+            "taxTotal": [
+                100
+            ],
+            "__typename": [
+                217
+            ]
+        },
         "Item": {
             "id": [
-                68
+                94
             ],
             "cursor": [
-                171
+                217
             ],
             "saleId": [
-                171
+                217
             ],
             "accountId": [
-                171
+                217
             ],
             "title": [
-                171
+                217
             ],
             "subTitle": [
-                171
+                217
+            ],
+            "conditionReport": [
+                34
             ],
             "description": [
-                171
+                217
             ],
             "currency": [
-                171
+                217
             ],
             "estimates": [
-                50
+                75
             ],
             "currentBid": [
-                72
+                100
             ],
             "bidStatus": [
-                13
+                24
             ],
             "totalBids": [
-                72
+                100
             ],
             "bids": [
-                4,
+                15,
                 {
                     "collapseSequentialUserBids": [
-                        17
+                        28
                     ]
                 }
             ],
             "userBids": [
-                4
+                15
             ],
             "reserveMet": [
-                17
+                28
             ],
             "reserveStatus": [
-                140
+                179
             ],
             "nextAsks": [
-                72,
+                100,
                 {
                     "iterations": [
-                        72
+                        100
                     ]
                 }
             ],
             "incrementTable": [
-                6
-            ],
-            "itemDates": [
-                75
-            ],
-            "dates": [
-                75
-            ],
-            "status": [
-                89
-            ],
-            "itemResult": [
-                85
-            ],
-            "startingBid": [
-                72
-            ],
-            "images": [
-                71
-            ],
-            "slug": [
-                171
-            ],
-            "slugFullPath": [
-                171
-            ],
-            "itemNumber": [
-                72
-            ],
-            "displayNumber": [
-                171
-            ],
-            "highlight": [
-                77
-            ],
-            "notifications": [
-                80
-            ],
-            "isUserSubscribed": [
                 17
             ],
+            "itemDates": [
+                105
+            ],
+            "dates": [
+                105
+            ],
+            "status": [
+                119
+            ],
+            "itemResult": [
+                115
+            ],
+            "startingBid": [
+                100
+            ],
+            "images": [
+                99
+            ],
+            "slug": [
+                217
+            ],
+            "slugFullPath": [
+                217
+            ],
+            "itemNumber": [
+                100
+            ],
+            "displayNumber": [
+                217
+            ],
+            "highlight": [
+                107
+            ],
+            "notifications": [
+                110
+            ],
+            "isUserSubscribed": [
+                28
+            ],
+            "subscriberCount": [
+                100
+            ],
             "allowedBidTypes": [
-                14
+                25
             ],
             "specifications": [
-                88
+                118
             ],
             "specificationsV2": [
-                88
+                118
             ],
             "packaging": [
-                84
+                114
             ],
             "prevItem": [
-                73,
+                103,
                 {
                     "sortBy": [
-                        82
+                        112
                     ]
                 }
             ],
             "nextItem": [
-                73,
+                103,
                 {
                     "sortBy": [
-                        82
+                        112
                     ]
                 }
             ],
             "externalId": [
-                171
+                217
             ],
             "location": [
-                171
+                217
             ],
             "closingTimeCountdown": [
-                72
+                100
             ],
             "metafields": [
-                108,
+                138,
                 {
                     "input": [
-                        64
+                        89
                     ]
                 }
             ],
             "metafield": [
-                106,
+                136,
                 {
                     "input": [
-                        63,
+                        88,
                         "GetMetafieldInput!"
                     ]
                 }
             ],
             "userItemRegistrations": [
-                181
+                231
             ],
             "feeRules": [
-                56
+                81
+            ],
+            "buyerPremiums": [
+                29
             ],
             "hidden": [
-                17
+                28
             ],
             "schema": [
-                86
+                116
             ],
             "tags": [
-                174
+                224
             ],
             "offers": [
-                118,
+                148,
                 {
                     "first": [
-                        72
+                        100
                     ],
                     "after": [
-                        171
+                        217
                     ],
                     "status": [
-                        117
+                        147
                     ]
                 }
             ],
             "offerEnabled": [
-                17
+                28
             ],
             "buyNowEnabled": [
-                17
+                28
             ],
             "buyNowPrice": [
-                72
+                100
             ],
             "directSell": [
-                30
+                54
             ],
             "consignors": [
-                20
+                36
             ],
             "site": [
-                167
+                209
             ],
             "siteLocation": [
-                168
+                211
             ],
             "sectionMarkers": [
-                164
+                204
+            ],
+            "citesLicenceNumber": [
+                217
+            ],
+            "creators": [
+                46
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "ItemChanged": {
             "on_Item": [
-                73
+                103
             ],
             "on_ServerTime": [
-                165
+                205
             ],
             "on_Node": [
-                111
+                141
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "ItemDates": {
             "openDate": [
-                171
+                217
             ],
             "closingStart": [
-                171
+                217
             ],
             "closingEnd": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "ItemFairWarningNotification": {
             "id": [
-                171
+                217
             ],
             "date": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "ItemHighlight": {
             "enabled": [
-                17
+                28
             ],
             "position": [
-                72
+                100
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "ItemIdsFilter": {
             "itemIds": [
-                68
+                94
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "ItemMessageNotification": {
             "id": [
-                171
+                217
             ],
             "message": [
-                171
+                217
             ],
             "date": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "ItemNotification": {
             "on_ItemMessageNotification": [
-                79
+                109
             ],
             "on_ItemFairWarningNotification": [
-                76
+                106
             ],
             "on_ItemOfferPlacedNotification": [
-                81
+                111
             ],
             "on_ItemSoldNotification": [
-                87
+                117
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "ItemOfferPlacedNotification": {
             "id": [
-                171
+                217
             ],
             "amount": [
-                72
+                100
             ],
             "currency": [
-                171
+                217
             ],
             "referenceId": [
-                171
+                217
             ],
             "date": [
-                171
+                217
             ],
             "buyerIdentifier": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "ItemOrderField": {},
         "ItemOrderInput": {
             "field": [
-                82
+                112
             ],
             "direction": [
-                125
+                161
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "ItemPackaging": {
             "id": [
-                171
+                217
             ],
             "quantity": [
-                72
+                100
             ],
             "boxedHeight": [
-                58
+                83
             ],
             "boxedLength": [
-                58
+                83
             ],
             "boxedDepth": [
-                58
+                83
             ],
             "boxedMeasurementUnit": [
-                105
+                135
             ],
             "boxedWeight": [
-                58
+                83
             ],
             "boxedWeightUnit": [
-                188
+                242
             ],
             "created": [
-                171
+                217
             ],
             "modified": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "ItemResult": {},
         "ItemSchema": {
             "id": [
-                68
+                94
             ],
             "definition": [
-                92
+                122
             ],
             "data": [
-                92
+                122
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "ItemSoldNotification": {
             "id": [
-                171
+                217
             ],
             "amount": [
-                72
+                100
             ],
             "currency": [
-                171
+                217
             ],
             "source": [
-                31
+                55
             ],
             "referenceId": [
-                171
+                217
             ],
             "date": [
-                171
+                217
             ],
             "buyerIdentifier": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "ItemSpecifications": {
             "id": [
-                171
+                217
             ],
             "type": [
-                170
+                213
             ],
             "subType": [
-                169
+                212
             ],
             "height": [
-                58
+                83
             ],
             "length": [
-                58
+                83
             ],
             "depth": [
-                58
+                83
             ],
             "diameter": [
-                58
+                83
             ],
             "measurementUnit": [
-                105
+                135
             ],
             "weight": [
-                58
+                83
             ],
             "weightUnit": [
-                188
+                242
             ],
             "quantity": [
-                72
+                100
             ],
             "created": [
-                171
+                217
             ],
             "modified": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "ItemStatus": {},
         "ItemsConnection": {
             "edges": [
-                91
+                121
             ],
             "pageInfo": [
-                124
+                160
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "ItemsEdge": {
             "cursor": [
-                171
+                217
             ],
             "node": [
-                73
+                103
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "JSON": {},
         "Link": {
             "type": [
-                94
+                124
             ],
             "url": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "LinkType": {},
         "LiveItem": {
             "item": [
-                73
+                103
             ],
             "cursor": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "LiveStream": {
             "url": [
-                171
+                217
             ],
             "type": [
-                97
+                127
             ],
             "created": [
-                171
+                217
             ],
             "updated": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "LiveStreamType": {},
         "LiveVideoStream": {
             "on_ExternalLiveStream": [
-                51
+                76
             ],
             "on_BastaLiveStream": [
-                3
+                14
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "MailingAddress": {
             "id": [
-                171
+                217
             ],
             "name": [
-                171
+                217
             ],
             "company": [
-                171
+                217
             ],
             "phone": [
-                171
+                217
             ],
             "line1": [
-                171
+                217
             ],
             "line2": [
-                171
+                217
             ],
             "city": [
-                171
+                217
             ],
             "state": [
-                171
+                217
             ],
             "postalCode": [
-                171
+                217
             ],
             "country": [
-                22
+                41
             ],
             "isPrimary": [
-                17
+                28
             ],
             "addressType": [
                 1
             ],
             "label": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "MailingAddressInput": {
             "id": [
-                171
+                217
             ],
             "name": [
-                171
+                217
             ],
             "company": [
-                171
+                217
             ],
             "phone": [
-                171
+                217
             ],
             "line1": [
-                171
+                217
             ],
             "line2": [
-                171
+                217
             ],
             "city": [
-                171
+                217
             ],
             "state": [
-                171
+                217
             ],
             "postalCode": [
-                171
+                217
             ],
             "country": [
-                22
+                41
             ],
             "isPrimary": [
-                17
+                28
             ],
             "label": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "MakeOfferInput": {
             "itemId": [
-                171
+                217
             ],
             "amount": [
-                72
+                100
             ],
             "currency": [
-                171
+                217
             ],
             "message": [
-                171
+                217
             ],
             "saleId": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "MaxBidPlaced": {
             "on_MaxBidPlacedSuccess": [
-                103
+                133
             ],
             "on_BidPlacedError": [
-                10
+                21
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "MaxBidPlacedSuccess": {
             "id": [
-                171
+                217
             ],
             "amount": [
-                72
+                100
             ],
             "maxAmount": [
-                72
+                100
             ],
             "bidStatus": [
-                13
+                24
             ],
             "date": [
-                171
+                217
             ],
             "registration": [
-                186
+                236
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "Me": {
             "userId": [
-                171
+                217
             ],
             "firstName": [
-                171
+                217
             ],
             "lastName": [
-                171
+                217
             ],
             "email": [
-                171
+                217
             ],
             "username": [
-                171
+                217
             ],
             "emailVerified": [
-                17
+                28
             ],
             "bids": [
-                179,
+                229,
                 {
                     "first": [
-                        72,
+                        100,
                         "Int!"
                     ],
                     "after": [
-                        171
+                        217
                     ]
                 }
             ],
             "offers": [
-                118,
+                148,
                 {
                     "first": [
-                        72
+                        100
                     ],
                     "after": [
-                        171
+                        217
                     ],
                     "status": [
-                        117
+                        147
                     ]
                 }
             ],
             "directSells": [
-                32,
+                56,
                 {
                     "first": [
-                        72
+                        100
                     ],
                     "after": [
-                        171
+                        217
                     ]
                 }
             ],
             "followedConsignors": [
-                61,
+                86,
                 {
                     "first": [
-                        72
+                        100
                     ],
                     "after": [
-                        171
+                        217
                     ]
                 }
             ],
@@ -1710,632 +2200,865 @@ export default {
                 0
             ],
             "verifiedAsBidder": [
-                17
+                28
             ],
             "saleSubscriptions": [
-                145,
+                184,
                 {
                     "first": [
-                        72
+                        100
                     ],
                     "after": [
-                        171
+                        217
                     ]
                 }
             ],
             "saleItemSubscriptions": [
-                90,
+                120,
                 {
                     "first": [
-                        72
+                        100
                     ],
                     "after": [
-                        171
+                        217
                     ]
                 }
             ],
             "notificationSettings": [
-                184
+                234
             ],
             "latestItemBids": [
-                90,
+                120,
                 {
                     "first": [
-                        72
+                        100
                     ]
                 }
             ],
             "billingAddress": [
-                99
+                129
             ],
             "shippingAddress": [
-                99
+                129
             ],
             "addresses": [
-                99
+                129
             ],
             "phoneAddresses": [
-                134
+                170
             ],
             "defaultPaymentMethod": [
-                127
+                163
             ],
             "blocked": [
-                17
+                28
             ],
             "idVerificationStatus": [
-                70
+                97
+            ],
+            "bankDetails": [
+                12
+            ],
+            "presaleAdvices": [
+                38,
+                {
+                    "first": [
+                        100
+                    ],
+                    "after": [
+                        217
+                    ]
+                }
+            ],
+            "appointments": [
+                5,
+                {
+                    "first": [
+                        100
+                    ],
+                    "after": [
+                        217
+                    ],
+                    "upcomingOnly": [
+                        28
+                    ]
+                }
+            ],
+            "appointmentBookingOptions": [
+                4
+            ],
+            "orders": [
+                152,
+                {
+                    "first": [
+                        100
+                    ],
+                    "after": [
+                        217
+                    ]
+                }
+            ],
+            "order": [
+                151,
+                {
+                    "id": [
+                        94,
+                        "ID!"
+                    ]
+                }
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "MeasurementUnit": {},
         "Metafield": {
             "id": [
-                68
+                94
             ],
             "key": [
-                171
+                217
             ],
             "value": [
-                171
+                217
             ],
             "valueType": [
-                107
+                137
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "MetafieldValueType": {},
         "MetafieldsConnection": {
             "edges": [
-                109
+                139
             ],
             "nodes": [
-                106
+                136
             ],
             "pageInfo": [
-                124
+                160
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "MetafieldsEdge": {
             "cursor": [
-                171
+                217
             ],
             "node": [
-                106
+                136
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "Mutation": {
             "bidOnItem": [
-                9,
+                20,
                 {
                     "saleId": [
-                        171,
+                        217,
                         "String!"
                     ],
                     "itemId": [
-                        171,
+                        217,
                         "String!"
                     ],
                     "amount": [
-                        72,
+                        100,
                         "Int!"
                     ],
                     "type": [
-                        14,
+                        25,
                         "BidType!"
                     ]
                 }
             ],
             "setMyNotificationPreferences": [
-                182,
+                232,
                 {
                     "preferences": [
-                        183,
+                        233,
                         "[UserNotificationPreferenceInput!]!"
                     ]
                 }
             ],
             "placeDutchBid": [
-                38,
+                63,
                 {
                     "saleId": [
-                        171,
+                        217,
                         "String!"
                     ],
                     "itemId": [
-                        171,
+                        217,
                         "String!"
                     ],
                     "quantity": [
-                        72,
+                        100,
                         "Int!"
                     ],
                     "amount": [
-                        72,
+                        100,
                         "Int!"
                     ]
                 }
             ],
             "maxBidOnItem": [
-                102,
+                132,
                 {
                     "saleId": [
-                        171,
+                        217,
                         "String!"
                     ],
                     "itemId": [
-                        171,
+                        217,
                         "String!"
                     ],
                     "maxAmount": [
-                        72,
+                        100,
                         "Int!"
                     ]
                 }
             ],
             "createBidderVerification": [
-                16,
+                27,
                 {
                     "input": [
-                        15
+                        26
                     ]
                 }
             ],
+            "createIdentityVerificationSession": [
+                98
+            ],
             "acceptBidderTerms": [
-                171
+                217
             ],
             "subscribeToAccount": [
-                177,
+                227,
                 {
                     "accountId": [
-                        171,
+                        217,
                         "String!"
                     ]
                 }
             ],
             "unsubscribeFromAccount": [
-                68,
+                94,
                 {
                     "accountId": [
-                        171,
+                        217,
                         "String!"
                     ]
                 }
             ],
             "followConsignor": [
-                59,
+                84,
                 {
                     "consignorId": [
-                        68,
+                        94,
                         "ID!"
                     ]
                 }
             ],
             "unfollowConsignor": [
-                59,
+                84,
                 {
                     "consignorId": [
-                        68,
+                        94,
                         "ID!"
                     ]
                 }
             ],
             "subsribeToItem": [
-                185,
+                235,
                 {
                     "saleId": [
-                        171,
+                        217,
                         "String!"
                     ],
                     "itemId": [
-                        171,
+                        217,
                         "String!"
                     ]
                 }
             ],
             "unsubscribeFromItem": [
-                68,
+                94,
                 {
                     "saleId": [
-                        171,
+                        217,
                         "String!"
                     ],
                     "itemId": [
-                        171,
+                        217,
                         "String!"
                     ]
                 }
             ],
             "subscribeToSale": [
-                187,
+                237,
                 {
                     "saleId": [
-                        171,
+                        217,
                         "String!"
                     ]
                 }
             ],
             "unsubscribeFromSale": [
-                68,
+                94,
                 {
                     "saleId": [
-                        171,
+                        217,
                         "String!"
                     ]
                 }
             ],
             "createPaymentProviderSession": [
-                128,
+                164,
                 {
                     "input": [
-                        129,
+                        165,
                         "PaymentProviderSessionInput!"
                     ]
                 }
             ],
             "updateUser": [
-                104,
+                134,
                 {
                     "input": [
-                        176,
+                        226,
                         "UpdateUserInput!"
                     ]
                 }
             ],
-            "createPhone": [
-                134,
+            "updateMyBankDetails": [
+                12,
                 {
                     "input": [
-                        23,
+                        13,
+                        "BankDetailsInput!"
+                    ]
+                }
+            ],
+            "deleteMyBankDetails": [
+                28
+            ],
+            "createPhone": [
+                170,
+                {
+                    "input": [
+                        42,
                         "CreatePhoneInput!"
                     ]
                 }
             ],
             "updatePhone": [
-                134,
+                170,
                 {
                     "input": [
-                        175,
+                        225,
                         "UpdatePhoneInput!"
                     ]
                 }
             ],
             "deletePhone": [
-                17,
+                28,
                 {
                     "phoneId": [
-                        171,
+                        217,
                         "String!"
                     ]
                 }
             ],
             "setDefaultPaymentMethod": [
-                127,
+                163,
                 {
                     "input": [
-                        166,
+                        206,
                         "SetDefaultPaymentMethodInput!"
                     ]
                 }
             ],
             "makeOffer": [
-                114,
+                144,
                 {
                     "input": [
-                        101,
+                        131,
                         "MakeOfferInput!"
                     ]
                 }
             ],
             "counterOffer": [
-                114,
+                144,
                 {
                     "input": [
-                        21,
+                        40,
                         "CounterOfferInput!"
                     ]
                 }
             ],
             "acceptCounter": [
-                114,
+                144,
                 {
                     "offerId": [
-                        68,
+                        94,
                         "ID!"
                     ]
                 }
             ],
             "withdrawOffer": [
-                114,
+                144,
                 {
                     "offerId": [
-                        68,
+                        94,
                         "ID!"
                     ]
                 }
             ],
             "createSaleRegistration": [
-                186,
+                236,
                 {
                     "input": [
-                        25,
+                        44,
                         "CreateSaleRegistrationInput!"
                     ]
                 }
             ],
             "createSaleItemRegistration": [
-                181,
+                231,
                 {
                     "input": [
-                        24,
+                        43,
                         "CreateSaleItemRegistrationInput!"
                     ]
                 }
             ],
+            "signConsignmentContract": [
+                208,
+                {
+                    "input": [
+                        207,
+                        "SignConsignmentContractInput!"
+                    ]
+                }
+            ],
+            "createValuationPhotoUploadUrl": [
+                240,
+                {
+                    "input": [
+                        45,
+                        "CreateValuationPhotoUploadUrlInput!"
+                    ]
+                }
+            ],
+            "submitValuationRequest": [
+                222,
+                {
+                    "input": [
+                        220,
+                        "SubmitValuationRequestInput!"
+                    ]
+                }
+            ],
+            "requestAppointment": [
+                3,
+                {
+                    "input": [
+                        176,
+                        "RequestAppointmentInput!"
+                    ]
+                }
+            ],
+            "cancelAppointment": [
+                3,
+                {
+                    "input": [
+                        31,
+                        "CancelAppointmentInput!"
+                    ]
+                }
+            ],
+            "requestConditionReport": [
+                178,
+                {
+                    "input": [
+                        177,
+                        "RequestConditionReportInput!"
+                    ]
+                }
+            ],
             "__typename": [
-                171
+                217
             ]
         },
         "Node": {
             "id": [
-                68
+                94
             ],
             "on_Department": [
-                27
+                51
             ],
             "on_DutchSale": [
-                45
+                70
             ],
             "on_FeeRule": [
-                56
+                81
             ],
             "on_Item": [
-                73
+                103
             ],
             "on_Metafield": [
-                106
+                136
             ],
             "on_Sale": [
-                141
+                180
+            ],
+            "on_StaffProfile": [
+                214
             ],
             "on_UserBid": [
-                178
+                228
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "NotificationChannel": {},
         "NotificationEvent": {},
         "Offer": {
             "id": [
-                68
+                94
             ],
             "itemId": [
-                171
+                217
             ],
             "amount": [
-                72
+                100
             ],
             "currency": [
-                171
+                217
             ],
             "status": [
-                117
+                147
             ],
             "message": [
-                171
+                217
             ],
             "awaitingParty": [
-                116
+                146
             ],
             "counters": [
-                115
+                145
             ],
             "created": [
-                171
+                217
             ],
             "modified": [
-                171
+                217
             ],
             "expiresAt": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "OfferCounter": {
             "id": [
-                68
+                94
             ],
             "party": [
-                116
+                146
             ],
             "amount": [
-                72
+                100
             ],
             "currency": [
-                171
+                217
             ],
             "message": [
-                171
+                217
             ],
             "created": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "OfferParty": {},
         "OfferStatus": {},
         "OffersConnection": {
             "edges": [
-                119
+                149
             ],
             "pageInfo": [
-                124
+                160
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "OffersEdge": {
             "cursor": [
-                171
+                217
             ],
             "node": [
-                114
+                144
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "OnlineBidOrigin": {
             "type": [
-                8
+                19
             ],
             "__typename": [
-                171
+                217
             ]
         },
-        "Paddle": {
-            "identifier": [
-                171
+        "Order": {
+            "id": [
+                94
             ],
-            "type": [
-                123
+            "saleId": [
+                94
+            ],
+            "title": [
+                217
+            ],
+            "currency": [
+                217
+            ],
+            "status": [
+                156
+            ],
+            "lines": [
+                154
+            ],
+            "billingAddress": [
+                129
+            ],
+            "shippingAddress": [
+                129
+            ],
+            "total": [
+                100
+            ],
+            "amountPaid": [
+                100
+            ],
+            "amountDue": [
+                100
+            ],
+            "taxTotal": [
+                100
+            ],
+            "taxBands": [
+                102
+            ],
+            "dueAt": [
+                217
+            ],
+            "invoiceNumber": [
+                217
+            ],
+            "invoice": [
+                101
             ],
             "created": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
+            ]
+        },
+        "OrderConnection": {
+            "edges": [
+                153
+            ],
+            "pageInfo": [
+                160
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "OrderEdge": {
+            "cursor": [
+                217
+            ],
+            "node": [
+                151
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "OrderLine": {
+            "itemId": [
+                94
+            ],
+            "description": [
+                217
+            ],
+            "hammer": [
+                100
+            ],
+            "fees": [
+                155
+            ],
+            "total": [
+                100
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "OrderLineFee": {
+            "name": [
+                217
+            ],
+            "amount": [
+                100
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "OrderStatus": {},
+        "Paddle": {
+            "identifier": [
+                217
+            ],
+            "type": [
+                159
+            ],
+            "created": [
+                217
+            ],
+            "__typename": [
+                217
             ]
         },
         "PaddleBidOrigin": {
             "type": [
-                8
+                19
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "PaddleType": {},
         "PageInfo": {
             "startCursor": [
-                68
+                94
             ],
             "endCursor": [
-                68
+                94
             ],
             "hasNextPage": [
-                17
+                28
             ],
             "totalRecords": [
-                72
+                100
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "PaginationDirection": {},
         "PaymentDetails": {
             "bidderPremium": [
-                58
+                83
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "PaymentMethod": {
             "on_Card": [
-                18
+                32
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "PaymentProviderSession": {
             "on_StripePaymentProviderSession": [
-                172
+                219
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "PaymentProviderSessionInput": {
             "accountId": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "PaymentSession": {
             "url": [
-                171
+                217
             ],
             "status": [
-                132
+                168
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "PaymentSessionInput": {
             "saleId": [
-                171
+                217
             ],
             "itemId": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "PaymentSessionStatus": {},
         "Permission": {},
         "PhoneAddress": {
             "id": [
-                171
+                217
             ],
             "phoneType": [
-                136
+                172
             ],
             "phoneNumber": [
-                171
+                217
             ],
             "label": [
-                171
+                217
             ],
             "isPrimary": [
-                17
+                28
             ],
             "verifiedAt": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "PhoneBidOrigin": {
             "type": [
-                8
+                19
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "PhoneType": {},
@@ -2344,493 +3067,618 @@ export default {
                 0,
                 {
                     "id": [
-                        171,
+                        217,
                         "String!"
                     ],
                     "idType": [
-                        69
+                        95
                     ]
                 }
             ],
             "sales": [
-                145,
+                184,
                 {
                     "accountId": [
-                        171,
+                        217,
                         "String!"
                     ],
                     "first": [
-                        72
+                        100
                     ],
                     "after": [
-                        171
+                        217
                     ],
                     "filter": [
-                        147
+                        187
                     ],
                     "idType": [
-                        69
+                        95
                     ]
                 }
             ],
             "sale": [
-                141,
+                180,
                 {
                     "id": [
-                        171,
+                        217,
                         "String!"
                     ],
                     "idType": [
-                        69
+                        95
                     ]
                 }
             ],
             "saleV2": [
-                155,
+                195,
                 {
                     "id": [
-                        171,
+                        217,
                         "String!"
                     ],
                     "idType": [
-                        69
+                        95
                     ]
                 }
             ],
             "salesV2": [
-                156,
+                196,
                 {
                     "accountId": [
-                        171,
+                        217,
                         "String!"
                     ],
                     "first": [
-                        72
+                        100
                     ],
                     "after": [
-                        171
+                        217
                     ],
                     "filter": [
-                        147
+                        187
                     ],
                     "idType": [
-                        69
+                        95
                     ]
                 }
             ],
             "saleItem": [
-                73,
+                103,
                 {
                     "saleId": [
-                        171,
+                        217,
                         "String!"
                     ],
                     "itemId": [
-                        171,
+                        217,
                         "String!"
                     ]
                 }
             ],
             "accountSaleItems": [
-                90,
+                120,
                 {
                     "accountId": [
-                        171,
+                        217,
                         "String!"
                     ],
                     "first": [
-                        72
+                        100
                     ],
                     "after": [
-                        171
+                        217
                     ],
                     "filter": [
-                        149
+                        189
+                    ]
+                }
+            ],
+            "creators": [
+                47,
+                {
+                    "accountId": [
+                        217,
+                        "String!"
+                    ],
+                    "parentId": [
+                        94
+                    ],
+                    "includeChildren": [
+                        28
+                    ],
+                    "first": [
+                        100
+                    ],
+                    "after": [
+                        217
                     ]
                 }
             ],
             "saleItemByURI": [
-                73,
+                103,
                 {
                     "uri": [
-                        171,
+                        217,
                         "String!"
                     ]
                 }
             ],
             "bids": [
-                179,
+                229,
                 {
                     "userId": [
-                        171,
+                        217,
                         "String!"
                     ],
                     "first": [
-                        72,
+                        100,
                         "Int!"
                     ],
                     "after": [
-                        171
+                        217
                     ]
                 }
             ],
             "me": [
-                104
+                134
             ],
             "isFollowingConsignor": [
-                17,
+                28,
                 {
                     "consignorId": [
-                        68,
+                        94,
                         "ID!"
                     ]
                 }
             ],
             "consignorFollowerCount": [
-                72,
+                100,
                 {
                     "accountId": [
-                        171,
+                        217,
                         "String!"
                     ],
                     "consignorId": [
-                        68,
+                        94,
                         "ID!"
                     ]
                 }
             ],
             "serverTime": [
-                165
+                205
             ],
             "paymentSession": [
-                130,
+                166,
                 {
                     "input": [
-                        131
+                        167
                     ]
                 }
             ],
             "search": [
-                160,
+                200,
                 {
                     "accountId": [
-                        171,
+                        217,
                         "String!"
                     ],
                     "type": [
-                        163,
+                        203,
                         "SearchType!"
                     ],
                     "query": [
-                        171,
+                        217,
                         "String!"
                     ],
                     "first": [
-                        72
+                        100
                     ],
                     "page": [
-                        72
+                        100
                     ],
                     "queryBy": [
-                        171,
+                        217,
                         "[String!]"
                     ],
                     "orderBy": [
-                        171
+                        217
                     ],
                     "filterBy": [
-                        171
+                        217
                     ],
                     "facetBy": [
-                        171,
+                        217,
                         "[String!]"
                     ]
                 }
             ],
             "offer": [
-                114,
+                144,
                 {
                     "id": [
-                        68,
+                        94,
+                        "ID!"
+                    ]
+                }
+            ],
+            "consignmentContractSigning": [
+                35,
+                {
+                    "code": [
+                        217,
+                        "String!"
+                    ]
+                }
+            ],
+            "valuationForm": [
+                238,
+                {
+                    "accountId": [
+                        94,
                         "ID!"
                     ]
                 }
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "RangeRule": {
             "highRange": [
-                72
+                100
             ],
             "lowRange": [
-                72
+                100
             ],
             "step": [
-                72
+                100
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "RenderMode": {},
+        "RequestAppointmentInput": {
+            "appointmentId": [
+                94
+            ],
+            "type": [
+                11
+            ],
+            "siteId": [
+                94
+            ],
+            "preferredStart": [
+                217
+            ],
+            "preferredEnd": [
+                217
+            ],
+            "note": [
+                217
+            ],
+            "documents": [
+                7
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "RequestConditionReportInput": {
+            "accountId": [
+                94
+            ],
+            "requestId": [
+                94
+            ],
+            "saleId": [
+                94
+            ],
+            "itemId": [
+                94
+            ],
+            "name": [
+                217
+            ],
+            "email": [
+                217
+            ],
+            "phone": [
+                217
+            ],
+            "message": [
+                217
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "RequestConditionReportPayload": {
+            "reference": [
+                217
+            ],
+            "submittedAt": [
+                217
+            ],
+            "__typename": [
+                217
+            ]
+        },
         "ReserveStatus": {},
         "Sale": {
             "id": [
-                68
+                94
             ],
             "cursor": [
-                171
+                217
             ],
             "accountId": [
-                171
+                217
             ],
             "title": [
-                171
+                217
             ],
             "description": [
-                171
+                217
             ],
             "currency": [
-                171
+                217
             ],
             "status": [
-                153
+                193
             ],
             "items": [
-                90,
+                120,
                 {
                     "first": [
-                        72
+                        100
                     ],
                     "after": [
-                        171
+                        217
                     ],
                     "filter": [
-                        149
+                        189
                     ],
                     "order": [
-                        83
+                        113
                     ]
                 }
             ],
             "incrementTable": [
-                6
-            ],
-            "sequenceNumber": [
-                72
-            ],
-            "dates": [
-                146
-            ],
-            "saleFormat": [
-                148
-            ],
-            "closingMethod": [
-                19
-            ],
-            "images": [
-                71
-            ],
-            "themeType": [
-                72
-            ],
-            "slug": [
-                171
-            ],
-            "slugFullPath": [
-                171
-            ],
-            "type": [
-                154
-            ],
-            "liveStream": [
-                96
-            ],
-            "liveVideoStream": [
-                98
-            ],
-            "liveItem": [
-                95
-            ],
-            "userPaddle": [
-                121
-            ],
-            "userSaleRegistrations": [
-                186
-            ],
-            "isUserSubscribed": [
                 17
             ],
+            "sequenceNumber": [
+                100
+            ],
+            "saleNumber": [
+                100
+            ],
+            "saleCode": [
+                217
+            ],
+            "dates": [
+                186
+            ],
+            "saleFormat": [
+                188
+            ],
+            "closingMethod": [
+                33
+            ],
+            "images": [
+                99
+            ],
+            "themeType": [
+                100
+            ],
+            "slug": [
+                217
+            ],
+            "slugFullPath": [
+                217
+            ],
+            "type": [
+                194
+            ],
+            "liveStream": [
+                126
+            ],
+            "liveVideoStream": [
+                128
+            ],
+            "liveItem": [
+                125
+            ],
+            "userPaddle": [
+                157
+            ],
+            "userSaleRegistrations": [
+                236
+            ],
+            "isUserSubscribed": [
+                28
+            ],
             "externalId": [
-                171
+                217
             ],
             "location": [
-                171
+                217
             ],
             "metafields": [
-                108,
+                138,
                 {
                     "input": [
-                        64
+                        89
                     ]
                 }
             ],
             "metafield": [
-                106,
+                136,
                 {
                     "input": [
-                        63,
+                        88,
                         "GetMetafieldInput!"
                     ]
                 }
             ],
             "bidRestrictions": [
-                12
+                23
             ],
             "highlighted": [
-                66
+                91
             ],
             "feeRules": [
-                56
+                81
             ],
             "sectionMarkers": [
-                164
+                204
             ],
             "site": [
-                167
+                209
             ],
             "viewingTimes": [
-                171
+                217
             ],
             "buyersNotes": [
-                171
+                217
             ],
             "feesApplyInfo": [
-                171
+                217
+            ],
+            "saleContact": [
+                185
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "SaleActivity": {
             "on_Sale": [
-                141
+                180
             ],
             "on_Item": [
-                73
+                103
             ],
             "on_Node": [
-                111
+                141
             ],
             "on_SaleV2": [
-                155
+                195
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "SaleActivityV2": {
             "on_Sale": [
-                141
+                180
             ],
             "on_Item": [
-                73
+                103
             ],
             "on_DutchSale": [
-                45
+                70
             ],
             "on_DutchSaleItem": [
-                46
+                71
             ],
             "on_Node": [
-                111
+                141
             ],
             "on_SaleV2": [
-                155
+                195
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "SaleChanged": {
             "on_Sale": [
-                141
+                180
             ],
             "on_ServerTime": [
-                165
+                205
             ],
             "on_Node": [
-                111
+                141
             ],
             "on_SaleV2": [
-                155
+                195
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "SaleConnection": {
             "edges": [
-                158
+                198
             ],
             "pageInfo": [
-                124
+                160
             ],
             "__typename": [
-                171
+                217
+            ]
+        },
+        "SaleContact": {
+            "name": [
+                217
+            ],
+            "email": [
+                217
+            ],
+            "__typename": [
+                217
             ]
         },
         "SaleDates": {
             "closingDate": [
-                171
+                217
             ],
             "openDate": [
-                171
+                217
             ],
             "liveDate": [
-                171
+                217
             ],
             "effectiveClosingDate": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "SaleFilter": {
             "statuses": [
-                153
+                193
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "SaleFormat": {},
         "SaleItemFilter": {
             "statuses": [
-                89
+                119
             ],
             "itemIds": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "SaleRegistrationPolicyResult": {
             "code": [
-                171
+                217
             ],
             "passed": [
-                17
+                28
             ],
             "description": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "SaleRegistrationStatus": {},
@@ -2839,541 +3687,745 @@ export default {
         "SaleType": {},
         "SaleV2": {
             "id": [
-                68
+                94
             ],
             "accountId": [
-                171
+                217
             ],
             "title": [
-                171
+                217
             ],
             "description": [
-                171
+                217
             ],
             "currency": [
-                171
+                217
             ],
             "status": [
-                153
+                193
             ],
             "dates": [
-                146
+                186
             ],
             "saleFormat": [
-                148
+                188
             ],
             "on_DutchSale": [
-                45
+                70
             ],
             "on_Sale": [
-                141
+                180
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "SaleV2Connection": {
             "edges": [
-                157
+                197
             ],
             "pageInfo": [
-                124
+                160
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "SaleV2Edge": {
             "cursor": [
-                171
+                217
             ],
             "node": [
-                155
+                195
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "SalesEdge": {
             "cursor": [
-                171
+                217
             ],
             "node": [
-                141
+                180
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "SearchPageInfo": {
             "page": [
-                72
+                100
             ],
             "pageSize": [
-                72
+                100
             ],
             "totalPages": [
-                72
+                100
             ],
             "hasNextPage": [
-                17
+                28
             ],
             "hasPreviousPage": [
-                17
+                28
             ],
             "totalRecords": [
-                72
+                100
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "SearchResultConnection": {
             "edges": [
-                161
+                201
             ],
             "pageInfo": [
-                159
+                199
             ],
             "resultCount": [
-                72
+                100
             ],
             "facets": [
-                52
+                77
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "SearchResultEdge": {
             "node": [
-                162
+                202
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "SearchResultItem": {
             "on_Item": [
-                73
+                103
             ],
             "on_Sale": [
-                141
+                180
             ],
             "on_Node": [
-                111
+                141
             ],
             "on_SaleV2": [
-                155
+                195
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "SearchType": {},
         "SectionMarker": {
             "id": [
-                68
+                94
             ],
             "title": [
-                171
+                217
             ],
             "summary": [
-                171
+                217
             ],
             "fromItemNumber": [
-                72
+                100
             ],
             "toItemNumber": [
-                72
+                100
             ],
             "imageAssetId": [
-                171
+                217
             ],
             "imageUrl": [
-                171
+                217
             ],
             "isFeaturedSelection": [
-                17
+                28
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "ServerTime": {
             "currentTime": [
-                72
+                100
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "SetDefaultPaymentMethodInput": {
             "paymentMethodId": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
+            ]
+        },
+        "SignConsignmentContractInput": {
+            "code": [
+                217
+            ],
+            "fullName": [
+                217
+            ],
+            "consent": [
+                28
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "SignConsignmentContractPayload": {
+            "signedAt": [
+                217
+            ],
+            "__typename": [
+                217
             ]
         },
         "Site": {
+            "id": [
+                94
+            ],
             "name": [
-                171
+                217
             ],
             "addressLine1": [
-                171
+                217
             ],
             "addressLine2": [
-                171
+                217
             ],
             "addressCity": [
-                171
+                217
             ],
             "addressPostalCode": [
-                171
+                217
             ],
             "addressCountryIso": [
-                171
+                217
             ],
             "addressState": [
-                171
+                217
             ],
             "openingHours": [
-                171
+                217
             ],
             "appointmentRequired": [
-                17
+                28
             ],
             "timezone": [
-                171
+                217
+            ],
+            "bookingHours": [
+                210
             ],
             "__typename": [
-                171
+                217
+            ]
+        },
+        "SiteBookingHours": {
+            "weekdays": [
+                241
+            ],
+            "opens": [
+                217
+            ],
+            "closes": [
+                217
+            ],
+            "__typename": [
+                217
             ]
         },
         "SiteLocation": {
             "id": [
-                68
+                94
             ],
             "name": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "SpecificationSubType": {},
         "SpecificationType": {},
-        "String": {},
-        "StripePaymentProviderSession": {
-            "publishableKey": [
-                171
+        "StaffProfile": {
+            "id": [
+                94
             ],
-            "customerSessionClientSecret": [
-                171
+            "name": [
+                217
             ],
-            "setupIntentClientSecret": [
-                171
+            "photo": [
+                99
+            ],
+            "departments": [
+                51
+            ],
+            "attributes": [
+                122
+            ],
+            "effectiveSchema": [
+                122
             ],
             "__typename": [
-                171
+                217
+            ]
+        },
+        "StaffProfileConnection": {
+            "edges": [
+                216
+            ],
+            "pageInfo": [
+                160
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "StaffProfileEdge": {
+            "cursor": [
+                217
+            ],
+            "node": [
+                214
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "String": {},
+        "StripeIdentityVerificationSession": {
+            "clientSecret": [
+                217
+            ],
+            "publishableKey": [
+                217
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "StripePaymentProviderSession": {
+            "publishableKey": [
+                217
+            ],
+            "customerSessionClientSecret": [
+                217
+            ],
+            "setupIntentClientSecret": [
+                217
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "SubmitValuationRequestInput": {
+            "accountId": [
+                94
+            ],
+            "requestId": [
+                94
+            ],
+            "name": [
+                217
+            ],
+            "email": [
+                217
+            ],
+            "phone": [
+                217
+            ],
+            "items": [
+                221
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "SubmitValuationRequestItemInput": {
+            "itemTypeId": [
+                94
+            ],
+            "fields": [
+                122
+            ],
+            "description": [
+                217
+            ],
+            "photoIds": [
+                94
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "SubmitValuationRequestPayload": {
+            "reference": [
+                217
+            ],
+            "submittedAt": [
+                217
+            ],
+            "__typename": [
+                217
             ]
         },
         "Subscription": {
             "itemChanged": [
-                74,
+                104,
                 {
                     "saleId": [
-                        68,
+                        94,
                         "ID!"
                     ],
                     "itemIds": [
-                        68,
+                        94,
                         "[ID!]!"
                     ]
                 }
             ],
             "saleChanged": [
-                144,
+                183,
                 {
                     "saleId": [
-                        68,
+                        94,
                         "ID!"
                     ]
                 }
             ],
             "salesChanged": [
-                144,
+                183,
                 {
                     "saleIds": [
-                        68,
+                        94,
                         "[ID!]!"
                     ]
                 }
             ],
             "saleActivity": [
-                142,
+                181,
                 {
                     "saleId": [
-                        68,
+                        94,
                         "ID!"
                     ],
                     "itemIdFilter": [
-                        78
+                        108
                     ]
                 }
             ],
             "saleActivityV2": [
-                143,
+                182,
                 {
                     "saleId": [
-                        68,
+                        94,
                         "ID!"
                     ],
                     "itemIdFilter": [
-                        78
+                        108
                     ]
                 }
             ],
             "serverTimeChanged": [
-                165
+                205
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "Tag": {
             "id": [
-                68
+                94
             ],
             "name": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "UpdatePhoneInput": {
             "id": [
-                171
+                217
             ],
             "phoneNumber": [
-                171
+                217
             ],
             "phoneType": [
-                136
+                172
             ],
             "isPrimary": [
-                17
+                28
             ],
             "label": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "UpdateUserInput": {
             "billingAddress": [
-                100
+                130
             ],
             "shippingAddress": [
-                100
+                130
             ],
             "phone": [
-                171
+                217
             ],
             "firstName": [
-                171
+                217
             ],
             "lastName": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "UserAccountSubscription": {
             "accountId": [
-                171
+                217
             ],
             "userId": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "UserBid": {
             "id": [
-                68
+                94
             ],
             "userId": [
-                171
+                217
             ],
             "saleId": [
-                171
+                217
             ],
             "itemId": [
-                171
+                217
             ],
             "amount": [
-                72
+                100
             ],
             "maxAmount": [
-                72
+                100
             ],
             "bidDate": [
-                171
+                217
             ],
             "reactiveBid": [
-                17
+                28
             ],
             "registration": [
-                186
+                236
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "UserBidsConnection": {
             "edges": [
-                180
+                230
             ],
             "pageInfo": [
-                124
+                160
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "UserBidsEdge": {
             "cursor": [
-                171
+                217
             ],
             "node": [
-                178
+                228
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "UserItemRegistration": {
             "id": [
-                68
+                94
             ],
             "saleRegistration": [
-                186
+                236
             ],
             "preferredPhoneNumber": [
-                134
+                170
             ],
             "alternativePhoneNumbers": [
-                134
+                170
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "UserNotificationPreference": {
             "notification": [
-                113
+                143
             ],
             "channel": [
-                112
+                142
             ],
             "optedIn": [
-                17
+                28
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "UserNotificationPreferenceInput": {
             "notification": [
-                113
+                143
             ],
             "channel": [
-                112
+                142
             ],
             "optedIn": [
-                17
+                28
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "UserNotificationSettings": {
             "preferences": [
-                182
+                232
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "UserSaleItemSubscription": {
             "accountId": [
-                171
+                217
             ],
             "saleId": [
-                171
+                217
             ],
             "itemId": [
-                171
+                217
             ],
             "userId": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "UserSaleRegistration": {
             "id": [
-                68
+                94
             ],
             "saleId": [
-                171
+                217
             ],
             "userId": [
-                171
+                217
             ],
             "registrationType": [
-                152
+                192
             ],
             "status": [
-                151
+                191
             ],
             "policyResults": [
-                150
+                190
             ],
             "preferredPhoneNumber": [
-                134
+                170
             ],
             "alternativePhoneNumbers": [
-                134
+                170
             ],
             "identifier": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
         "UserSaleSubscription": {
             "accountId": [
-                171
+                217
             ],
             "saleId": [
-                171
+                217
             ],
             "userId": [
-                171
+                217
             ],
             "__typename": [
-                171
+                217
             ]
         },
+        "ValuationForm": {
+            "accountId": [
+                94
+            ],
+            "houseName": [
+                217
+            ],
+            "houseLogoUrl": [
+                217
+            ],
+            "requiredPhotoCount": [
+                100
+            ],
+            "maxPhotoCount": [
+                100
+            ],
+            "maxItemCount": [
+                100
+            ],
+            "itemTypes": [
+                239
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "ValuationItemType": {
+            "id": [
+                94
+            ],
+            "name": [
+                217
+            ],
+            "schema": [
+                122
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "ValuationPhotoUploadUrl": {
+            "photoId": [
+                94
+            ],
+            "uploadUrl": [
+                217
+            ],
+            "headers": [
+                93
+            ],
+            "__typename": [
+                217
+            ]
+        },
+        "Weekday": {},
         "WeightUnit": {}
     }
 }
