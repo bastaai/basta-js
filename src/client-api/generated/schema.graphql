@@ -34,6 +34,12 @@ type Account {
   bastaBidClient: Boolean!
 
   """
+  When true, only logged-in clients can request condition reports, and the website shows
+  reports only to logged-in clients.
+  """
+  conditionReportsRequireLogin: Boolean!
+
+  """
   Is logged-in user subscribed to account ?
   Only applies to sales running on basta.app (false for all api clients)
   """
@@ -57,6 +63,19 @@ type Account {
     first: Int = 50
     after: String
   ): DepartmentConnection!
+
+  """
+  Visible staff of the account, ordered by name.
+  Pass the previous page's endCursor as `after` to fetch the next page.
+  """
+  staffProfiles(
+    """Number of staff profiles to return, at most 200."""
+    first: Int = 50
+    after: String
+
+    """Only staff in this department."""
+    departmentId: ID
+  ): StaffProfileConnection!
 }
 
 enum AddressType {
@@ -68,6 +87,165 @@ enum AddressType {
 type Aggregator {
   name: String!
   type: BidOriginType!
+}
+
+"""An appointment the logged-in user requested at an auction house site."""
+type Appointment {
+  id: ID!
+  type: AppointmentType!
+  status: AppointmentStatus!
+
+  """Null when the site no longer exists."""
+  site: Site
+
+  """The start the user asked for (RFC3339)."""
+  preferredStart: String!
+
+  """The end the user asked for (RFC3339). Null when not given."""
+  preferredEnd: String
+
+  """The start the house confirmed (RFC3339). Null until confirmed."""
+  scheduledStart: String
+
+  """The end the house confirmed (RFC3339). Null when not set."""
+  scheduledEnd: String
+
+  """The user's note to the house. Null when not given."""
+  note: String
+
+  """
+  True when the house cancelled, false when the user did. Null unless cancelled.
+  """
+  cancelledByHouse: Boolean
+
+  """Why the appointment was cancelled. Null when no reason was given."""
+  cancellationReason: String
+
+  """
+  The invoices and statements the appointment is for. Empty for a valuation.
+  """
+  documents: [AppointmentDocument!]!
+
+  """When the appointment was requested (RFC3339)."""
+  created: String!
+}
+
+"""What the logged-in user can book at this auction house."""
+type AppointmentBookingOptions {
+  """Whether the house takes appointment requests."""
+  enabled: Boolean!
+
+  """
+  The sites an appointment can be requested at. Empty when enabled is false.
+  """
+  sites: [Site!]!
+
+  """
+  The earliest preferredStart the house accepts (RFC3339). Null when enabled is false.
+  """
+  earliestStart: String
+
+  """
+  The latest preferredStart the house accepts (RFC3339). Null when enabled is false.
+  """
+  latestStart: String
+}
+
+"""Pass pageInfo.endCursor as after to get the next page."""
+type AppointmentConnection {
+  edges: [AppointmentEdge!]!
+  pageInfo: PageInfo!
+}
+
+"""
+An invoice or statement an appointment is for, as it was when the appointment was requested.
+"""
+type AppointmentDocument {
+  type: AppointmentDocumentType!
+  documentId: ID!
+
+  """The document's number. Null when it has none."""
+  number: String
+  saleId: ID!
+
+  """The items to collect. Empty means every item on the document."""
+  itemIds: [ID!]!
+}
+
+input AppointmentDocumentInput {
+  type: AppointmentDocumentType!
+
+  """
+  The invoice or statement id. Must be the user's own: an invoice billed to them, or an issued statement addressed to them.
+  """
+  documentId: ID!
+
+  """
+  Items on the document to collect. Omit or leave empty to collect every item on it.
+  """
+  itemIds: [ID!]
+}
+
+enum AppointmentDocumentType {
+  """An invoice for items the user bought."""
+  INVOICE
+
+  """An issued statement for items the user consigned."""
+  STATEMENT
+}
+
+type AppointmentEdge {
+  """Pass as after to get the appointments that follow this one."""
+  cursor: String!
+  node: Appointment!
+}
+
+enum AppointmentStatus {
+  """Waiting for the house to confirm a time."""
+  REQUESTED
+
+  """The house has set the time in scheduledStart."""
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum AppointmentType {
+  """Collecting items on one or more invoices or statements."""
+  COLLECTION
+
+  """Bringing items to be valued."""
+  VALUATION
+}
+
+"""A consignor's payout bank account."""
+type BankDetails {
+  """Account holder name."""
+  accountName: String!
+
+  """8-digit account number."""
+  accountNumber: String!
+
+  """6-digit sort code."""
+  sortCode: String!
+
+  """ISO 3166-1 alpha-2 country of the account (e.g. "GB")."""
+  country: String!
+}
+
+"""
+Payout bank details to set. Name/account/sort are required and replace the stored
+set. Shape is validated server-side (8-digit account number, 6-digit sort code).
+"""
+input BankDetailsInput {
+  accountName: String!
+  accountNumber: String!
+  sortCode: String!
+
+  """
+  ISO 3166-1 alpha-2 country. Optional; defaults to "GB". Only GB is supported for now.
+  """
+  country: String
 }
 
 type BastaLiveStream {
@@ -209,8 +387,16 @@ type BidRestrictions {
   """Users need to have an accepted registration to bid on this sale"""
   acceptedRegistrationRequired: Boolean!
 
-  """When true, phone registrations are open/enabled for this sale"""
+  """
+  Whether you can request phone bidding for this sale. False once phoneRegistrationClosesAt has passed.
+  """
   phoneRegistrationOpen: Boolean!
+
+  """
+  When phone registrations close, as an RFC3339 timestamp: a set number of hours before the live start
+  (live sales) or before the first item starts closing (timed sales). Null when there is no cut-off.
+  """
+  phoneRegistrationClosesAt: String
 }
 
 """Bid statuses that calculates in what status the bid is."""
@@ -276,6 +462,61 @@ type BidderVerificationLink {
   clientSecret: String!
 }
 
+"""
+A premium a buyer pays on top of the hammer price, made of one or more bands.
+"""
+type BuyerPremium {
+  """ID of the buyer premium"""
+  id: ID!
+
+  """Name of the buyer premium as shown on orders"""
+  name: String!
+
+  """ISO 4217 currency code of the premium's amounts"""
+  currency: String!
+
+  """How the bands are applied to the amount. See FeeCalculationType."""
+  calculationType: FeeCalculationType!
+
+  """Smallest premium charged, in minor currency units. 0 means no floor."""
+  minimum: Int!
+
+  """Largest premium charged, in minor currency units. 0 means no cap."""
+  maximum: Int!
+
+  """Bands of the premium, ordered by lowerLimit."""
+  bands: [BuyerPremiumBand!]!
+}
+
+"""One price bracket of a buyer premium."""
+type BuyerPremiumBand {
+  """Lower limit of the band."""
+  lowerLimit: Int!
+
+  """
+  Upper limit of the band.
+  If empty then there is no upper limit.
+  """
+  upperLteLimit: Int
+
+  """Band type influences how the value is calculated"""
+  type: FeeRuleType!
+
+  """
+  Value of the band interpreted based on the type
+  * 500 means 5% if type is percentage
+  * 1000 means $10 if type is amount
+  """
+  value: Int!
+}
+
+input CancelAppointmentInput {
+  appointmentId: ID!
+
+  """At most 1000 characters."""
+  reason: String
+}
+
 """Card payment method"""
 type Card {
   """Unique card id"""
@@ -317,6 +558,45 @@ enum ClosingMethod {
   NONE
 }
 
+"""A lot's condition write-up."""
+type ConditionReport {
+  """
+  Portable Text. Inline images carry url, content_type, size and filename. An empty document ([])
+  when the report has images but no text.
+  """
+  text: JSON!
+
+  """Condition images in display order."""
+  images: [Image!]!
+}
+
+"""A consignment contract awaiting the consignor's electronic signature."""
+type ConsignmentContractSigning {
+  """Name of the consignor the contract was sent to."""
+  consignorName: String!
+
+  """Name of the auction house."""
+  houseName: String!
+
+  """Public URL of the auction house's logo. Null when the house has none."""
+  houseLogoUrl: String
+
+  """The consignment's human-facing reference. Null when unavailable."""
+  consignmentReference: String
+
+  """Revision number of the contract."""
+  revision: Int!
+
+  """Short-lived URL of the contract PDF to sign."""
+  documentUrl: String!
+
+  """When documentUrl stops working (RFC3339). Query again for a fresh URL."""
+  documentUrlExpiresAt: String!
+
+  """When the signing link expires (RFC3339)."""
+  expiresAt: String!
+}
+
 """A consignor of an item — one of the parties selling it."""
 type Consignor {
   """The consignor's Basta user id. Not interchangeable with Me.userId."""
@@ -327,6 +607,39 @@ type Consignor {
 
   """The consignor's username. Null when not set."""
   username: String
+}
+
+"""A pre-sale advice: the letter listing a consignor's items in a sale."""
+type ConsignorPresaleAdvice {
+  id: ID!
+  saleId: String!
+
+  """Title of the sale. Null when the sale has no title."""
+  saleTitle: String
+
+  """
+  The live date of a live sale, else the closing date, else the open date (RFC3339). Null
+  when none is set or the sale is not visible.
+  """
+  saleDate: String
+
+  """When the advice was emailed (RFC3339)."""
+  sentAt: String!
+
+  """A short-lived link to download the advice document."""
+  download: DocumentDownload
+}
+
+"""Pass pageInfo.endCursor as after to get the next page."""
+type ConsignorPresaleAdviceConnection {
+  edges: [ConsignorPresaleAdviceEdge!]!
+  pageInfo: PageInfo!
+}
+
+type ConsignorPresaleAdviceEdge {
+  """Pass as after to get the advices that follow this one."""
+  cursor: String!
+  node: ConsignorPresaleAdvice!
 }
 
 """Input for the buyer countering an outstanding offer."""
@@ -593,9 +906,9 @@ enum Country {
 """Input for adding a phone number to the logged-in user."""
 input CreatePhoneInput {
   """
-  Full phone number in E.164 format (e.g., +15551234567)
+  Full phone number in E.164 format (e.g., +12015550123)
   Includes country code, number, and optional extension using RFC 3966 format
-  Example: +1-555-123-4567;ext=1234
+  Example: +1-201-555-0123;ext=1234
   """
   phoneNumber: String!
 
@@ -669,6 +982,99 @@ input CreateSaleRegistrationInput {
   alternativePhoneNumberIds: [ID!]
 }
 
+input CreateValuationPhotoUploadUrlInput {
+  accountId: ID!
+
+  """image/jpeg, image/png, image/webp, image/heic or image/heif."""
+  contentType: String!
+  filename: String!
+
+  """
+  File size in bytes, at most 20 MiB. The upload must send exactly this many bytes.
+  """
+  size: Int!
+}
+
+"""
+A creator is a maker or artist an account can attribute items to. Creators may be
+nested (e.g. a manufacturer with model lines); the hierarchy is navigable via
+`parent` and `children`.
+"""
+type Creator {
+  """ID of the creator."""
+  id: ID!
+
+  """Display name of the creator."""
+  name: String!
+
+  """URL-friendly slug, unique within the account's creator tree level."""
+  slug: String!
+
+  """
+  Parent creator's id, if this creator is nested. Null for a top-level creator.
+  """
+  parentId: ID
+
+  """
+  Parent creator, if this creator is nested. Null for a top-level creator.
+  """
+  parent: Creator
+
+  """Direct child creators. Empty when this creator is a leaf."""
+  children: [Creator!]!
+
+  """
+  Kind of creator. Nested creators inherit their root's type. Null only when the
+  creator's ancestry cannot be resolved.
+  """
+  type: CreatorType
+
+  """
+  Root-to-leaf slug path joined with "/", e.g. "studio/picasso". Matches the
+  `creatorPaths` value that item search filters on, so a facet value maps to this
+  creator by name.
+  """
+  path: String!
+
+  """
+  Year the creator started, as free text (e.g. "1881", "c. 1900"). Null when not set.
+  """
+  yearFrom: String
+
+  """
+  Year the creator ended, as free text (e.g. "1973", "present"). Null when not set.
+  """
+  yearTo: String
+
+  """Nationality of the creator, as free text. Null when not set."""
+  nationality: String
+
+  """Sanitised rich-text HTML biography. Null when not set."""
+  biography: String
+}
+
+type CreatorConnection {
+  edges: [CreatorEdge!]!
+  pageInfo: PageInfo!
+}
+
+type CreatorEdge {
+  cursor: String!
+  node: Creator!
+}
+
+enum CreatorType {
+  ARTIST
+  PHOTOGRAPHER
+  SCULPTOR
+  POTTER
+  JEWELER
+  TEXTILE_ARTIST
+  GLASS_ARTIST
+  FURNITURE_DESIGNER
+  MANUFACTURER
+}
+
 type CurrentItem {
   item: Item!
   cursor: String!
@@ -731,6 +1137,14 @@ type DirectSellsConnection {
 type DirectSellsEdge {
   cursor: String!
   node: Item!
+}
+
+"""A short-lived link to a document. Treat the url as a secret."""
+type DocumentDownload {
+  url: String!
+
+  """When the link stops working (RFC3339)."""
+  expiresAt: String!
 }
 
 """A bid accepted on a Dutch lot at the clock price at acceptance time."""
@@ -893,6 +1307,11 @@ type DutchSaleItem {
   schedule: DutchSchedule
   title: String
   subTitle: String
+
+  """
+  Condition report for the lot. Null when the lot has no condition text and no condition images.
+  """
+  conditionReport: ConditionReport
   description: String
 
   """Images attached to the lot."""
@@ -1134,9 +1553,36 @@ type HighlightedItemEdge {
   position: Int!
 }
 
+"""HttpHeader is one header key-value pair."""
+type HttpHeader {
+  key: String!
+  value: String!
+}
+
 enum IdType {
   ID
   URI
+}
+
+"""Stage of a user's identity verification."""
+enum IdVerificationState {
+  """The user has not started identity verification."""
+  NONE
+
+  """A verification has been started but the user has not submitted it yet."""
+  REQUESTED
+
+  """The user has submitted the verification and it is being checked."""
+  PROCESSING
+
+  """The user's identity has been verified."""
+  VERIFIED
+
+  """The verification did not succeed. The user can start a new one."""
+  FAILED
+
+  """The verification was canceled. The user can start a new one."""
+  CANCELED
 }
 
 """Identity verification status of the logged-in user."""
@@ -1146,7 +1592,22 @@ type IdVerificationStatus {
 
   """When the verification status was last modified, in RFC 3339 format."""
   modifiedAt: String!
+
+  """Current stage of the user's identity verification."""
+  status: IdVerificationState!
+
+  """
+  Why the last verification attempt failed, suitable for showing to the user.
+  Null unless the last attempt failed.
+  """
+  failureReason: String
 }
+
+"""
+A started identity verification for the logged-in user. The concrete type tells the
+browser which verification flow to open.
+"""
+union IdentityVerificationSession = StripeIdentityVerificationSession
 
 """Image object"""
 type Image {
@@ -1158,6 +1619,37 @@ type Image {
 
   """DisplayOrder for image"""
   order: Int!
+}
+
+"""
+One issued revision of the order's invoice, printed as invoiceNumber-revision, for example INV-0042-2.
+"""
+type Invoice {
+  revision: Int!
+
+  """UTC RFC3339 date and time this revision was issued."""
+  issuedAt: String!
+
+  """YYYY-MM-DD printed on the invoice."""
+  dueDate: String!
+
+  """The PDF. Null for a moment after issue while it renders."""
+  download: DocumentDownload
+}
+
+"""The VAT shown on an invoice at one rate."""
+type InvoiceTaxBand {
+  """As printed, for example Standard rate."""
+  name: String!
+
+  """In basis points: 2000 is 20%."""
+  rateBps: Int!
+
+  """The amount taxed at this rate, in minor units."""
+  basisTotal: Int!
+
+  """The VAT on it, in minor units."""
+  taxTotal: Int!
 }
 
 """An item (can be associcated with a sale or not)"""
@@ -1179,6 +1671,11 @@ type Item implements Node {
 
   """Item sub-title"""
   subTitle: String
+
+  """
+  Condition report for the lot. Null when the lot has no condition text and no condition images.
+  """
+  conditionReport: ConditionReport
 
   """Item Description"""
   description: String
@@ -1279,6 +1776,9 @@ type Item implements Node {
   """
   isUserSubscribed: Boolean!
 
+  """Number of users subscribed to (following) this item."""
+  subscriberCount: Int!
+
   """Allowed BidTypes on the item."""
   allowedBidTypes: [BidType!]!
 
@@ -1321,7 +1821,12 @@ type Item implements Node {
   userItemRegistrations: [UserItemRegistration!]!
 
   """Effective fee rules for this item."""
-  feeRules: [FeeRule!]!
+  feeRules: [FeeRule!]! @deprecated(reason: "Use buyerPremiums.")
+
+  """
+  The premiums a buyer pays on this lot, on top of the hammer price. Fixed once the lot closes.
+  """
+  buyerPremiums: [BuyerPremium!]!
 
   """Whether the item is hidden from public view."""
   hidden: Boolean!
@@ -1387,6 +1892,14 @@ type Item implements Node {
   Section markers of this item's sale whose item-number range covers this item's item number.
   """
   sectionMarkers: [SectionMarker!]!
+
+  """CITES licence number for this item, when subject to CITES regulations."""
+  citesLicenceNumber: String
+
+  """
+  Creators (makers/artists) of this item, by name. Empty when none are recorded.
+  """
+  creators: [Creator!]!
 }
 
 union ItemChanged = Item | ServerTime
@@ -1869,6 +2382,38 @@ type Me {
   Null when the user has never submitted identity verification.
   """
   idVerificationStatus: IdVerificationStatus
+
+  """The logged-in user's payout bank details. Null when none are on file."""
+  bankDetails: BankDetails
+
+  """
+  Pre-sale advices the auction house has emailed to the logged-in user as a consignor: the
+  latest sent revision of each, most recently sent first. Empty when not logged in.
+  """
+  presaleAdvices(first: Int = 20, after: String): ConsignorPresaleAdviceConnection!
+
+  """
+  The logged-in user's appointments at this auction house, most recently requested first. With
+  upcomingOnly, only requested and confirmed appointments that have not started, soonest first.
+  Empty when not logged in.
+  """
+  appointments(first: Int = 20, after: String, upcomingOnly: Boolean = false): AppointmentConnection!
+
+  """
+  Whether and where the logged-in user can request an appointment at this auction house.
+  enabled is false when not logged in.
+  """
+  appointmentBookingOptions: AppointmentBookingOptions!
+
+  """
+  The logged-in user's orders at this auction house, newest first. An order
+  appears once the house has published it. Empty when not logged in. Page
+  with pageInfo.endCursor as after; at most 20 per page.
+  """
+  orders(first: Int = 20, after: String): OrderConnection!
+
+  """One of the logged-in user's orders. Null when there is no such order."""
+  order(id: ID!): Order
 }
 
 """Measurement unit enum"""
@@ -1947,6 +2492,16 @@ type Mutation {
   createBidderVerification(input: BidderVerificationInput): BidderVerificationLink!
 
   """
+  Starts identity verification for the logged-in user, or resumes the one they
+  have not finished yet. Open the verification in the browser with the handoff
+  field that matches the returned provider, then read me.idVerificationStatus
+  to follow its progress.
+  Fails when identity verification is not enabled for the account, when the user
+  is already verified, or while a submitted verification is still being checked.
+  """
+  createIdentityVerificationSession: IdentityVerificationSession!
+
+  """
   AcceptBidderTerms.
   This method is only available to basta users and front ends written by Basta.
   Returns a RFC3339 timestamp of when bidder terms were accepted.
@@ -1992,6 +2547,18 @@ type Mutation {
   """Update user information."""
   updateUser(input: UpdateUserInput!): Me!
 
+  """
+  Set the logged-in user's payout bank details. All three fields are required and
+  replace the stored set.
+  """
+  updateMyBankDetails(input: BankDetailsInput!): BankDetails!
+
+  """
+  Remove the logged-in user's payout bank details. Idempotent — returns true even
+  when none were on file.
+  """
+  deleteMyBankDetails: Boolean!
+
   """Add a phone number to the logged-in user."""
   createPhone(input: CreatePhoneInput!): PhoneAddress!
 
@@ -2034,6 +2601,62 @@ type Mutation {
   the existing registration is returned unchanged.
   """
   createSaleItemRegistration(input: CreateSaleItemRegistrationInput!): UserItemRegistration!
+
+  """
+  Sign a consignment contract with the code from its signing link. Needs no login. Pass the
+  code as a variable. Fails with code CONTRACT_SIGNING_UNAVAILABLE for any code that cannot
+  be used, whether unknown, expired, cancelled or already signed.
+  """
+  signConsignmentContract(input: SignConsignmentContractInput!): SignConsignmentContractPayload!
+
+  """
+  A signed URL to upload one photo for a valuation request. Needs no login. Fails with code
+  VALUATION_REQUESTS_UNAVAILABLE when the house does not accept valuation requests, and with
+  BAD_USER_INPUT for a content type or size that is not allowed.
+  """
+  createValuationPhotoUploadUrl(input: CreateValuationPhotoUploadUrlInput!): ValuationPhotoUploadUrl!
+
+  """
+  Send a valuation request to an auction house. Needs no login. Fails with code
+  VALUATION_REQUESTS_UNAVAILABLE when the house does not accept valuation requests, and with
+  BAD_USER_INPUT when the input does not fit the house's form.
+  """
+  submitValuationRequest(input: SubmitValuationRequestInput!): SubmitValuationRequestPayload!
+
+  """
+  Request an appointment at one of the auction house's sites. Needs login. The house confirms
+  the time. Fails with code APPOINTMENTS_UNAVAILABLE when the house does not take appointments,
+  APPOINTMENT_LIMIT_REACHED when the user has too many requested or confirmed appointments, and
+  BAD_USER_INPUT when the input is not valid, including a document that is not the user's own.
+  
+  Safe to retry: sending the same appointmentId again returns the appointment it created, even
+  if the first response was lost, so a double click or a retry never books twice.
+  """
+  requestAppointment(input: RequestAppointmentInput!): Appointment!
+
+  """
+  Cancel one of the logged-in user's requested or confirmed appointments. Needs login. Fails
+  with code NOT_FOUND when the user has no such appointment and APPOINTMENT_NOT_CANCELLABLE when
+  it is already cancelled or completed.
+  """
+  cancelAppointment(input: CancelAppointmentInput!): Appointment!
+
+  """
+  Ask the auction house for a lot's condition report. Needs login only when the house's
+  Account.conditionReportsRequireLogin is true; a login for another house counts as no login.
+  A logged-in user may leave out name and email, which then come from their profile.
+  
+  Fails with code UNAUTHENTICATED when the house requires login and there is none, NOT_FOUND
+  when the lot is not shown on the house's website, CONDITION_REPORT_REQUESTS_UNAVAILABLE when
+  the lot or its sale has closed or the house does not exist, BAD_USER_INPUT when the input is
+  not valid, REQUEST_ID_IN_USE when requestId was already sent for another lot or email, and
+  RATE_LIMITED after too many requests.
+  
+  Safe to retry while the lot is open: sending the same requestId again returns the first result. Asking again about
+  the same lot with the same email, while the house has not yet replied, adds to the first
+  request instead of making a new one.
+  """
+  requestConditionReport(input: RequestConditionReportInput!): RequestConditionReportPayload!
 }
 
 interface Node {
@@ -2161,6 +2784,83 @@ type OnlineBidOrigin {
   type: BidOriginType!
 }
 
+type Order {
+  id: ID!
+  saleId: ID!
+
+  """The order's title, else the sale's."""
+  title: String
+
+  """ISO 4217."""
+  currency: String!
+  status: OrderStatus!
+  lines: [OrderLine!]!
+  billingAddress: MailingAddress
+  shippingAddress: MailingAddress
+
+  """Hammer plus fees over all lines, in minor units."""
+  total: Int!
+  amountPaid: Int!
+  amountDue: Int!
+
+  """
+  The VAT shown on the order's invoice, in minor units. Zero until an invoice is issued through Basta and when no VAT is shown.
+  """
+  taxTotal: Int!
+
+  """
+  The VAT shown on the order's invoice, one entry per rate. Empty when none is shown.
+  """
+  taxBands: [InvoiceTaxBand!]!
+
+  """YYYY-MM-DD the order asks to be paid by."""
+  dueAt: String
+
+  """INV-0042: the order's invoice number once the house has issued one."""
+  invoiceNumber: String
+
+  """
+  The invoice issued through Basta. Null for a house that invoices outside it.
+  """
+  invoice: Invoice
+  created: String!
+}
+
+type OrderConnection {
+  edges: [OrderEdge!]!
+  pageInfo: PageInfo!
+}
+
+type OrderEdge {
+  cursor: String!
+  node: Order!
+}
+
+type OrderLine {
+  itemId: ID!
+  description: String!
+
+  """Hammer price in minor units."""
+  hammer: Int!
+  fees: [OrderLineFee!]!
+
+  """Hammer plus fees."""
+  total: Int!
+}
+
+type OrderLineFee {
+  """As printed, for example Buyer's premium."""
+  name: String!
+  amount: Int!
+}
+
+enum OrderStatus {
+  """Published and awaiting payment, in part or in full."""
+  PENDING_PAYMENT
+  PAID
+  CANCELLED
+}
+
 """Paddle represent a paddle in a sale"""
 type Paddle {
   """Paddle identifier"""
@@ -2267,9 +2967,9 @@ type PhoneAddress {
   phoneType: PhoneType!
 
   """
-  Full phone number in E.164 format (e.g., +15551234567)
+  Full phone number in E.164 format (e.g., +12015550123)
   Includes country code, number, and optional extension using RFC 3966 format
-  Example: +1-555-123-4567;ext=1234
+  Example: +1-201-555-0123;ext=1234
   """
   phoneNumber: String!
 
@@ -2326,6 +3026,13 @@ type Query {
   Max allowed batch size is 50. Anything above that will be downgraded to 20 items.
   """
   accountSaleItems(accountId: String!, first: Int = 20, after: String = "", filter: SaleItemFilter): ItemsConnection!
+
+  """
+  Creators (makers/artists) of an account. Top-level creators by default; pass a
+  parentId for its direct children, or includeChildren with no parentId to list
+  the whole tree flat. Pass the previous page's endCursor as `after`.
+  """
+  creators(accountId: String!, parentId: ID, includeChildren: Boolean = false, first: Int = 50, after: String): CreatorConnection!
 
   """Get item information by URI."""
   saleItemByURI(uri: String!): Item!
@@ -2433,6 +3140,19 @@ type Query {
   authenticated caller.
   """
   offer(id: ID!): Offer
+
+  """
+  The consignment contract a signing link was sent for. Needs no login: the code from the
+  link is the credential. Pass the code as a variable. Returns null for any code that cannot
+  be used, whether unknown, expired, cancelled or already signed.
+  """
+  consignmentContractSigning(code: String!): ConsignmentContractSigning
+
+  """
+  The public valuation request form of an auction house. Needs no login. Null when the house
+  does not accept valuation requests or the account does not exist.
+  """
+  valuationForm(accountId: ID!): ValuationForm
 }
 
 """
@@ -2458,6 +3178,76 @@ enum RenderMode {
 
   """When client wants a secret for embedded render"""
   EMBED
+}
+
+input RequestAppointmentInput {
+  """
+  The id of the new appointment, chosen by the client. Generate one UUID (for example with
+  crypto.randomUUID()) when the form opens and send it on every submit of that form. A repeated
+  id returns the appointment already created with it; the rest of the input is ignored. Use a
+  new id for each new booking.
+  """
+  appointmentId: ID!
+  type: AppointmentType!
+
+  """One of AppointmentBookingOptions.sites."""
+  siteId: ID!
+
+  """
+  Between AppointmentBookingOptions.earliestStart and latestStart (RFC3339).
+  """
+  preferredStart: String!
+
+  """After preferredStart (RFC3339)."""
+  preferredEnd: String
+
+  """A note to the house, at most 2000 characters."""
+  note: String
+
+  """Required for a COLLECTION, at most 10. Must be empty for a VALUATION."""
+  documents: [AppointmentDocumentInput!]
+}
+
+input RequestConditionReportInput {
+  accountId: ID!
+
+  """
+  A UUID the client generates once per request. Resending the same id returns the first result.
+  """
+  requestId: ID!
+
+  """The lot's sale."""
+  saleId: ID!
+
+  """The lot's item."""
+  itemId: ID!
+
+  """
+  At most 200 characters. Required unless logged in, when it defaults to the profile's name.
+  """
+  name: String
+
+  """
+  At most 200 characters. Required unless logged in, when it defaults to the profile's email.
+  """
+  email: String
+
+  """At most 200 characters."""
+  phone: String
+
+  """What the requester wants to know, at most 2,000 characters."""
+  message: String
+}
+
+type RequestConditionReportPayload {
+  """
+  Short reference for this ask, to quote when contacting the house. Each ask has its own
+  reference, even when it adds to an earlier request.
+  """
+  reference: String!
+
+  """When this ask was received (RFC3339)."""
+  submittedAt: String!
 }
 
 enum ReserveStatus {
@@ -2509,6 +3299,16 @@ type Sale implements Node & SaleV2 {
 
   """Sequence number of this sale."""
   sequenceNumber: Int!
+
+  """
+  The sale code as a number. Null when the code is not a plain number, e.g. "021226".
+  """
+  saleNumber: Int @deprecated(reason: "Use saleCode.")
+
+  """
+  The sale's code in lowercase, e.g. "6622" or "021226". Unique within the auction house.
+  """
+  saleCode: String
 
   """Sale Dates"""
   dates: SaleDates!
@@ -2582,7 +3382,7 @@ type Sale implements Node & SaleV2 {
   highlighted: HighlightedItemConnection!
 
   """Effective fee rules for this sale."""
-  feeRules: [FeeRule!]!
+  feeRules: [FeeRule!]! @deprecated(reason: "Use buyerPremiums.")
 
   """
   Section markers for this sale, ordered by fromItemNumber. Ranges may overlap.
@@ -2600,6 +3400,12 @@ type Sale implements Node & SaleV2 {
 
   """Fees-apply information for the sale. Rich text encoded by the client."""
   feesApplyInfo: String
+
+  """
+  The staff member to contact about this sale, if one is set. Null when no
+  contact is set or the contact's identity cannot be resolved.
+  """
+  saleContact: SaleContact
 }
 
 union SaleActivity = Sale | Item
@@ -2618,6 +3424,18 @@ type SaleConnection {
 
   """Current page information"""
   pageInfo: PageInfo!
+}
+
+"""
+A staff member buyers can contact about a sale. Fields are individually
+nullable when the underlying identity does not provide them.
+"""
+type SaleContact {
+  """The contact's display name."""
+  name: String
+
+  """The contact's email address."""
+  email: String
 }
 
 """Sale Dates"""
@@ -2703,9 +3521,14 @@ enum SaleRegistrationType {
 """Sale Status represent what status an sale is currently running in."""
 enum SaleStatus {
   """
-  Sale has not been published. This status will never appear in the API expcept when you are previewing the sale.
+  Sale has not been published. Only the account's own logged-in users see sales in this status.
   """
   UNPUBLISHED
+
+  """
+  Sale is shown before publishing, with only the lots chosen for the preview. Bidding is closed; registration is open.
+  """
+  PREVIEW
 
   """Sale has been published but is not opened for bidding."""
   PUBLISHED
@@ -2876,10 +3699,31 @@ input SetDefaultPaymentMethodInput {
   paymentMethodId: String!
 }
 
+input SignConsignmentContractInput {
+  """The code from the signing link."""
+  code: String!
+
+  """
+  The signer's full name, 1 to 200 characters with no control characters.
+  """
+  fullName: String!
+
+  """Must be true: the signer agrees to sign electronically."""
+  consent: Boolean!
+}
+
+type SignConsignmentContractPayload {
+  """When the contract was signed (RFC3339)."""
+  signedAt: String!
+}
+
 """
 A physical site where an item resides, exposed to buyers for arranging collection.
 """
 type Site {
+  """Site id. Pass as siteId when requesting an appointment."""
+  id: ID!
+
   """Display name of the site."""
   name: String!
 
@@ -2914,6 +3758,30 @@ type Site {
   not europe/london). Null when not set.
   """
   timezone: String
+
+  """
+  When clients can request an appointment start at this site, in the site's
+  timezone. Null means any time between earliestStart and latestStart.
+  """
+  bookingHours: SiteBookingHours
+}
+
+"""
+One daily window, in the site's timezone, during which clients can request an
+appointment start. Applies to each listed weekday.
+"""
+type SiteBookingHours {
+  """Days the window applies to, Monday first."""
+  weekdays: [Weekday!]!
+
+  """Opening time, HH:MM 24-hour, inclusive."""
+  opens: String!
+
+  """
+  Closing time, HH:MM 24-hour. A requested start must be before it and a
+  requested end at or before it.
+  """
+  closes: String!
 }
 
 """A location within a site where an item resides."""
@@ -3065,6 +3933,51 @@ enum SpecificationType {
   CLIENT_PACKAGE
 }
 
+"""A member of the auction house's staff."""
+type StaffProfile implements Node {
+  """ID of the staff profile."""
+  id: ID!
+
+  """Display name."""
+  name: String!
+
+  """Profile photo, if one is set."""
+  photo: Image
+
+  """Departments the staff member belongs to."""
+  departments: [Department!]!
+
+  """Public field values; fields marked private in the schema are omitted."""
+  attributes: JSON
+
+  """Public JSON Schema for attributes (private properties removed)."""
+  effectiveSchema: JSON
+}
+
+type StaffProfileConnection {
+  edges: [StaffProfileEdge!]!
+  pageInfo: PageInfo!
+}
+
+type StaffProfileEdge {
+  cursor: String!
+  node: StaffProfile!
+}
+
+"""
+A verification run by Stripe Identity, as the browser needs it to open the Stripe.js flow.
+"""
+type StripeIdentityVerificationSession {
+  """
+  Secret that opens this verification in Stripe.js.
+  Valid only for this verification; do not store or log it.
+  """
+  clientSecret: String!
+
+  """Publishable key to initialize Stripe.js with."""
+  publishableKey: String!
+}
+
 """
 StripePaymentProviderSession provides credentials for client-side Stripe integration.
 A Customer Session allows you to grant Stripe’s frontend SDKs (like Stripe.js) client-side access control over a Customer.
@@ -3078,6 +3991,50 @@ type StripePaymentProviderSession {
 
   """Setup Intent Client Secret"""
   setupIntentClientSecret: String!
+}
+
+input SubmitValuationRequestInput {
+  accountId: ID!
+
+  """
+  A UUID the client generates once per form. Resubmitting with the same id returns the first result.
+  """
+  requestId: ID!
+  name: String!
+  email: String!
+  phone: String
+
+  """The items to value, 1 to ValuationForm.maxItemCount, in display order."""
+  items: [SubmitValuationRequestItemInput!]!
+}
+
+"""One item in a valuation request."""
+input SubmitValuationRequestItemInput {
+  """
+  One of ValuationForm.itemTypes. Required when the form lists any item type.
+  """
+  itemTypeId: ID
+
+  """Values for the item type's fields, conforming to its schema."""
+  fields: JSON
+
+  """Must not be blank."""
+  description: String!
+
+  """
+  Photos from createValuationPhotoUploadUrl, in display order. Between
+  ValuationForm.requiredPhotoCount and ValuationForm.maxPhotoCount. A photo may appear only once
+  in the whole request.
+  """
+  photoIds: [ID!]!
+}
+
+type SubmitValuationRequestPayload {
+  """Short reference to quote when contacting the house."""
+  reference: String!
+
+  """When the request was received (RFC3339)."""
+  submittedAt: String!
 }
 
 type Subscription {
@@ -3131,9 +4088,9 @@ input UpdatePhoneInput {
   id: String!
 
   """
-  Full phone number in E.164 format (e.g., +15551234567)
+  Full phone number in E.164 format (e.g., +12015550123)
   Includes country code, number, and optional extension using RFC 3966 format
-  Example: +1-555-123-4567;ext=1234
+  Example: +1-201-555-0123;ext=1234
   """
   phoneNumber: String!
 
@@ -3289,6 +4246,58 @@ type UserSaleSubscription {
   accountId: String!
   saleId: String!
   userId: String!
+}
+
+"""The public valuation request form of an auction house."""
+type ValuationForm {
+  accountId: ID!
+  houseName: String!
+  houseLogoUrl: String
+
+  """Fewest photos each item must include."""
+  requiredPhotoCount: Int!
+
+  """Most photos each item may include."""
+  maxPhotoCount: Int!
+
+  """Most items one request may include."""
+  maxItemCount: Int!
+
+  """The house's top-level item types, in the house's order. May be empty."""
+  itemTypes: [ValuationItemType!]!
+}
+
+"""An item type a valuation request can be about."""
+type ValuationItemType {
+  id: ID!
+  name: String!
+
+  """
+  JSON Schema of the fields to collect for this item type. Every field is optional.
+  """
+  schema: JSON!
+}
+
+type ValuationPhotoUploadUrl {
+  """Pass this id in photoIds when submitting."""
+  photoId: ID!
+
+  """Signed URL to PUT the file to. Expires 15 minutes after issuance."""
+  uploadUrl: String!
+
+  """Headers the PUT must send."""
+  headers: [HttpHeader!]!
+}
+
+"""Day of the week."""
+enum Weekday {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
 }
 
 """Weight unit enum"""

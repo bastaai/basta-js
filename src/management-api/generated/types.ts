@@ -1,1516 +1,2917 @@
 export default {
     "scalars": [
-        3,
-        9,
-        12,
-        27,
-        33,
-        39,
-        44,
-        57,
+        5,
+        11,
+        14,
+        34,
+        42,
+        45,
+        51,
+        56,
         60,
-        64,
-        67,
-        73,
-        74,
-        80,
-        93,
-        94,
-        95,
-        98,
-        100,
-        102,
-        103,
-        104,
-        106,
-        109,
-        112,
-        119,
-        120,
+        63,
+        66,
+        68,
+        69,
+        76,
+        78,
+        90,
+        91,
+        111,
+        117,
         121,
-        123,
-        165,
-        166,
+        124,
+        130,
+        131,
+        138,
+        143,
+        144,
+        149,
+        150,
+        151,
+        158,
         169,
+        176,
+        177,
+        178,
+        181,
+        183,
+        185,
+        186,
+        190,
+        192,
         194,
-        202,
-        205,
-        217,
-        219,
+        198,
+        203,
+        211,
+        212,
+        213,
+        215,
+        218,
         220,
-        222,
-        234,
-        237,
-        239,
-        243,
-        268,
-        274,
-        279,
-        286,
+        228,
+        229,
+        233,
+        236,
         291,
+        292,
         295,
-        301,
-        303,
-        305,
-        307,
-        310,
-        311,
-        314,
-        316,
-        319,
-        325,
-        327,
-        329,
-        330,
-        342,
-        343,
-        348,
-        350,
-        356,
-        362,
-        363,
-        366,
-        368,
-        395,
-        396,
-        397,
-        410,
-        414,
+        321,
+        336,
+        339,
+        352,
+        354,
+        355,
+        357,
+        374,
+        375,
+        380,
+        381,
+        383,
+        387,
+        391,
+        404,
+        408,
         419,
-        444,
-        445,
-        446,
-        470,
+        425,
+        430,
+        438,
+        443,
+        447,
+        456,
+        458,
+        460,
+        462,
         471,
-        490,
-        494,
-        498,
-        535,
+        472,
+        473,
+        476,
+        478,
+        481,
+        487,
+        489,
+        491,
+        492,
+        505,
+        507,
+        512,
+        514,
+        520,
+        526,
+        527,
+        531,
         536,
-        540,
-        551,
-        553,
+        539,
+        541,
+        545,
+        546,
+        548,
+        552,
+        554,
+        560,
+        566,
+        601,
+        602,
         603,
-        618,
-        625,
+        617,
+        621,
         626,
-        630,
-        631
+        655,
+        656,
+        657,
+        681,
+        682,
+        701,
+        705,
+        709,
+        778,
+        779,
+        793,
+        795,
+        804,
+        813,
+        816,
+        817,
+        823,
+        828,
+        896,
+        911,
+        923,
+        926,
+        927,
+        928,
+        932,
+        933
     ],
     "types": {
-        "AcceptSaleRegistrationInput": {
-            "registrationId": [
-                540
+        "AcceptPhoneClerkSuggestionInput": {
+            "planId": [
+                374
+            ],
+            "saleItemRegistrationId": [
+                374
+            ],
+            "lineNumber": [
+                387
+            ],
+            "reasonCode": [
+                541
+            ],
+            "evidenceAssignmentId": [
+                374
+            ],
+            "evidenceSaleId": [
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "AcceptSaleRegistrationInput": {
+            "registrationId": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "Account": {
             "id": [
-                234
+                374
             ],
             "name": [
-                540
+                795
             ],
             "email": [
-                540
+                795
             ],
             "created": [
-                540
+                795
             ],
             "modified": [
-                540
+                795
             ],
             "handle": [
-                540
+                795
             ],
             "description": [
-                540
+                795
             ],
             "imageUrl": [
-                540
+                795
             ],
             "links": [
-                287
+                439
             ],
             "paymentDetails": [
-                357
+                521
             ],
             "bastaBidClient": [
-                80
+                138
             ],
             "terms": [
-                499
+                710
             ],
             "itemSchema": [
-                286
+                438
             ],
             "bastaLiveStreamEnabled": [
-                80
+                138
             ],
             "shopifyConfiguration": [
-                530
+                771
             ],
             "aggregators": [
-                32
+                44
             ],
             "metafields": [
-                304,
+                459,
                 {
                     "input": [
-                        227,
+                        366,
                         "GetMetafieldsInput!"
                     ]
                 }
             ],
             "metafield": [
-                304,
+                459,
                 {
                     "input": [
-                        226,
+                        365,
                         "GetMetafieldInput!"
                     ]
                 }
             ],
             "homeCountryCode": [
-                123
+                236
             ],
             "auctionSymbols": [
-                55
+                109
             ],
             "preferredAuctionFormat": [
-                471
+                682
             ],
             "defaultCurrency": [
-                166
+                292
             ],
             "organisationDetails": [
-                344
+                508
             ],
             "defaultStartBidPercentage": [
-                222
+                357
+            ],
+            "saleUrlTemplate": [
+                795
             ],
             "arrSettings": [
-                48
+                96
+            ],
+            "creatorSettings": [
+                290
             ],
             "charges": [
-                96,
+                179,
                 {
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ],
                     "options": [
-                        99
+                        182
                     ]
                 }
             ],
+            "buyerPremiums": [
+                145,
+                {
+                    "first": [
+                        387
+                    ],
+                    "after": [
+                        795
+                    ],
+                    "options": [
+                        147
+                    ]
+                }
+            ],
+            "accountCodes": [
+                3
+            ],
+            "taxCodes": [
+                815
+            ],
+            "streamChannels": [
+                794
+            ],
+            "taxSettings": [
+                818
+            ],
+            "itemTypeTaxDefaults": [
+                433
+            ],
+            "identityVerification": [
+                376
+            ],
+            "documentBranding": [
+                325
+            ],
+            "consignmentContractTemplate": [
+                214
+            ],
+            "consignmentContractTemplateVersions": [
+                214
+            ],
+            "workflowSettings": [
+                937
+            ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "AccountCode": {
+            "id": [
+                374
+            ],
+            "code": [
+                795
+            ],
+            "name": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "AccountFee": {
             "id": [
-                234
+                374
             ],
             "name": [
-                540
+                795
             ],
             "type": [
-                3
+                5
             ],
             "value": [
-                243
+                387
             ],
             "upperLteLimit": [
-                243
+                387
             ],
             "lowerLimit": [
-                243
+                387
             ],
             "calculationType": [
-                217
+                352
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "AccountFeeType": {},
         "AccountImageAssociation": {
             "accountId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ActionHookFilter": {
             "types": [
-                12
+                14
             ],
             "statuses": [
-                9
+                11
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ActionHookLog": {
             "id": [
-                234
+                374
             ],
             "accountId": [
-                540
+                795
             ],
             "idempotencyKey": [
-                540
+                795
             ],
             "action": [
-                12
+                14
             ],
             "url": [
-                540
+                795
             ],
             "headers": [
-                232
+                372
             ],
             "requestPayload": [
-                540
+                795
             ],
             "response": [
-                540
+                795
             ],
             "status": [
-                9
+                11
             ],
             "error": [
-                540
+                795
             ],
             "retries": [
-                243
+                387
             ],
             "createdAt": [
-                540
+                795
             ],
             "executedAt": [
-                540
+                795
             ],
             "nextRetryDate": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ActionHookLogConnection": {
             "edges": [
-                8
+                10
             ],
             "pageInfo": [
-                349
+                513
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ActionHookLogEdge": {
             "cursor": [
-                540
+                795
             ],
             "node": [
-                6
+                8
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ActionHookStatus": {},
         "ActionHookSubscription": {
             "id": [
-                234
+                374
             ],
             "accountId": [
-                540
+                795
             ],
             "action": [
-                12
+                14
             ],
             "url": [
-                540
+                795
             ],
             "headers": [
-                232
+                372
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ActionHookSubscriptionInput": {
             "action": [
-                12
+                14
             ],
             "url": [
-                540
+                795
             ],
             "headers": [
-                233
+                373
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ActionType": {},
         "Activity": {
             "id": [
-                234
+                374
             ],
             "entityType": [
-                540
+                795
             ],
             "entityId": [
-                540
+                795
             ],
             "activityType": [
-                540
+                795
             ],
             "principalType": [
-                540
+                795
             ],
             "principalId": [
-                540
+                795
             ],
             "occurredAt": [
-                540
+                795
             ],
             "changes": [
-                221
+                356
             ],
             "principal": [
-                367
+                559
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "AddAppraisalClientsInput": {
+            "appraisalId": [
+                795
+            ],
+            "clientUserIds": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "AddAppraisalStaffInput": {
+            "appraisalId": [
+                795
+            ],
+            "staffUserIds": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "AddConsignmentStaffInput": {
             "consignmentId": [
-                540
+                795
             ],
             "consignmentStaffUserIds": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "AddConsignorsInput": {
             "consignmentId": [
-                540
+                795
             ],
             "consignorUserIds": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "AddDashboardUserRoleInput": {
             "userId": [
-                540
+                795
             ],
             "role": [
-                169
+                295
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "AddFairWarningNotificationToItemInput": {
             "itemId": [
-                540
+                795
             ],
             "saleId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "AddItemNoteInput": {
+            "itemId": [
+                795
+            ],
+            "noteTypeId": [
+                795
+            ],
+            "note": [
+                795
+            ],
+            "isAlert": [
+                138
+            ],
+            "__typename": [
+                795
             ]
         },
         "AddItemToSaleInput": {
             "saleId": [
-                540
+                795
             ],
             "itemId": [
-                540
+                795
             ],
             "bidIncrementTable": [
-                62
+                119
             ],
             "startingBid": [
-                243
+                387
             ],
             "reserve": [
-                243
+                387
             ],
             "lowEstimate": [
-                243
+                387
             ],
             "highEstimate": [
-                243
+                387
             ],
             "ItemNumber": [
-                243
+                387
             ],
             "allowedBidTypes": [
-                74
+                131
             ],
             "openDate": [
-                540
+                795
             ],
             "closingDate": [
-                540
+                795
             ],
             "slug": [
-                540
+                795
             ],
             "hidden": [
-                80
+                138
             ],
             "closingTimeCountdown": [
-                243
+                387
             ],
             "externalId": [
-                540
+                795
             ],
             "displayNumber": [
-                540
+                795
             ],
             "highlight": [
-                252
+                401
             ],
             "metafields": [
-                306
+                461
             ],
             "reserveType": [
-                397
+                603
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "AddLiveStreamToSaleInput": {
             "saleId": [
-                540
+                795
             ],
             "url": [
-                540
+                795
             ],
             "type": [
-                295
+                447
+            ],
+            "streamChannelId": [
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "AddMessageNotificationToItemInput": {
             "itemId": [
-                540
+                795
             ],
             "saleId": [
-                540
+                795
             ],
             "message": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "AddPackagingInput": {
             "itemId": [
-                540
+                795
             ],
             "packaging": [
-                271
+                422
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "AddPaddleToSaleInput": {
             "saleId": [
-                540
+                795
             ],
             "paddleIdentifier": [
-                540
+                795
             ],
             "userId": [
-                540
+                795
             ],
             "type": [
-                348
+                512
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "AddSpecificationsInput": {
             "itemId": [
-                540
+                795
             ],
             "specifications": [
-                278
+                429
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "AddStatementChargeInput": {
+            "lineId": [
+                374
+            ],
+            "chargeId": [
+                374
+            ],
+            "note": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "AddTagToItemInput": {
             "itemId": [
-                540
+                795
             ],
             "name": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "AddTagToSaleItemInput": {
             "saleId": [
-                540
+                795
             ],
             "itemId": [
-                540
+                795
             ],
             "name": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "AddTagToUserInput": {
             "userId": [
-                540
+                795
             ],
             "name": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "AddUserNoteInput": {
+            "userId": [
+                795
+            ],
+            "noteTypeId": [
+                795
+            ],
+            "note": [
+                795
+            ],
+            "isAlert": [
+                138
+            ],
+            "__typename": [
+                795
             ]
         },
         "AddressType": {},
         "Affiliate": {
             "id": [
-                234
+                374
             ],
             "accountId": [
-                234
+                374
             ],
             "firstName": [
-                540
+                795
             ],
             "lastName": [
-                540
+                795
             ],
             "email": [
-                540
+                795
             ],
             "token": [
-                540
+                795
             ],
             "createdBy": [
-                540
+                795
             ],
             "updatedBy": [
-                540
+                795
             ],
             "createdAt": [
-                540
+                795
             ],
             "updatedAt": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "AffiliateConnection": {
             "edges": [
-                30
+                37
             ],
             "pageInfo": [
-                349
+                513
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "AffiliateEdge": {
             "cursor": [
-                540
+                795
             ],
             "node": [
-                28
+                35
             ],
             "__typename": [
-                540
+                795
             ]
         },
-        "AffiliatesInput": {
-            "first": [
-                243
+        "AffiliateEventType": {
+            "id": [
+                374
             ],
-            "after": [
-                540
+            "name": [
+                795
             ],
-            "direction": [
-                350
+            "description": [
+                795
+            ],
+            "metadataSchema": [
+                438
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "AffiliateReport": {
+            "resolution": [
+                42
+            ],
+            "dataPoints": [
+                40
+            ],
+            "campaignDataPoints": [
+                152
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "AffiliateReportDataPoint": {
+            "affiliateId": [
+                374
+            ],
+            "eventTypeId": [
+                374
+            ],
+            "eventType": [
+                38
+            ],
+            "period": [
+                795
+            ],
+            "eventCount": [
+                387
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "AffiliateReportInput": {
+            "affiliateIds": [
+                374
+            ],
+            "campaignIds": [
+                374
+            ],
+            "startDate": [
+                795
+            ],
+            "endDate": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "AffiliateReportResolution": {},
+        "AffiliatesInput": {
+            "first": [
+                387
+            ],
+            "after": [
+                795
+            ],
+            "direction": [
+                514
+            ],
+            "__typename": [
+                795
             ]
         },
         "Aggregator": {
             "name": [
-                540
+                795
             ],
             "identifier": [
-                540
+                795
             ],
             "type": [
-                67
+                124
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "AmlRiskClass": {},
         "ApiKey": {
             "id": [
-                234
+                374
             ],
             "name": [
-                540
+                795
             ],
             "accountId": [
-                540
+                795
             ],
             "created": [
-                540
+                795
             ],
             "roles": [
-                39
+                51
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ApiKeyConnection": {
             "edges": [
-                37
+                49
             ],
             "pageInfo": [
-                349
+                513
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ApiKeyCreated": {
             "id": [
-                234
+                374
             ],
             "name": [
-                540
+                795
             ],
             "generatedApiKey": [
-                540
+                795
             ],
             "roles": [
-                39
+                51
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ApiKeyEdge": {
             "cursor": [
-                540
+                795
             ],
             "node": [
-                34
+                46
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ApiKeyInput": {
             "name": [
-                540
+                795
             ],
             "role": [
-                39
+                51
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ApiKeyRole": {},
         "ApiToken": {
             "id": [
-                234
+                374
             ],
             "name": [
-                540
+                795
             ],
             "accountId": [
-                540
+                795
             ],
             "created": [
-                540
+                795
             ],
             "roles": [
-                44
+                56
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ApiTokenConnection": {
             "edges": [
-                45
+                57
             ],
             "pageInfo": [
-                349
+                513
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ApiTokenCreated": {
             "id": [
-                234
+                374
             ],
             "name": [
-                540
+                795
             ],
             "generatedApiKey": [
-                540
+                795
             ],
             "roles": [
-                44
+                56
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ApiTokenInput": {
             "name": [
-                540
+                795
             ],
             "role": [
-                44
+                56
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ApiTokenRole": {},
         "ApiTokensEdge": {
             "cursor": [
-                540
+                795
             ],
             "node": [
-                40
+                52
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "AppliedTax": {
+            "taxCode": [
+                815
+            ],
+            "codeName": [
+                795
+            ],
+            "application": [
+                813
+            ],
+            "rateBps": [
+                387
+            ],
+            "basisAmount": [
+                387
+            ],
+            "taxAmount": [
+                387
+            ],
+            "shownSeparately": [
+                138
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "Appointment": {
+            "id": [
+                374
+            ],
+            "accountId": [
+                795
+            ],
+            "type": [
+                69
+            ],
+            "status": [
+                68
+            ],
+            "clientUserId": [
+                795
+            ],
+            "client": [
+                888
+            ],
+            "site": [
+                773
+            ],
+            "preferredStart": [
+                823
+            ],
+            "preferredEnd": [
+                823
+            ],
+            "scheduledStart": [
+                823
+            ],
+            "scheduledEnd": [
+                823
+            ],
+            "clientNote": [
+                795
+            ],
+            "staffNote": [
+                795
+            ],
+            "cancelledBy": [
+                60
+            ],
+            "cancellationReason": [
+                795
+            ],
+            "documents": [
+                61
+            ],
+            "createdAt": [
+                823
+            ],
+            "modifiedAt": [
+                823
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "AppointmentActor": {},
+        "AppointmentDocument": {
+            "type": [
+                63
+            ],
+            "documentId": [
+                374
+            ],
+            "number": [
+                795
+            ],
+            "saleId": [
+                795
+            ],
+            "itemIds": [
+                795
+            ],
+            "invoice": [
+                523
+            ],
+            "statement": [
+                786
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "AppointmentDocumentFilter": {
+            "type": [
+                63
+            ],
+            "ids": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "AppointmentDocumentType": {},
+        "AppointmentEdge": {
+            "cursor": [
+                795
+            ],
+            "node": [
+                59
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "AppointmentFilter": {
+            "statuses": [
+                68
+            ],
+            "types": [
+                69
+            ],
+            "siteId": [
+                795
+            ],
+            "clientUserId": [
+                795
+            ],
+            "startFrom": [
+                823
+            ],
+            "startTo": [
+                823
+            ],
+            "document": [
+                62
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "AppointmentOrder": {},
+        "AppointmentSettings": {
+            "enabled": [
+                138
+            ],
+            "recipientEmails": [
+                795
+            ],
+            "minLeadHours": [
+                387
+            ],
+            "maxDaysAhead": [
+                387
+            ],
+            "maxActivePerClient": [
+                387
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "AppointmentStatus": {},
+        "AppointmentType": {},
+        "AppointmentsConnection": {
+            "edges": [
+                64
+            ],
+            "pageInfo": [
+                513
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "Appraisal": {
+            "id": [
+                374
+            ],
+            "cursor": [
+                795
+            ],
+            "accountId": [
+                795
+            ],
+            "appraisalNumber": [
+                387
+            ],
+            "name": [
+                795
+            ],
+            "notes": [
+                795
+            ],
+            "type": [
+                90
+            ],
+            "attributionChannel": [
+                107
+            ],
+            "itemCount": [
+                387
+            ],
+            "clients": [
+                73
+            ],
+            "staff": [
+                89
+            ],
+            "items": [
+                435,
+                {
+                    "first": [
+                        387
+                    ],
+                    "after": [
+                        795
+                    ],
+                    "direction": [
+                        514
+                    ]
+                }
+            ],
+            "appraisalItems": [
+                86,
+                {
+                    "first": [
+                        387
+                    ],
+                    "after": [
+                        795
+                    ],
+                    "direction": [
+                        514
+                    ],
+                    "consigned": [
+                        138
+                    ]
+                }
+            ],
+            "created": [
+                795
+            ],
+            "modified": [
+                795
+            ],
+            "createdByUserId": [
+                795
+            ],
+            "modifiedByUserId": [
+                795
+            ],
+            "consignments": [
+                207
+            ],
+            "valuationDate": [
+                795
+            ],
+            "dateOfDeath": [
+                795
+            ],
+            "instructedBy": [
+                80
+            ],
+            "reference": [
+                795
+            ],
+            "valuer": [
+                89
+            ],
+            "documentSettings": [
+                77
+            ],
+            "documents": [
+                75
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "AppraisalBanner": {
+            "id": [
+                374
+            ],
+            "accountId": [
+                795
+            ],
+            "appraisalNumber": [
+                387
+            ],
+            "name": [
+                795
+            ],
+            "type": [
+                90
+            ],
+            "mainClientId": [
+                795
+            ],
+            "mainClientName": [
+                795
+            ],
+            "clientNumber": [
+                387
+            ],
+            "leadStaffId": [
+                795
+            ],
+            "leadStaffName": [
+                795
+            ],
+            "attributionChannelId": [
+                795
+            ],
+            "itemCount": [
+                387
+            ],
+            "createdTimestamp": [
+                387
+            ],
+            "modifiedTimestamp": [
+                387
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "AppraisalClient": {
+            "userId": [
+                795
+            ],
+            "isMain": [
+                138
+            ],
+            "accountId": [
+                795
+            ],
+            "user": [
+                888
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "AppraisalConsignmentTargetInput": {
+            "newConsignment": [
+                465
+            ],
+            "consignmentId": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "AppraisalDocument": {
+            "id": [
+                374
+            ],
+            "revision": [
+                387
+            ],
+            "type": [
+                90
+            ],
+            "templateVersion": [
+                387
+            ],
+            "filename": [
+                795
+            ],
+            "generatedAt": [
+                823
+            ],
+            "generatedBy": [
+                795
+            ],
+            "download": [
+                329
+            ],
+            "outdated": [
+                138
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "AppraisalDocumentGroupBy": {},
+        "AppraisalDocumentSettings": {
+            "groupBy": [
+                76
+            ],
+            "sortBy": [
+                78
+            ],
+            "sectionTotals": [
+                138
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "AppraisalDocumentSortBy": {},
+        "AppraisalDocumentTemplate": {
+            "id": [
+                374
+            ],
+            "type": [
+                90
+            ],
+            "version": [
+                387
+            ],
+            "title": [
+                795
+            ],
+            "intro": [
+                795
+            ],
+            "preInventory": [
+                795
+            ],
+            "summary": [
+                795
+            ],
+            "valuerStatement": [
+                795
+            ],
+            "terms": [
+                795
+            ],
+            "createdAt": [
+                823
+            ],
+            "createdBy": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "AppraisalInstructedBy": {
+            "name": [
+                795
+            ],
+            "company": [
+                795
+            ],
+            "addressLines": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "AppraisalInstructedByInput": {
+            "name": [
+                795
+            ],
+            "company": [
+                795
+            ],
+            "addressLines": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "AppraisalItem": {
+            "id": [
+                374
+            ],
+            "accountId": [
+                795
+            ],
+            "appraisalId": [
+                795
+            ],
+            "item": [
+                393
+            ],
+            "title": [
+                795
+            ],
+            "subTitle": [
+                795
+            ],
+            "description": [
+                795
+            ],
+            "schemaId": [
+                374
+            ],
+            "attributes": [
+                438
+            ],
+            "creators": [
+                287
+            ],
+            "frozen": [
+                138
+            ],
+            "frozenAt": [
+                795
+            ],
+            "lineNumber": [
+                387
+            ],
+            "valuation": [
+                84
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "AppraisalItemRefInput": {
+            "appraisalId": [
+                795
+            ],
+            "itemId": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "AppraisalItemValuation": {
+            "low": [
+                387
+            ],
+            "high": [
+                387
+            ],
+            "currency": [
+                795
+            ],
+            "basis": [
+                91
+            ],
+            "room": [
+                795
+            ],
+            "sortPosition": [
+                387
+            ],
+            "noCommercialValue": [
+                138
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "AppraisalItemValueInput": {
+            "low": [
+                387
+            ],
+            "high": [
+                387
+            ],
+            "currency": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "AppraisalItemsConnection": {
+            "edges": [
+                87
+            ],
+            "pageInfo": [
+                513
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "AppraisalItemsEdge": {
+            "cursor": [
+                795
+            ],
+            "node": [
+                82
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "AppraisalLine": {
+            "appraisalId": [
+                374
+            ],
+            "appraisal": [
+                71
+            ],
+            "lineNumber": [
+                387
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "AppraisalStaff": {
+            "userId": [
+                795
+            ],
+            "isLead": [
+                138
+            ],
+            "accountId": [
+                795
+            ],
+            "name": [
+                795
+            ],
+            "email": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "AppraisalType": {},
+        "AppraisalValueBasis": {},
+        "AppraisalsConnection": {
+            "edges": [
+                93
+            ],
+            "pageInfo": [
+                513
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "AppraisalsEdge": {
+            "cursor": [
+                795
+            ],
+            "node": [
+                71
+            ],
+            "__typename": [
+                795
             ]
         },
         "ArrBand": {
             "id": [
-                234
+                374
             ],
             "lowerLimit": [
-                243
+                387
             ],
             "upperLteLimit": [
-                243
+                387
             ],
             "rateBps": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ArrBandInput": {
             "lowerLimit": [
-                243
+                387
             ],
             "upperLteLimit": [
-                243
+                387
             ],
             "rateBps": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ArrSettings": {
             "currency": [
-                166
+                292
             ],
             "enabled": [
-                80
+                138
             ],
             "thresholdAmount": [
-                243
+                387
             ],
             "capAmount": [
-                243
+                387
             ],
             "bands": [
-                46
+                94
+            ],
+            "accountCode": [
+                3
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "Asset": {
             "id": [
-                540
+                795
             ],
             "url": [
-                540
+                795
             ],
             "externalId": [
-                540
+                795
             ],
             "on_Document": [
-                196
+                324
             ],
             "on_Image": [
-                235
+                378
             ],
             "on_Video": [
-                624
+                925
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "AssetConnection": {
+            "edges": [
+                99
+            ],
+            "pageInfo": [
+                513
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "AssetEdge": {
+            "node": [
+                97
+            ],
+            "cursor": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "AssetUploadUrl": {
             "assetId": [
-                540
+                795
             ],
             "uploadUrl": [
-                540
+                795
             ],
             "assetUrl": [
-                540
+                795
             ],
             "headers": [
-                232
+                372
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "AssignDisplayNumbersInput": {
+            "saleId": [
+                795
+            ],
+            "startFrom": [
+                387
+            ],
+            "itemIds": [
+                374
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "AssignPhoneClerkInput": {
+            "saleId": [
+                795
+            ],
+            "assignmentId": [
+                374
+            ],
+            "lineNumber": [
+                387
+            ],
+            "note": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "AssociateUserToAccountInput": {
             "userId": [
-                540
+                795
             ],
             "email": [
-                540
+                795
             ],
             "role": [
-                169
+                295
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "AttachSaleRegistrationPoliciesInput": {
             "saleId": [
-                540
+                795
             ],
             "policyIds": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "AttributeSuggestion": {
+            "key": [
+                795
+            ],
+            "value": [
+                438
+            ],
+            "label": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "AttributesSuggestion": {
+            "values": [
+                105
+            ],
+            "__typename": [
+                795
             ]
         },
         "AttributionChannel": {
             "id": [
-                234
+                374
             ],
             "accountId": [
-                540
+                795
             ],
             "name": [
-                540
+                795
+            ],
+            "selfServiceOnly": [
+                138
             ],
             "archivedAt": [
-                540
+                795
             ],
             "created": [
-                540
+                795
             ],
             "modified": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "AttributionSource": {
             "id": [
-                234
+                374
             ],
             "accountId": [
-                540
+                795
             ],
             "name": [
-                540
+                795
+            ],
+            "public": [
+                138
+            ],
+            "channelIds": [
+                795
             ],
             "archivedAt": [
-                540
+                795
             ],
             "created": [
-                540
+                795
             ],
             "modified": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "AuctionSymbol": {
             "type": [
-                57
+                111
             ],
             "glyph": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "AuctionSymbolInput": {
             "type": [
-                57
+                111
             ],
             "glyph": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "AuctionSymbolType": {},
-        "BastaLiveStream": {
-            "optionAvailable": [
-                80
+        "Author": {
+            "id": [
+                374
             ],
-            "publicUrl": [
-                540
-            ],
-            "ingestUrl": [
-                540
-            ],
-            "channelId": [
-                540
-            ],
-            "streamKey": [
-                540
-            ],
-            "isLive": [
-                80
-            ],
-            "currentViewers": [
-                243
+            "name": [
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "BankDetails": {
+            "accountName": [
+                795
+            ],
+            "accountNumber": [
+                795
+            ],
+            "sortCode": [
+                795
+            ],
+            "country": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "BankDetailsInput": {
+            "accountName": [
+                795
+            ],
+            "accountNumber": [
+                795
+            ],
+            "sortCode": [
+                795
+            ],
+            "country": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "BastaLiveStream": {
+            "optionAvailable": [
+                138
+            ],
+            "publicUrl": [
+                795
+            ],
+            "ingestUrl": [
+                795
+            ],
+            "channelId": [
+                795
+            ],
+            "streamKey": [
+                795
+            ],
+            "isLive": [
+                138
+            ],
+            "currentViewers": [
+                387
+            ],
+            "streamChannel": [
+                794
+            ],
+            "__typename": [
+                795
             ]
         },
         "Bid": {
             "bidId": [
-                540
+                795
             ],
             "saleId": [
-                540
+                795
             ],
             "itemId": [
-                540
+                795
             ],
             "sale": [
-                403
+                610
             ],
             "saleItem": [
-                416
+                623
             ],
             "amount": [
-                243
+                387
             ],
             "maxAmount": [
-                243
+                387
             ],
             "userId": [
-                540
+                795
             ],
             "user": [
-                606
+                899
             ],
             "date": [
-                540
+                795
             ],
             "bidStatus": [
-                73
+                130
             ],
             "bidSequenceNumber": [
-                243
+                387
             ],
             "bidderIdentifier": [
-                540
+                795
             ],
             "paddle": [
-                346
+                510
+            ],
+            "reactiveBid": [
+                138
             ],
             "bidOrigin": [
-                65
+                122
             ],
             "userProfile": [
-                606
+                899
             ],
             "registrationId": [
-                540
+                795
             ],
             "registration": [
-                438
+                649
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "BidErrorCode": {},
         "BidIncrementTable": {
             "rules": [
-                376
+                575
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "BidIncrementTableInput": {
             "rules": [
-                377
+                576
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "BidOnBehalfInput": {
             "userId": [
-                540
+                795
             ],
             "amount": [
-                243
+                387
             ],
             "itemId": [
-                540
+                795
             ],
             "saleId": [
-                540
+                795
             ],
             "type": [
-                74
+                131
             ],
             "bidOrigin": [
-                66
+                123
             ],
             "registrationId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "BidOrderByField": {},
         "BidOrigin": {
             "on_OnlineBidOrigin": [
-                336
+                498
             ],
             "on_PaddleBidOrigin": [
-                347
+                511
             ],
             "on_PhoneBidOrigin": [
-                365
+                529
             ],
             "on_Aggregator": [
-                32
+                44
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "BidOriginInput": {
             "type": [
-                67
+                124
             ],
             "name": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "BidOriginType": {},
         "BidPlaced": {
             "on_BidPlacedSuccess": [
-                70
+                127
             ],
             "on_BidPlacedError": [
-                69
+                126
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "BidPlacedError": {
             "error": [
-                540
+                795
             ],
             "errorCode": [
-                60
+                117
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "BidPlacedSuccess": {
             "bidId": [
-                540
+                795
             ],
             "amount": [
-                243
+                387
             ],
             "maxAmount": [
-                243
+                387
             ],
             "date": [
-                540
+                795
             ],
             "bidStatus": [
-                73
+                130
             ],
             "bidType": [
-                74
+                131
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "BidRestrictions": {
             "acceptedRegistrationRequired": [
-                80
+                138
             ],
             "phoneRegistrationOpen": [
-                80
+                138
+            ],
+            "phoneRegistrationCutoffHours": [
+                387
+            ],
+            "phoneRegistrationClosesAt": [
+                823
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "BidRestrictionsInput": {
             "acceptedRegistrationRequired": [
-                80
+                138
             ],
             "phoneRegistrationOpen": [
-                80
+                138
+            ],
+            "phoneRegistrationCutoffHours": [
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "BidStatus": {},
         "BidType": {},
         "BidderToken": {
             "token": [
-                540
+                795
             ],
             "expiration": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "BidderTokenInput": {
             "metadata": [
-                552
+                824
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "BidsConnection": {
             "edges": [
-                78
+                135
             ],
             "pageInfo": [
-                349
+                513
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "BidsEdge": {
             "cursor": [
-                540
+                795
             ],
             "node": [
-                59
+                116
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "BidsFilter": {
+            "saleId": [
+                795
+            ],
+            "itemId": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "BlockUserInput": {
             "userId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "Boolean": {},
         "BuyItemInput": {
             "itemId": [
-                540
+                795
             ],
             "saleId": [
-                540
+                795
             ],
             "buyerUserId": [
-                540
+                795
             ],
             "expectedPrice": [
-                243
+                387
             ],
             "currency": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "BuyerPremium": {
+            "id": [
+                374
+            ],
+            "externalId": [
+                795
+            ],
+            "name": [
+                795
+            ],
+            "currency": [
+                292
+            ],
+            "calculationType": [
+                144
+            ],
+            "status": [
+                150
+            ],
+            "minimum": [
+                387
+            ],
+            "maximum": [
+                387
+            ],
+            "bands": [
+                141
+            ],
+            "appliesAt": [
+                149
+            ],
+            "accountCode": [
+                3
+            ],
+            "taxCode": [
+                815
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "BuyerPremiumBand": {
+            "id": [
+                374
+            ],
+            "lowerLimit": [
+                387
+            ],
+            "upperLteLimit": [
+                387
+            ],
+            "type": [
+                143
+            ],
+            "value": [
+                387
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "BuyerPremiumBandInput": {
+            "lowerLimit": [
+                387
+            ],
+            "upperLteLimit": [
+                387
+            ],
+            "type": [
+                143
+            ],
+            "value": [
+                387
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "BuyerPremiumBandType": {},
+        "BuyerPremiumCalculationType": {},
+        "BuyerPremiumConnection": {
+            "edges": [
+                146
+            ],
+            "pageInfo": [
+                513
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "BuyerPremiumEdge": {
+            "node": [
+                140
+            ],
+            "cursor": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "BuyerPremiumOptions": {
+            "currency": [
+                292
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "BuyerPremiumScopeInput": {
+            "type": [
+                151
+            ],
+            "id": [
+                374
+            ],
+            "saleId": [
+                374
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "BuyerPremiumScopeType": {},
+        "BuyerPremiumStatus": {},
+        "BuyerPremiumWriteScopeType": {},
+        "CampaignReportDataPoint": {
+            "campaignId": [
+                374
+            ],
+            "eventTypeId": [
+                374
+            ],
+            "eventType": [
+                38
+            ],
+            "period": [
+                795
+            ],
+            "eventCount": [
+                387
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "CancelAppointmentInput": {
+            "appointmentId": [
+                374
+            ],
+            "reason": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "CancelLatestBidOnItemInput": {
             "itemId": [
-                540
+                795
             ],
             "saleId": [
-                540
+                795
             ],
             "sequenceNumber": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CancelPaymentOrderInput": {
             "orderId": [
-                234
+                374
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CanceledLatestBidOnItem": {
             "removedBids": [
-                59
+                116
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "Card": {
             "id": [
-                540
+                795
             ],
             "brand": [
-                540
+                795
             ],
             "last4": [
-                540
+                795
             ],
             "expMonth": [
-                243
+                387
             ],
             "expYear": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "CataloguingWorkflowStatus": {},
+        "CataloguingWorkflowSummary": {
+            "totalItems": [
+                387
+            ],
+            "awaitingCataloguing": [
+                387
+            ],
+            "catalogued": [
+                387
+            ],
+            "proofed": [
+                387
+            ],
+            "__typename": [
+                795
             ]
         },
         "Category": {
             "id": [
-                234
+                374
             ],
             "accountId": [
-                234
+                374
             ],
             "name": [
-                540
+                795
             ],
             "slug": [
-                540
+                795
             ],
             "parentId": [
-                234
+                374
             ],
             "parent": [
-                86
+                160
             ],
             "children": [
-                87,
+                161,
                 {
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ]
                 }
             ],
             "createdAt": [
-                540
+                795
             ],
             "updatedAt": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CategoryConnection": {
             "edges": [
-                88
+                162
             ],
             "pageInfo": [
-                349
+                513
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CategoryEdge": {
             "node": [
-                86
+                160
             ],
             "cursor": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CategoryList": {
             "categories": [
-                86
+                160
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "CelEnum": {
+            "name": [
+                795
+            ],
+            "description": [
+                795
+            ],
+            "values": [
+                165
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "CelEnumValue": {
+            "name": [
+                795
+            ],
+            "number": [
+                387
+            ],
+            "description": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "CelEnvironment": {
+            "variables": [
+                172
+            ],
+            "types": [
+                170
+            ],
+            "enums": [
+                164
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "CelField": {
+            "name": [
+                795
+            ],
+            "kind": [
+                169
+            ],
+            "typeName": [
+                795
+            ],
+            "isList": [
+                138
+            ],
+            "description": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "CelIssue": {
+            "message": [
+                795
+            ],
+            "line": [
+                387
+            ],
+            "column": [
+                387
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "CelKind": {},
+        "CelType": {
+            "name": [
+                795
+            ],
+            "description": [
+                795
+            ],
+            "fields": [
+                167
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "CelValidationResult": {
+            "valid": [
+                138
+            ],
+            "issues": [
+                168
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "CelVariable": {
+            "name": [
+                795
+            ],
+            "kind": [
+                169
+            ],
+            "typeName": [
+                795
+            ],
+            "description": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "Charge": {
             "id": [
-                234
+                374
             ],
             "name": [
-                540
+                795
             ],
             "currency": [
-                166
+                292
             ],
             "basedOn": [
-                94
+                177
             ],
             "frequency": [
-                98
+                181
             ],
-            "outcome": [
-                100
+            "outcomes": [
+                183
             ],
             "calculationType": [
-                95
+                178
             ],
             "status": [
-                103
+                186
             ],
             "minimum": [
-                243
+                387
             ],
             "maximum": [
-                243
+                387
             ],
             "bands": [
-                91
+                174
             ],
             "appliesAt": [
-                102
+                185
+            ],
+            "accountCode": [
+                3
+            ],
+            "taxCode": [
+                815
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ChargeBand": {
             "id": [
-                234
+                374
             ],
             "lowerLimit": [
-                243
+                387
             ],
             "upperLteLimit": [
-                243
+                387
             ],
             "type": [
-                93
+                176
             ],
             "value": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ChargeBandInput": {
             "lowerLimit": [
-                243
+                387
             ],
             "upperLteLimit": [
-                243
+                387
             ],
             "type": [
-                93
+                176
             ],
             "value": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ChargeBandType": {},
@@ -1518,8639 +2919,13261 @@ export default {
         "ChargeCalculationType": {},
         "ChargeConnection": {
             "edges": [
-                97
+                180
             ],
             "pageInfo": [
-                349
+                513
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ChargeEdge": {
             "node": [
-                90
+                173
             ],
             "cursor": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ChargeFrequency": {},
         "ChargeOptions": {
             "currency": [
-                166
+                292
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ChargeOutcome": {},
         "ChargeScopeInput": {
             "type": [
-                102
+                185
             ],
             "id": [
-                234
+                374
             ],
             "saleId": [
-                234
+                374
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ChargeScopeType": {},
         "ChargeStatus": {},
-        "ClientPermission": {},
-        "CloseSaleInput": {
-            "saleId": [
-                540
+        "ClearItemsAppraisalInput": {
+            "appraisalId": [
+                795
+            ],
+            "itemIds": [
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "ClearItemsAppraisalPayload": {
+            "appraisal": [
+                71
+            ],
+            "count": [
+                387
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "ClientNumberSettings": {
+            "nextClientNumber": [
+                387
+            ],
+            "highestAssignedClientNumber": [
+                387
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "ClientPermission": {},
+        "ClientRelationship": {
+            "id": [
+                374
+            ],
+            "type": [
+                192
+            ],
+            "reason": [
+                795
+            ],
+            "client": [
+                888
+            ],
+            "relatedClient": [
+                888
+            ],
+            "created": [
+                795
+            ],
+            "modified": [
+                795
+            ],
+            "createdBy": [
+                112
+            ],
+            "modifiedBy": [
+                112
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "ClientRelationshipType": {},
+        "CloseSaleInput": {
+            "saleId": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "ClosingMethod": {},
-        "ConnectShopifyToAccountInput": {
-            "shopId": [
-                540
+        "ConditionReport": {
+            "text": [
+                438
             ],
-            "token": [
-                540
+            "images": [
+                378
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "ConditionReportRequest": {
+            "id": [
+                374
+            ],
+            "reference": [
+                795
+            ],
+            "status": [
+                203
+            ],
+            "contact": [
+                199
+            ],
+            "clientUserId": [
+                795
+            ],
+            "saleId": [
+                795
+            ],
+            "itemId": [
+                795
+            ],
+            "saleItem": [
+                623
+            ],
+            "assignee": [
+                197
+            ],
+            "messages": [
+                202
+            ],
+            "conditionReport": [
+                195
+            ],
+            "createdAt": [
+                795
+            ],
+            "modifiedAt": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "ConditionReportRequestAssignee": {
+            "userId": [
+                795
+            ],
+            "name": [
+                795
+            ],
+            "email": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "ConditionReportRequestChannel": {},
+        "ConditionReportRequestContact": {
+            "name": [
+                795
+            ],
+            "email": [
+                795
+            ],
+            "phone": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "ConditionReportRequestEdge": {
+            "cursor": [
+                795
+            ],
+            "node": [
+                196
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "ConditionReportRequestFilter": {
+            "statuses": [
+                203
+            ],
+            "assigneeUserId": [
+                795
+            ],
+            "unassigned": [
+                138
+            ],
+            "saleId": [
+                795
+            ],
+            "itemId": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "ConditionReportRequestMessage": {
+            "id": [
+                374
+            ],
+            "reference": [
+                795
+            ],
+            "channel": [
+                198
+            ],
+            "message": [
+                795
+            ],
+            "createdAt": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "ConditionReportRequestStatus": {},
+        "ConditionReportRequestsConnection": {
+            "edges": [
+                200
+            ],
+            "pageInfo": [
+                513
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "ConfirmAppointmentInput": {
+            "appointmentId": [
+                374
+            ],
+            "scheduledStart": [
+                823
+            ],
+            "scheduledEnd": [
+                823
+            ],
+            "staffNote": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "ConnectShopifyToAccountInput": {
+            "shopId": [
+                795
+            ],
+            "token": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "Consignment": {
             "id": [
-                234
+                374
             ],
             "cursor": [
-                540
+                795
             ],
             "accountId": [
-                540
+                795
             ],
             "shortId": [
-                540
+                795
+            ],
+            "consignmentNumber": [
+                387
             ],
             "consignorUserId": [
-                540
+                795
             ],
             "consignor": [
-                595
+                888
             ],
             "consignors": [
-                116
+                225
             ],
             "staff": [
-                113
+                221
             ],
             "name": [
-                540
+                795
             ],
             "description": [
-                540
+                795
             ],
             "externalId": [
-                540
+                795
             ],
             "feeRules": [
-                110
+                216
+            ],
+            "reportSeparately": [
+                138
             ],
             "created": [
-                540
+                795
             ],
             "modified": [
-                540
+                795
             ],
             "createdByUserId": [
-                540
+                795
             ],
             "modifiedByUserId": [
-                540
+                795
             ],
             "charges": [
-                96,
+                179,
                 {
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ],
                     "options": [
-                        99
+                        182
                     ]
                 }
             ],
+            "contracts": [
+                209
+            ],
+            "currentContract": [
+                209
+            ],
+            "signedContract": [
+                209
+            ],
+            "contractState": [
+                212
+            ],
+            "contractNeedsResigning": [
+                138
+            ],
+            "contractOutdated": [
+                138
+            ],
+            "appraisals": [
+                71
+            ],
+            "originAppraisal": [
+                71
+            ],
+            "transport": [
+                222
+            ],
+            "propertyReceipts": [
+                565
+            ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "ConsignmentBanner": {
+            "id": [
+                374
+            ],
+            "accountId": [
+                795
+            ],
+            "shortId": [
+                795
+            ],
+            "consignmentNumber": [
+                387
+            ],
+            "name": [
+                795
+            ],
+            "mainConsignorId": [
+                795
+            ],
+            "mainConsignorName": [
+                795
+            ],
+            "leadStaffId": [
+                795
+            ],
+            "leadStaffName": [
+                795
+            ],
+            "externalId": [
+                795
+            ],
+            "createdTimestamp": [
+                387
+            ],
+            "clientNumber": [
+                387
+            ],
+            "signatureStatus": [
+                220
+            ],
+            "itemCount": [
+                387
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "ConsignmentContract": {
+            "id": [
+                374
+            ],
+            "consignmentId": [
+                795
+            ],
+            "revision": [
+                387
+            ],
+            "status": [
+                213
+            ],
+            "filename": [
+                795
+            ],
+            "sha256": [
+                795
+            ],
+            "templateVersion": [
+                387
+            ],
+            "currency": [
+                795
+            ],
+            "generatedAt": [
+                823
+            ],
+            "generatedBy": [
+                795
+            ],
+            "sentAt": [
+                823
+            ],
+            "sentBy": [
+                795
+            ],
+            "signedAt": [
+                823
+            ],
+            "signatureRecordedAt": [
+                823
+            ],
+            "signatureRecordedBy": [
+                795
+            ],
+            "signatureNote": [
+                795
+            ],
+            "download": [
+                329
+            ],
+            "signingRequest": [
+                210
+            ],
+            "signedDownload": [
+                329
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "ConsignmentContractSigningRequest": {
+            "id": [
+                374
+            ],
+            "status": [
+                211
+            ],
+            "recipientEmail": [
+                795
+            ],
+            "createdAt": [
+                823
+            ],
+            "createdBy": [
+                795
+            ],
+            "expiresAt": [
+                823
+            ],
+            "completedAt": [
+                823
+            ],
+            "cancelledAt": [
+                823
+            ],
+            "signerName": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "ConsignmentContractSigningRequestStatus": {},
+        "ConsignmentContractState": {},
+        "ConsignmentContractStatus": {},
+        "ConsignmentContractTemplate": {
+            "id": [
+                374
+            ],
+            "version": [
+                387
+            ],
+            "title": [
+                795
+            ],
+            "body": [
+                795
+            ],
+            "createdAt": [
+                823
+            ],
+            "createdBy": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "ConsignmentFeeCalculationType": {},
         "ConsignmentFeeRule": {
             "id": [
-                234
+                374
             ],
             "name": [
-                540
+                795
             ],
             "type": [
-                112
+                218
             ],
             "value": [
-                243
+                387
             ],
             "lowerLimit": [
-                243
+                387
             ],
             "upperLteLimit": [
-                243
+                387
             ],
             "calculationType": [
-                109
+                215
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ConsignmentFeeRuleInput": {
             "name": [
-                540
+                795
             ],
             "type": [
-                112
+                218
             ],
             "value": [
-                243
+                387
             ],
             "lowerLimit": [
-                243
+                387
             ],
             "upperLteLimit": [
-                243
+                387
             ],
             "calculationType": [
-                109
+                215
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ConsignmentFeeType": {},
-        "ConsignmentStaff": {
-            "userId": [
-                540
+        "ConsignmentLine": {
+            "consignmentId": [
+                374
             ],
-            "isLead": [
-                80
+            "consignment": [
+                207
             ],
-            "accountId": [
-                540
+            "lineNumber": [
+                387
             ],
-            "name": [
-                540
+            "item": [
+                393
             ],
-            "email": [
-                540
+            "consignedFrom": [
+                88
+            ],
+            "created": [
+                795
+            ],
+            "removed": [
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "ConsignmentSignatureStatus": {},
+        "ConsignmentStaff": {
+            "userId": [
+                795
+            ],
+            "isLead": [
+                138
+            ],
+            "accountId": [
+                795
+            ],
+            "name": [
+                795
+            ],
+            "email": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "ConsignmentTransport": {
+            "coordinator": [
+                827
+            ],
+            "expectedDate": [
+                795
+            ],
+            "courier": [
+                240
+            ],
+            "receivingSite": [
+                773
+            ],
+            "__typename": [
+                795
             ]
         },
         "ConsignmentsConnection": {
             "edges": [
-                115
+                224
             ],
             "pageInfo": [
-                349
+                513
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ConsignmentsEdge": {
             "cursor": [
-                540
+                795
             ],
             "node": [
-                108
+                207
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "Consignor": {
             "userId": [
-                540
+                795
             ],
             "isMain": [
-                80
+                138
             ],
             "accountId": [
-                540
+                795
             ],
             "user": [
-                595
+                888
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ContentDiff": {
             "targetKind": [
-                120
+                229
             ],
             "saleId": [
-                234
+                374
             ],
             "saleItemId": [
-                234
+                374
             ],
             "variantId": [
-                234
+                374
             ],
             "itemSchemaId": [
-                234
+                374
             ],
             "targetSchemaId": [
-                234
+                374
             ],
             "schemaIdMatches": [
-                80
+                138
             ],
             "inSync": [
-                80
+                138
             ],
             "entries": [
-                118
+                227
             ],
             "removableKeys": [
-                540
+                795
+            ],
+            "creators": [
+                367
+            ],
+            "categories": [
+                367
+            ],
+            "tags": [
+                367
+            ],
+            "images": [
+                367
+            ],
+            "templates": [
+                820
+            ],
+            "conditionReportChanged": [
+                138
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ContentDiffEntry": {
             "key": [
-                540
+                795
             ],
             "status": [
-                119
+                228
             ],
             "itemValue": [
-                286
+                438
             ],
             "targetValue": [
-                286
+                438
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ContentDiffStatus": {},
         "ContentDiffTargetKind": {},
+        "ContentIssue": {
+            "severity": [
+                391
+            ],
+            "field": [
+                804
+            ],
+            "key": [
+                795
+            ],
+            "message": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "ContentSuggestion": {
+            "field": [
+                804
+            ],
+            "value": [
+                806
+            ],
+            "reasoning": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "ContentSuggestions": {
+            "suggestions": [
+                231
+            ],
+            "imageCount": [
+                387
+            ],
+            "templatedFields": [
+                804
+            ],
+            "__typename": [
+                795
+            ]
+        },
         "ContentSyncDirection": {},
         "ContinueOnboardPaymentAccountInput": {
             "returnUrl": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "ContractPlaceholder": {
+            "name": [
+                795
+            ],
+            "description": [
+                795
+            ],
+            "block": [
+                138
+            ],
+            "__typename": [
+                795
             ]
         },
         "Country": {},
         "CountryInfo": {
             "code": [
-                123
+                236
             ],
             "name": [
-                540
+                795
             ],
             "enabled": [
-                80
+                138
             ],
             "amlRiskClass": [
-                33
+                45
             ],
             "isHomeCountry": [
-                80
+                138
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CountryInfoConnection": {
             "edges": [
-                126
+                239
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CountryInfoEdge": {
             "node": [
-                124
+                237
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "Courier": {
+            "id": [
+                374
+            ],
+            "name": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "CreateAccountCodeInput": {
+            "code": [
+                795
+            ],
+            "name": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "CreateAccountFeeInput": {
             "name": [
-                540
+                795
             ],
             "type": [
-                3
+                5
             ],
             "value": [
-                243
+                387
             ],
             "upperLteLimit": [
-                243
+                387
             ],
             "lowerLimit": [
-                243
+                387
             ],
             "calculationType": [
-                217
+                352
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CreateAccountInput": {
             "name": [
-                540
+                795
             ],
             "email": [
-                540
+                795
             ],
             "handle": [
-                540
+                795
             ],
             "description": [
-                540
+                795
             ],
             "links": [
-                290
+                442
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CreateAffiliateInput": {
             "firstName": [
-                540
+                795
             ],
             "lastName": [
-                540
+                795
             ],
             "email": [
-                540
+                795
             ],
             "token": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "CreateAppraisalDocumentTemplateVersionInput": {
+            "type": [
+                90
+            ],
+            "title": [
+                795
+            ],
+            "intro": [
+                795
+            ],
+            "preInventory": [
+                795
+            ],
+            "summary": [
+                795
+            ],
+            "valuerStatement": [
+                795
+            ],
+            "terms": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "CreateAppraisalInput": {
+            "clientUserIds": [
+                795
+            ],
+            "staffUserIds": [
+                795
+            ],
+            "name": [
+                795
+            ],
+            "notes": [
+                795
+            ],
+            "type": [
+                90
+            ],
+            "attributionChannelId": [
+                374
+            ],
+            "__typename": [
+                795
             ]
         },
         "CreateAssetUploadUrlInput": {
             "contentType": [
-                540
+                795
             ],
             "filename": [
-                540
+                795
             ],
             "externalId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CreateAttributionChannelInput": {
             "name": [
-                540
+                795
+            ],
+            "selfServiceOnly": [
+                138
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CreateAttributionSourceInput": {
             "name": [
-                540
+                795
+            ],
+            "public": [
+                138
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "CreateBuyerPremiumInput": {
+            "name": [
+                795
+            ],
+            "currency": [
+                292
+            ],
+            "calculationType": [
+                144
+            ],
+            "minimum": [
+                387
+            ],
+            "maximum": [
+                387
+            ],
+            "externalId": [
+                795
+            ],
+            "accountCodeId": [
+                374
+            ],
+            "taxCodeId": [
+                374
+            ],
+            "__typename": [
+                795
             ]
         },
         "CreateCategoryInput": {
             "name": [
-                540
+                795
             ],
             "slug": [
-                540
+                795
             ],
             "parentId": [
-                234
+                374
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CreateChargeInput": {
             "name": [
-                540
+                795
             ],
             "currency": [
-                166
+                292
             ],
             "basedOn": [
-                94
+                177
             ],
             "frequency": [
-                98
+                181
             ],
-            "outcome": [
-                100
+            "outcomes": [
+                183
             ],
             "calculationType": [
-                95
+                178
             ],
             "minimum": [
-                243
+                387
             ],
             "maximum": [
-                243
+                387
+            ],
+            "accountCodeId": [
+                374
+            ],
+            "taxCodeId": [
+                374
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "CreateClientRelationshipInput": {
+            "userId": [
+                374
+            ],
+            "relatedUserId": [
+                374
+            ],
+            "type": [
+                192
+            ],
+            "reason": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "CreateConsignmentContractTemplateVersionInput": {
+            "title": [
+                795
+            ],
+            "body": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "CreateConsignmentInput": {
             "consignorUserId": [
-                540
+                795
             ],
             "idType": [
-                603
+                896
             ],
             "name": [
-                540
+                795
             ],
             "description": [
-                540
+                795
             ],
             "externalId": [
-                540
+                795
             ],
             "feeRules": [
-                111
+                217
             ],
             "consignorUserIds": [
-                540
+                795
             ],
             "consignmentStaffUserIds": [
-                540
+                795
+            ],
+            "reportSeparately": [
+                138
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CreateCreatorInput": {
             "name": [
-                540
+                795
             ],
             "slug": [
-                540
+                795
             ],
             "parentId": [
-                234
+                374
             ],
             "type": [
-                165
+                291
             ],
             "arr": [
-                80
+                138
+            ],
+            "yearFrom": [
+                795
+            ],
+            "yearTo": [
+                795
+            ],
+            "nationality": [
+                795
+            ],
+            "biography": [
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CreateDutchItemForSaleInput": {
             "saleId": [
-                540
+                795
             ],
             "title": [
-                540
+                795
             ],
             "description": [
-                540
+                795
             ],
             "availableUnits": [
-                243
+                387
             ],
             "openTime": [
-                540
+                795
             ],
             "closingTime": [
-                540
+                795
             ],
             "schedule": [
-                211
+                345
             ],
             "config": [
-                201
+                335
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CreateDutchSaleInput": {
             "dates": [
-                408
+                615
             ],
             "title": [
-                540
+                795
             ],
             "description": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CreateInvoiceInput": {
             "orderId": [
-                234
+                374
             ],
             "externalID": [
-                540
+                795
             ],
             "url": [
-                540
+                795
             ],
             "dueDate": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CreateItemImage": {
             "itemId": [
-                540
+                795
             ],
             "url": [
-                540
+                795
             ],
             "order": [
-                243
+                387
             ],
             "imageId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CreateItemInput": {
             "title": [
-                540
+                795
             ],
             "description": [
-                540
+                795
             ],
             "price": [
-                273
+                424
             ],
             "externalId": [
-                540
+                795
             ],
             "consignmentId": [
-                540
+                795
+            ],
+            "appraisalId": [
+                795
             ],
             "siteId": [
-                540
+                795
             ],
             "locationId": [
-                540
+                795
             ],
             "metadata": [
-                260
+                411
             ],
             "tags": [
-                540
+                795
             ],
             "specifications": [
-                278
+                429
             ],
             "valuationAmount": [
-                243
+                387
             ],
             "valuationCurrency": [
-                540
+                795
             ],
             "lowEstimate": [
-                243
+                387
             ],
             "highEstimate": [
-                243
+                387
             ],
             "location": [
-                540
+                795
+            ],
+            "status": [
+                404
+            ],
+            "staffLeadUserId": [
+                795
+            ],
+            "citesLicenceNumber": [
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CreateItemNoteInput": {
             "itemId": [
-                540
+                795
             ],
             "note": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CreateItemTypeInput": {
             "name": [
-                540
+                795
             ],
             "schema": [
-                286
+                438
             ],
             "parentId": [
-                540
+                795
             ],
             "namespace": [
-                540
+                795
+            ],
+            "slug": [
+                795
             ],
             "titleTemplate": [
-                540
+                795
             ],
             "subTitleTemplate": [
-                540
+                795
             ],
             "descriptionTemplate": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CreateLocationInput": {
             "siteId": [
-                540
+                795
             ],
             "parentLocationId": [
-                540
+                795
             ],
             "name": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "CreateNoteTypeInput": {
+            "name": [
+                795
+            ],
+            "scope": [
+                471
+            ],
+            "__typename": [
+                795
             ]
         },
         "CreateOrderInput": {
             "saleId": [
-                540
+                795
             ],
             "userId": [
-                540
+                795
             ],
             "title": [
-                540
+                795
             ],
             "currency": [
-                166
+                292
             ],
             "billingAddress": [
-                300
+                452
             ],
             "shippingAddress": [
-                300
+                452
             ],
             "orderLines": [
-                146
+                267
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CreateOrderLineForOrderInput": {
             "itemId": [
-                540
+                795
             ],
             "amount": [
-                243
+                387
             ],
             "description": [
-                540
+                795
             ],
             "fees": [
-                150
+                271
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CreateOrderLineInput": {
             "orderId": [
-                234
+                374
             ],
             "itemId": [
-                540
+                795
             ],
             "amount": [
-                243
+                387
             ],
             "description": [
-                540
+                795
             ],
             "fees": [
-                150
+                271
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CreatePaymentInput": {
             "orderId": [
-                234
+                374
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CreatePaymentOrderInput": {
             "saleId": [
-                540
+                795
             ],
             "itemId": [
-                540
+                795
             ],
             "userId": [
-                540
+                795
             ],
             "orderLines": [
-                151
+                272
             ],
             "currency": [
-                166
+                292
             ],
             "billingAddress": [
-                300
+                452
             ],
             "shippingAddress": [
-                300
+                452
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CreatePaymentOrderLineFeeInput": {
             "description": [
-                540
+                795
             ],
             "amount": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CreatePaymentOrderLineInput": {
             "itemId": [
-                540
+                795
             ],
             "amount": [
-                243
+                387
             ],
             "description": [
-                540
+                795
             ],
             "orderLineType": [
-                342
+                505
             ],
             "fees": [
-                150
+                271
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "CreatePropertyReceiptTemplateVersionInput": {
+            "title": [
+                795
+            ],
+            "body": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "CreateSaleFeeInput": {
             "saleId": [
-                234
+                374
             ],
             "name": [
-                540
+                795
             ],
             "type": [
-                220
+                355
             ],
             "value": [
-                243
+                387
             ],
             "upperLteLimit": [
-                243
+                387
             ],
             "lowerLimit": [
-                243
+                387
             ],
             "calculationType": [
-                217
+                352
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CreateSaleInput": {
             "dates": [
-                408
+                615
             ],
             "title": [
-                540
+                795
             ],
             "description": [
-                540
+                795
             ],
             "currency": [
-                540
+                795
             ],
             "bidIncrementTable": [
-                62
+                119
             ],
             "closingMethod": [
-                106
+                194
             ],
             "closingTimeCountdown": [
-                243
+                387
             ],
             "saleItemClosingSchedule": [
-                418
+                625
             ],
             "reserveAutoBidMethod": [
-                395
+                601
             ],
             "themeType": [
-                243
+                387
             ],
             "hidden": [
-                80
+                138
             ],
             "type": [
-                471
+                682
             ],
             "isTestSale": [
-                80
+                138
             ],
             "printedCatalogue": [
-                80
+                138
             ],
             "bidRestrictions": [
-                72
+                129
             ],
             "externalId": [
-                540
+                795
             ],
             "location": [
-                540
+                795
             ],
             "slug": [
-                540
+                795
             ],
             "metafields": [
-                306
+                461
             ],
             "saleGenreId": [
-                234
+                374
             ],
             "siteId": [
-                234
+                374
             ],
             "viewingTimes": [
-                540
+                795
             ],
             "buyersNotes": [
-                540
+                795
             ],
             "feesApplyInfo": [
-                540
+                795
             ],
             "saleContactUserId": [
-                234
+                374
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CreateSaleItemFeeInput": {
             "saleId": [
-                234
+                374
             ],
             "itemId": [
-                234
+                374
             ],
             "name": [
-                540
+                795
             ],
             "type": [
-                220
+                355
             ],
             "value": [
-                243
+                387
             ],
             "upperLteLimit": [
-                243
+                387
             ],
             "lowerLimit": [
-                243
+                387
             ],
             "calculationType": [
-                217
+                352
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CreateSaleItemRegistrationInput": {
             "saleId": [
-                540
+                795
             ],
             "itemId": [
-                540
+                795
             ],
             "userId": [
-                540
+                795
             ],
             "type": [
-                446
+                657
             ],
             "identifier": [
-                540
+                795
             ],
             "status": [
-                445
+                656
             ],
             "preferredPhoneNumberId": [
-                234
+                374
             ],
             "alternativePhoneNumberIds": [
-                234
+                374
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CreateSaleRegistrationInput": {
             "saleId": [
-                540
+                795
             ],
             "userId": [
-                540
+                795
             ],
             "type": [
-                446
+                657
             ],
             "identifier": [
-                540
+                795
             ],
             "status": [
-                445
+                656
             ],
             "preferredPhoneNumberId": [
-                234
+                374
             ],
             "alternativePhoneNumberIds": [
-                234
+                374
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CreateSaleRegistrationPolicyInput": {
             "code": [
-                540
+                795
             ],
             "description": [
-                540
+                795
             ],
             "rule": [
-                540
+                795
             ],
             "isDefault": [
-                80
+                138
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CreateSendGridNotificationIntegrationInput": {
             "apiKey": [
-                540
+                795
             ],
             "fromEmail": [
-                540
+                795
             ],
             "fromName": [
-                540
+                795
             ],
             "replyToEmail": [
-                540
+                795
             ],
             "accountNotificationEmail": [
-                540
+                795
             ],
             "timezone": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CreateSiteInput": {
             "name": [
-                540
+                795
             ],
             "addressLine1": [
-                540
+                795
             ],
             "addressLine2": [
-                540
+                795
             ],
             "addressCity": [
-                540
+                795
             ],
             "addressPostalCode": [
-                540
+                795
             ],
             "addressCountryIso": [
-                540
+                795
             ],
             "addressState": [
-                540
+                795
             ],
             "phone": [
-                540
+                795
             ],
             "email": [
-                540
+                795
             ],
             "openingHours": [
-                540
+                795
             ],
             "collectionInstructions": [
-                540
+                795
             ],
             "appointmentRequired": [
-                80
+                138
             ],
             "timezone": [
-                540
+                795
+            ],
+            "bookingHours": [
+                775
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "CreateStaffProfileInput": {
+            "name": [
+                795
+            ],
+            "attributes": [
+                438
+            ],
+            "departmentIds": [
+                374
+            ],
+            "itemTypeIds": [
+                374
+            ],
+            "dashboardUserId": [
+                795
+            ],
+            "public": [
+                138
+            ],
+            "isPhoneClerk": [
+                138
+            ],
+            "phoneClerkNotes": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "CreateStreamChannelInput": {
+            "name": [
+                795
+            ],
+            "location": [
+                795
+            ],
+            "description": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "CreateTaxCodeInput": {
+            "name": [
+                795
+            ],
+            "application": [
+                813
+            ],
+            "rateBps": [
+                387
+            ],
+            "effectiveFrom": [
+                795
+            ],
+            "effectiveTo": [
+                795
+            ],
+            "accountCodeId": [
+                374
+            ],
+            "replacesTaxCodeId": [
+                374
+            ],
+            "__typename": [
+                795
             ]
         },
         "CreateTwilioNotificationIntegrationInput": {
             "accountSid": [
-                540
+                795
             ],
             "authToken": [
-                540
+                795
             ],
             "messagingServiceSid": [
-                540
+                795
             ],
             "timezone": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CreateUploadUrlInput": {
             "imageTypes": [
-                239
+                383
             ],
             "contentType": [
-                540
+                795
             ],
             "order": [
-                243
+                387
             ],
             "saleId": [
-                540
+                795
             ],
             "itemId": [
-                540
+                795
             ],
             "externalId": [
-                540
+                795
             ],
             "marketplaceEntityId": [
-                540
+                795
+            ],
+            "staffProfileId": [
+                795
+            ],
+            "kind": [
+                381
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "Creator": {
             "id": [
-                234
+                374
             ],
             "accountId": [
-                234
+                374
             ],
             "name": [
-                540
+                795
             ],
             "slug": [
-                540
+                795
             ],
             "parentId": [
-                234
+                374
             ],
             "parent": [
-                162
+                287
             ],
             "children": [
-                162
+                287
             ],
             "type": [
-                165
+                291
             ],
             "arr": [
-                80
+                138
+            ],
+            "yearFrom": [
+                795
+            ],
+            "yearTo": [
+                795
+            ],
+            "nationality": [
+                795
+            ],
+            "biography": [
+                795
             ],
             "createdAt": [
-                540
+                795
             ],
             "updatedAt": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CreatorConnection": {
             "creators": [
-                162
+                287
             ],
             "hasNextPage": [
-                80
+                138
             ],
             "endCursor": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "CreatorList": {
             "creators": [
-                162
+                287
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "CreatorSettings": {
+            "allowNested": [
+                138
+            ],
+            "__typename": [
+                795
             ]
         },
         "CreatorType": {},
         "Currency": {},
         "CurrentUser": {
             "userId": [
-                540
+                795
             ],
             "roles": [
-                169
+                295
             ],
             "permissions": [
-                363
+                527
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DashboardMember": {
             "userId": [
-                540
+                795
             ],
             "name": [
-                540
+                795
             ],
             "email": [
-                540
+                795
             ],
             "roles": [
-                170
+                296
+            ],
+            "staffProfile": [
+                780
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DashboardUserRole": {},
         "DashboardUserRoleAssignment": {
             "role": [
-                169
+                295
             ],
             "assignedAt": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DeleteAccountFeeInput": {
             "id": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DeleteActionHookSubscriptionInput": {
             "id": [
-                234
+                374
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "DeleteBuyerPremiumAtScopeInput": {
+            "buyerPremiumId": [
+                374
+            ],
+            "scope": [
+                148
+            ],
+            "__typename": [
+                795
             ]
         },
         "DeleteChargeAtScopeInput": {
             "chargeId": [
-                234
+                374
             ],
             "scope": [
-                101
+                184
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DeleteImageInput": {
             "saleId": [
-                540
+                795
             ],
             "itemId": [
-                540
+                795
             ],
             "imageId": [
-                540
+                795
             ],
             "imageTypes": [
-                239
+                383
+            ],
+            "staffProfileId": [
+                795
+            ],
+            "kind": [
+                381
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DeleteItemImageInput": {
             "itemId": [
-                540
+                795
             ],
             "imageId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DeleteItemInput": {
             "itemId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DeleteLiveStreamFromSaleInput": {
             "saleId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DeleteMetafieldInput": {
             "entityType": [
-                305
+                460
             ],
             "entityId": [
-                540
+                795
             ],
             "key": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DeleteOrderLineInput": {
             "orderId": [
-                234
+                374
             ],
             "orderLineId": [
-                234
+                374
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DeletePaymentOrderInput": {
             "orderId": [
-                234
+                374
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DeleteSaleFeeInput": {
             "id": [
-                234
+                374
             ],
             "saleId": [
-                234
+                374
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DeleteSaleInput": {
             "saleId": [
-                540
+                795
             ],
             "confirmationSaleId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DeleteSaleItemFeeInput": {
             "id": [
-                234
+                374
             ],
             "saleId": [
-                234
+                374
             ],
             "itemId": [
-                234
+                374
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DeleteSaleItemRegistrationInput": {
             "itemRegistrationId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DeleteSalePayload": {
             "saleId": [
-                234
+                374
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DeleteSaleRegistrationInput": {
             "registrationId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DeleteUserAddressInput": {
             "userId": [
-                540
+                795
             ],
             "idType": [
-                603
+                896
             ],
             "addressId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DeleteUserPhoneInput": {
             "userId": [
-                540
+                795
             ],
             "idType": [
-                603
+                896
             ],
             "phoneId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "Department": {
             "id": [
-                234
+                374
             ],
             "name": [
-                540
+                795
             ],
             "slug": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DepartmentConnection": {
             "edges": [
-                191
+                318
             ],
             "pageInfo": [
-                349
+                513
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DepartmentEdge": {
             "node": [
-                189
+                316
             ],
             "cursor": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DetachSaleRegistrationPoliciesInput": {
             "saleId": [
-                540
+                795
             ],
             "policyIds": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DirectSell": {
             "accountId": [
-                540
+                795
             ],
             "buyerId": [
-                540
+                795
             ],
             "buyer": [
-                606
+                899
             ],
             "amount": [
-                243
+                387
             ],
             "currency": [
-                540
+                795
             ],
             "source": [
-                194
+                321
             ],
             "referenceId": [
-                540
+                795
             ],
             "timestamp": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DirectSellSource": {},
         "DisassociateUserFromAccountInput": {
             "userId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "DisplayNumberAssignmentInput": {
+            "itemId": [
+                374
+            ],
+            "displayNumber": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "Document": {
             "id": [
-                540
+                795
             ],
             "accountId": [
-                540
+                795
             ],
             "url": [
-                540
+                795
             ],
             "contentType": [
-                540
+                795
             ],
             "size": [
-                243
+                387
             ],
             "filename": [
-                540
+                795
             ],
             "externalId": [
-                540
+                795
             ],
             "created": [
-                540
+                795
             ],
             "modified": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "DocumentBranding": {
+            "logoAssetId": [
+                795
+            ],
+            "accentColor": [
+                795
+            ],
+            "secondaryColor": [
+                795
+            ],
+            "hideAccountName": [
+                138
+            ],
+            "company": [
+                326
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "DocumentBrandingCompany": {
+            "legalName": [
+                795
+            ],
+            "addressLines": [
+                795
+            ],
+            "registrationLabel": [
+                795
+            ],
+            "registrationNumber": [
+                795
+            ],
+            "taxLabel": [
+                795
+            ],
+            "taxNumber": [
+                795
+            ],
+            "email": [
+                795
+            ],
+            "phone": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "DocumentBrandingCompanyInput": {
+            "legalName": [
+                795
+            ],
+            "addressLines": [
+                795
+            ],
+            "registrationLabel": [
+                795
+            ],
+            "registrationNumber": [
+                795
+            ],
+            "taxLabel": [
+                795
+            ],
+            "taxNumber": [
+                795
+            ],
+            "email": [
+                795
+            ],
+            "phone": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "DocumentBrandingInput": {
+            "logoAssetId": [
+                795
+            ],
+            "accentColor": [
+                795
+            ],
+            "secondaryColor": [
+                795
+            ],
+            "hideAccountName": [
+                138
+            ],
+            "company": [
+                327
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "DocumentDownload": {
+            "url": [
+                795
+            ],
+            "expiresAt": [
+                823
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "DraftItemInput": {
+            "itemTypeId": [
+                374
+            ],
+            "title": [
+                795
+            ],
+            "subTitle": [
+                795
+            ],
+            "description": [
+                795
+            ],
+            "tags": [
+                795
+            ],
+            "attributes": [
+                438
+            ],
+            "imageUrls": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "DutchBid": {
             "id": [
-                234
+                374
             ],
             "userId": [
-                540
+                795
             ],
             "amount": [
-                243
+                387
             ],
             "quantityRequested": [
-                243
+                387
             ],
             "quantityAllocated": [
-                243
+                387
             ],
             "placedAt": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DutchBidConnection": {
             "edges": [
-                199
+                333
             ],
             "pageInfo": [
-                349
+                513
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DutchBidEdge": {
             "cursor": [
-                540
+                795
             ],
             "node": [
-                197
+                331
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DutchItemConfig": {
             "pricingMode": [
-                205
+                339
             ],
             "maxBidsPerBidder": [
-                243
+                387
             ],
             "maxUnitsPerBidder": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DutchItemConfigInput": {
             "pricingMode": [
-                205
+                339
             ],
             "maxBidsPerBidder": [
-                243
+                387
             ],
             "maxUnitsPerBidder": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DutchItemStatus": {},
         "DutchPriceDrop": {
             "at": [
-                540
+                795
             ],
             "price": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DutchPriceDropInput": {
             "at": [
-                540
+                795
             ],
             "price": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DutchPricingMode": {},
         "DutchSale": {
             "id": [
-                234
+                374
             ],
             "accountId": [
-                540
+                795
             ],
             "title": [
-                540
+                795
             ],
             "description": [
-                540
+                795
             ],
             "currency": [
-                540
+                795
             ],
             "status": [
-                470
+                681
             ],
             "dates": [
-                407
+                614
             ],
             "saleFormat": [
-                410
+                617
             ],
             "images": [
-                235
+                378
             ],
             "items": [
-                208,
+                342,
                 {
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ]
                 }
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DutchSaleItem": {
             "id": [
-                234
+                374
             ],
             "saleId": [
-                540
+                795
             ],
             "status": [
-                202
+                336
             ],
             "availableUnits": [
-                243
+                387
             ],
             "openTime": [
-                540
+                795
             ],
             "endTime": [
-                540
+                795
             ],
             "schedule": [
-                210
+                344
             ],
             "config": [
-                200
+                334
             ],
             "title": [
-                540
+                795
             ],
             "description": [
-                540
+                795
             ],
             "images": [
-                235
+                378
             ],
             "bids": [
-                198,
+                332,
                 {
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ]
                 }
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DutchSaleItemConnection": {
             "edges": [
-                209
+                343
             ],
             "pageInfo": [
-                349
+                513
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DutchSaleItemEdge": {
             "cursor": [
-                540
+                795
             ],
             "node": [
-                207
+                341
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DutchSchedule": {
             "startingAmount": [
-                243
+                387
             ],
             "drops": [
-                203
+                337
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "DutchScheduleInput": {
             "startingAmount": [
-                243
+                387
             ],
             "drops": [
-                204
+                338
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "EntityNumberSettings": {
+            "nextNumber": [
+                387
+            ],
+            "highestAssignedNumber": [
+                387
+            ],
+            "__typename": [
+                795
             ]
         },
         "Estimate": {
             "low": [
-                243
+                387
             ],
             "high": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ExternalLiveStream": {
             "url": [
-                540
+                795
             ],
             "type": [
-                295
+                447
             ],
             "created": [
-                540
+                795
             ],
             "updated": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "FacetCount": {
             "fieldName": [
-                540
+                795
             ],
             "counts": [
-                216
+                351
             ],
             "stats": [
-                215
+                350
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "FacetStats": {
             "avg": [
-                222
+                357
             ],
             "max": [
-                222
+                357
             ],
             "min": [
-                222
+                357
             ],
             "sum": [
-                222
+                357
             ],
             "totalValues": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "FacetValue": {
             "value": [
-                540
+                795
             ],
             "count": [
-                243
+                387
             ],
             "highlighted": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "FeeCalculationType": {},
         "FeeRule": {
             "id": [
-                234
+                374
             ],
             "name": [
-                540
+                795
             ],
             "type": [
-                220
+                355
             ],
             "value": [
-                243
+                387
             ],
             "upperLteLimit": [
-                243
+                387
             ],
             "lowerLimit": [
-                243
+                387
             ],
             "calculationType": [
-                217
+                352
             ],
             "source": [
-                219
+                354
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "FeeRuleSource": {},
         "FeeRuleType": {},
         "FieldChange": {
             "field": [
-                540
+                795
             ],
             "oldValue": [
-                286
+                438
             ],
             "newValue": [
-                286
+                438
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "Float": {},
-        "GeoLocation": {
-            "countryIsoCode": [
-                540
+        "GenerateConsignmentContractInput": {
+            "consignmentId": [
+                795
             ],
-            "countryName": [
-                540
-            ],
-            "cityName": [
-                540
-            ],
-            "latitude": [
-                222
-            ],
-            "longitude": [
-                222
-            ],
-            "timezone": [
-                540
-            ],
-            "found": [
-                80
+            "currency": [
+                292
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "GeneratePresaleAdvicesInput": {
+            "saleId": [
+                795
+            ],
+            "consignorUserIds": [
+                795
+            ],
+            "consignmentId": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "GeneratePresaleAdvicesResult": {
+            "advices": [
+                549
+            ],
+            "skipped": [
+                553
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "GeneratePropertyReceiptInput": {
+            "consignmentId": [
+                795
+            ],
+            "itemIds": [
+                795
+            ],
+            "location": [
+                568
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "GeoLocation": {
+            "countryIsoCode": [
+                795
+            ],
+            "countryName": [
+                795
+            ],
+            "cityName": [
+                795
+            ],
+            "latitude": [
+                357
+            ],
+            "longitude": [
+                357
+            ],
+            "timezone": [
+                795
+            ],
+            "found": [
+                138
+            ],
+            "__typename": [
+                795
             ]
         },
         "GetItemInput": {
             "itemId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "GetItemsInput": {
             "userId": [
-                540
+                795
             ],
             "first": [
-                243
+                387
             ],
             "after": [
-                540
+                795
             ],
             "direction": [
-                350
+                514
             ],
             "itemsFilter": [
-                285
+                437
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "GetMetafieldInput": {
             "key": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "GetMetafieldsInput": {
             "keys": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "GroupSyncDiff": {
+            "resulting": [
+                795
+            ],
+            "added": [
+                795
+            ],
+            "removed": [
+                795
+            ],
+            "inSync": [
+                138
+            ],
+            "__typename": [
+                795
             ]
         },
         "HideItemsFromSaleInput": {
             "saleId": [
-                540
+                795
             ],
             "includingAndFromItemNumber": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "HighestBidInfo": {
             "bidId": [
-                540
+                795
             ],
             "itemId": [
-                540
+                795
             ],
             "currentAmount": [
-                243
+                387
             ],
             "maxAmount": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "HighlightedSaleItemConnection": {
             "edges": [
-                231
+                371
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "HighlightedSaleItemEdge": {
             "node": [
-                416
+                623
             ],
             "position": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "HttpHeader": {
             "key": [
-                540
+                795
             ],
             "value": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "HttpHeaderInput": {
             "key": [
-                540
+                795
             ],
             "value": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ID": {},
-        "Image": {
-            "id": [
-                540
-            ],
-            "url": [
-                540
-            ],
-            "order": [
-                243
-            ],
-            "externalId": [
-                540
+        "IdVerificationState": {},
+        "IdentityVerificationProvider": {
+            "on_StripeIdentityProviderSettings": [
+                799
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "IdentityVerificationProviderInput": {
+            "stripeIdentity": [
+                798
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "Image": {
+            "id": [
+                795
+            ],
+            "url": [
+                795
+            ],
+            "order": [
+                387
+            ],
+            "externalId": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "ImageAssociation": {
             "on_SaleItemImageAssociation": [
-                421
+                628
             ],
             "on_ItemImageAssociation": [
-                254
+                403
             ],
             "on_SaleImageAssociation": [
-                415
+                622
             ],
             "on_AccountImageAssociation": [
-                4
+                6
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ImageIdType": {},
+        "ImageKind": {},
         "ImageOrderInput": {
             "imageId": [
-                540
+                795
             ],
             "order": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ImageType": {},
         "ImageWithAssociations": {
             "image": [
-                235
+                378
             ],
             "associations": [
-                236
+                379
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "InstantNotificationConfiguration": {
             "channel": [
-                314
+                476
             ],
             "status": [
-                316
+                478
             ],
             "templates": [
-                323
+                485
             ],
             "sender": [
-                317
+                479
             ],
             "replyToEmail": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "InstantNotificationConfigurationInput": {
             "templates": [
-                324
+                486
             ],
             "sender": [
-                318
+                480
             ],
             "replyToEmail": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "Int": {},
-        "Invoice": {
-            "invoiceId": [
-                234
+        "InventoryNumberSettings": {
+            "nextNumber": [
+                387
             ],
-            "externalID": [
-                540
-            ],
-            "dueDate": [
-                540
-            ],
-            "url": [
-                540
+            "highestAssignedNumber": [
+                387
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "Invoice": {
+            "invoiceId": [
+                374
+            ],
+            "externalID": [
+                795
+            ],
+            "dueDate": [
+                795
+            ],
+            "url": [
+                795
+            ],
+            "revision": [
+                387
+            ],
+            "issuedAt": [
+                795
+            ],
+            "download": [
+                329
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "InvoiceSettings": {
+            "paymentTermsDays": [
+                387
+            ],
+            "paymentInstructions": [
+                795
+            ],
+            "footerText": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "IssueSeverity": {},
+        "IssuesSuggestion": {
+            "issues": [
+                230
+            ],
+            "__typename": [
+                795
             ]
         },
         "Item": {
             "id": [
-                234
+                374
             ],
             "cursor": [
-                540
+                795
             ],
             "title": [
-                540
+                795
             ],
             "subTitle": [
-                540
+                795
+            ],
+            "conditionReport": [
+                195
             ],
             "accountId": [
-                540
+                795
             ],
             "description": [
-                540
+                795
             ],
             "titleTemplateOverride": [
-                540
+                795
             ],
             "subTitleTemplateOverride": [
-                540
+                795
             ],
             "descriptionTemplateOverride": [
-                540
+                795
             ],
             "price": [
-                272
+                423
             ],
             "images": [
-                235
+                378
             ],
             "externalId": [
-                540
+                795
             ],
             "tags": [
-                540
+                795
             ],
             "metadata": [
-                259
+                410
             ],
             "itemType": [
-                280
+                431
             ],
             "effectiveSchema": [
-                286
+                438
             ],
             "attributes": [
-                286
+                438
             ],
             "type": [
-                280
+                431
             ],
             "schema": [
-                286
+                438
             ],
             "itemNotes": [
-                262,
+                413,
                 {
                     "take": [
-                        243
+                        387
                     ],
                     "cursor": [
-                        540
+                        795
                     ],
                     "direction": [
-                        350
+                        514
                     ]
                 }
             ],
+            "notes": [
+                468,
+                {
+                    "first": [
+                        387
+                    ],
+                    "after": [
+                        795
+                    ]
+                }
+            ],
+            "alerts": [
+                467
+            ],
             "specifications": [
-                277
+                428
             ],
             "specificationsV2": [
-                277
+                428
             ],
             "packaging": [
-                270
+                421
             ],
             "estimates": [
-                212
+                347
             ],
             "valuationAmount": [
-                243
+                387
             ],
             "valuationCurrency": [
-                540
+                795
             ],
             "saleId": [
-                540
+                795
             ],
             "location": [
-                540
+                795
             ],
             "metafields": [
-                304,
+                459,
                 {
                     "input": [
-                        227,
+                        366,
                         "GetMetafieldsInput!"
                     ]
                 }
             ],
             "metafield": [
-                304,
+                459,
                 {
                     "input": [
-                        226,
+                        365,
                         "GetMetafieldInput!"
                     ]
                 }
             ],
             "consignment": [
-                108
+                207
+            ],
+            "appraisal": [
+                71
+            ],
+            "appraisals": [
+                71
+            ],
+            "appraisalLines": [
+                88
+            ],
+            "consignmentLineNumber": [
+                387
+            ],
+            "consignedFrom": [
+                88
             ],
             "site": [
-                532
+                773
             ],
             "siteLocation": [
-                296
+                448
+            ],
+            "locationStatus": [
+                408
+            ],
+            "inTransitSince": [
+                823
+            ],
+            "propertyReceipt": [
+                569
             ],
             "categories": [
-                86
+                160
             ],
             "creators": [
-                162
+                287
             ],
             "arr": [
-                80
+                138
             ],
             "arrOverride": [
-                80
+                138
             ],
             "productVariants": [
-                370,
+                562,
                 {
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ]
                 }
             ],
             "offerConfig": [
-                266
+                417
             ],
             "offers": [
-                331,
+                493,
                 {
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ],
                     "status": [
-                        330
+                        492
                     ],
                     "direction": [
-                        350
+                        514
                     ]
                 }
             ],
             "contentDrift": [
-                117,
+                226,
                 {
                     "targetKind": [
-                        120
+                        229
                     ]
                 }
             ],
             "links": [
-                256
+                406
+            ],
+            "lifecycleStatus": [
+                404
+            ],
+            "cataloguingWorkflowStatus": [
+                158
+            ],
+            "photographyWorkflowStatus": [
+                546
+            ],
+            "staffLead": [
+                294
+            ],
+            "citesLicenceNumber": [
+                795
+            ],
+            "inventoryNumber": [
+                387
+            ],
+            "created": [
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemBanner": {
             "id": [
-                234
+                374
             ],
             "accountId": [
-                540
+                795
             ],
             "title": [
-                540
+                795
             ],
             "description": [
-                540
+                795
             ],
             "images": [
-                235
+                378
             ],
             "price": [
-                272
+                423
             ],
             "externalId": [
-                540
+                795
             ],
             "location": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemBuyNowConfig": {
             "itemId": [
-                540
+                795
             ],
             "accountId": [
-                540
+                795
             ],
             "enabled": [
-                80
+                138
             ],
             "price": [
-                243
+                387
             ],
             "currency": [
-                540
+                795
             ],
             "setAt": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "ItemCataloguingReadiness": {
+            "noItemType": [
+                138
+            ],
+            "missingRequiredFields": [
+                463
+            ],
+            "__typename": [
+                795
             ]
         },
         "ItemDates": {
             "openDate": [
-                540
+                795
             ],
             "closingStart": [
-                540
+                795
             ],
             "closingEnd": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemFairWarningNotification": {
             "id": [
-                540
+                795
             ],
             "date": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemFilter": {
             "title": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemHighlight": {
             "enabled": [
-                80
+                138
             ],
             "position": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemHighlightInput": {
             "enabled": [
-                80
+                138
             ],
             "position": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemIdsFilter": {
             "itemIds": [
-                234
+                374
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemImageAssociation": {
             "itemId": [
-                540
+                795
+            ],
+            "kind": [
+                381
             ],
             "__typename": [
-                540
+                795
             ]
         },
+        "ItemLifecycleStatus": {},
         "ItemLink": {
             "on_SaleItemLink": [
-                423
+                630
             ],
             "on_ProductVariantLink": [
-                372
+                564
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemLinkConnection": {
             "edges": [
-                257
+                407
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemLinkEdge": {
             "node": [
-                255
+                405
             ],
             "__typename": [
-                540
+                795
             ]
         },
+        "ItemLocationStatus": {},
         "ItemMessageNotification": {
             "id": [
-                540
+                795
             ],
             "message": [
-                540
+                795
             ],
             "date": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemMetadata": {
             "data": [
-                286
+                438
             ],
             "schema": [
-                286
+                438
             ],
             "schemaId": [
-                234
+                374
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemMetadataInput": {
             "data": [
-                286
+                438
             ],
             "schemaId": [
-                234
+                374
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemNote": {
             "id": [
-                234
+                374
             ],
             "note": [
-                540
+                795
             ],
             "userId": [
-                540
+                795
             ],
             "user": [
-                606
+                899
             ],
             "created": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemNoteConnection": {
             "edges": [
-                263
+                414
             ],
             "pageInfo": [
-                349
+                513
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemNoteEdge": {
             "cursor": [
-                540
+                795
             ],
             "node": [
-                261
+                412
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemNotification": {
             "on_ItemMessageNotification": [
-                258
+                409
             ],
             "on_ItemFairWarningNotification": [
-                249
+                398
             ],
             "on_ItemOfferPlacedNotification": [
-                267
+                418
             ],
             "on_ItemSoldNotification": [
-                276
+                427
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemNumberChangeInput": {
             "itemId": [
-                540
+                795
             ],
             "itemNumber": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemOfferConfig": {
             "itemId": [
-                540
+                795
             ],
             "accountId": [
-                540
+                795
             ],
             "enabled": [
-                80
+                138
             ],
             "autoAcceptAmount": [
-                243
+                387
             ],
             "autoAcceptCurrency": [
-                540
+                795
             ],
             "offerTtlSeconds": [
-                243
+                387
             ],
             "created": [
-                540
+                795
             ],
             "modified": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemOfferPlacedNotification": {
             "id": [
-                540
+                795
             ],
             "amount": [
-                243
+                387
             ],
             "currency": [
-                540
+                795
             ],
             "buyerId": [
-                540
+                795
             ],
             "referenceId": [
-                540
+                795
             ],
             "date": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemOrderField": {},
         "ItemOrderInput": {
             "field": [
-                268
+                419
             ],
             "direction": [
-                350
+                514
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemPackaging": {
             "id": [
-                540
+                795
             ],
             "quantity": [
-                243
+                387
             ],
             "boxedHeight": [
-                222
+                357
             ],
             "boxedLength": [
-                222
+                357
             ],
             "boxedDepth": [
-                222
+                357
             ],
             "boxedMeasurementUnit": [
-                303
+                458
             ],
             "boxedWeight": [
-                222
+                357
             ],
             "boxedWeightUnit": [
-                625
+                927
             ],
             "created": [
-                540
+                795
             ],
             "modified": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemPackagingInput": {
             "quantity": [
-                243
+                387
             ],
             "boxedHeight": [
-                222
+                357
             ],
             "boxedLength": [
-                222
+                357
             ],
             "boxedDepth": [
-                222
+                357
             ],
             "boxedMeasurementUnit": [
-                303
+                458
             ],
             "boxedWeight": [
-                222
+                357
             ],
             "boxedWeightUnit": [
-                625
+                927
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemPrice": {
             "currency": [
-                166
+                292
             ],
             "reserve": [
-                243
+                387
             ],
             "startingBid": [
-                243
+                387
             ],
             "lowEstimate": [
-                243
+                387
             ],
             "highEstimate": [
-                243
+                387
             ],
             "reserveType": [
-                397
+                603
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemPriceInput": {
             "currency": [
-                166
+                292
             ],
             "reserve": [
-                243
+                387
             ],
             "startingBid": [
-                243
+                387
             ],
             "lowEstimate": [
-                243
+                387
             ],
             "highEstimate": [
-                243
+                387
             ],
             "reserveType": [
-                397
+                603
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemResult": {},
         "ItemSchema": {
             "schema": [
-                286
+                438
             ],
             "metadataSchema": [
-                286
+                438
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemSoldNotification": {
             "id": [
-                540
+                795
             ],
             "amount": [
-                243
+                387
             ],
             "currency": [
-                540
+                795
             ],
             "source": [
-                194
+                321
             ],
             "buyerId": [
-                540
+                795
             ],
             "referenceId": [
-                540
+                795
             ],
             "date": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemSpecifications": {
             "id": [
-                540
+                795
             ],
             "type": [
-                536
+                779
             ],
             "subType": [
-                535
+                778
             ],
             "height": [
-                222
+                357
             ],
             "length": [
-                222
+                357
             ],
             "depth": [
-                222
+                357
             ],
             "diameter": [
-                222
+                357
             ],
             "measurementUnit": [
-                303
+                458
             ],
             "weight": [
-                222
+                357
             ],
             "weightUnit": [
-                625
+                927
             ],
             "quantity": [
-                243
+                387
             ],
             "created": [
-                540
+                795
             ],
             "modified": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemSpecificationsInput": {
             "type": [
-                536
+                779
             ],
             "subType": [
-                535
+                778
             ],
             "height": [
-                222
+                357
             ],
             "length": [
-                222
+                357
             ],
             "depth": [
-                222
+                357
             ],
             "diameter": [
-                222
+                357
             ],
             "measurementUnit": [
-                303
+                458
             ],
             "weight": [
-                222
+                357
             ],
             "weightUnit": [
-                625
+                927
             ],
             "quantity": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemStatus": {},
         "ItemType": {
             "id": [
-                234
+                374
             ],
             "accountId": [
-                540
+                795
             ],
             "name": [
-                540
+                795
             ],
             "namespace": [
-                540
+                795
+            ],
+            "slug": [
+                795
             ],
             "schema": [
-                286
+                438
             ],
             "parentId": [
-                540
+                795
             ],
             "createdAt": [
-                540
+                795
             ],
             "modifiedAt": [
-                540
+                795
             ],
             "effectiveSchema": [
-                286
+                438
             ],
             "titleTemplate": [
-                540
+                795
             ],
             "subTitleTemplate": [
-                540
+                795
             ],
             "descriptionTemplate": [
-                540
+                795
             ],
             "charges": [
-                96,
+                179,
                 {
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ],
                     "options": [
-                        99
+                        182
+                    ]
+                }
+            ],
+            "buyerPremiums": [
+                145,
+                {
+                    "first": [
+                        387
+                    ],
+                    "after": [
+                        795
+                    ],
+                    "options": [
+                        147
                     ]
                 }
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemTypeEdge": {
             "node": [
-                280
+                431
             ],
             "cursor": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "ItemTypeTaxDefault": {
+            "itemTypeId": [
+                374
+            ],
+            "hammerTaxCode": [
+                815
+            ],
+            "chargeTaxCode": [
+                815
+            ],
+            "__typename": [
+                795
             ]
         },
         "ItemTypesConnection": {
             "edges": [
-                281
+                432
             ],
             "pageInfo": [
-                349
+                513
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemsConnection": {
             "edges": [
-                284
+                436
             ],
             "pageInfo": [
-                349
+                513
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemsEdge": {
             "cursor": [
-                540
+                795
             ],
             "node": [
-                245
+                393
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ItemsFilter": {
             "onlyMyItems": [
-                80
+                138
             ],
             "title": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "JSON": {},
         "Link": {
             "type": [
-                291
+                443
             ],
             "url": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "LinkImageByExternalIdInput": {
             "externalId": [
-                540
+                795
             ],
             "imageTypes": [
-                239
+                383
             ],
             "saleId": [
-                540
+                795
             ],
             "itemId": [
-                540
+                795
             ],
             "order": [
-                243
+                387
+            ],
+            "kind": [
+                381
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "LinkImageByIdInput": {
             "imageId": [
-                540
+                795
             ],
             "imageTypes": [
-                239
+                383
             ],
             "saleId": [
-                540
+                795
             ],
             "itemId": [
-                540
+                795
             ],
             "order": [
-                243
+                387
+            ],
+            "kind": [
+                381
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "LinkInput": {
             "type": [
-                291
+                443
             ],
             "url": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "LinkType": {},
         "LiveItem": {
             "item": [
-                416
+                623
             ],
             "cursor": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "LiveStream": {
             "on_ExternalLiveStream": [
-                213
+                348
             ],
             "on_BastaLiveStream": [
-                58
+                115
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "LiveStreamInput": {
             "url": [
-                540
+                795
             ],
             "type": [
-                295
+                447
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "LiveStreamType": {},
         "Location": {
             "id": [
-                234
+                374
             ],
             "accountId": [
-                540
+                795
             ],
             "site": [
-                532
+                773
             ],
             "parent": [
-                296
+                448
             ],
             "children": [
-                296
+                448
             ],
             "name": [
-                540
+                795
             ],
             "archivedAt": [
-                540
+                795
             ],
             "created": [
-                540
+                795
             ],
             "modified": [
-                540
+                795
             ],
             "createdByUserId": [
-                540
+                795
             ],
             "modifiedByUserId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "LocationConnection": {
             "edges": [
-                298
+                450
             ],
             "pageInfo": [
-                349
+                513
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "LocationEdge": {
             "cursor": [
-                540
+                795
             ],
             "node": [
-                296
+                448
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "MailingAddress": {
             "id": [
-                540
+                795
             ],
             "name": [
-                540
+                795
             ],
             "company": [
-                540
+                795
             ],
             "phone": [
-                540
+                795
             ],
             "line1": [
-                540
+                795
             ],
             "line2": [
-                540
+                795
             ],
             "city": [
-                540
+                795
             ],
             "state": [
-                540
+                795
             ],
             "postalCode": [
-                540
+                795
             ],
             "country": [
-                123
+                236
             ],
             "isPrimary": [
-                80
+                138
             ],
             "addressType": [
-                27
+                34
             ],
             "label": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "MailingAddressInput": {
             "id": [
-                540
+                795
             ],
             "name": [
-                540
+                795
             ],
             "company": [
-                540
+                795
             ],
             "phone": [
-                540
+                795
             ],
             "line1": [
-                540
+                795
             ],
             "line2": [
-                540
+                795
             ],
             "city": [
-                540
+                795
             ],
             "state": [
-                540
+                795
             ],
             "postalCode": [
-                540
+                795
             ],
             "country": [
-                123
+                236
             ],
             "isPrimary": [
-                80
+                138
             ],
             "addressType": [
-                27
+                34
             ],
             "label": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "MarkConsignmentContractSentInput": {
+            "consignmentId": [
+                795
+            ],
+            "contractId": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "MarketingConsent": {
+            "consented": [
+                138
+            ],
+            "decidedAt": [
+                823
+            ],
+            "recordedAt": [
+                823
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "MarketingConsentInput": {
+            "consented": [
+                138
+            ],
+            "decidedAt": [
+                823
+            ],
+            "__typename": [
+                795
             ]
         },
         "MarketplaceCurrencyCode": {},
         "MaxBidOnBehalfInput": {
             "userId": [
-                540
+                795
             ],
             "maxAmount": [
-                243
+                387
             ],
             "itemId": [
-                540
+                795
             ],
             "saleId": [
-                540
+                795
             ],
             "bidOrigin": [
-                66
+                123
             ],
             "registrationId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "MeasurementUnit": {},
         "Metafield": {
             "id": [
-                540
+                795
             ],
             "key": [
-                540
+                795
             ],
             "value": [
-                540
+                795
             ],
             "valueType": [
-                307
+                462
             ],
             "entityType": [
-                305
+                460
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "MetafieldEntityType": {},
         "MetafieldInput": {
             "key": [
-                540
+                795
             ],
             "value": [
-                540
+                795
             ],
             "valueType": [
-                307
+                462
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "MetafieldValueType": {},
+        "MissingRequiredField": {
+            "name": [
+                795
+            ],
+            "title": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
         "Mutation": {
             "updateAccount": [
-                1,
+                2,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        560,
+                        836,
                         "UpdateAccountInput!"
                     ]
                 }
             ],
             "setAccountCountriesEnabled": [
-                124,
+                237,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "codes": [
-                        123,
+                        236,
                         "[Country!]!"
                     ],
                     "enabled": [
-                        80,
+                        138,
                         "Boolean!"
                     ]
                 }
             ],
             "setAccountCountryAmlRiskClass": [
-                124,
+                237,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "code": [
-                        123,
+                        236,
                         "Country!"
                     ],
                     "amlRiskClass": [
-                        33,
+                        45,
                         "AmlRiskClass!"
                     ]
                 }
             ],
             "setAuctionSymbols": [
-                1,
+                2,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        56,
+                        110,
                         "[AuctionSymbolInput!]!"
                     ]
                 }
             ],
-            "createSale": [
-                403,
+            "updateDocumentBranding": [
+                2,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        153,
+                        328,
+                        "DocumentBrandingInput!"
+                    ]
+                }
+            ],
+            "createConsignmentContractTemplateVersion": [
+                214,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        254,
+                        "CreateConsignmentContractTemplateVersionInput!"
+                    ]
+                }
+            ],
+            "setNextClientNumber": [
+                189,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "nextClientNumber": [
+                        387,
+                        "Int!"
+                    ]
+                }
+            ],
+            "setNextSaleNumber": [
+                647,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "nextSaleNumber": [
+                        387,
+                        "Int!"
+                    ]
+                }
+            ],
+            "setIdentityVerificationProvider": [
+                376,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "enabled": [
+                        138,
+                        "Boolean!"
+                    ],
+                    "provider": [
+                        377,
+                        "IdentityVerificationProviderInput!"
+                    ]
+                }
+            ],
+            "createSale": [
+                610,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        275,
                         "CreateSaleInput!"
                     ]
                 }
             ],
             "createDutchSale": [
-                206,
+                340,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        138,
+                        258,
                         "CreateDutchSaleInput!"
                     ]
                 }
             ],
             "updateDutchSale": [
-                206,
+                340,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        568,
+                        851,
                         "UpdateDutchSaleInput!"
                     ]
                 }
             ],
             "updateSale": [
-                403,
+                610,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "saleId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        584,
+                        869,
                         "UpdateSaleInput!"
                     ]
                 }
             ],
             "addSaleDepartments": [
-                403,
+                610,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "saleId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "departmentIds": [
-                        234,
+                        374,
                         "[ID!]!"
                     ]
                 }
             ],
             "removeSaleDepartment": [
-                403,
+                610,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "saleId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "departmentId": [
-                        234,
+                        374,
                         "ID!"
                     ]
                 }
             ],
             "createDepartment": [
-                189,
+                316,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "name": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "slug": [
-                        540
+                        795
                     ]
                 }
             ],
             "updateDepartment": [
-                189,
+                316,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "id": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "name": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "deleteDepartment": [
-                189,
+                316,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "id": [
-                        234,
+                        374,
                         "ID!"
                     ]
                 }
             ],
             "restoreDepartment": [
-                189,
+                316,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "id": [
-                        234,
+                        374,
                         "ID!"
                     ]
                 }
             ],
             "createSaleGenre": [
-                411,
+                618,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "name": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "slug": [
-                        540
+                        795
                     ],
                     "isPublic": [
-                        80
+                        138
                     ]
                 }
             ],
             "updateSaleGenre": [
-                411,
+                618,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "id": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "name": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "isPublic": [
-                        80
+                        138
                     ]
                 }
             ],
             "archiveSaleGenre": [
-                411,
+                618,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "id": [
-                        234,
+                        374,
                         "ID!"
                     ]
                 }
             ],
             "restoreSaleGenre": [
-                411,
+                618,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "id": [
-                        234,
+                        374,
                         "ID!"
                     ]
                 }
             ],
             "deleteSaleGenre": [
-                411,
+                618,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "id": [
-                        234,
+                        374,
                         "ID!"
                     ]
                 }
             ],
             "setSectionMarker": [
-                403,
+                610,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "saleId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "input": [
-                        526,
+                        763,
                         "SetSectionMarkerInput!"
                     ]
                 }
             ],
             "removeSectionMarker": [
-                403,
+                610,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "saleId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "id": [
-                        234,
+                        374,
                         "ID!"
                     ]
                 }
             ],
             "setSaleSlug": [
-                450,
+                661,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        524,
+                        761,
                         "SetSaleSlugInput!"
                     ]
                 }
             ],
             "setSaleItemSlug": [
-                429,
+                638,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        522,
+                        757,
                         "SetSaleItemSlugInput!"
                     ]
                 }
             ],
             "openSale": [
-                403,
+                610,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        337,
+                        499,
                         "OpenSaleInput!"
                     ]
                 }
             ],
             "closeSale": [
-                403,
+                610,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        105,
+                        193,
                         "CloseSaleInput!"
                     ]
                 }
             ],
             "setSaleStatus": [
-                403,
+                610,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        525,
+                        762,
                         "SetSaleStatusInput!"
                     ]
                 }
             ],
             "startClosingSale": [
-                403,
+                610,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        539,
+                        785,
                         "StartClosingSaleInput!"
                     ]
                 }
             ],
             "forceOpenSale": [
-                403,
+                610,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        337,
+                        499,
                         "OpenSaleInput!"
                     ]
                 }
             ],
             "forceCloseSale": [
-                403,
+                610,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        105,
+                        193,
                         "CloseSaleInput!"
                     ]
                 }
             ],
             "forceStartClosingSale": [
-                403,
+                610,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        539,
+                        785,
                         "StartClosingSaleInput!"
                     ]
                 }
             ],
             "publishSale": [
-                403,
+                610,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        374,
+                        573,
                         "PublishSaleInput!"
                     ]
                 }
             ],
-            "deleteSale": [
-                185,
+            "previewSale": [
+                610,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        182,
+                        558,
+                        "PreviewSaleInput!"
+                    ]
+                }
+            ],
+            "setSaleItemsPreview": [
+                387,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        759,
+                        "SetSaleItemsPreviewInput!"
+                    ]
+                }
+            ],
+            "deleteSale": [
+                312,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        309,
                         "DeleteSaleInput!"
                     ]
                 }
             ],
             "createItem": [
-                245,
+                393,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        141,
+                        261,
                         "CreateItemInput!"
                     ]
                 }
             ],
             "updateItem": [
-                245,
+                393,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "itemId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        573,
+                        856,
                         "UpdateItemInput!"
                     ]
                 }
             ],
-            "addSpecifications": [
-                277,
+            "setItemStatus": [
+                393,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        23,
+                        740,
+                        "SetItemStatusInput!"
+                    ]
+                }
+            ],
+            "setCataloguingWorkflowStatus": [
+                726,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "itemId": [
+                        374,
+                        "ID!"
+                    ],
+                    "status": [
+                        158,
+                        "CataloguingWorkflowStatus!"
+                    ]
+                }
+            ],
+            "setPhotographyWorkflowStatus": [
+                751,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "itemId": [
+                        374,
+                        "ID!"
+                    ],
+                    "status": [
+                        546,
+                        "PhotographyWorkflowStatus!"
+                    ]
+                }
+            ],
+            "setPhotographyWorkflowStatuses": [
+                752,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "itemIds": [
+                        374,
+                        "[ID!]!"
+                    ],
+                    "status": [
+                        546,
+                        "PhotographyWorkflowStatus!"
+                    ]
+                }
+            ],
+            "addSpecifications": [
+                428,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        28,
                         "AddSpecificationsInput!"
                     ]
                 }
             ],
             "createConsignment": [
-                108,
+                207,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        135,
+                        255,
                         "CreateConsignmentInput!"
                     ]
                 }
             ],
             "updateConsignment": [
-                108,
+                207,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        566,
+                        848,
                         "UpdateConsignmentInput!"
                     ]
                 }
             ],
             "deleteConsignment": [
-                108,
+                207,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "consignmentId": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "setItemConsignment": [
-                245,
+                393,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        509,
+                        736,
                         "SetItemConsignmentInput!"
                     ]
                 }
             ],
             "clearItemConsignment": [
-                245,
+                393,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "itemId": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "createSite": [
-                532,
+                773,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        159,
+                        281,
                         "CreateSiteInput!"
                     ]
                 }
             ],
             "updateSite": [
-                532,
+                773,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        589,
+                        874,
                         "UpdateSiteInput!"
                     ]
                 }
             ],
             "archiveSite": [
-                532,
+                773,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "siteId": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "unarchiveSite": [
-                532,
+                773,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "siteId": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "deleteSite": [
-                532,
+                773,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "siteId": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "createLocation": [
-                296,
+                448,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        144,
+                        264,
                         "CreateLocationInput!"
                     ]
                 }
             ],
             "updateLocation": [
-                296,
+                448,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        576,
+                        859,
                         "UpdateLocationInput!"
                     ]
                 }
             ],
             "archiveLocation": [
-                296,
+                448,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "locationId": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "unarchiveLocation": [
-                296,
+                448,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "locationId": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "deleteLocation": [
-                296,
+                448,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "locationId": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "setItemSiteLocation": [
-                245,
+                393,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        512,
+                        739,
                         "SetItemSiteLocationInput!"
                     ]
                 }
             ],
             "clearItemSiteLocation": [
-                245,
+                393,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "itemId": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "addConsignors": [
-                108,
+                207,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        15,
+                        19,
                         "AddConsignorsInput!"
                     ]
                 }
             ],
             "removeConsignors": [
-                108,
+                207,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        381,
+                        585,
                         "RemoveConsignorsInput!"
                     ]
                 }
             ],
             "setMainConsignor": [
-                108,
+                207,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        514,
+                        746,
                         "SetMainConsignorInput!"
                     ]
                 }
             ],
             "addConsignmentStaff": [
-                108,
+                207,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        14,
+                        18,
                         "AddConsignmentStaffInput!"
                     ]
                 }
             ],
-            "removeConsignmentStaff": [
-                108,
+            "setConsignmentTransport": [
+                207,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        380,
+                        731,
+                        "SetConsignmentTransportInput!"
+                    ]
+                }
+            ],
+            "removeConsignmentStaff": [
+                207,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        584,
                         "RemoveConsignmentStaffInput!"
                     ]
                 }
             ],
             "setConsignmentStaffLead": [
-                108,
+                207,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        505,
+                        730,
                         "SetConsignmentStaffLeadInput!"
                     ]
                 }
             ],
-            "setItemOfferConfig": [
-                266,
+            "createAppraisal": [
+                71,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        511,
+                        246,
+                        "CreateAppraisalInput!"
+                    ]
+                }
+            ],
+            "updateAppraisal": [
+                71,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        840,
+                        "UpdateAppraisalInput!"
+                    ]
+                }
+            ],
+            "deleteAppraisal": [
+                71,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "appraisalId": [
+                        795,
+                        "String!"
+                    ]
+                }
+            ],
+            "transferAppraisalItemsToConsignment": [
+                826,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        825,
+                        "TransferAppraisalItemsToConsignmentInput!"
+                    ]
+                }
+            ],
+            "setItemsAppraisal": [
+                744,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        743,
+                        "SetItemsAppraisalInput!"
+                    ]
+                }
+            ],
+            "clearItemsAppraisal": [
+                188,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        187,
+                        "ClearItemsAppraisalInput!"
+                    ]
+                }
+            ],
+            "updateAppraisalItem": [
+                82,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        841,
+                        "UpdateAppraisalItemInput!"
+                    ]
+                }
+            ],
+            "addAppraisalClients": [
+                71,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        16,
+                        "AddAppraisalClientsInput!"
+                    ]
+                }
+            ],
+            "removeAppraisalClients": [
+                71,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        582,
+                        "RemoveAppraisalClientsInput!"
+                    ]
+                }
+            ],
+            "setMainAppraisalClient": [
+                71,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        745,
+                        "SetMainAppraisalClientInput!"
+                    ]
+                }
+            ],
+            "addAppraisalStaff": [
+                71,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        17,
+                        "AddAppraisalStaffInput!"
+                    ]
+                }
+            ],
+            "removeAppraisalStaff": [
+                71,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        583,
+                        "RemoveAppraisalStaffInput!"
+                    ]
+                }
+            ],
+            "setAppraisalStaffLead": [
+                71,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        718,
+                        "SetAppraisalStaffLeadInput!"
+                    ]
+                }
+            ],
+            "updateAppraisalItemValuation": [
+                82,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        842,
+                        "UpdateAppraisalItemValuationInput!"
+                    ]
+                }
+            ],
+            "updateAppraisalDocumentDetails": [
+                71,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        839,
+                        "UpdateAppraisalDocumentDetailsInput!"
+                    ]
+                }
+            ],
+            "generateAppraisalDocument": [
+                75,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "appraisalId": [
+                        795,
+                        "String!"
+                    ]
+                }
+            ],
+            "generatePropertyReceipt": [
+                565,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        361,
+                        "GeneratePropertyReceiptInput!"
+                    ]
+                }
+            ],
+            "sendPropertyReceipt": [
+                565,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        715,
+                        "SendPropertyReceiptInput!"
+                    ]
+                }
+            ],
+            "createAppraisalDocumentTemplateVersion": [
+                79,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        245,
+                        "CreateAppraisalDocumentTemplateVersionInput!"
+                    ]
+                }
+            ],
+            "createPropertyReceiptTemplateVersion": [
+                571,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        273,
+                        "CreatePropertyReceiptTemplateVersionInput!"
+                    ]
+                }
+            ],
+            "setValuationRequestSettings": [
+                922,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        769,
+                        "SetValuationRequestSettingsInput!"
+                    ]
+                }
+            ],
+            "setValuationRequestStatus": [
+                917,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "id": [
+                        374,
+                        "ID!"
+                    ],
+                    "status": [
+                        923,
+                        "ValuationRequestStatus!"
+                    ]
+                }
+            ],
+            "setValuationRequestAssignee": [
+                917,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "id": [
+                        374,
+                        "ID!"
+                    ],
+                    "assigneeUserId": [
+                        795
+                    ]
+                }
+            ],
+            "deleteValuationRequest": [
+                917,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "id": [
+                        374,
+                        "ID!"
+                    ]
+                }
+            ],
+            "setConditionReportRequestAssignee": [
+                196,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "id": [
+                        374,
+                        "ID!"
+                    ],
+                    "userId": [
+                        795
+                    ]
+                }
+            ],
+            "setAppointmentSettings": [
+                67,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        716,
+                        "SetAppointmentSettingsInput!"
+                    ]
+                }
+            ],
+            "confirmAppointment": [
+                59,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        205,
+                        "ConfirmAppointmentInput!"
+                    ]
+                }
+            ],
+            "cancelAppointment": [
+                59,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        153,
+                        "CancelAppointmentInput!"
+                    ]
+                }
+            ],
+            "completeAppointment": [
+                59,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "appointmentId": [
+                        374,
+                        "ID!"
+                    ]
+                }
+            ],
+            "setAppointmentStaffNote": [
+                59,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        717,
+                        "SetAppointmentStaffNoteInput!"
+                    ]
+                }
+            ],
+            "setNextEntityNumber": [
+                346,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "nextNumber": [
+                        387,
+                        "Int!"
+                    ]
+                }
+            ],
+            "setNextInventoryNumber": [
+                388,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "nextNumber": [
+                        387,
+                        "Int!"
+                    ]
+                }
+            ],
+            "generateConsignmentContract": [
+                209,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        358,
+                        "GenerateConsignmentContractInput!"
+                    ]
+                }
+            ],
+            "previewConsignmentContract": [
+                329,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        557,
+                        "PreviewConsignmentContractInput!"
+                    ]
+                }
+            ],
+            "markConsignmentContractSent": [
+                209,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        453,
+                        "MarkConsignmentContractSentInput!"
+                    ]
+                }
+            ],
+            "sendConsignmentContract": [
+                209,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        711,
+                        "SendConsignmentContractInput!"
+                    ]
+                }
+            ],
+            "recordConsignmentContractSignature": [
+                209,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        577,
+                        "RecordConsignmentContractSignatureInput!"
+                    ]
+                }
+            ],
+            "previewPresaleAdvice": [
+                329,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "saleId": [
+                        795,
+                        "String!"
+                    ],
+                    "consignorUserId": [
+                        795,
+                        "String!"
+                    ],
+                    "consignmentId": [
+                        795
+                    ]
+                }
+            ],
+            "generatePresaleAdvices": [
+                360,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        359,
+                        "GeneratePresaleAdvicesInput!"
+                    ]
+                }
+            ],
+            "sendPresaleAdvices": [
+                714,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        713,
+                        "SendPresaleAdvicesInput!"
+                    ]
+                }
+            ],
+            "setItemOfferConfig": [
+                417,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        738,
                         "SetItemOfferConfigInput!"
                     ]
                 }
             ],
             "setItemBuyNowConfig": [
-                416,
+                623,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        507,
+                        734,
                         "SetItemBuyNowConfigInput!"
                     ]
                 }
             ],
             "buyItem": [
-                416,
+                623,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        81,
+                        139,
                         "BuyItemInput!"
                     ]
                 }
             ],
-            "acceptOffer": [
-                326,
+            "revertDirectSell": [
+                623,
                 {
                     "accountId": [
-                        540,
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        606,
+                        "RevertDirectSellInput!"
+                    ]
+                }
+            ],
+            "acceptOffer": [
+                488,
+                {
+                    "accountId": [
+                        795,
                         "String!"
                     ],
                     "offerId": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "rejectOffer": [
-                326,
+                488,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "offerId": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "counterOffer": [
-                326,
+                488,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "offerId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "amount": [
-                        243,
+                        387,
                         "Int!"
                     ],
                     "currency": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "message": [
-                        540
+                        795
                     ]
                 }
             ],
             "addPackaging": [
-                270,
+                421,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        21,
+                        26,
                         "AddPackagingInput!"
                     ]
                 }
             ],
             "updateSpecification": [
-                245,
+                393,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        590,
+                        875,
                         "UpdateSpecificationInput!"
                     ]
                 }
             ],
             "updatePackaging": [
-                245,
+                393,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        580,
+                        865,
                         "UpdatePackagingInput!"
                     ]
                 }
             ],
             "removeSpecifications": [
-                245,
+                393,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        386,
+                        590,
                         "RemoveSpecificationsInput!"
                     ]
                 }
             ],
             "removePackaging": [
-                245,
+                393,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        383,
+                        587,
                         "RemovePackagingInput!"
                     ]
                 }
             ],
             "updateItemNumbers": [
-                403,
+                610,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        574,
+                        857,
                         "UpdateItemNumbersInput!"
                     ]
                 }
             ],
-            "createItemForSale": [
-                416,
+            "assignDisplayNumbers": [
+                610,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        422,
+                        101,
+                        "AssignDisplayNumbersInput!"
+                    ]
+                }
+            ],
+            "setDisplayNumbers": [
+                610,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        732,
+                        "SetDisplayNumbersInput!"
+                    ]
+                }
+            ],
+            "unlotSale": [
+                610,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "saleId": [
+                        795,
+                        "String!"
+                    ]
+                }
+            ],
+            "createItemForSale": [
+                623,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        629,
                         "SaleItemInput!"
                     ]
                 }
             ],
             "createDutchItemForSale": [
-                207,
+                341,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        137,
+                        257,
                         "CreateDutchItemForSaleInput!"
                     ]
                 }
             ],
             "updateDutchSaleItem": [
-                207,
+                341,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        569,
+                        852,
                         "UpdateDutchSaleItemInput!"
                     ]
                 }
             ],
             "addItemToSale": [
-                416,
+                623,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        18,
+                        23,
                         "AddItemToSaleInput!"
                     ]
                 }
             ],
             "updateItemForSale": [
-                416,
+                623,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        586,
+                        871,
                         "UpdateSaleItemInput!"
                     ]
                 }
             ],
             "syncContent": [
-                117,
+                226,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        545,
+                        807,
                         "SyncContentInput!"
                     ]
                 }
             ],
             "syncSchemaDataToSaleItem": [
-                117,
+                226,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        548,
+                        810,
                         "SyncSchemaDataToSaleItemInput!"
                     ]
                 }
             ],
             "syncSchemaDataFromSaleItem": [
-                117,
+                226,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        546,
+                        808,
                         "SyncSchemaDataFromSaleItemInput!"
                     ]
                 }
             ],
             "syncSchemaDataToProductVariant": [
-                117,
+                226,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        547,
+                        809,
                         "SyncSchemaDataToProductVariantInput!"
                     ]
                 }
             ],
             "reorderHighlightedItems": [
-                230,
+                370,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        392,
+                        598,
                         "ReorderHighlightedItemsInput!"
                     ]
                 }
             ],
             "setItemWinner": [
-                416,
+                623,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        513,
+                        742,
                         "SetItemWinnerInput!"
                     ]
                 }
             ],
             "setSaleItemStatus": [
-                416,
+                623,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        523,
+                        758,
                         "SetSaleItemStatusInput!"
                     ]
                 }
             ],
             "removeItemFromSale": [
-                403,
+                610,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        385,
+                        589,
                         "RemoveSaleItemInput!"
                     ]
                 }
             ],
             "createApiKey": [
-                36,
+                48,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        38,
+                        50,
                         "ApiKeyInput!"
                     ]
                 }
             ],
             "revokeApiKey": [
-                80,
+                138,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        400,
+                        607,
                         "RevokeApiKeyInput!"
                     ]
                 }
             ],
             "createApiToken": [
-                42,
+                54,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        43,
+                        55,
                         "ApiTokenInput!"
                     ]
                 }
             ],
             "revokeApiToken": [
-                80,
+                138,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        401,
+                        608,
                         "RevokeApiTokenInput!"
                     ]
                 }
             ],
             "bidOnBehalf": [
-                59,
+                116,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        63,
+                        120,
                         "BidOnBehalfInput!"
                     ]
                 }
             ],
             "maxBidOnBehalf": [
-                59,
+                116,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        302,
+                        457,
                         "MaxBidOnBehalfInput!"
                     ]
                 }
             ],
             "cancelLatestBidOnItem": [
-                84,
+                156,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        82,
+                        154,
                         "CancelLatestBidOnItemInput!"
                     ]
                 }
             ],
             "setUserIdOnBid": [
-                59,
+                116,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        528,
+                        768,
                         "SetUserIdOnBidInput!"
                     ]
                 }
             ],
             "createBidderToken": [
-                75,
+                132,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        76,
+                        133,
                         "BidderTokenInput!"
                     ]
                 }
             ],
             "createUserTokenV2": [
-                621,
+                914,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        622,
+                        915,
                         "UserTokenInput!"
                     ]
                 }
             ],
             "addActionHookSubscription": [
-                10,
+                12,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        11,
+                        13,
                         "ActionHookSubscriptionInput!"
                     ]
                 }
             ],
             "updateActionHookSubscription": [
-                10,
+                12,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        561,
+                        837,
                         "UpdateActionHookSubscriptionInput!"
                     ]
                 }
             ],
             "deleteActionHookSubscription": [
-                80,
+                138,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        172,
+                        298,
                         "DeleteActionHookSubscriptionInput!"
                     ]
                 }
             ],
             "retryActionHook": [
-                6,
+                8,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        399,
+                        605,
                         "RetryActionHookInput!"
                     ]
                 }
             ],
             "testActionHook": [
-                550,
+                821,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        11,
+                        13,
                         "ActionHookSubscriptionInput!"
                     ]
                 }
             ],
             "onboardPaymentAccount": [
-                335,
+                497,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        334,
+                        496,
                         "OnboardPaymentAccountInput!"
                     ]
                 }
             ],
             "continueOnboardPaymentAccount": [
-                335,
+                497,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        122,
+                        234,
                         "ContinueOnboardPaymentAccountInput!"
                     ]
                 }
             ],
             "acceptTerms": [
-                540,
+                795,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "createItemImage": [
-                235,
+                378,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        140,
+                        260,
                         "CreateItemImage!"
                     ]
                 }
             ],
             "reorderItemImages": [
-                235,
+                378,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        394,
+                        600,
                         "ReorderItemImages!"
                     ]
                 }
             ],
             "reorderImages": [
-                235,
+                378,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        393,
+                        599,
                         "ReorderImagesInput!"
                     ]
                 }
             ],
             "deleteItemImage": [
-                235,
+                378,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        175,
+                        302,
                         "DeleteItemImageInput!"
                     ]
                 }
             ],
             "deleteImage": [
-                235,
+                378,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        174,
+                        301,
                         "DeleteImageInput!"
                     ]
                 }
             ],
             "addPaddleToSale": [
-                346,
+                510,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        22,
+                        27,
                         "AddPaddleToSaleInput!"
                     ]
                 }
             ],
             "removePaddleFromSale": [
-                346,
+                510,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        384,
+                        588,
                         "RemovePaddleFromSaleInput!"
                     ]
                 }
             ],
             "registerUserPaddle": [
-                346,
+                510,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        378,
+                        579,
                         "RegisterUserPaddleInput!"
                     ]
                 }
             ],
             "updateUser": [
-                606,
+                899,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        591,
+                        879,
                         "UpdateUserInput!"
                     ]
                 }
             ],
-            "setUserNotificationPreferences": [
-                608,
+            "deleteBankDetails": [
+                138,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "userId": [
-                        540,
+                        795,
+                        "String!"
+                    ],
+                    "idType": [
+                        896,
+                        "UserIdType!"
+                    ]
+                }
+            ],
+            "setUserNotificationPreferences": [
+                901,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "userId": [
+                        795,
                         "String!"
                     ],
                     "preferences": [
-                        609,
+                        902,
                         "[UserNotificationPreferenceInput!]!"
                     ]
                 }
             ],
             "upsertUserAddress": [
-                299,
+                451,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        593,
+                        886,
                         "UpsertUserAddressInput!"
                     ]
                 }
             ],
             "upsertUserPhone": [
-                364,
+                528,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        594,
+                        887,
                         "UpsertUserPhoneInput!"
                     ]
                 }
             ],
             "deleteUserAddress": [
-                80,
+                138,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        187,
+                        314,
                         "DeleteUserAddressInput!"
                     ]
                 }
             ],
             "deleteUserPhone": [
-                80,
+                138,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        188,
+                        315,
                         "DeleteUserPhoneInput!"
                     ]
                 }
             ],
             "addMessageNotificationToItem": [
-                416,
+                623,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        20,
+                        25,
                         "AddMessageNotificationToItemInput!"
                     ]
                 }
             ],
             "addFairWarningNotificationToItem": [
-                416,
+                623,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        17,
+                        21,
                         "AddFairWarningNotificationToItemInput!"
                     ]
                 }
             ],
             "addLiveStreamToSale": [
-                293,
+                445,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        19,
+                        24,
                         "AddLiveStreamToSaleInput!"
                     ]
                 }
             ],
             "deleteLiveStreamFromSale": [
-                80,
+                138,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        177,
+                        304,
                         "DeleteLiveStreamFromSaleInput!"
                     ]
                 }
             ],
-            "addTagToItem": [
-                549,
+            "createStreamChannel": [
+                794,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        24,
+                        283,
+                        "CreateStreamChannelInput!"
+                    ]
+                }
+            ],
+            "updateStreamChannel": [
+                794,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "channelId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        877,
+                        "UpdateStreamChannelInput!"
+                    ]
+                }
+            ],
+            "deleteStreamChannel": [
+                138,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "channelId": [
+                        795,
+                        "String!"
+                    ]
+                }
+            ],
+            "addTagToItem": [
+                811,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        30,
                         "AddTagToItemInput!"
                     ]
                 }
             ],
             "removeTagFromItem": [
-                80,
+                138,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        387,
+                        592,
                         "RemoveTagFromItemInput!"
                     ]
                 }
             ],
             "addTagToSaleItem": [
-                549,
+                811,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        25,
+                        31,
                         "AddTagToSaleItemInput!"
                     ]
                 }
             ],
             "removeTagFromSaleItem": [
-                80,
+                138,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        388,
+                        593,
                         "RemoveTagFromSaleItemInput!"
                     ]
                 }
             ],
             "addTagToUser": [
-                549,
+                811,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        26,
+                        32,
                         "AddTagToUserInput!"
                     ]
                 }
             ],
             "removeTagFromUser": [
-                80,
+                138,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        389,
+                        594,
                         "RemoveTagFromUserInput!"
                     ]
                 }
             ],
             "blockUser": [
-                595,
+                888,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        79,
+                        137,
                         "BlockUserInput!"
                     ]
                 }
             ],
             "unblockUser": [
-                595,
+                888,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        557,
+                        832,
                         "UnblockUserInput!"
                     ]
                 }
             ],
             "setUserExternalId": [
-                595,
+                888,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        527,
+                        767,
                         "SetUserExternalIdInput!"
                     ]
                 }
             ],
             "createItemNote": [
-                261,
+                412,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        142,
+                        262,
                         "CreateItemNoteInput!"
                     ]
                 }
             ],
             "createUploadUrl": [
-                592,
+                882,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        161,
+                        286,
                         "CreateUploadUrlInput!"
                     ]
                 }
             ],
             "createAssetUploadUrl": [
-                50,
+                100,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        130,
+                        247,
                         "CreateAssetUploadUrlInput!"
                     ]
                 }
             ],
             "linkImageById": [
-                240,
+                384,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        289,
+                        441,
                         "LinkImageByIdInput!"
                     ]
                 }
             ],
             "linkImageByExternalId": [
-                240,
+                384,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        288,
+                        440,
                         "LinkImageByExternalIdInput!"
                     ]
                 }
             ],
             "createItemType": [
-                280,
+                431,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "input": [
-                        143,
+                        263,
                         "CreateItemTypeInput!"
                     ]
                 }
             ],
             "updateItemType": [
-                280,
+                431,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "itemTypeId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "input": [
-                        575,
+                        858,
                         "UpdateItemTypeInput!"
                     ]
                 }
             ],
             "reorderItemTypes": [
-                280,
+                431,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "parentId": [
-                        234
+                        374
                     ],
                     "itemTypeIds": [
-                        234,
+                        374,
                         "[ID!]!"
                     ]
                 }
             ],
-            "createSchema": [
-                280,
+            "deleteItemType": [
+                138,
                 {
                     "accountId": [
-                        234,
+                        374,
+                        "ID!"
+                    ],
+                    "itemTypeId": [
+                        374,
+                        "ID!"
+                    ]
+                }
+            ],
+            "createSchema": [
+                431,
+                {
+                    "accountId": [
+                        374,
                         "ID!"
                     ],
                     "input": [
-                        143,
+                        263,
                         "CreateItemTypeInput!"
                     ]
                 }
             ],
             "updateSchema": [
-                280,
+                431,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "schemaId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "input": [
-                        575,
+                        858,
                         "UpdateItemTypeInput!"
                     ]
                 }
             ],
             "updateGlobalIncrementTable": [
-                403,
+                610,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        572,
+                        855,
                         "UpdateGlobalIncrementTableInput!"
                     ]
                 }
             ],
             "updateGlobalDates": [
-                403,
+                610,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        571,
+                        854,
                         "UpdateGlobalDatesInput!"
                     ]
                 }
             ],
             "updateGlobalClosingTimeCountdown": [
-                403,
+                610,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        570,
+                        853,
                         "UpdateGlobalClosingTimeCountdownInput!"
                     ]
                 }
             ],
             "passLiveItem": [
-                416,
+                623,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        354,
+                        518,
                         "PassLiveItemInput!"
                     ]
                 }
             ],
             "sellLiveItem": [
-                416,
+                623,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        492,
+                        703,
                         "SellLiveItemInput!"
                     ]
                 }
             ],
             "sellLiveItemToBid": [
-                496,
+                707,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        495,
+                        706,
                         "SellLiveItemToBidInput!"
                     ]
                 }
             ],
             "hideItemsFromSale": [
-                243,
+                387,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        228,
+                        368,
                         "HideItemsFromSaleInput!"
                     ]
                 }
             ],
             "unhideItemsFromSale": [
-                243,
+                387,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        558,
+                        833,
                         "UnhideItemsFromSaleInput!"
                     ]
                 }
             ],
             "connectShopifyToAccount": [
-                531,
+                772,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        107,
+                        206,
                         "ConnectShopifyToAccountInput!"
                     ]
                 }
             ],
             "createPaymentOrder": [
-                359,
+                523,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        149,
+                        270,
                         "CreatePaymentOrderInput!"
                     ]
                 }
             ],
             "createOrder": [
-                359,
+                523,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        145,
+                        266,
                         "CreateOrderInput!"
                     ]
                 }
             ],
             "createOrderLine": [
-                340,
+                502,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        147,
+                        268,
                         "CreateOrderLineInput!"
                     ]
                 }
             ],
             "updateOrderLine": [
-                340,
+                502,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        579,
+                        864,
                         "UpdateOrderLineInput!"
                     ]
                 }
             ],
             "deleteOrderLine": [
-                340,
+                502,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        179,
+                        306,
                         "DeleteOrderLineInput!"
                     ]
                 }
             ],
             "updatePaymentOrder": [
-                359,
+                523,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        581,
+                        866,
                         "UpdatePaymentOrderInput!"
                     ]
                 }
             ],
             "updateOrder": [
-                359,
+                523,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        577,
+                        862,
                         "UpdateOrderInput!"
                     ]
                 }
             ],
             "deletePaymentOrder": [
-                359,
+                523,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        180,
+                        307,
                         "DeletePaymentOrderInput!"
                     ]
                 }
             ],
             "cancelPaymentOrder": [
-                359,
+                523,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        83,
+                        155,
                         "CancelPaymentOrderInput!"
                     ]
                 }
             ],
             "publishPaymentOrder": [
-                359,
+                523,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        373,
+                        572,
                         "PublishPaymentOrderInput!"
                     ]
                 }
             ],
-            "createInvoice": [
-                244,
+            "reopenOrder": [
+                523,
                 {
                     "accountId": [
-                        540,
+                        374,
+                        "ID!"
+                    ],
+                    "orderId": [
+                        374,
+                        "ID!"
+                    ]
+                }
+            ],
+            "createInvoice": [
+                389,
+                {
+                    "accountId": [
+                        795,
                         "String!"
                     ],
                     "input": [
-                        139,
+                        259,
                         "CreateInvoiceInput!"
                     ]
                 }
             ],
             "createPayment": [
-                355,
+                519,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        148,
+                        269,
                         "CreatePaymentInput!"
                     ]
                 }
             ],
             "createAccountFee": [
-                2,
+                4,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        127,
+                        242,
                         "CreateAccountFeeInput!"
                     ]
                 }
             ],
             "updateAccountFee": [
-                2,
+                4,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        559,
+                        835,
                         "UpdateAccountFeeInput!"
                     ]
                 }
             ],
             "deleteAccountFee": [
-                234,
+                374,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        171,
+                        297,
                         "DeleteAccountFeeInput!"
                     ]
                 }
             ],
             "createSaleFee": [
-                218,
+                353,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        152,
+                        274,
                         "CreateSaleFeeInput!"
                     ]
                 }
             ],
             "updateSaleFee": [
-                218,
+                353,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        583,
+                        868,
                         "UpdateSaleFeeInput!"
                     ]
                 }
             ],
             "deleteSaleFee": [
-                234,
+                374,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        181,
+                        308,
                         "DeleteSaleFeeInput!"
                     ]
                 }
             ],
             "resetSaleFees": [
-                218,
+                353,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        398,
+                        604,
                         "ResetSaleFeesInput!"
                     ]
                 }
             ],
             "createSaleItemFee": [
-                218,
+                353,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        154,
+                        276,
                         "CreateSaleItemFeeInput!"
                     ]
                 }
             ],
             "updateSaleItemFee": [
-                218,
+                353,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        585,
+                        870,
                         "UpdateSaleItemFeeInput!"
                     ]
                 }
             ],
             "deleteSaleItemFee": [
-                234,
+                374,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        183,
+                        310,
                         "DeleteSaleItemFeeInput!"
                     ]
                 }
             ],
             "createSaleRegistration": [
-                438,
+                649,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        156,
+                        278,
                         "CreateSaleRegistrationInput!"
                     ]
                 }
             ],
             "acceptSaleRegistration": [
-                438,
+                649,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        0,
+                        1,
                         "AcceptSaleRegistrationInput!"
                     ]
                 }
             ],
             "rejectSaleRegistration": [
-                438,
+                649,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        379,
+                        580,
                         "RejectSaleRegistrationInput!"
                     ]
                 }
             ],
             "deleteSaleRegistration": [
-                234,
+                374,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        186,
+                        313,
                         "DeleteSaleRegistrationInput!"
                     ]
                 }
             ],
             "createSaleItemRegistration": [
-                425,
+                633,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        155,
+                        277,
                         "CreateSaleItemRegistrationInput!"
                     ]
                 }
             ],
             "deleteSaleItemRegistration": [
-                234,
+                374,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        184,
+                        311,
                         "DeleteSaleItemRegistrationInput!"
                     ]
                 }
             ],
             "createSaleRegistrationPolicy": [
-                441,
+                652,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        157,
+                        279,
                         "CreateSaleRegistrationPolicyInput!"
                     ]
                 }
             ],
             "updateSaleRegistrationPolicy": [
-                441,
+                652,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        587,
+                        872,
                         "UpdateSaleRegistrationPolicyInput!"
                     ]
                 }
             ],
             "attachSaleRegistrationPolicies": [
-                441,
+                652,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        52,
+                        104,
                         "AttachSaleRegistrationPoliciesInput!"
                     ]
                 }
             ],
             "detachSaleRegistrationPolicies": [
-                441,
+                652,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        192,
+                        319,
                         "DetachSaleRegistrationPoliciesInput!"
                     ]
                 }
             ],
             "setMetafields": [
-                304,
+                459,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "metafields": [
-                        515,
+                        747,
                         "[SetMetafieldInput!]!"
                     ]
                 }
             ],
             "deleteMetafield": [
-                80,
+                138,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        178,
+                        305,
                         "DeleteMetafieldInput!"
                     ]
                 }
             ],
             "createUserPaymentProviderSession": [
-                613,
+                906,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        614,
+                        907,
                         "UserPaymentProviderSessionInput!"
                     ]
                 }
             ],
             "createPaymentProviderSession": [
-                361,
+                525,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "addDashboardUserRole": [
-                170,
+                296,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        16,
+                        20,
                         "AddDashboardUserRoleInput!"
                     ]
                 }
             ],
             "removeDashboardUserRole": [
-                170,
+                296,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        382,
+                        586,
                         "RemoveDashboardUserRoleInput!"
                     ]
                 }
             ],
             "associateUserToAccount": [
-                168,
+                294,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        51,
+                        103,
                         "AssociateUserToAccountInput!"
                     ]
                 }
             ],
             "disassociateUserFromAccount": [
-                80,
+                138,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        195,
+                        322,
                         "DisassociateUserFromAccountInput!"
                     ]
                 }
             ],
             "createCategory": [
-                86,
+                160,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "input": [
-                        133,
+                        251,
                         "CreateCategoryInput!"
                     ]
                 }
             ],
             "updateCategory": [
-                86,
+                160,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "input": [
-                        564,
+                        845,
                         "UpdateCategoryInput!"
                     ]
                 }
             ],
             "deleteCategory": [
-                80,
+                138,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "categoryId": [
-                        234,
+                        374,
                         "ID!"
                     ]
                 }
             ],
             "setItemCategories": [
-                89,
+                163,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "input": [
-                        508,
+                        735,
                         "SetItemCategoriesInput!"
                     ]
                 }
             ],
             "setSaleCategories": [
-                89,
+                163,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "input": [
-                        518,
+                        753,
                         "SetSaleCategoriesInput!"
                     ]
                 }
             ],
             "setSaleItemCategories": [
-                89,
+                163,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "input": [
-                        520,
+                        755,
                         "SetSaleItemCategoriesInput!"
                     ]
                 }
             ],
             "createCreator": [
-                162,
+                287,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "input": [
-                        136,
+                        256,
                         "CreateCreatorInput!"
                     ]
                 }
             ],
             "updateCreator": [
-                162,
+                287,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "input": [
-                        567,
+                        849,
                         "UpdateCreatorInput!"
                     ]
                 }
             ],
             "deleteCreator": [
-                80,
+                138,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "creatorId": [
-                        234,
+                        374,
                         "ID!"
                     ]
                 }
             ],
-            "setItemCreators": [
-                164,
+            "createStaffProfile": [
+                780,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "input": [
-                        510,
+                        282,
+                        "CreateStaffProfileInput!"
+                    ]
+                }
+            ],
+            "updateStaffProfile": [
+                780,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "input": [
+                        876,
+                        "UpdateStaffProfileInput!"
+                    ]
+                }
+            ],
+            "deleteStaffProfile": [
+                138,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "staffProfileId": [
+                        374,
+                        "ID!"
+                    ]
+                }
+            ],
+            "setStaffProfileDepartments": [
+                780,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "staffProfileId": [
+                        374,
+                        "ID!"
+                    ],
+                    "departmentIds": [
+                        374,
+                        "[ID!]!"
+                    ]
+                }
+            ],
+            "setStaffProfilePhoto": [
+                780,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "staffProfileId": [
+                        374,
+                        "ID!"
+                    ],
+                    "imageId": [
+                        795
+                    ]
+                }
+            ],
+            "setStaffProfileItemTypes": [
+                780,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "staffProfileId": [
+                        374,
+                        "ID!"
+                    ],
+                    "itemTypeIds": [
+                        374,
+                        "[ID!]!"
+                    ]
+                }
+            ],
+            "setStaffProfileDashboardMember": [
+                780,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "staffProfileId": [
+                        374,
+                        "ID!"
+                    ],
+                    "userId": [
+                        795
+                    ]
+                }
+            ],
+            "updateStaffProfileSchema": [
+                438,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "definition": [
+                        438,
+                        "JSON!"
+                    ]
+                }
+            ],
+            "updateCreatorSettings": [
+                290,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "input": [
+                        850,
+                        "UpdateCreatorSettingsInput!"
+                    ]
+                }
+            ],
+            "setItemCreators": [
+                289,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "input": [
+                        737,
                         "SetItemCreatorsInput!"
                     ]
                 }
             ],
             "setSaleItemCreators": [
-                164,
+                289,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "input": [
-                        521,
+                        756,
                         "SetSaleItemCreatorsInput!"
                     ]
                 }
             ],
             "updateArrSettings": [
-                48,
+                96,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "input": [
-                        563,
+                        843,
                         "UpdateArrSettingsInput!"
                     ]
                 }
             ],
             "setArrBands": [
-                48,
+                96,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "input": [
-                        501,
+                        719,
                         "SetArrBandsInput!"
                     ]
                 }
             ],
             "deleteArrSettings": [
-                80,
+                138,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "currency": [
-                        166,
+                        292,
                         "Currency!"
                     ]
                 }
             ],
             "createCharge": [
-                90,
+                173,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "input": [
-                        134,
+                        252,
                         "CreateChargeInput!"
                     ]
                 }
             ],
             "updateCharge": [
-                90,
+                173,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "input": [
-                        565,
+                        846,
                         "UpdateChargeInput!"
                     ]
                 }
             ],
             "setChargeStatus": [
-                90,
+                173,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "input": [
-                        504,
+                        729,
                         "SetChargeStatusInput!"
                     ]
                 }
             ],
             "setChargeBands": [
-                90,
+                173,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "input": [
-                        503,
+                        728,
                         "SetChargeBandsInput!"
                     ]
                 }
             ],
             "setChargeAtScope": [
-                90,
+                173,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "input": [
-                        502,
+                        727,
                         "SetChargeAtScopeInput!"
                     ]
                 }
             ],
             "deleteChargeAtScope": [
-                90,
+                173,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "input": [
-                        173,
+                        300,
                         "DeleteChargeAtScopeInput!"
                     ]
                 }
             ],
-            "setItemArr": [
-                245,
+            "createBuyerPremium": [
+                140,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "input": [
-                        506,
+                        250,
+                        "CreateBuyerPremiumInput!"
+                    ]
+                }
+            ],
+            "updateBuyerPremium": [
+                140,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "input": [
+                        844,
+                        "UpdateBuyerPremiumInput!"
+                    ]
+                }
+            ],
+            "setBuyerPremiumStatus": [
+                140,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "input": [
+                        725,
+                        "SetBuyerPremiumStatusInput!"
+                    ]
+                }
+            ],
+            "setBuyerPremiumBands": [
+                140,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "input": [
+                        724,
+                        "SetBuyerPremiumBandsInput!"
+                    ]
+                }
+            ],
+            "setBuyerPremiumAtScope": [
+                140,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "input": [
+                        723,
+                        "SetBuyerPremiumAtScopeInput!"
+                    ]
+                }
+            ],
+            "deleteBuyerPremiumAtScope": [
+                140,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "input": [
+                        299,
+                        "DeleteBuyerPremiumAtScopeInput!"
+                    ]
+                }
+            ],
+            "createAccountCode": [
+                3,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "input": [
+                        241,
+                        "CreateAccountCodeInput!"
+                    ]
+                }
+            ],
+            "updateAccountCode": [
+                3,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "input": [
+                        834,
+                        "UpdateAccountCodeInput!"
+                    ]
+                }
+            ],
+            "deleteAccountCode": [
+                138,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "accountCodeId": [
+                        374,
+                        "ID!"
+                    ]
+                }
+            ],
+            "createTaxCode": [
+                815,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "input": [
+                        284,
+                        "CreateTaxCodeInput!"
+                    ]
+                }
+            ],
+            "updateTaxCode": [
+                815,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "input": [
+                        878,
+                        "UpdateTaxCodeInput!"
+                    ]
+                }
+            ],
+            "upsertTaxSettings": [
+                885,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "input": [
+                        884,
+                        "UpsertTaxSettingsInput!"
+                    ]
+                }
+            ],
+            "setItemTypeTaxDefault": [
+                433,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "input": [
+                        741,
+                        "SetItemTypeTaxDefaultInput!"
+                    ]
+                }
+            ],
+            "deleteItemTypeTaxDefault": [
+                138,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "itemTypeId": [
+                        374,
+                        "ID!"
+                    ]
+                }
+            ],
+            "issueStatement": [
+                786,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "id": [
+                        374,
+                        "ID!"
+                    ]
+                }
+            ],
+            "setStatementAddress": [
+                786,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "id": [
+                        374,
+                        "ID!"
+                    ],
+                    "addressId": [
+                        374,
+                        "ID!"
+                    ]
+                }
+            ],
+            "setStatementChargeAmount": [
+                786,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "id": [
+                        374,
+                        "ID!"
+                    ],
+                    "input": [
+                        764,
+                        "SetStatementChargeAmountInput!"
+                    ]
+                }
+            ],
+            "addStatementCharge": [
+                786,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "id": [
+                        374,
+                        "ID!"
+                    ],
+                    "input": [
+                        29,
+                        "AddStatementChargeInput!"
+                    ]
+                }
+            ],
+            "removeStatementCharge": [
+                786,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "id": [
+                        374,
+                        "ID!"
+                    ],
+                    "input": [
+                        591,
+                        "RemoveStatementChargeInput!"
+                    ]
+                }
+            ],
+            "setStatementLineHammer": [
+                786,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "id": [
+                        374,
+                        "ID!"
+                    ],
+                    "input": [
+                        766,
+                        "SetStatementLineHammerInput!"
+                    ]
+                }
+            ],
+            "setStatementLineDescription": [
+                786,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "id": [
+                        374,
+                        "ID!"
+                    ],
+                    "input": [
+                        765,
+                        "SetStatementLineDescriptionInput!"
+                    ]
+                }
+            ],
+            "recordOrderPayment": [
+                523,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "orderId": [
+                        374,
+                        "ID!"
+                    ],
+                    "input": [
+                        578,
+                        "RecordOrderPaymentInput!"
+                    ]
+                }
+            ],
+            "upsertInvoiceSettings": [
+                390,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "input": [
+                        883,
+                        "UpsertInvoiceSettingsInput!"
+                    ]
+                }
+            ],
+            "setItemArr": [
+                393,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "input": [
+                        733,
                         "SetItemArrInput!"
                     ]
                 }
             ],
             "setSaleItemArr": [
-                416,
+                623,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "input": [
-                        519,
+                        754,
                         "SetSaleItemArrInput!"
                     ]
                 }
             ],
-            "createAffiliate": [
-                28,
-                {
-                    "accountId": [
-                        234,
-                        "ID!"
-                    ],
-                    "input": [
-                        129,
-                        "CreateAffiliateInput!"
-                    ]
-                }
-            ],
-            "updateAffiliate": [
-                28,
-                {
-                    "accountId": [
-                        234,
-                        "ID!"
-                    ],
-                    "affiliateId": [
-                        234,
-                        "ID!"
-                    ],
-                    "input": [
-                        562,
-                        "UpdateAffiliateInput!"
-                    ]
-                }
-            ],
             "createSendGridNotificationIntegration": [
-                500,
+                712,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "input": [
-                        158,
+                        280,
                         "CreateSendGridNotificationIntegrationInput!"
                     ]
                 }
             ],
             "updateSendGridNotificationIntegration": [
-                500,
+                712,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "input": [
-                        588,
+                        873,
                         "UpdateSendGridNotificationIntegrationInput!"
                     ]
                 }
             ],
             "rotateSendGridNotificationIntegrationApiKey": [
-                500,
+                712,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "input": [
-                        402,
+                        609,
                         "RotateSendGridNotificationIntegrationApiKeyInput!"
                     ]
                 }
             ],
             "createTwilioNotificationIntegration": [
-                556,
+                831,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "input": [
-                        160,
+                        285,
                         "CreateTwilioNotificationIntegrationInput!"
                     ]
                 }
             ],
             "setNotificationConfiguration": [
-                313,
+                475,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "input": [
-                        516,
+                        748,
                         "SetNotificationConfigurationInput!"
                     ]
                 }
             ],
             "setNotificationConfigurationStatus": [
-                313,
+                475,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "input": [
-                        517,
+                        749,
                         "SetNotificationConfigurationStatusInput!"
                     ]
                 }
             ],
             "createAttributionChannel": [
-                53,
+                107,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        131,
+                        248,
                         "CreateAttributionChannelInput!"
                     ]
                 }
             ],
             "renameAttributionChannel": [
-                53,
+                107,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        390,
+                        595,
                         "RenameAttributionChannelInput!"
                     ]
                 }
             ],
             "archiveAttributionChannel": [
-                53,
+                107,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "id": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "unarchiveAttributionChannel": [
-                53,
+                107,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "id": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "deleteAttributionChannel": [
-                53,
+                107,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "id": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "createAttributionSource": [
-                54,
+                108,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        132,
+                        249,
                         "CreateAttributionSourceInput!"
                     ]
                 }
             ],
             "renameAttributionSource": [
-                54,
+                108,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "input": [
-                        391,
+                        596,
                         "RenameAttributionSourceInput!"
                     ]
                 }
             ],
             "archiveAttributionSource": [
-                54,
+                108,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "id": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "unarchiveAttributionSource": [
-                54,
+                108,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "id": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "deleteAttributionSource": [
-                54,
+                108,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "id": [
-                        540,
+                        795,
                         "String!"
+                    ]
+                }
+            ],
+            "setAttributionChannelSelfServiceOnly": [
+                107,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        720,
+                        "SetAttributionChannelSelfServiceOnlyInput!"
+                    ]
+                }
+            ],
+            "setAttributionSourcePublic": [
+                108,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        722,
+                        "SetAttributionSourcePublicInput!"
+                    ]
+                }
+            ],
+            "setAttributionSourceChannels": [
+                108,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        721,
+                        "SetAttributionSourceChannelsInput!"
+                    ]
+                }
+            ],
+            "createNoteType": [
+                470,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        265,
+                        "CreateNoteTypeInput!"
+                    ]
+                }
+            ],
+            "renameNoteType": [
+                470,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        597,
+                        "RenameNoteTypeInput!"
+                    ]
+                }
+            ],
+            "updateNoteTypeScope": [
+                470,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        861,
+                        "UpdateNoteTypeScopeInput!"
+                    ]
+                }
+            ],
+            "archiveNoteType": [
+                470,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "id": [
+                        795,
+                        "String!"
+                    ]
+                }
+            ],
+            "unarchiveNoteType": [
+                470,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "id": [
+                        795,
+                        "String!"
+                    ]
+                }
+            ],
+            "deleteNoteType": [
+                470,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "id": [
+                        795,
+                        "String!"
+                    ]
+                }
+            ],
+            "addItemNote": [
+                467,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        22,
+                        "AddItemNoteInput!"
+                    ]
+                }
+            ],
+            "updateItemNote": [
+                467,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        860,
+                        "UpdateNoteInput!"
+                    ]
+                }
+            ],
+            "deleteItemNote": [
+                467,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "id": [
+                        795,
+                        "String!"
+                    ]
+                }
+            ],
+            "setItemNoteAlert": [
+                467,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "id": [
+                        795,
+                        "String!"
+                    ],
+                    "isAlert": [
+                        138,
+                        "Boolean!"
+                    ]
+                }
+            ],
+            "createClientRelationship": [
+                191,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        253,
+                        "CreateClientRelationshipInput!"
+                    ]
+                }
+            ],
+            "updateClientRelationship": [
+                191,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        847,
+                        "UpdateClientRelationshipInput!"
+                    ]
+                }
+            ],
+            "deleteClientRelationship": [
+                374,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "id": [
+                        374,
+                        "ID!"
+                    ]
+                }
+            ],
+            "addUserNote": [
+                467,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        33,
+                        "AddUserNoteInput!"
+                    ]
+                }
+            ],
+            "updateUserNote": [
+                467,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        860,
+                        "UpdateNoteInput!"
+                    ]
+                }
+            ],
+            "deleteUserNote": [
+                467,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "id": [
+                        795,
+                        "String!"
+                    ]
+                }
+            ],
+            "setUserNoteAlert": [
+                467,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "id": [
+                        795,
+                        "String!"
+                    ],
+                    "isAlert": [
+                        138,
+                        "Boolean!"
                     ]
                 }
             ],
             "setWorkflowScheduleOffsets": [
-                632,
+                934,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "input": [
-                        529,
+                        770,
                         "SetWorkflowScheduleOffsetsInput!"
                     ]
                 }
             ],
-            "setSaleWorkflowDateOverride": [
-                403,
+            "updateWorkflowSettings": [
+                881,
                 {
                     "accountId": [
-                        234,
+                        374,
+                        "ID!"
+                    ],
+                    "input": [
+                        880,
+                        "UpdateWorkflowSettingsInput!"
+                    ]
+                }
+            ],
+            "setSaleWorkflowDateOverride": [
+                610,
+                {
+                    "accountId": [
+                        374,
                         "ID!"
                     ],
                     "saleId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "dateType": [
-                        626,
+                        928,
                         "WorkflowDateType!"
                     ],
                     "overrideDate": [
-                        551
+                        823
+                    ]
+                }
+            ],
+            "assignPhoneClerksToSale": [
+                543,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "saleId": [
+                        795,
+                        "String!"
+                    ],
+                    "staffProfileIds": [
+                        374,
+                        "[ID!]!"
+                    ]
+                }
+            ],
+            "removePhoneClerkFromSale": [
+                543,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "saleId": [
+                        795,
+                        "String!"
+                    ],
+                    "staffProfileId": [
+                        374,
+                        "ID!"
+                    ]
+                }
+            ],
+            "reorderSalePhoneClerks": [
+                543,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "saleId": [
+                        795,
+                        "String!"
+                    ],
+                    "staffProfileIds": [
+                        374,
+                        "[ID!]!"
+                    ]
+                }
+            ],
+            "setSalePhoneLineCount": [
+                543,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "saleId": [
+                        795,
+                        "String!"
+                    ],
+                    "count": [
+                        387,
+                        "Int!"
+                    ]
+                }
+            ],
+            "setSalePhoneClerkConfig": [
+                648,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        760,
+                        "SetSalePhoneClerkConfigInput!"
+                    ]
+                }
+            ],
+            "setPhoneClerkOverride": [
+                534,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        750,
+                        "SetPhoneClerkOverrideInput!"
+                    ]
+                }
+            ],
+            "deletePhoneClerkOverride": [
+                374,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "id": [
+                        374,
+                        "ID!"
+                    ]
+                }
+            ],
+            "generatePhoneClerkPlan": [
+                535,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "saleId": [
+                        795,
+                        "String!"
+                    ],
+                    "force": [
+                        138
+                    ]
+                }
+            ],
+            "assignPhoneClerk": [
+                530,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        102,
+                        "AssignPhoneClerkInput!"
+                    ]
+                }
+            ],
+            "acceptPhoneClerkSuggestion": [
+                530,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        0,
+                        "AcceptPhoneClerkSuggestionInput!"
+                    ]
+                }
+            ],
+            "lockPhoneClerkPlan": [
+                535,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "planId": [
+                        374,
+                        "ID!"
+                    ]
+                }
+            ],
+            "generatePhoneBidSummarySheet": [
+                329,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "saleId": [
+                        795,
+                        "String!"
+                    ]
+                }
+            ],
+            "generatePhoneClerkSheet": [
+                329,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "saleId": [
+                        795,
+                        "String!"
+                    ],
+                    "lineNumber": [
+                        387,
+                        "Int!"
+                    ]
+                }
+            ],
+            "createAffiliate": [
+                35,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "input": [
+                        244,
+                        "CreateAffiliateInput!"
+                    ]
+                }
+            ],
+            "updateAffiliate": [
+                35,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "affiliateId": [
+                        374,
+                        "ID!"
+                    ],
+                    "input": [
+                        838,
+                        "UpdateAffiliateInput!"
                     ]
                 }
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "NewConsignmentFromAppraisalInput": {
+            "name": [
+                795
+            ],
+            "description": [
+                795
+            ],
+            "feeRules": [
+                217
+            ],
+            "externalId": [
+                795
+            ],
+            "reportSeparately": [
+                138
+            ],
+            "staffUserIds": [
+                795
+            ],
+            "reuseAppraisalNumber": [
+                138
+            ],
+            "__typename": [
+                795
             ]
         },
         "Node": {
             "id": [
-                234
+                374
             ],
             "on_AccountFee": [
-                2
+                4
             ],
             "on_ActionHookLog": [
-                6
+                8
             ],
             "on_ApiKey": [
-                34
+                46
             ],
             "on_ApiToken": [
-                40
+                52
+            ],
+            "on_Appointment": [
+                59
+            ],
+            "on_Appraisal": [
+                71
             ],
             "on_Category": [
-                86
+                160
+            ],
+            "on_ConditionReportRequest": [
+                196
             ],
             "on_Consignment": [
-                108
+                207
             ],
             "on_Department": [
-                189
+                316
             ],
             "on_DutchSale": [
-                206
+                340
             ],
             "on_FeeRule": [
-                218
+                353
             ],
             "on_Item": [
-                245
+                393
             ],
             "on_Location": [
-                296
+                448
             ],
             "on_Offer": [
-                326
+                488
             ],
             "on_PaymentOrder": [
-                359
+                523
             ],
             "on_Sale": [
-                403
+                610
             ],
             "on_SaleGenre": [
-                411
+                618
             ],
             "on_SaleItemRegistration": [
-                425
+                633
             ],
             "on_SaleItemWatchlistEntry": [
-                432
+                641
             ],
             "on_SaleRegistration": [
-                438
+                649
             ],
             "on_SaleRegistrationPolicy": [
-                441
+                652
             ],
             "on_SaleWatchlistEntry": [
-                477
+                688
             ],
             "on_SectionMarker": [
-                491
+                702
             ],
             "on_Site": [
-                532
+                773
+            ],
+            "on_StaffProfile": [
+                780
             ],
             "on_User": [
-                595
+                888
+            ],
+            "on_ValuationRequest": [
+                917
             ],
             "__typename": [
-                540
+                795
             ]
         },
+        "Note": {
+            "id": [
+                374
+            ],
+            "accountId": [
+                795
+            ],
+            "entityId": [
+                795
+            ],
+            "noteType": [
+                470
+            ],
+            "noteTypeId": [
+                795
+            ],
+            "authorId": [
+                795
+            ],
+            "author": [
+                112
+            ],
+            "note": [
+                795
+            ],
+            "isAlert": [
+                138
+            ],
+            "created": [
+                795
+            ],
+            "modified": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "NoteConnection": {
+            "edges": [
+                469
+            ],
+            "pageInfo": [
+                513
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "NoteEdge": {
+            "cursor": [
+                795
+            ],
+            "node": [
+                467
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "NoteType": {
+            "id": [
+                374
+            ],
+            "accountId": [
+                795
+            ],
+            "name": [
+                795
+            ],
+            "scope": [
+                471
+            ],
+            "archivedAt": [
+                795
+            ],
+            "created": [
+                795
+            ],
+            "modified": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "NoteTypeScope": {},
         "NotificationAudience": {},
         "NotificationAudienceGroup": {},
         "NotificationCatalog": {
             "entries": [
-                313
+                475
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "NotificationCatalogEntry": {
             "event": [
-                319
+                481
             ],
             "audience": [
-                310
+                472
             ],
             "displayName": [
-                540
+                795
             ],
             "timing": [
-                325
+                487
             ],
             "supportedChannels": [
-                314
+                476
             ],
             "saleTypeVarying": [
-                80
+                138
             ],
             "configurations": [
-                315
+                477
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "NotificationChannel": {},
         "NotificationConfiguration": {
             "channel": [
-                314
+                476
             ],
             "status": [
-                316
+                478
             ],
             "on_InstantNotificationConfiguration": [
-                241
+                385
             ],
             "on_ScheduledNotificationConfiguration": [
-                482
+                693
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "NotificationConfigurationStatus": {},
         "NotificationEmailSender": {
             "fromEmail": [
-                540
+                795
             ],
             "fromName": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "NotificationEmailSenderInput": {
             "fromEmail": [
-                540
+                795
             ],
             "fromName": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "NotificationEvent": {},
         "NotificationIntegration": {
             "channel": [
-                314
+                476
             ],
             "created": [
-                540
+                795
             ],
             "timezone": [
-                540
+                795
             ],
             "on_SendGridNotificationIntegration": [
-                500
+                712
             ],
             "on_TwilioNotificationIntegration": [
-                556
+                831
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "NotificationLeadTime": {
             "minutesBefore": [
-                243
+                387
             ],
             "templates": [
-                323
+                485
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "NotificationLeadTimeInput": {
             "minutesBefore": [
-                243
+                387
             ],
             "templates": [
-                324
+                486
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "NotificationTemplate": {
             "saleType": [
-                471
+                682
             ],
             "templateId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "NotificationTemplateInput": {
             "saleType": [
-                471
+                682
             ],
             "templateId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "NotificationTiming": {},
         "Offer": {
             "id": [
-                234
+                374
             ],
             "cursor": [
-                540
+                795
             ],
             "accountId": [
-                540
+                795
             ],
             "itemId": [
-                540
+                795
             ],
             "item": [
-                246
+                394
             ],
             "buyerUserId": [
-                540
+                795
             ],
             "buyer": [
-                606
+                899
             ],
             "amount": [
-                243
+                387
             ],
             "currency": [
-                540
+                795
             ],
             "status": [
-                330
+                492
             ],
             "message": [
-                540
+                795
             ],
             "decidedByUserId": [
-                540
+                795
             ],
             "decidedByActor": [
-                327
+                489
             ],
             "awaitingParty": [
-                329
+                491
             ],
             "counters": [
-                328
+                490
             ],
             "created": [
-                540
+                795
             ],
             "modified": [
-                540
+                795
             ],
             "expiresAt": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "OfferActor": {},
         "OfferCounter": {
             "id": [
-                234
+                374
             ],
             "party": [
-                329
+                491
             ],
             "amount": [
-                243
+                387
             ],
             "currency": [
-                540
+                795
             ],
             "message": [
-                540
+                795
             ],
             "createdByUserId": [
-                540
+                795
             ],
             "created": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "OfferParty": {},
         "OfferStatus": {},
         "OffersConnection": {
             "edges": [
-                332
+                494
             ],
             "pageInfo": [
-                349
+                513
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "OffersEdge": {
             "cursor": [
-                540
+                795
             ],
             "node": [
-                326
+                488
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "OffersFilter": {
             "statuses": [
-                330
+                492
             ],
             "itemId": [
-                540
+                795
             ],
             "buyerUserId": [
-                540
+                795
             ],
             "consignorUserId": [
-                540
+                795
             ],
             "minAmount": [
-                243
+                387
             ],
             "maxAmount": [
-                243
+                387
             ],
             "createdAfter": [
-                540
+                795
             ],
             "createdBefore": [
-                540
+                795
             ],
             "query": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "OnboardPaymentAccountInput": {
             "sellerLocation": [
-                498
+                709
             ],
             "type": [
-                356
+                520
             ],
             "returnUrl": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "OnboardPaymentAccountResponse": {
             "onboardingUrl": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "OnlineBidOrigin": {
             "type": [
-                67
+                124
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "OpenSaleInput": {
             "saleId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "OrderConnection": {
             "edges": [
-                339
+                501
             ],
             "pageInfo": [
-                349
+                513
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "OrderEdge": {
             "cursor": [
-                540
+                795
             ],
             "node": [
-                359
+                523
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "OrderLine": {
             "orderLineId": [
-                234
+                374
             ],
             "amount": [
-                243
+                387
             ],
             "description": [
-                540
+                795
             ],
             "orderLineType": [
-                342
+                505
             ],
             "fees": [
-                341
+                503
             ],
             "sellerFees": [
-                341
+                503
+            ],
+            "platformFees": [
+                504
             ],
             "item": [
-                424
+                631
+            ],
+            "tax": [
+                58
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "OrderLineFee": {
             "id": [
-                234
+                374
             ],
             "description": [
-                540
+                795
             ],
             "name": [
-                540
+                795
             ],
             "amount": [
-                243
+                387
             ],
             "isSystemDefined": [
-                80
+                138
+            ],
+            "tax": [
+                58
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "OrderLinePlatformFee": {
+            "name": [
+                795
+            ],
+            "amount": [
+                387
+            ],
+            "chargedTo": [
+                548
+            ],
+            "__typename": [
+                795
             ]
         },
         "OrderLineType": {},
+        "OrderPayment": {
+            "id": [
+                374
+            ],
+            "amount": [
+                387
+            ],
+            "receivedOn": [
+                795
+            ],
+            "reference": [
+                795
+            ],
+            "createdAt": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
         "OrderStatus": {},
         "OrganisationDetails": {
             "legalName": [
-                540
+                795
             ],
             "registrationNumber": [
-                540
+                795
             ],
             "vatNumber": [
-                540
+                795
             ],
             "addressLine1": [
-                540
+                795
             ],
             "addressLine2": [
-                540
+                795
             ],
             "city": [
-                540
+                795
             ],
             "region": [
-                540
+                795
             ],
             "postalCode": [
-                540
+                795
             ],
             "countryName": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "OrganisationDetailsInput": {
             "legalName": [
-                540
+                795
             ],
             "registrationNumber": [
-                540
+                795
             ],
             "vatNumber": [
-                540
+                795
             ],
             "addressLine1": [
-                540
+                795
             ],
             "addressLine2": [
-                540
+                795
             ],
             "city": [
-                540
+                795
             ],
             "region": [
-                540
+                795
             ],
             "postalCode": [
-                540
+                795
             ],
             "countryName": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "Paddle": {
             "identifier": [
-                540
+                795
             ],
             "userId": [
-                540
+                795
             ],
             "user": [
-                606
+                899
             ],
             "type": [
-                348
+                512
             ],
             "created": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "PaddleBidOrigin": {
             "type": [
-                67
+                124
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "PaddleType": {},
         "PageInfo": {
             "startCursor": [
-                234
+                374
             ],
             "endCursor": [
-                234
+                374
             ],
             "hasNextPage": [
-                80
+                138
             ],
             "hasPreviousPage": [
-                80
+                138
             ],
             "totalRecords": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "PaginationDirection": {},
         "Participant": {
             "userId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ParticipantsConnection": {
             "edges": [
-                353
+                517
             ],
             "totalCount": [
-                243
+                387
             ],
             "pageInfo": [
-                349
+                513
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ParticipantsEdge": {
             "cursor": [
-                540
+                795
             ],
             "node": [
-                351
+                515
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "PassLiveItemInput": {
             "saleId": [
-                540
+                795
             ],
             "itemId": [
-                540
+                795
             ],
             "transitionToUpcomingLot": [
-                80
+                138
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "Payment": {
             "paymentId": [
-                234
+                374
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "PaymentAccountType": {},
         "PaymentDetails": {
             "paymentProviderAccountId": [
-                540
+                795
             ],
             "status": [
-                362
+                526
             ],
             "accountFees": [
-                2
+                4
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "PaymentMethod": {
             "on_Card": [
-                85
+                157
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "PaymentOrder": {
             "id": [
-                234
+                374
             ],
             "orderId": [
-                234
+                374
             ],
             "title": [
-                540
+                795
             ],
             "currency": [
-                166
+                292
             ],
             "saleId": [
-                540
+                795
             ],
             "itemId": [
-                540
+                795
             ],
             "invoiceId": [
-                540
+                795
+            ],
+            "invoiceNumber": [
+                795
             ],
             "invoice": [
-                244
+                389
+            ],
+            "dueAt": [
+                795
+            ],
+            "paymentTermsDays": [
+                387
+            ],
+            "total": [
+                387
+            ],
+            "taxTotal": [
+                387
+            ],
+            "taxBands": [
+                814
+            ],
+            "taxInLieuTotal": [
+                387
+            ],
+            "marginScheme": [
+                138
+            ],
+            "amountPaid": [
+                387
+            ],
+            "amountDue": [
+                387
+            ],
+            "payments": [
+                506
             ],
             "paymentId": [
-                540
+                795
             ],
             "userId": [
-                540
+                795
             ],
             "orderLines": [
-                340
+                502
             ],
             "user": [
-                606
+                899
             ],
             "billingAddress": [
-                299
+                451
             ],
             "shippingAddress": [
-                299
+                451
+            ],
+            "buyerAddresses": [
+                451
             ],
             "status": [
-                343
+                507
             ],
             "created": [
-                540
+                795
             ],
             "modified": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "PaymentProviderCustomerInput": {
             "stripe": [
-                542
+                797
             ],
             "stripeApp": [
-                541
+                796
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "PaymentProviderSession": {
             "on_StripePaymentProviderSession": [
-                543
+                800
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "PaymentProviderStatus": {},
         "Permission": {},
         "PhoneAddress": {
             "id": [
-                540
+                795
             ],
             "phoneType": [
-                366
+                545
             ],
             "phoneNumber": [
-                540
+                795
             ],
             "label": [
-                540
+                795
             ],
             "isPrimary": [
-                80
+                138
             ],
             "verifiedAt": [
-                551
+                823
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "PhoneBidOrigin": {
             "type": [
-                67
+                124
             ],
             "__typename": [
+                795
+            ]
+        },
+        "PhoneClerkAssignment": {
+            "id": [
+                374
+            ],
+            "itemId": [
+                795
+            ],
+            "itemNumber": [
+                387
+            ],
+            "saleRegistrationId": [
+                374
+            ],
+            "saleRegistration": [
+                649
+            ],
+            "saleItemRegistrationId": [
+                374
+            ],
+            "bidderUserId": [
+                795
+            ],
+            "lineNumber": [
+                387
+            ],
+            "clerkName": [
+                795
+            ],
+            "source": [
+                531
+            ],
+            "reason": [
                 540
+            ],
+            "suggestion": [
+                542
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "PhoneClerkAssignmentSource": {},
+        "PhoneClerkHistoryEntry": {
+            "bidderUserId": [
+                795
+            ],
+            "staffProfileId": [
+                374
+            ],
+            "clerkName": [
+                795
+            ],
+            "saleId": [
+                795
+            ],
+            "lastItemNumber": [
+                387
+            ],
+            "lockedAt": [
+                823
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "PhoneClerkItemAssignments": {
+            "itemId": [
+                795
+            ],
+            "itemNumber": [
+                387
+            ],
+            "assignments": [
+                530
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "PhoneClerkOverride": {
+            "id": [
+                374
+            ],
+            "bidderUserId": [
+                795
+            ],
+            "itemId": [
+                795
+            ],
+            "lineNumber": [
+                387
+            ],
+            "note": [
+                795
+            ],
+            "createdBy": [
+                795
+            ],
+            "createdAt": [
+                823
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "PhoneClerkPlan": {
+            "id": [
+                374
+            ],
+            "saleId": [
+                795
+            ],
+            "version": [
+                387
+            ],
+            "status": [
+                539
+            ],
+            "generator": [
+                536
+            ],
+            "model": [
+                795
+            ],
+            "error": [
+                795
+            ],
+            "staleness": [
+                538
+            ],
+            "issues": [
+                537
+            ],
+            "createdBy": [
+                795
+            ],
+            "createdAt": [
+                823
+            ],
+            "lockedBy": [
+                795
+            ],
+            "lockedAt": [
+                823
+            ],
+            "assignments": [
+                530
+            ],
+            "byItem": [
+                533
+            ],
+            "byLine": [
+                544
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "PhoneClerkPlanGenerator": {},
+        "PhoneClerkPlanIssue": {
+            "code": [
+                795
+            ],
+            "message": [
+                795
+            ],
+            "saleItemRegistrationIds": [
+                374
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "PhoneClerkPlanStaleness": {
+            "isStale": [
+                138
+            ],
+            "uncoveredRegistrationCount": [
+                387
+            ],
+            "removedRegistrationCount": [
+                387
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "PhoneClerkPlanStatus": {},
+        "PhoneClerkReason": {
+            "code": [
+                541
+            ],
+            "explanation": [
+                795
+            ],
+            "evidenceAssignmentId": [
+                374
+            ],
+            "evidenceSaleId": [
+                795
+            ],
+            "rewritten": [
+                138
+            ],
+            "actorUserId": [
+                795
+            ],
+            "at": [
+                823
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "PhoneClerkReasonCode": {},
+        "PhoneClerkSuggestion": {
+            "lineNumber": [
+                387
+            ],
+            "reason": [
+                540
+            ],
+            "conflictingSaleItemRegistrationIds": [
+                374
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "PhoneLine": {
+            "lineNumber": [
+                387
+            ],
+            "label": [
+                795
+            ],
+            "clerk": [
+                780
+            ],
+            "displayName": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "PhoneLineAssignments": {
+            "line": [
+                543
+            ],
+            "assignments": [
+                530
+            ],
+            "__typename": [
+                795
             ]
         },
         "PhoneType": {},
-        "Principal": {
-            "id": [
-                234
+        "PhotographyWorkflowStatus": {},
+        "PhotographyWorkflowSummary": {
+            "totalItems": [
+                387
             ],
-            "type": [
-                368
+            "toPhotograph": [
+                387
             ],
-            "name": [
-                540
+            "photographed": [
+                387
+            ],
+            "uploaded": [
+                387
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "PlatformFeeChargedTo": {},
+        "PresaleAdvice": {
+            "id": [
+                374
+            ],
+            "saleId": [
+                795
+            ],
+            "consignor": [
+                225
+            ],
+            "consignments": [
+                207
+            ],
+            "reportedSeparately": [
+                138
+            ],
+            "revision": [
+                387
+            ],
+            "status": [
+                554
+            ],
+            "filename": [
+                795
+            ],
+            "generatedAt": [
+                823
+            ],
+            "generatedBy": [
+                795
+            ],
+            "sentAt": [
+                823
+            ],
+            "sentBy": [
+                795
+            ],
+            "sentToEmail": [
+                795
+            ],
+            "download": [
+                329
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "PresaleAdviceList": {
+            "advices": [
+                549
+            ],
+            "skipped": [
+                553
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "PresaleAdviceSendResult": {
+            "presaleAdviceId": [
+                795
+            ],
+            "sent": [
+                138
+            ],
+            "error": [
+                795
+            ],
+            "advice": [
+                549
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "PresaleAdviceSkipReason": {},
+        "PresaleAdviceSkippedItem": {
+            "itemId": [
+                795
+            ],
+            "reason": [
+                552
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "PresaleAdviceStatus": {},
+        "PresaleAdvicesConnection": {
+            "edges": [
+                556
+            ],
+            "pageInfo": [
+                513
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "PresaleAdvicesEdge": {
+            "cursor": [
+                795
+            ],
+            "node": [
+                549
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "PreviewConsignmentContractInput": {
+            "consignmentId": [
+                795
+            ],
+            "currency": [
+                292
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "PreviewSaleInput": {
+            "saleId": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "Principal": {
+            "id": [
+                374
+            ],
+            "type": [
+                560
+            ],
+            "name": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "PrincipalType": {},
         "ProductVariant": {
             "id": [
-                234
+                374
             ],
             "productId": [
-                234
+                374
             ],
             "name": [
-                540
+                795
             ],
             "sku": [
-                540
+                795
             ],
             "price": [
-                243
+                387
             ],
             "currencyCode": [
-                301
+                456
             ],
             "stockOnHand": [
-                243
+                387
             ],
             "enabled": [
-                80
+                138
             ],
             "itemId": [
-                234
+                374
             ],
             "itemType": [
-                280
+                431
             ],
             "effectiveSchema": [
-                286
+                438
             ],
             "type": [
-                280
+                431
             ],
             "schema": [
-                286
+                438
             ],
             "schemaId": [
-                234
+                374
             ],
             "schemaData": [
-                286
+                438
             ],
             "attributes": [
-                286
+                438
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ProductVariantConnection": {
             "edges": [
-                371
+                563
             ],
             "pageInfo": [
-                349
+                513
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ProductVariantEdge": {
             "cursor": [
-                540
+                795
             ],
             "node": [
-                369
+                561
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ProductVariantLink": {
             "variantId": [
-                234
+                374
             ],
             "productId": [
-                234
+                374
             ],
             "productName": [
-                540
+                795
             ],
             "variantName": [
-                540
+                795
             ],
             "sku": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "PropertyReceipt": {
+            "id": [
+                374
+            ],
+            "consignmentId": [
+                795
+            ],
+            "number": [
+                795
+            ],
+            "items": [
+                567
+            ],
+            "custody": [
+                566
+            ],
+            "site": [
+                773
+            ],
+            "siteLocation": [
+                448
+            ],
+            "templateVersion": [
+                387
+            ],
+            "filename": [
+                795
+            ],
+            "issuedAt": [
+                823
+            ],
+            "issuedBy": [
+                795
+            ],
+            "lastSentAt": [
+                823
+            ],
+            "lastSentBy": [
+                795
+            ],
+            "lastSentTo": [
+                795
+            ],
+            "sendCount": [
+                387
+            ],
+            "download": [
+                329
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "PropertyReceiptCustody": {},
+        "PropertyReceiptItem": {
+            "itemId": [
+                795
+            ],
+            "lineNumber": [
+                387
+            ],
+            "item": [
+                393
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "PropertyReceiptLocationInput": {
+            "inTransit": [
+                138
+            ],
+            "site": [
+                570
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "PropertyReceiptRef": {
+            "id": [
+                374
+            ],
+            "number": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "PropertyReceiptSiteInput": {
+            "siteId": [
+                795
+            ],
+            "locationId": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "PropertyReceiptTemplate": {
+            "id": [
+                374
+            ],
+            "version": [
+                387
+            ],
+            "title": [
+                795
+            ],
+            "body": [
+                795
+            ],
+            "createdAt": [
+                823
+            ],
+            "createdBy": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "PublishPaymentOrderInput": {
             "orderId": [
-                234
+                374
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "PublishSaleInput": {
             "saleId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "Query": {
             "account": [
-                1,
+                2,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "saleStatsDataCoverage": [
-                456,
+                667,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ]
                 }
             ],
             "saleStatsYoyGmv": [
-                469,
+                680,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "yearA": [
-                        243,
+                        387,
                         "Int!"
                     ],
                     "yearB": [
-                        243,
+                        387,
                         "Int!"
                     ]
                 }
             ],
             "saleStatsMomGmv": [
-                464,
+                675,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "yearA": [
-                        243,
+                        387,
                         "Int!"
                     ],
                     "monthA": [
-                        243,
+                        387,
                         "Int!"
                     ],
                     "yearB": [
-                        243,
+                        387,
                         "Int!"
                     ],
                     "monthB": [
-                        243,
+                        387,
                         "Int!"
                     ]
                 }
             ],
             "saleStatsSellThrough": [
-                466,
+                677,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "year": [
-                        243,
+                        387,
                         "Int!"
                     ]
                 }
             ],
             "saleStatsBidderEngagement": [
-                453,
+                664,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "year": [
-                        243,
+                        387,
                         "Int!"
                     ]
                 }
             ],
             "saleStatsDistinctWinners": [
-                457,
+                668,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "year": [
-                        243,
+                        387,
                         "Int!"
                     ]
                 }
             ],
             "saleStatsLotOutcomeSummary": [
-                463,
+                674,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "year": [
-                        243,
+                        387,
                         "Int!"
                     ]
                 }
             ],
             "saleStatsHammerVsEstimate": [
-                460,
+                671,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "year": [
-                        243,
+                        387,
                         "Int!"
                     ]
                 }
             ],
             "saleStatsClosingDayProfile": [
-                454,
+                665,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "year": [
-                        243,
+                        387,
                         "Int!"
                     ]
                 }
             ],
             "saleStatsTopSales": [
-                468,
+                679,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "year": [
-                        243,
+                        387,
                         "Int!"
                     ],
                     "limit": [
-                        243
+                        387
                     ]
                 }
             ],
             "accounts": [
-                1
+                2
             ],
             "countries": [
-                124,
+                237,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ]
                 }
             ],
             "accountCountries": [
-                125,
+                238,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ]
                 }
             ],
             "sales": [
-                406,
+                613,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ],
                     "filter": [
-                        409
+                        616
                     ]
                 }
             ],
             "sale": [
-                403,
+                610,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "id": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "saleIdType": [
-                        414
+                        621
                     ]
                 }
             ],
             "saleV2": [
-                472,
+                683,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "id": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "saleIdType": [
-                        414
+                        621
                     ]
                 }
             ],
             "salesV2": [
-                473,
+                684,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ],
                     "filter": [
-                        409
+                        616
                     ]
                 }
             ],
             "departments": [
-                190,
+                317,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ]
                 }
             ],
             "saleGenres": [
-                412,
+                619,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ],
                     "includeArchived": [
-                        80
+                        138
                     ]
                 }
             ],
             "saleItem": [
-                416,
+                623,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "saleId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "itemId": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "saleItemByExternalId": [
-                416,
+                623,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "externalId": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "apiKeys": [
-                35,
+                47,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ]
                 }
             ],
             "searchKey": [
-                485,
+                696,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "apiTokens": [
-                41,
+                53,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ]
                 }
             ],
             "actionHookSubscriptions": [
-                10,
+                12,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "attributionChannels": [
-                53,
+                107,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "includeArchived": [
-                        80
+                        138
                     ]
                 }
             ],
             "attributionSources": [
-                54,
+                108,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "includeArchived": [
-                        80
+                        138
+                    ]
+                }
+            ],
+            "noteTypes": [
+                470,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "includeArchived": [
+                        138
                     ]
                 }
             ],
             "notificationIntegrations": [
-                320,
+                482,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ]
                 }
             ],
             "revealSendGridNotificationIntegrationApiKey": [
-                540,
+                795,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ]
                 }
             ],
             "notificationCatalog": [
-                312,
+                474,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ]
                 }
             ],
             "workflowScheduleOffsets": [
-                632,
+                934,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ]
                 }
             ],
-            "actionHookLogs": [
-                7,
+            "cataloguingWorkflowSummaryForSale": [
+                159,
                 {
                     "accountId": [
-                        540,
+                        374,
+                        "ID!"
+                    ],
+                    "saleId": [
+                        374,
+                        "ID!"
+                    ]
+                }
+            ],
+            "photographyWorkflowSummaryForSale": [
+                547,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "saleId": [
+                        374,
+                        "ID!"
+                    ]
+                }
+            ],
+            "itemCataloguingReadiness": [
+                396,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "itemId": [
+                        374,
+                        "ID!"
+                    ]
+                }
+            ],
+            "saleItemsRequiredFieldStatus": [
+                637,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "saleId": [
+                        374,
+                        "ID!"
+                    ],
+                    "itemIds": [
+                        374,
+                        "[ID!]"
+                    ]
+                }
+            ],
+            "actionHookLogs": [
+                9,
+                {
+                    "accountId": [
+                        795,
                         "String!"
                     ],
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ],
                     "filter": [
-                        5
+                        7
                     ]
                 }
             ],
             "item": [
-                245,
+                393,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "itemId": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "itemByExternalId": [
-                245,
+                393,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "externalId": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "items": [
-                283,
+                435,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ],
                     "itemsFilter": [
-                        285,
+                        437,
                         "ItemsFilter!"
                     ],
                     "direction": [
-                        350
+                        514
                     ]
                 }
             ],
             "consignment": [
-                108,
+                207,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "consignmentId": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
-            "consignmentByShortId": [
-                108,
+            "couriers": [
+                240,
                 {
                     "accountId": [
-                        540,
+                        795,
+                        "String!"
+                    ],
+                    "query": [
+                        795
+                    ],
+                    "first": [
+                        387
+                    ]
+                }
+            ],
+            "consignmentByShortId": [
+                207,
+                {
+                    "accountId": [
+                        795,
                         "String!"
                     ],
                     "shortId": [
-                        540,
+                        795,
+                        "String!"
+                    ]
+                }
+            ],
+            "consignmentLine": [
+                219,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "consignmentNumber": [
+                        387,
+                        "Int!"
+                    ],
+                    "lineNumber": [
+                        387,
+                        "Int!"
+                    ]
+                }
+            ],
+            "entityNumberSettings": [
+                346,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ]
+                }
+            ],
+            "inventoryNumberSettings": [
+                388,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ]
+                }
+            ],
+            "consignmentContract": [
+                209,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "contractId": [
+                        795,
+                        "String!"
+                    ]
+                }
+            ],
+            "presaleAdvices": [
+                550,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "saleId": [
+                        795,
+                        "String!"
+                    ]
+                }
+            ],
+            "consignorPresaleAdvices": [
+                555,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "consignorUserId": [
+                        795,
+                        "String!"
+                    ],
+                    "first": [
+                        387
+                    ],
+                    "after": [
+                        795
+                    ]
+                }
+            ],
+            "consignmentContractPlaceholders": [
+                235,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ]
+                }
+            ],
+            "consignmentContractTemplateStarter": [
+                795,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ]
+                }
+            ],
+            "consignmentContractTemplateVersion": [
+                214,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "id": [
+                        795,
                         "String!"
                     ]
                 }
             ],
             "consignments": [
-                114,
+                223,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ],
                     "direction": [
-                        350
+                        514
+                    ]
+                }
+            ],
+            "appraisal": [
+                71,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "appraisalId": [
+                        795,
+                        "String!"
+                    ]
+                }
+            ],
+            "appraisalItem": [
+                82,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "appraisalId": [
+                        795,
+                        "String!"
+                    ],
+                    "itemId": [
+                        795,
+                        "String!"
+                    ]
+                }
+            ],
+            "appraisalLine": [
+                82,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "appraisalNumber": [
+                        387,
+                        "Int!"
+                    ],
+                    "lineNumber": [
+                        387,
+                        "Int!"
+                    ]
+                }
+            ],
+            "suggestContent": [
+                232,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "input": [
+                        802,
+                        "SuggestContentInput!"
+                    ]
+                }
+            ],
+            "appraisals": [
+                92,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "first": [
+                        387
+                    ],
+                    "after": [
+                        795
+                    ],
+                    "direction": [
+                        514
+                    ]
+                }
+            ],
+            "appraisalDocumentTemplate": [
+                79,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "type": [
+                        90,
+                        "AppraisalType!"
+                    ]
+                }
+            ],
+            "appraisalDocumentTemplateVersions": [
+                79,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "type": [
+                        90,
+                        "AppraisalType!"
+                    ]
+                }
+            ],
+            "appraisalDocumentPlaceholders": [
+                235,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ]
+                }
+            ],
+            "propertyReceiptTemplate": [
+                571,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ]
+                }
+            ],
+            "propertyReceiptTemplateVersions": [
+                571,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ]
+                }
+            ],
+            "propertyReceiptTemplateVersion": [
+                571,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "version": [
+                        387,
+                        "Int!"
+                    ]
+                }
+            ],
+            "propertyReceiptPlaceholders": [
+                235,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ]
+                }
+            ],
+            "propertyReceipt": [
+                565,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "receiptId": [
+                        795,
+                        "String!"
+                    ]
+                }
+            ],
+            "valuationRequestSettings": [
+                922,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ]
+                }
+            ],
+            "valuationRequests": [
+                924,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "first": [
+                        387
+                    ],
+                    "after": [
+                        795
+                    ],
+                    "filter": [
+                        920
+                    ]
+                }
+            ],
+            "valuationRequest": [
+                917,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "id": [
+                        374,
+                        "ID!"
+                    ]
+                }
+            ],
+            "conditionReportRequests": [
+                204,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "first": [
+                        387
+                    ],
+                    "after": [
+                        795
+                    ],
+                    "filter": [
+                        201
+                    ]
+                }
+            ],
+            "conditionReportRequest": [
+                196,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "id": [
+                        374,
+                        "ID!"
+                    ]
+                }
+            ],
+            "appointmentSettings": [
+                67,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ]
+                }
+            ],
+            "appointments": [
+                70,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "first": [
+                        387
+                    ],
+                    "after": [
+                        795
+                    ],
+                    "filter": [
+                        65
+                    ],
+                    "order": [
+                        66
+                    ]
+                }
+            ],
+            "appointment": [
+                59,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "id": [
+                        374,
+                        "ID!"
                     ]
                 }
             ],
             "site": [
-                532,
+                773,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "siteId": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "sites": [
-                533,
+                776,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "includeArchived": [
-                        80
+                        138
                     ]
                 }
             ],
             "location": [
-                296,
+                448,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "locationId": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "locations": [
-                297,
+                449,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "siteId": [
-                        540
+                        795
                     ],
                     "includeArchived": [
-                        80
+                        138
                     ]
                 }
             ],
             "consignorItems": [
-                283,
+                435,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "consignorUserId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ],
                     "direction": [
-                        350
+                        514
                     ]
                 }
             ],
             "itemOfferConfig": [
-                266,
+                417,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "itemId": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "offer": [
-                326,
+                488,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "offerId": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "itemOffers": [
-                331,
+                493,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "itemId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ],
                     "status": [
-                        330
+                        492
                     ],
                     "direction": [
-                        350
+                        514
                     ]
                 }
             ],
             "offers": [
-                331,
+                493,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "filter": [
-                        333
+                        495
                     ],
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ],
                     "direction": [
-                        350
+                        514
+                    ]
+                }
+            ],
+            "bids": [
+                134,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "filter": [
+                        136
+                    ],
+                    "first": [
+                        387
+                    ],
+                    "after": [
+                        795
+                    ],
+                    "direction": [
+                        514
                     ]
                 }
             ],
             "salesAggregate": [
-                479,
+                690,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "userBidActivity": [
-                599,
+                892,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "userId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ],
                     "filter": [
-                        601
+                        894
                     ],
                     "direction": [
-                        350
+                        514
                     ],
                     "orderBy": [
-                        64
+                        121
                     ]
                 }
             ],
             "user": [
-                595,
+                888,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "userId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "idType": [
-                        603,
+                        896,
                         "UserIdType!"
                     ]
                 }
             ],
-            "orders": [
-                338,
+            "clientNumberSettings": [
+                189,
                 {
                     "accountId": [
-                        540,
+                        795,
+                        "String!"
+                    ]
+                }
+            ],
+            "saleNumberSettings": [
+                647,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ]
+                }
+            ],
+            "orders": [
+                500,
+                {
+                    "accountId": [
+                        795,
                         "String!"
                     ],
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ],
                     "before": [
-                        540
+                        795
                     ],
                     "last": [
-                        243
+                        387
+                    ]
+                }
+            ],
+            "order": [
+                523,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "orderId": [
+                        795,
+                        "String!"
                     ]
                 }
             ],
             "userOrders": [
-                338,
+                500,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "userID": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ],
                     "before": [
-                        540
+                        795
                     ],
                     "last": [
-                        243
+                        387
+                    ]
+                }
+            ],
+            "statements": [
+                787,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "filter": [
+                        790
+                    ],
+                    "first": [
+                        387
+                    ],
+                    "after": [
+                        795
+                    ]
+                }
+            ],
+            "statement": [
+                786,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "id": [
+                        374,
+                        "ID!"
+                    ]
+                }
+            ],
+            "invoiceSettings": [
+                390,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
                     ]
                 }
             ],
             "saleRegistrations": [
-                447,
+                658,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ],
                     "filter": [
-                        449
+                        660
                     ],
                     "direction": [
-                        350
+                        514
                     ],
                     "sortByField": [
-                        444
+                        655
                     ]
                 }
             ],
             "image": [
-                240,
+                384,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "id": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "idType": [
-                        237,
+                        380,
                         "ImageIdType!"
                     ]
                 }
             ],
             "asset": [
-                49,
+                97,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "assetId": [
-                        540,
+                        795,
                         "String!"
+                    ]
+                }
+            ],
+            "assets": [
+                98,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "contentTypes": [
+                        795,
+                        "[String!]"
+                    ],
+                    "first": [
+                        387
+                    ],
+                    "after": [
+                        795
                     ]
                 }
             ],
             "users": [
-                623,
+                916,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ]
                 }
             ],
             "consignorFollowers": [
-                623,
+                916,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "consignorId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ]
                 }
             ],
             "userFollowing": [
-                623,
+                916,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "userId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ]
                 }
             ],
             "consignorFollowerCount": [
-                243,
+                387,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "consignorId": [
-                        234,
+                        374,
                         "ID!"
                     ]
                 }
             ],
             "saleRegistrationPolicies": [
-                440,
+                651,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ],
                     "last": [
-                        243
+                        387
                     ],
                     "before": [
-                        540
+                        795
+                    ]
+                }
+            ],
+            "saleRegistrationPolicySchema": [
+                166,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ]
+                }
+            ],
+            "validateSaleRegistrationPolicyRule": [
+                171,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "rule": [
+                        795,
+                        "String!"
                     ]
                 }
             ],
             "search": [
-                487,
+                698,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "type": [
-                        490,
+                        701,
                         "SearchType!"
                     ],
                     "query": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "first": [
-                        243
+                        387
                     ],
                     "page": [
-                        243
+                        387
                     ],
                     "queryBy": [
-                        540,
+                        795,
                         "[String!]"
                     ],
                     "orderBy": [
-                        540
+                        795
                     ],
                     "filterBy": [
-                        540
+                        795
                     ]
                 }
             ],
             "geoLookup": [
-                223,
+                362,
                 {
                     "ip": [
-                        540
+                        795
                     ]
                 }
             ],
             "dashboardMembers": [
-                168,
+                294,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "dashboardUserRoles": [
-                170,
+                296,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "userId": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "currentUser": [
-                167,
+                293,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ]
                 }
             ],
             "category": [
-                86,
+                160,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "categoryId": [
-                        234,
+                        374,
                         "ID!"
                     ]
                 }
             ],
             "categories": [
-                87,
+                161,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "parentId": [
-                        234
+                        374
                     ],
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ]
                 }
             ],
             "itemTypes": [
-                282,
+                434,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "parentId": [
-                        234
+                        374
                     ],
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ]
                 }
             ],
             "schemas": [
-                282,
+                434,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "parentId": [
-                        234
+                        374
                     ],
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ]
                 }
             ],
             "schemaNamespaces": [
-                484,
+                695,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ]
                 }
             ],
             "creator": [
-                162,
+                287,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "creatorId": [
-                        234,
+                        374,
                         "ID!"
                     ]
                 }
             ],
             "creators": [
-                163,
+                288,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "parentId": [
-                        234
+                        374
                     ],
                     "includeChildren": [
-                        80
+                        138
                     ],
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
+                    ]
+                }
+            ],
+            "staffProfile": [
+                780,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "staffProfileId": [
+                        374,
+                        "ID!"
+                    ]
+                }
+            ],
+            "staffProfiles": [
+                781,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "first": [
+                        387
+                    ],
+                    "after": [
+                        795
+                    ],
+                    "departmentId": [
+                        374
+                    ],
+                    "itemTypeId": [
+                        374
+                    ],
+                    "isPhoneClerk": [
+                        138
+                    ]
+                }
+            ],
+            "staffProfileSchema": [
+                438,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ]
+                }
+            ],
+            "suggestPhoneClerk": [
+                542,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "saleItemRegistrationId": [
+                        374,
+                        "ID!"
+                    ]
+                }
+            ],
+            "phoneClerkPlan": [
+                535,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "id": [
+                        374,
+                        "ID!"
+                    ]
+                }
+            ],
+            "phoneClerkHistory": [
+                532,
+                {
+                    "accountId": [
+                        795,
+                        "String!"
+                    ],
+                    "bidderUserId": [
+                        795,
+                        "String!"
                     ]
                 }
             ],
             "affiliate": [
-                28,
+                35,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "affiliateId": [
-                        234,
+                        374,
                         "ID!"
                     ]
                 }
             ],
             "affiliates": [
-                29,
+                36,
                 {
                     "accountId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "input": [
-                        31
+                        43
+                    ]
+                }
+            ],
+            "affiliateReport": [
+                39,
+                {
+                    "accountId": [
+                        374,
+                        "ID!"
+                    ],
+                    "input": [
+                        41,
+                        "AffiliateReportInput!"
                     ]
                 }
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "RangeRule": {
             "highRange": [
-                243
+                387
             ],
             "lowRange": [
-                243
+                387
             ],
             "step": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "RangeRuleInput": {
             "highRange": [
-                243
+                387
             ],
             "lowRange": [
-                243
+                387
             ],
             "step": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "RecordConsignmentContractSignatureInput": {
+            "consignmentId": [
+                795
+            ],
+            "contractId": [
+                795
+            ],
+            "signedAt": [
+                823
+            ],
+            "note": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "RecordOrderPaymentInput": {
+            "amount": [
+                387
+            ],
+            "receivedOn": [
+                795
+            ],
+            "reference": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "RegisterUserPaddleInput": {
             "saleId": [
-                540
+                795
             ],
             "paddleIdentifier": [
-                540
+                795
             ],
             "type": [
-                348
+                512
             ],
             "email": [
-                540
+                795
             ],
             "firstName": [
-                540
+                795
             ],
             "lastName": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "RejectSaleRegistrationInput": {
             "registrationId": [
-                540
+                795
             ],
             "reason": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "RelatedParty": {
+            "party": [
+                888
+            ],
+            "partyHoldsRole": [
+                138
+            ],
+            "relationship": [
+                191
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "RemoveAppraisalClientsInput": {
+            "appraisalId": [
+                795
+            ],
+            "clientUserIds": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "RemoveAppraisalStaffInput": {
+            "appraisalId": [
+                795
+            ],
+            "staffUserIds": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "RemoveConsignmentStaffInput": {
             "consignmentId": [
-                540
+                795
             ],
             "consignmentStaffUserIds": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "RemoveConsignorsInput": {
             "consignmentId": [
-                540
+                795
             ],
             "consignorUserIds": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "RemoveDashboardUserRoleInput": {
             "userId": [
-                540
+                795
             ],
             "role": [
-                169
+                295
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "RemovePackagingInput": {
             "itemId": [
-                540
+                795
             ],
             "packagingIds": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "RemovePaddleFromSaleInput": {
             "saleId": [
-                540
+                795
             ],
             "paddleIdentifier": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "RemoveSaleItemInput": {
             "saleId": [
-                540
+                795
             ],
             "itemId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "RemoveSpecificationsInput": {
             "itemId": [
-                540
+                795
             ],
             "specificationIds": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "RemoveStatementChargeInput": {
+            "lineChargeId": [
+                374
+            ],
+            "note": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "RemoveTagFromItemInput": {
             "itemId": [
-                540
+                795
             ],
             "name": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "RemoveTagFromSaleItemInput": {
             "saleId": [
-                540
+                795
             ],
             "itemId": [
-                540
+                795
             ],
             "name": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "RemoveTagFromUserInput": {
             "userId": [
-                540
+                795
             ],
             "name": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "RenameAttributionChannelInput": {
             "id": [
-                540
+                795
             ],
             "name": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "RenameAttributionSourceInput": {
             "id": [
-                540
+                795
             ],
             "name": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "RenameNoteTypeInput": {
+            "id": [
+                795
+            ],
+            "name": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "ReorderHighlightedItemsInput": {
             "saleId": [
-                540
+                795
             ],
             "itemIds": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ReorderImagesInput": {
             "saleId": [
-                540
+                795
             ],
             "itemId": [
-                540
+                795
             ],
             "imageType": [
-                239
+                383
             ],
             "imageOrderChanges": [
-                238
+                382
+            ],
+            "kind": [
+                381
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ReorderItemImages": {
             "itemId": [
-                540
+                795
             ],
             "imageOrderChanges": [
-                238
+                382
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ReserveAutoBidMethod": {},
@@ -10158,1292 +16181,1453 @@ export default {
         "ReserveType": {},
         "ResetSaleFeesInput": {
             "saleId": [
-                234
+                374
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "RetryActionHookInput": {
             "id": [
-                234
+                374
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "RevertDirectSellInput": {
+            "itemId": [
+                795
+            ],
+            "saleId": [
+                795
+            ],
+            "buyerUserId": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "RevokeApiKeyInput": {
             "apiKeyId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "RevokeApiTokenInput": {
             "apiTokenId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "RotateSendGridNotificationIntegrationApiKeyInput": {
             "apiKey": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "Sale": {
             "id": [
-                234
+                374
             ],
             "cursor": [
-                540
+                795
             ],
             "type": [
-                471
+                682
             ],
             "accountId": [
-                540
+                795
             ],
             "title": [
-                540
+                795
             ],
             "description": [
-                540
+                795
             ],
             "currency": [
-                540
+                795
             ],
             "status": [
-                470
+                681
             ],
             "saleFormat": [
-                410
+                617
             ],
             "items": [
-                434,
+                643,
                 {
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ],
                     "filter": [
-                        420
+                        627
                     ],
                     "order": [
-                        269
+                        420
                     ]
                 }
             ],
             "incrementTable": [
-                61
+                118
             ],
             "dates": [
-                407
+                614
             ],
             "participants": [
-                352,
+                516,
                 {
                     "take": [
-                        243
+                        387
                     ],
                     "cursor": [
-                        540
+                        795
                     ],
                     "direction": [
-                        350
+                        514
                     ]
                 }
             ],
             "sequenceNumber": [
-                243
+                387
+            ],
+            "saleNumber": [
+                387
+            ],
+            "saleCode": [
+                795
             ],
             "closingMethod": [
-                106
+                194
             ],
             "closingTimeCountdown": [
-                243
+                387
             ],
             "images": [
-                235
+                378
             ],
             "themeType": [
-                243
+                387
             ],
             "slug": [
-                540
+                795
+            ],
+            "websiteUrl": [
+                795
             ],
             "reserveAutoBidMethod": [
-                395
+                601
             ],
             "isTestSale": [
-                80
+                138
             ],
             "printedCatalogue": [
-                80
+                138
             ],
             "workflowSchedule": [
-                629
+                931
             ],
             "bastaBidClient": [
-                80
+                138
             ],
             "hidden": [
-                80
+                138
             ],
             "paddles": [
-                346
+                510
             ],
             "liveStream": [
-                213
+                348
             ],
             "liveVideoStream": [
-                293
+                445
             ],
             "liveItem": [
-                292,
+                444,
                 {
                     "itemOrderInput": [
-                        269
+                        420
                     ]
                 }
             ],
             "saleBidsCounts": [
-                243
+                387
             ],
             "sumOfHighestBids": [
-                243
+                387
             ],
             "statistics": [
-                452
+                663
             ],
             "bidRestrictions": [
-                71
+                128
             ],
             "registrations": [
-                447,
+                658,
                 {
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ],
                     "filter": [
-                        448
+                        659
                     ],
                     "direction": [
-                        350
+                        514
                     ],
                     "sortByField": [
-                        444
+                        655
                     ]
                 }
             ],
             "registrationPolicies": [
-                440,
+                651,
                 {
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ],
                     "last": [
-                        243
+                        387
                     ],
                     "before": [
-                        540
+                        795
                     ]
                 }
             ],
             "orders": [
-                338,
+                500,
                 {
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ],
                     "before": [
-                        540
+                        795
                     ],
                     "last": [
-                        243
+                        387
                     ]
                 }
             ],
             "externalId": [
-                540
+                795
             ],
             "location": [
-                540
+                795
             ],
             "metafields": [
-                304,
+                459,
                 {
                     "input": [
-                        227,
+                        366,
                         "GetMetafieldsInput!"
                     ]
                 }
             ],
             "metafield": [
-                304,
+                459,
                 {
                     "input": [
-                        226,
+                        365,
                         "GetMetafieldInput!"
                     ]
                 }
             ],
             "highlighted": [
-                230
+                370
             ],
             "saleItemClosingSchedule": [
-                417
+                624
             ],
             "feeRules": [
-                218
+                353
             ],
             "hasDefaultSaleFees": [
-                80
+                138
             ],
             "watchlist": [
-                475,
+                686,
                 {
                     "input": [
-                        478
+                        689
                     ]
                 }
             ],
             "categories": [
-                86
+                160
             ],
             "departments": [
-                189
+                316
             ],
             "saleGenre": [
-                411
+                618
             ],
             "site": [
-                532
+                773
             ],
             "viewingTimes": [
-                540
+                795
             ],
             "buyersNotes": [
-                540
+                795
             ],
             "feesApplyInfo": [
-                540
+                795
             ],
             "saleContact": [
-                168
+                294
             ],
             "sectionMarkers": [
-                491
+                702
+            ],
+            "itemsMissingDisplayNumberCount": [
+                387
+            ],
+            "phoneClerks": [
+                543
+            ],
+            "phoneClerkConfig": [
+                648
+            ],
+            "phoneClerkPlan": [
+                535
+            ],
+            "lockedPhoneClerkPlan": [
+                535
+            ],
+            "phoneClerkOverrides": [
+                534
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleActivity": {
             "on_Sale": [
-                403
+                610
             ],
             "on_SaleItem": [
-                416
+                623
             ],
             "on_SaleLiveStreamUpdate": [
-                436
+                645
             ],
             "on_Node": [
-                309
+                466
             ],
             "on_SaleV2": [
-                472
+                683
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleBanner": {
             "id": [
-                234
+                374
             ],
             "accountId": [
-                540
+                795
             ],
             "title": [
-                540
+                795
             ],
             "description": [
-                540
+                795
             ],
             "status": [
-                470
+                681
             ],
             "type": [
-                471
+                682
             ],
             "currency": [
-                540
+                795
             ],
             "closingMethod": [
-                106
+                194
             ],
             "dates": [
-                407
+                614
             ],
             "hidden": [
-                80
+                138
             ],
             "slug": [
-                540
+                795
             ],
             "createdTimestamp": [
-                243
+                387
             ],
             "reserveAutoBidMethod": [
-                395
+                601
             ],
             "bastaBidClient": [
-                80
+                138
             ],
             "images": [
-                235
+                378
             ],
             "externalId": [
-                540
+                795
             ],
             "location": [
-                540
+                795
             ],
             "isTestSale": [
-                80
+                138
+            ],
+            "saleNumber": [
+                387
+            ],
+            "saleCode": [
+                795
             ],
             "statistics": [
-                452
+                663
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleConnection": {
             "edges": [
-                481
+                692
             ],
             "pageInfo": [
-                349
+                513
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleDates": {
             "closingDate": [
-                540
+                795
             ],
             "openDate": [
-                540
+                795
             ],
             "liveDate": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleDatesInput": {
             "closingDate": [
-                540
+                795
             ],
             "openDate": [
-                540
+                795
             ],
             "liveDate": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleFilter": {
             "statuses": [
-                470
+                681
             ],
             "showTestSales": [
-                80
+                138
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleFormat": {},
         "SaleGenre": {
             "id": [
-                234
+                374
             ],
             "name": [
-                540
+                795
             ],
             "slug": [
-                540
+                795
             ],
             "archivedAt": [
-                540
+                795
             ],
             "isPublic": [
-                80
+                138
             ],
             "charges": [
-                96,
+                179,
                 {
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ],
                     "options": [
-                        99
+                        182
+                    ]
+                }
+            ],
+            "buyerPremiums": [
+                145,
+                {
+                    "first": [
+                        387
+                    ],
+                    "after": [
+                        795
+                    ],
+                    "options": [
+                        147
                     ]
                 }
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleGenreConnection": {
             "edges": [
-                413
+                620
             ],
             "pageInfo": [
-                349
+                513
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleGenreEdge": {
             "node": [
-                411
+                618
             ],
             "cursor": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleIDType": {},
         "SaleImageAssociation": {
             "saleId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleItem": {
             "id": [
-                234
+                374
             ],
             "cursor": [
-                540
+                795
             ],
             "accountId": [
-                540
+                795
             ],
             "title": [
-                540
+                795
             ],
             "subTitle": [
-                540
+                795
+            ],
+            "conditionReport": [
+                195
             ],
             "totalBids": [
-                243
+                387
             ],
             "description": [
-                540
+                795
+            ],
+            "cataloguingWorkflowStatus": [
+                158
+            ],
+            "photographyWorkflowStatus": [
+                546
             ],
             "titleTemplateOverride": [
-                540
+                795
             ],
             "subTitleTemplateOverride": [
-                540
+                795
             ],
             "descriptionTemplateOverride": [
-                540
+                795
             ],
             "currentBid": [
-                243
+                387
             ],
             "currentMaxBid": [
-                243
+                387
             ],
             "currency": [
-                540
+                795
             ],
             "leaderId": [
-                540
+                795
             ],
             "saleId": [
-                540
+                795
             ],
             "bids": [
-                59,
+                116,
                 {
                     "collapseSequentialUserBids": [
-                        80
+                        138
                     ]
                 }
             ],
             "reserve": [
-                243
+                387
             ],
             "startingBid": [
-                243
+                387
             ],
             "incrementTable": [
-                61
+                118
             ],
             "status": [
-                279
+                430
             ],
             "estimates": [
-                212
+                347
             ],
             "itemNumber": [
-                243
+                387
             ],
             "dates": [
-                248
+                397
             ],
             "allowedBidTypes": [
-                74
+                131
             ],
             "images": [
-                235
+                378
             ],
             "slug": [
-                540
+                795
             ],
             "paymentOrder": [
-                359
+                523
             ],
             "paymentOrders": [
-                359
+                523
             ],
             "hidden": [
-                80
+                138
+            ],
+            "preview": [
+                138
             ],
             "nextAsks": [
-                243,
+                387,
                 {
                     "iterations": [
-                        243
+                        387
                     ]
                 }
             ],
             "reserveMet": [
-                80
+                138
             ],
             "notifications": [
-                264
+                415
             ],
             "tags": [
-                540
+                795
             ],
             "tagsV2": [
-                549
+                811
             ],
             "reserveStatus": [
-                396
+                602
             ],
             "itemResult": [
-                274
+                425
             ],
             "reserveType": [
-                397
+                603
             ],
             "externalId": [
-                540
+                795
             ],
             "displayNumber": [
-                540
+                795
             ],
             "highlight": [
-                251
+                400
             ],
             "metadata": [
-                259
+                410
             ],
             "itemType": [
-                280
+                431
             ],
             "effectiveSchema": [
-                286
+                438
             ],
             "type": [
-                280
+                431
             ],
             "schema": [
-                286
+                438
             ],
             "schemaId": [
-                234
+                374
             ],
             "schemaData": [
-                286
+                438
             ],
             "attributes": [
-                286
+                438
             ],
             "closingTimeCountdown": [
-                243
+                387
             ],
             "specifications": [
-                277
+                428
             ],
             "specificationsV2": [
-                277
+                428
             ],
             "packaging": [
-                270
+                421
             ],
             "registrations": [
-                428,
+                636,
                 {
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ],
                     "filter": [
-                        427
+                        635
                     ]
                 }
             ],
             "feeRules": [
-                218
+                353
             ],
             "location": [
-                540
+                795
             ],
             "site": [
-                532
+                773
             ],
             "siteLocation": [
-                296
+                448
             ],
             "consignment": [
-                108
+                207
             ],
             "metafields": [
-                304,
+                459,
                 {
                     "input": [
-                        227,
+                        366,
                         "GetMetafieldsInput!"
                     ]
                 }
             ],
             "metafield": [
-                304,
+                459,
                 {
                     "input": [
-                        226,
+                        365,
                         "GetMetafieldInput!"
                     ]
                 }
             ],
             "watchlist": [
-                430,
+                639,
                 {
                     "input": [
-                        433
+                        642
                     ]
                 }
             ],
+            "watcherCount": [
+                387
+            ],
             "categories": [
-                86
+                160
             ],
             "creators": [
-                162
+                287
             ],
             "arr": [
-                80
+                138
             ],
             "offerConfig": [
-                266
+                417
             ],
             "offers": [
-                331,
+                493,
                 {
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ],
                     "status": [
-                        330
+                        492
                     ],
                     "direction": [
-                        350
+                        514
                     ]
                 }
             ],
             "buyNowConfig": [
-                247
+                395
+            ],
+            "offerEnabled": [
+                138
+            ],
+            "buyNowEnabled": [
+                138
             ],
             "directSell": [
-                193
+                320
             ],
             "charges": [
-                96,
+                179,
                 {
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ],
                     "options": [
-                        99
+                        182
                     ]
                 }
             ],
+            "buyerPremiums": [
+                145,
+                {
+                    "first": [
+                        387
+                    ],
+                    "after": [
+                        795
+                    ],
+                    "options": [
+                        147
+                    ]
+                }
+            ],
+            "buyerPremiumsFixedAt": [
+                823
+            ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleItemClosingSchedule": {
             "type": [
-                419
+                626
             ],
             "staggered": [
-                537
+                783
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleItemClosingScheduleInput": {
             "type": [
-                419
+                626
             ],
             "staggered": [
-                538
+                784
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleItemClosingScheduleType": {},
         "SaleItemFilter": {
             "statuses": [
-                279
+                430
             ],
             "showHiddenItems": [
-                80
+                138
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleItemImageAssociation": {
             "itemId": [
-                540
+                795
             ],
             "saleId": [
-                540
+                795
+            ],
+            "kind": [
+                381
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleItemInput": {
             "saleId": [
-                540
+                795
             ],
             "bidIncrementTable": [
-                62
+                119
             ],
             "title": [
-                540
+                795
             ],
             "description": [
-                540
+                795
             ],
             "startingBid": [
-                243
+                387
             ],
             "valuationAmount": [
-                243
+                387
             ],
             "valuationCurrency": [
-                540
+                795
             ],
             "reserve": [
-                243
+                387
             ],
             "lowEstimate": [
-                243
+                387
             ],
             "highEstimate": [
-                243
+                387
             ],
             "ItemNumber": [
-                243
+                387
             ],
             "allowedBidTypes": [
-                74
+                131
             ],
             "openDate": [
-                540
+                795
             ],
             "closingDate": [
-                540
+                795
             ],
             "slug": [
-                540
+                795
             ],
             "closingTimeCountdown": [
-                243
+                387
             ],
             "hidden": [
-                80
+                138
             ],
             "tags": [
-                540
+                795
             ],
             "specifications": [
-                278
+                429
             ],
             "externalId": [
-                540
+                795
             ],
             "displayNumber": [
-                540
+                795
             ],
             "highlight": [
-                252
+                401
             ],
             "metafields": [
-                306
+                461
             ],
             "reserveType": [
-                397
+                603
             ],
             "schemaId": [
-                234
+                374
             ],
             "schemaData": [
-                286
+                438
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleItemLink": {
             "saleId": [
-                234
+                374
             ],
             "saleItemId": [
-                234
+                374
             ],
             "saleTitle": [
-                540
+                795
             ],
             "saleStatus": [
-                470
+                681
             ],
             "itemNumber": [
-                243
+                387
             ],
             "displayNumber": [
-                540
+                795
             ],
             "saleItemStatus": [
-                279
+                430
             ],
             "saleItemTitle": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleItemOrItem": {
             "on_SaleItem": [
-                416
+                623
             ],
             "on_Item": [
-                245
+                393
             ],
             "on_Node": [
-                309
+                466
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "SaleItemRefInput": {
+            "saleId": [
+                795
+            ],
+            "itemId": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "SaleItemRegistration": {
             "id": [
-                234
+                374
             ],
             "saleRegistration": [
-                438
+                649
             ],
             "saleItem": [
-                416
+                623
             ],
             "createdAt": [
-                540
+                795
             ],
             "preferredPhoneNumber": [
-                364
+                528
             ],
             "alternativePhoneNumbers": [
-                364
+                528
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleItemRegistrationEdge": {
             "node": [
-                425
+                633
             ],
             "cursor": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleItemRegistrationFilter": {
             "types": [
-                446
+                657
             ],
             "userId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleItemRegistrationsConnection": {
             "edges": [
-                426
+                634
             ],
             "pageInfo": [
-                349
+                513
             ],
             "totalCount": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "SaleItemRequiredFieldStatus": {
+            "itemId": [
+                374
+            ],
+            "found": [
+                138
+            ],
+            "noItemType": [
+                138
+            ],
+            "missingRequiredFields": [
+                463
+            ],
+            "__typename": [
+                795
             ]
         },
         "SaleItemSlug": {
             "id": [
-                234
+                374
             ],
             "slug": [
-                540
+                795
             ],
             "accountHandle": [
-                540
+                795
             ],
             "accountId": [
-                540
+                795
             ],
             "saleId": [
-                540
+                795
             ],
             "itemId": [
-                540
+                795
             ],
             "sale": [
-                403
+                610
             ],
             "saleItem": [
-                416
+                623
             ],
             "account": [
-                1
+                2
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleItemWatchlistConnection": {
             "edges": [
-                431
+                640
             ],
             "pageInfo": [
-                349
+                513
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleItemWatchlistEdge": {
             "cursor": [
-                540
+                795
             ],
             "node": [
-                432
+                641
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleItemWatchlistEntry": {
             "id": [
-                234
+                374
             ],
             "userId": [
-                540
+                795
             ],
             "createdAt": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleItemWatchlistInput": {
             "first": [
-                243
+                387
             ],
             "after": [
-                540
+                795
             ],
             "direction": [
-                350
+                514
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleItemsConnection": {
             "edges": [
-                435
+                644
             ],
             "pageInfo": [
-                349
+                513
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleItemsEdge": {
             "cursor": [
-                540
+                795
             ],
             "node": [
-                416
+                623
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleLiveStreamUpdate": {
             "currentViewers": [
-                243
+                387
             ],
             "observedAt": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleMetrics": {
             "totalItems": [
-                243
+                387
             ],
             "itemsOverReserve": [
-                243
+                387
             ],
             "itemsWithBids": [
-                243
+                387
             ],
             "totalBids": [
-                243
+                387
             ],
             "uniqueBidders": [
-                243
+                387
             ],
             "highEstimateSum": [
-                243
+                387
             ],
             "lowEstimateSum": [
-                243
+                387
             ],
             "currentBidOverReserveTotal": [
-                243
+                387
             ],
             "currentBidTotal": [
-                243
+                387
+            ],
+            "soldHammerTotal": [
+                387
+            ],
+            "expectedHammerTotal": [
+                387
             ],
             "maxBidsTotal": [
-                243
+                387
             ],
             "itemsOverReservePercentage": [
-                222
+                357
             ],
             "itemsWithBidsPercentage": [
-                222
+                357
             ],
             "averageBidsPerItem": [
-                222
+                357
             ],
             "hiddenItems": [
-                243
+                387
             ],
             "highestBid": [
-                229
+                369
             ],
             "bidderEngagement": [
-                222
+                357
             ],
             "dailyBidCounts": [
-                451
+                662
             ],
             "calculatedAt": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "SaleNumberSettings": {
+            "nextSaleNumber": [
+                387
+            ],
+            "highestAssignedSaleNumber": [
+                387
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "SalePhoneClerkConfig": {
+            "itemGap": [
+                387
+            ],
+            "planningNotes": [
+                795
+            ],
+            "updatedAt": [
+                823
+            ],
+            "__typename": [
+                795
             ]
         },
         "SaleRegistration": {
             "id": [
-                234
+                374
             ],
             "account": [
-                1
+                2
             ],
             "sale": [
-                403
+                610
             ],
             "userId": [
-                540
+                795
             ],
             "type": [
-                446
+                657
             ],
             "identifier": [
-                540
+                795
             ],
             "status": [
-                445
+                656
             ],
             "rejectedReason": [
-                540
+                795
             ],
             "createdAt": [
-                540
+                795
             ],
             "userProfile": [
-                606
+                899
             ],
             "policyResults": [
-                443
+                654
             ],
             "preferredPhoneNumber": [
-                364
+                528
             ],
             "alternativePhoneNumbers": [
-                364
+                528
             ],
             "itemRegistrations": [
-                428
+                636
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleRegistrationEdge": {
             "node": [
-                438
+                649
             ],
             "cursor": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleRegistrationPoliciesConnection": {
             "edges": [
-                442
+                653
             ],
             "pageInfo": [
-                349
+                513
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleRegistrationPolicy": {
             "id": [
-                234
+                374
             ],
             "code": [
-                540
+                795
             ],
             "description": [
-                540
+                795
             ],
             "rule": [
-                540
+                795
             ],
             "isDefault": [
-                80
+                138
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleRegistrationPolicyEdge": {
             "node": [
-                441
+                652
             ],
             "cursor": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleRegistrationPolicyResult": {
             "code": [
-                540
+                795
             ],
             "passed": [
-                80
+                138
             ],
             "description": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleRegistrationSortByField": {},
@@ -11451,3284 +17635,4843 @@ export default {
         "SaleRegistrationType": {},
         "SaleRegistrationsConnection": {
             "edges": [
-                439
+                650
             ],
             "pageInfo": [
-                349
+                513
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleRegistrationsForSaleFilter": {
             "types": [
-                446
+                657
             ],
             "statuses": [
-                445
+                656
             ],
             "userId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleRegistrationsQueryFilter": {
             "saleIds": [
-                540
+                795
             ],
             "userIds": [
-                540
+                795
             ],
             "types": [
-                446
+                657
             ],
             "statuses": [
-                445
+                656
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleSlug": {
             "id": [
-                234
+                374
             ],
             "slug": [
-                540
+                795
             ],
             "accountHandle": [
-                540
+                795
             ],
             "accountId": [
-                540
+                795
             ],
             "saleId": [
-                540
+                795
             ],
             "created": [
-                540
+                795
             ],
             "modified": [
-                540
+                795
             ],
             "sale": [
-                403
+                610
             ],
             "account": [
-                1
+                2
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleStatisticBidCounts": {
             "date": [
-                540
+                795
             ],
             "bidCount": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleStatistics": {
             "saleMetrics": [
-                437
+                646
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleStatsBidderEngagement": {
             "lotCount": [
-                243
+                387
             ],
             "avgUniqueBiddersPerLot": [
-                222
+                357
             ],
             "maxUniqueBiddersPerLot": [
-                243
+                387
             ],
             "avgBidsPerLot": [
-                222
+                357
             ],
             "caveats": [
-                540
+                795
             ],
             "dayOfYearCutoff": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleStatsClosingDayProfile": {
             "rows": [
-                455
+                666
             ],
             "caveats": [
-                540
+                795
             ],
             "dayOfYearCutoff": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleStatsClosingDayRow": {
             "dayOfWeek": [
-                243
+                387
             ],
             "lotCount": [
-                243
+                387
             ],
             "avgBidsPerLot": [
-                222
+                357
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleStatsDataCoverage": {
             "hasData": [
-                80
+                138
             ],
             "minDateKey": [
-                243
+                387
             ],
             "maxDateKey": [
-                243
+                387
             ],
             "lotCount": [
-                243
+                387
             ],
             "distinctCurrencies": [
-                243
+                387
             ],
             "lastProjectedAt": [
-                540
+                795
             ],
             "backfillDone": [
-                80
+                138
             ],
             "caveats": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleStatsDistinctWinners": {
             "rows": [
-                458
+                669
             ],
             "caveats": [
-                540
+                795
             ],
             "dayOfYearCutoff": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleStatsDistinctWinnersRow": {
             "currency": [
-                540
+                795
             ],
             "distinctWinners": [
-                243
+                387
             ],
             "repeatWinners": [
-                243
+                387
             ],
             "repeatBuyerShare": [
-                222
+                357
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleStatsGmvPoint": {
             "currency": [
-                540
+                795
             ],
             "year": [
-                243
+                387
             ],
             "gmv": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleStatsHammerVsEstimate": {
             "rows": [
-                461
+                672
             ],
             "caveats": [
-                540
+                795
             ],
             "dayOfYearCutoff": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleStatsHammerVsEstimateRow": {
             "currency": [
-                540
+                795
             ],
             "scoredLots": [
-                243
+                387
             ],
             "totalHammer": [
-                243
+                387
             ],
             "totalMidEstimate": [
-                243
+                387
             ],
             "avgHammerToMidRatio": [
-                222
+                357
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleStatsLotOutcomeRow": {
             "currency": [
-                540
+                795
             ],
             "sold": [
-                243
+                387
             ],
             "unsold": [
-                243
+                387
             ],
             "total": [
-                243
+                387
             ],
             "sellThrough": [
-                222
+                357
             ],
             "reserveMetRate": [
-                222
+                357
             ],
             "soldViaAuction": [
-                243
+                387
             ],
             "soldViaOffer": [
-                243
+                387
             ],
             "soldViaBuyNow": [
-                243
+                387
             ],
             "auctionShare": [
-                222
+                357
             ],
             "offerShare": [
-                222
+                357
             ],
             "buyNowShare": [
-                222
+                357
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleStatsLotOutcomeSummary": {
             "rows": [
-                462
+                673
             ],
             "caveats": [
-                540
+                795
             ],
             "dayOfYearCutoff": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleStatsMomGmv": {
             "rows": [
-                465
+                676
             ],
             "caveats": [
-                540
+                795
             ],
             "dayOfMonthCutoff": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleStatsMonthlyGmvPoint": {
             "currency": [
-                540
+                795
             ],
             "year": [
-                243
+                387
             ],
             "month": [
-                243
+                387
             ],
             "gmv": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleStatsSellThrough": {
             "sold": [
-                243
+                387
             ],
             "total": [
-                243
+                387
             ],
             "sellThrough": [
-                222
+                357
             ],
             "caveats": [
-                540
+                795
             ],
             "dayOfYearCutoff": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleStatsTopSaleRow": {
             "currency": [
-                540
+                795
             ],
             "rank": [
-                243
+                387
             ],
             "saleId": [
-                234
+                374
             ],
             "title": [
-                540
+                795
             ],
             "gmv": [
-                243
+                387
             ],
             "sold": [
-                243
+                387
             ],
             "total": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleStatsTopSales": {
             "rows": [
-                467
+                678
             ],
             "caveats": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleStatsYoyGmv": {
             "rows": [
-                459
+                670
             ],
             "caveats": [
-                540
+                795
             ],
             "dayOfYearCutoff": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleStatus": {},
         "SaleType": {},
         "SaleV2": {
             "id": [
-                234
+                374
             ],
             "accountId": [
-                540
+                795
             ],
             "title": [
-                540
+                795
             ],
             "description": [
-                540
+                795
             ],
             "currency": [
-                540
+                795
             ],
             "status": [
-                470
+                681
             ],
             "dates": [
-                407
+                614
             ],
             "saleFormat": [
-                410
+                617
             ],
             "on_DutchSale": [
-                206
+                340
             ],
             "on_Sale": [
-                403
+                610
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleV2Connection": {
             "edges": [
-                474
+                685
             ],
             "pageInfo": [
-                349
+                513
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleV2Edge": {
             "cursor": [
-                540
+                795
             ],
             "node": [
-                472
+                683
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleWatchlistConnection": {
             "edges": [
-                476
+                687
             ],
             "pageInfo": [
-                349
+                513
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleWatchlistEdge": {
             "cursor": [
-                540
+                795
             ],
             "node": [
-                477
+                688
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleWatchlistEntry": {
             "id": [
-                234
+                374
             ],
             "userId": [
-                540
+                795
             ],
             "createdAt": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SaleWatchlistInput": {
             "first": [
-                243
+                387
             ],
             "after": [
-                540
+                795
             ],
             "direction": [
-                350
+                514
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SalesAggregate": {
             "open": [
-                243
+                387
             ],
             "closing": [
-                243
+                387
             ],
             "closed": [
-                243
+                387
             ],
             "published": [
-                243
+                387
             ],
             "unpublished": [
-                243
+                387
+            ],
+            "preview": [
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SalesAggregateInput": {
             "accountId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SalesEdge": {
             "cursor": [
-                540
+                795
             ],
             "node": [
-                403
+                610
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ScheduledNotificationConfiguration": {
             "channel": [
-                314
+                476
             ],
             "status": [
-                316
+                478
             ],
             "audienceGroups": [
-                311
+                473
             ],
             "leadTimes": [
-                321
+                483
             ],
             "sender": [
-                317
+                479
             ],
             "replyToEmail": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ScheduledNotificationConfigurationInput": {
             "audienceGroups": [
-                311
+                473
             ],
             "leadTimes": [
-                322
+                484
             ],
             "sender": [
-                318
+                480
             ],
             "replyToEmail": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SchemaNamespace": {
             "namespace": [
-                540
+                795
             ],
             "accountId": [
-                540
+                795
             ],
             "createdAt": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SearchKey": {
             "key": [
-                540
+                795
             ],
             "collections": [
-                540
+                795
             ],
             "expiration": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SearchPageInfo": {
             "currentPage": [
-                243
+                387
             ],
             "perPage": [
-                243
+                387
             ],
             "totalPages": [
-                243
+                387
             ],
             "totalCount": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SearchResultConnection": {
             "edges": [
-                488
+                699
             ],
             "pageInfo": [
-                486
+                697
             ],
             "resultCount": [
-                243
+                387
             ],
             "facets": [
-                214
+                349
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SearchResultEdge": {
             "node": [
-                489
+                700
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SearchResultItem": {
             "on_User": [
-                595
+                888
             ],
             "on_SaleRegistration": [
-                438
+                649
             ],
             "on_SaleItem": [
-                416
+                623
             ],
             "on_SaleBanner": [
-                405
+                612
             ],
             "on_Item": [
-                245
+                393
             ],
             "on_Offer": [
-                326
+                488
             ],
             "on_Image": [
-                235
+                378
             ],
             "on_Video": [
-                624
+                925
             ],
             "on_Document": [
-                196
+                324
             ],
             "on_Activity": [
-                13
+                15
+            ],
+            "on_ConsignmentBanner": [
+                208
+            ],
+            "on_AppraisalBanner": [
+                72
             ],
             "on_Node": [
-                309
+                466
             ],
             "on_Asset": [
-                49
+                97
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SearchType": {},
         "SectionMarker": {
             "id": [
-                234
+                374
             ],
             "title": [
-                540
+                795
             ],
             "summary": [
-                540
+                795
             ],
             "fromItemNumber": [
-                243
+                387
             ],
             "toItemNumber": [
-                243
+                387
             ],
             "imageAssetId": [
-                540
+                795
             ],
             "imageUrl": [
-                540
+                795
             ],
             "isFeaturedSelection": [
-                80
+                138
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SellLiveItemInput": {
             "saleId": [
-                540
+                795
             ],
             "itemId": [
-                540
+                795
             ],
             "transitionToUpcomingLot": [
-                80
+                138
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SellLiveItemToBidError": {
             "error": [
-                540
+                795
             ],
             "errorCode": [
-                494
+                705
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SellLiveItemToBidErrorCode": {},
         "SellLiveItemToBidInput": {
             "saleId": [
-                540
+                795
             ],
             "itemId": [
-                540
+                795
             ],
             "bidId": [
-                540
+                795
             ],
             "transitionToUpcomingLot": [
-                80
+                138
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SellLiveItemToBidResult": {
             "on_SellLiveItemToBidSuccess": [
-                497
+                708
             ],
             "on_SellLiveItemToBidError": [
-                493
+                704
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SellLiveItemToBidSuccess": {
             "saleItem": [
-                416
+                623
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SellerLocation": {},
         "SellerTerms": {
             "accepted_by": [
-                540
+                795
             ],
             "accepted_date": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "SendConsignmentContractInput": {
+            "consignmentId": [
+                795
+            ],
+            "contractId": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "SendGridNotificationIntegration": {
             "channel": [
-                314
+                476
             ],
             "created": [
-                540
+                795
             ],
             "timezone": [
-                540
+                795
             ],
             "fromEmail": [
-                540
+                795
             ],
             "fromName": [
-                540
+                795
             ],
             "replyToEmail": [
-                540
+                795
             ],
             "accountNotificationEmail": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "SendPresaleAdvicesInput": {
+            "presaleAdviceIds": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "SendPresaleAdvicesResult": {
+            "results": [
+                551
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "SendPropertyReceiptInput": {
+            "receiptId": [
+                795
+            ],
+            "recipientEmail": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "SetAppointmentSettingsInput": {
+            "enabled": [
+                138
+            ],
+            "recipientEmails": [
+                795
+            ],
+            "minLeadHours": [
+                387
+            ],
+            "maxDaysAhead": [
+                387
+            ],
+            "maxActivePerClient": [
+                387
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "SetAppointmentStaffNoteInput": {
+            "appointmentId": [
+                374
+            ],
+            "staffNote": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "SetAppraisalStaffLeadInput": {
+            "appraisalId": [
+                795
+            ],
+            "staffUserId": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "SetArrBandsInput": {
             "currency": [
-                166
+                292
             ],
             "bands": [
-                47
+                95
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "SetAttributionChannelSelfServiceOnlyInput": {
+            "id": [
+                795
+            ],
+            "selfServiceOnly": [
+                138
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "SetAttributionSourceChannelsInput": {
+            "sourceId": [
+                795
+            ],
+            "channelIds": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "SetAttributionSourcePublicInput": {
+            "id": [
+                795
+            ],
+            "public": [
+                138
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "SetBuyerPremiumAtScopeInput": {
+            "buyerPremiumId": [
+                374
+            ],
+            "scope": [
+                148
+            ],
+            "calculationType": [
+                144
+            ],
+            "status": [
+                150
+            ],
+            "minimum": [
+                387
+            ],
+            "maximum": [
+                387
+            ],
+            "bands": [
+                142
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "SetBuyerPremiumBandsInput": {
+            "buyerPremiumId": [
+                374
+            ],
+            "bands": [
+                142
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "SetBuyerPremiumStatusInput": {
+            "buyerPremiumId": [
+                374
+            ],
+            "status": [
+                150
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "SetCataloguingWorkflowStatusPayload": {
+            "item": [
+                393
+            ],
+            "__typename": [
+                795
             ]
         },
         "SetChargeAtScopeInput": {
             "chargeId": [
-                234
+                374
             ],
             "scope": [
-                101
+                184
             ],
             "basedOn": [
-                94
+                177
             ],
             "frequency": [
-                98
-            ],
-            "outcome": [
-                100
+                181
             ],
             "calculationType": [
-                95
+                178
             ],
             "status": [
-                103
+                186
             ],
             "minimum": [
-                243
+                387
             ],
             "maximum": [
-                243
+                387
             ],
             "bands": [
-                92
+                175
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SetChargeBandsInput": {
             "chargeId": [
-                234
+                374
             ],
             "bands": [
-                92
+                175
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SetChargeStatusInput": {
             "chargeId": [
-                234
+                374
             ],
             "status": [
-                103
+                186
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SetConsignmentStaffLeadInput": {
             "consignmentId": [
-                540
+                795
             ],
             "consignmentStaffUserId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "SetConsignmentTransportInput": {
+            "consignmentId": [
+                795
+            ],
+            "coordinatorUserId": [
+                795
+            ],
+            "expectedDate": [
+                795
+            ],
+            "courierName": [
+                795
+            ],
+            "receivingSiteId": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "SetDisplayNumbersInput": {
+            "saleId": [
+                795
+            ],
+            "assignments": [
+                323
+            ],
+            "__typename": [
+                795
             ]
         },
         "SetItemArrInput": {
             "itemId": [
-                234
+                374
             ],
             "arr": [
-                80
+                138
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SetItemBuyNowConfigInput": {
             "itemId": [
-                540
+                795
             ],
             "saleId": [
-                540
+                795
             ],
             "enabled": [
-                80
+                138
             ],
             "price": [
-                243
+                387
             ],
             "currency": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SetItemCategoriesInput": {
             "itemId": [
-                234
+                374
             ],
             "categoryIds": [
-                234
+                374
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SetItemConsignmentInput": {
             "itemId": [
-                540
+                795
             ],
             "consignmentId": [
-                540
+                795
             ],
             "reassign": [
-                80
+                138
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SetItemCreatorsInput": {
             "itemId": [
-                234
+                374
             ],
             "creatorIds": [
-                234
+                374
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SetItemOfferConfigInput": {
             "itemId": [
-                540
+                795
             ],
             "enabled": [
-                80
+                138
             ],
             "autoAcceptAmount": [
-                243
+                387
             ],
             "autoAcceptCurrency": [
-                540
+                795
             ],
             "clearAutoAccept": [
-                80
+                138
             ],
             "offerTtlSeconds": [
-                243
+                387
             ],
             "clearOfferTtl": [
-                80
+                138
             ],
             "cancelPendingOffers": [
-                80
+                138
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SetItemSiteLocationInput": {
             "itemId": [
-                540
+                795
             ],
             "siteId": [
-                540
+                795
             ],
             "locationId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "SetItemStatusInput": {
+            "itemId": [
+                795
+            ],
+            "status": [
+                404
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "SetItemTypeTaxDefaultInput": {
+            "itemTypeId": [
+                374
+            ],
+            "hammerTaxCodeId": [
+                374
+            ],
+            "chargeTaxCodeId": [
+                374
+            ],
+            "__typename": [
+                795
             ]
         },
         "SetItemWinnerInput": {
             "saleId": [
-                540
+                795
             ],
             "itemId": [
-                540
+                795
             ],
             "bidId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "SetItemsAppraisalInput": {
+            "appraisalId": [
+                795
+            ],
+            "itemIds": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "SetItemsAppraisalPayload": {
+            "appraisal": [
+                71
+            ],
+            "count": [
+                387
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "SetMainAppraisalClientInput": {
+            "appraisalId": [
+                795
+            ],
+            "clientUserId": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "SetMainConsignorInput": {
             "consignmentId": [
-                540
+                795
             ],
             "consignorUserId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SetMetafieldInput": {
             "entityType": [
-                305
+                460
             ],
             "entityId": [
-                540
+                795
             ],
             "key": [
-                540
+                795
             ],
             "value": [
-                540
+                795
             ],
             "valueType": [
-                307
+                462
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SetNotificationConfigurationInput": {
             "event": [
-                319
+                481
             ],
             "audience": [
-                310
+                472
             ],
             "channel": [
-                314
+                476
             ],
             "instant": [
-                242
+                386
             ],
             "scheduled": [
-                483
+                694
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SetNotificationConfigurationStatusInput": {
             "event": [
-                319
+                481
             ],
             "audience": [
-                310
+                472
             ],
             "channel": [
-                314
+                476
             ],
             "status": [
-                316
+                478
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "SetPhoneClerkOverrideInput": {
+            "saleId": [
+                795
+            ],
+            "bidderUserId": [
+                795
+            ],
+            "itemId": [
+                795
+            ],
+            "lineNumber": [
+                387
+            ],
+            "note": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "SetPhotographyWorkflowStatusPayload": {
+            "item": [
+                393
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "SetPhotographyWorkflowStatusesPayload": {
+            "items": [
+                393
+            ],
+            "skippedItemIds": [
+                374
+            ],
+            "__typename": [
+                795
             ]
         },
         "SetSaleCategoriesInput": {
             "saleId": [
-                234
+                374
             ],
             "categoryIds": [
-                234
+                374
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SetSaleItemArrInput": {
             "saleId": [
-                234
+                374
             ],
             "itemId": [
-                234
+                374
             ],
             "arr": [
-                80
+                138
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SetSaleItemCategoriesInput": {
             "saleId": [
-                234
+                374
             ],
             "itemId": [
-                234
+                374
             ],
             "categoryIds": [
-                234
+                374
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SetSaleItemCreatorsInput": {
             "saleId": [
-                234
+                374
             ],
             "itemId": [
-                234
+                374
             ],
             "creatorIds": [
-                234
+                374
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SetSaleItemSlugInput": {
             "saleId": [
-                540
+                795
             ],
             "itemId": [
-                540
+                795
             ],
             "slug": [
-                540
+                795
             ],
             "overrideOnConflict": [
-                80
+                138
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SetSaleItemStatusInput": {
             "saleId": [
-                540
+                795
             ],
             "itemId": [
-                540
+                795
             ],
             "status": [
-                279
+                430
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "SetSaleItemsPreviewInput": {
+            "saleId": [
+                795
+            ],
+            "itemIds": [
+                795
+            ],
+            "preview": [
+                138
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "SetSalePhoneClerkConfigInput": {
+            "saleId": [
+                795
+            ],
+            "itemGap": [
+                387
+            ],
+            "planningNotes": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "SetSaleSlugInput": {
             "saleId": [
-                540
+                795
             ],
             "slug": [
-                540
+                795
             ],
             "overrideOnConflict": [
-                80
+                138
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SetSaleStatusInput": {
             "saleId": [
-                540
+                795
             ],
             "status": [
-                470
+                681
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SetSectionMarkerInput": {
             "id": [
-                234
+                374
             ],
             "title": [
-                540
+                795
             ],
             "summary": [
-                540
+                795
             ],
             "fromItemNumber": [
-                243
+                387
             ],
             "toItemNumber": [
-                243
+                387
             ],
             "imageAssetId": [
-                540
+                795
             ],
             "isFeaturedSelection": [
-                80
+                138
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "SetStatementChargeAmountInput": {
+            "lineChargeId": [
+                374
+            ],
+            "amount": [
+                387
+            ],
+            "note": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "SetStatementLineDescriptionInput": {
+            "lineId": [
+                374
+            ],
+            "description": [
+                795
+            ],
+            "note": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "SetStatementLineHammerInput": {
+            "lineId": [
+                374
+            ],
+            "hammer": [
+                387
+            ],
+            "note": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "SetUserExternalIdInput": {
             "id": [
-                540
+                795
             ],
             "externalId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SetUserIdOnBidInput": {
             "saleId": [
-                540
+                795
             ],
             "itemId": [
-                540
+                795
             ],
             "bidId": [
-                540
+                795
             ],
             "userId": [
-                540
+                795
             ],
             "bidOrigin": [
-                66
+                123
             ],
             "registrationId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "SetValuationRequestSettingsInput": {
+            "enabled": [
+                138
+            ],
+            "requiredPhotoCount": [
+                387
+            ],
+            "recipientEmails": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "SetWorkflowScheduleOffsetsInput": {
             "rows": [
-                634
+                936
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ShopifyConfiguration": {
             "shopId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "ShopifyConnection": {
             "accountId": [
-                540
+                795
             ],
             "shopId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "Site": {
             "id": [
-                234
+                374
             ],
             "accountId": [
-                540
+                795
             ],
             "name": [
-                540
+                795
             ],
             "addressLine1": [
-                540
+                795
             ],
             "addressLine2": [
-                540
+                795
             ],
             "addressCity": [
-                540
+                795
             ],
             "addressPostalCode": [
-                540
+                795
             ],
             "addressCountryIso": [
-                540
+                795
             ],
             "addressState": [
-                540
+                795
             ],
             "phone": [
-                540
+                795
             ],
             "email": [
-                540
+                795
             ],
             "openingHours": [
-                540
+                795
             ],
             "collectionInstructions": [
-                540
+                795
             ],
             "appointmentRequired": [
-                80
+                138
             ],
             "timezone": [
-                540
+                795
+            ],
+            "bookingHours": [
+                774
             ],
             "archivedAt": [
-                540
+                795
             ],
             "created": [
-                540
+                795
             ],
             "modified": [
-                540
+                795
             ],
             "createdByUserId": [
-                540
+                795
             ],
             "modifiedByUserId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "SiteBookingHours": {
+            "weekdays": [
+                926
+            ],
+            "opens": [
+                795
+            ],
+            "closes": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "SiteBookingHoursInput": {
+            "weekdays": [
+                926
+            ],
+            "opens": [
+                795
+            ],
+            "closes": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "SiteConnection": {
             "edges": [
-                534
+                777
             ],
             "pageInfo": [
-                349
+                513
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SiteEdge": {
             "cursor": [
-                540
+                795
             ],
             "node": [
-                532
+                773
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SpecificationSubType": {},
         "SpecificationType": {},
-        "StaggeredSaleItemScheduleConfiguration": {
-            "firstItemClosingDate": [
-                540
+        "StaffProfile": {
+            "id": [
+                374
             ],
-            "spacingMs": [
-                243
+            "accountId": [
+                374
+            ],
+            "name": [
+                795
+            ],
+            "photo": [
+                378
+            ],
+            "departments": [
+                316
+            ],
+            "itemTypes": [
+                431
+            ],
+            "dashboardMember": [
+                294
+            ],
+            "attributes": [
+                438
+            ],
+            "effectiveSchema": [
+                438
+            ],
+            "schemaId": [
+                374
+            ],
+            "public": [
+                138
+            ],
+            "isPhoneClerk": [
+                138
+            ],
+            "phoneClerkNotes": [
+                795
+            ],
+            "created": [
+                795
+            ],
+            "modified": [
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "StaffProfileConnection": {
+            "edges": [
+                782
+            ],
+            "pageInfo": [
+                513
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "StaffProfileEdge": {
+            "node": [
+                780
+            ],
+            "cursor": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "StaggeredSaleItemScheduleConfiguration": {
+            "firstItemClosingDate": [
+                795
+            ],
+            "spacingMs": [
+                387
+            ],
+            "__typename": [
+                795
             ]
         },
         "StaggeredSaleItemScheduleConfigurationInput": {
             "firstItemClosingDate": [
-                540
+                795
             ],
             "spacingMs": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "StartClosingSaleInput": {
             "saleId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "Statement": {
+            "id": [
+                374
+            ],
+            "number": [
+                795
+            ],
+            "status": [
+                793
+            ],
+            "consignor": [
+                788
+            ],
+            "saleId": [
+                374
+            ],
+            "currency": [
+                292
+            ],
+            "title": [
+                795
+            ],
+            "total": [
+                387
+            ],
+            "hammerTotal": [
+                387
+            ],
+            "chargesTotal": [
+                387
+            ],
+            "taxTotal": [
+                387
+            ],
+            "taxBands": [
+                814
+            ],
+            "taxInLieuTotal": [
+                387
+            ],
+            "marginScheme": [
+                138
+            ],
+            "issuedAt": [
+                795
+            ],
+            "createdAt": [
+                795
+            ],
+            "lines": [
+                791
+            ],
+            "download": [
+                329
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "StatementConnection": {
+            "edges": [
+                789
+            ],
+            "pageInfo": [
+                513
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "StatementConsignor": {
+            "userId": [
+                374
+            ],
+            "address": [
+                451
+            ],
+            "addressId": [
+                374
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "StatementEdge": {
+            "node": [
+                786
+            ],
+            "cursor": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "StatementFilter": {
+            "saleId": [
+                374
+            ],
+            "consignorId": [
+                374
+            ],
+            "status": [
+                793
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "StatementLine": {
+            "id": [
+                374
+            ],
+            "itemId": [
+                374
+            ],
+            "lotNumber": [
+                795
+            ],
+            "hammer": [
+                387
+            ],
+            "description": [
+                795
+            ],
+            "charges": [
+                792
+            ],
+            "total": [
+                387
+            ],
+            "chargesTotal": [
+                387
+            ],
+            "taxTotal": [
+                387
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "StatementLineCharge": {
+            "id": [
+                374
+            ],
+            "chargeId": [
+                374
+            ],
+            "description": [
+                795
+            ],
+            "amount": [
+                387
+            ],
+            "tax": [
+                58
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "StatementStatus": {},
+        "StreamChannel": {
+            "channelId": [
+                795
+            ],
+            "isDefault": [
+                138
+            ],
+            "name": [
+                795
+            ],
+            "location": [
+                795
+            ],
+            "description": [
+                795
+            ],
+            "ingestUrl": [
+                795
+            ],
+            "streamKey": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "String": {},
         "StripeAppCustomerDetailsInput": {
             "id": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "StripeCustomerDetailsInput": {
             "id": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "StripeIdentityProviderInput": {
+            "secretKey": [
+                795
+            ],
+            "publishableKey": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "StripeIdentityProviderSettings": {
+            "enabled": [
+                138
+            ],
+            "livemode": [
+                138
+            ],
+            "publishableKey": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "StripePaymentProviderSession": {
             "publishableKey": [
-                540
+                795
             ],
             "clientSecret": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "Subscription": {
             "saleActivity": [
-                404,
+                611,
                 {
                     "accountId": [
-                        540,
+                        795,
                         "String!"
                     ],
                     "saleId": [
-                        234,
+                        374,
                         "ID!"
                     ],
                     "itemIdFilter": [
-                        253
+                        402
                     ]
                 }
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "SuggestContentInput": {
+            "target": [
+                805
+            ],
+            "fields": [
+                804
+            ],
+            "language": [
+                795
+            ],
+            "instructions": [
+                795
+            ],
+            "fresh": [
+                138
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "SuggestedTag": {
+            "name": [
+                795
+            ],
+            "existing": [
+                138
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "SuggestionField": {},
+        "SuggestionTargetInput": {
+            "itemId": [
+                795
+            ],
+            "appraisalItem": [
+                83
+            ],
+            "saleItem": [
+                632
+            ],
+            "saleId": [
+                795
+            ],
+            "draftItem": [
+                330
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "SuggestionValue": {
+            "on_TextSuggestion": [
+                822
+            ],
+            "on_TagsSuggestion": [
+                812
+            ],
+            "on_AttributesSuggestion": [
+                106
+            ],
+            "on_IssuesSuggestion": [
+                392
+            ],
+            "__typename": [
+                795
             ]
         },
         "SyncContentInput": {
             "itemId": [
-                540
+                795
             ],
             "saleId": [
-                540
+                795
             ],
             "direction": [
-                121
+                233
             ],
             "keys": [
-                540
+                795
             ],
             "deleteKeys": [
-                540
+                795
             ],
             "syncSchemaId": [
-                80
+                138
+            ],
+            "syncCreators": [
+                138
+            ],
+            "syncTags": [
+                138
+            ],
+            "syncCategories": [
+                138
+            ],
+            "syncImages": [
+                138
+            ],
+            "syncConditionReport": [
+                138
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SyncSchemaDataFromSaleItemInput": {
             "itemId": [
-                540
+                795
             ],
             "saleId": [
-                540
+                795
             ],
             "keys": [
-                540
+                795
             ],
             "deleteKeys": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SyncSchemaDataToProductVariantInput": {
             "variantId": [
-                540
+                795
             ],
             "keys": [
-                540
+                795
             ],
             "deleteKeys": [
-                540
+                795
             ],
             "syncSchemaId": [
-                80
+                138
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "SyncSchemaDataToSaleItemInput": {
             "itemId": [
-                540
+                795
             ],
             "saleId": [
-                540
+                795
             ],
             "keys": [
-                540
+                795
             ],
             "deleteKeys": [
-                540
+                795
             ],
             "syncSchemaId": [
-                80
+                138
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "Tag": {
             "id": [
-                234
+                374
             ],
             "name": [
-                540
+                795
             ],
             "created": [
-                540
+                795
             ],
             "associated": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "TagsSuggestion": {
+            "tags": [
+                803
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "TaxApplication": {},
+        "TaxBand": {
+            "codeName": [
+                795
+            ],
+            "application": [
+                813
+            ],
+            "rateBps": [
+                387
+            ],
+            "basisTotal": [
+                387
+            ],
+            "taxTotal": [
+                387
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "TaxCode": {
+            "id": [
+                374
+            ],
+            "name": [
+                795
+            ],
+            "application": [
+                813
+            ],
+            "rateBps": [
+                387
+            ],
+            "effectiveFrom": [
+                795
+            ],
+            "effectiveTo": [
+                795
+            ],
+            "status": [
+                816
+            ],
+            "accountCode": [
+                3
+            ],
+            "replaces": [
+                815
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "TaxCodeStatus": {},
+        "TaxRegime": {},
+        "TaxSettings": {
+            "regime": [
+                817
+            ],
+            "defaultHammerTaxCode": [
+                815
+            ],
+            "defaultChargeTaxCode": [
+                815
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "TemplateFieldChange": {
+            "before": [
+                795
+            ],
+            "after": [
+                795
+            ],
+            "changed": [
+                138
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "TemplateSyncDiff": {
+            "title": [
+                819
+            ],
+            "subTitle": [
+                819
+            ],
+            "description": [
+                819
+            ],
+            "__typename": [
+                795
             ]
         },
         "TestActionHookResponse": {
             "requestHeaders": [
-                232
+                372
             ],
             "requestPayload": [
-                540
+                795
             ],
             "requestMethod": [
-                540
+                795
             ],
             "responseHeaders": [
-                232
+                372
             ],
             "responseBody": [
-                540
+                795
             ],
             "statusCode": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "TextSuggestion": {
+            "text": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "Time": {},
         "TokenMetadata": {
             "userId": [
-                540
+                795
             ],
             "ttl": [
-                243
+                387
             ],
             "permissions": [
-                104
+                190
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "TransferAppraisalItemsToConsignmentInput": {
+            "appraisalId": [
+                795
+            ],
+            "itemIds": [
+                795
+            ],
+            "target": [
+                74
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "TransferAppraisalItemsToConsignmentPayload": {
+            "consignment": [
+                207
+            ],
+            "appraisal": [
+                71
+            ],
+            "transferredCount": [
+                387
+            ],
+            "consignmentCreated": [
+                138
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "TransportCoordinator": {
+            "userId": [
+                795
+            ],
+            "name": [
+                795
+            ],
+            "email": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "TrustLevel": {},
         "TrustLevelInfo": {
             "level": [
-                553
+                828
             ],
             "modifiedAt": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "TrustLevelInput": {
             "level": [
-                553
+                828
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "TwilioNotificationIntegration": {
             "channel": [
-                314
+                476
             ],
             "created": [
-                540
+                795
             ],
             "timezone": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UnblockUserInput": {
             "userId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UnhideItemsFromSaleInput": {
             "saleId": [
-                540
+                795
             ],
             "includingAndFromItemNumber": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "UpdateAccountCodeInput": {
+            "accountCodeId": [
+                374
+            ],
+            "name": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "UpdateAccountFeeInput": {
             "id": [
-                540
+                795
             ],
             "name": [
-                540
+                795
             ],
             "type": [
-                3
+                5
             ],
             "value": [
-                243
+                387
             ],
             "upperLteLimit": [
-                243
+                387
             ],
             "lowerLimit": [
-                243
+                387
             ],
             "calculationType": [
-                217
+                352
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UpdateAccountInput": {
             "name": [
-                540
+                795
             ],
             "email": [
-                540
+                795
             ],
             "handle": [
-                540
+                795
             ],
             "description": [
-                540
+                795
             ],
             "links": [
-                290
+                442
             ],
             "generateNewHandle": [
-                80
+                138
             ],
             "enableBastaStreaming": [
-                80
+                138
             ],
             "preferredAuctionFormat": [
-                471
+                682
             ],
             "defaultCurrency": [
-                166
+                292
             ],
             "homeCountryCode": [
-                123
+                236
             ],
             "organisationDetails": [
-                345
+                509
             ],
             "defaultStartBidPercentage": [
-                222
+                357
+            ],
+            "saleUrlTemplate": [
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UpdateActionHookSubscriptionInput": {
             "id": [
-                234
+                374
             ],
             "url": [
-                540
+                795
             ],
             "headers": [
-                233
+                373
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UpdateAffiliateInput": {
             "firstName": [
-                540
+                795
             ],
             "lastName": [
-                540
+                795
             ],
             "email": [
-                540
+                795
             ],
             "token": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "UpdateAppraisalDocumentDetailsInput": {
+            "appraisalId": [
+                795
+            ],
+            "valuationDate": [
+                795
+            ],
+            "dateOfDeath": [
+                795
+            ],
+            "instructedBy": [
+                81
+            ],
+            "clearInstructedBy": [
+                138
+            ],
+            "reference": [
+                795
+            ],
+            "valuerUserId": [
+                795
+            ],
+            "groupBy": [
+                76
+            ],
+            "sortBy": [
+                78
+            ],
+            "sectionTotals": [
+                138
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "UpdateAppraisalInput": {
+            "appraisalId": [
+                795
+            ],
+            "name": [
+                795
+            ],
+            "notes": [
+                795
+            ],
+            "type": [
+                90
+            ],
+            "attributionChannelId": [
+                374
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "UpdateAppraisalItemInput": {
+            "appraisalId": [
+                795
+            ],
+            "itemId": [
+                795
+            ],
+            "title": [
+                795
+            ],
+            "subTitle": [
+                795
+            ],
+            "description": [
+                795
+            ],
+            "schemaData": [
+                438
+            ],
+            "creatorIds": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "UpdateAppraisalItemValuationInput": {
+            "appraisalId": [
+                795
+            ],
+            "itemId": [
+                795
+            ],
+            "value": [
+                85
+            ],
+            "clearValue": [
+                138
+            ],
+            "basis": [
+                91
+            ],
+            "clearBasis": [
+                138
+            ],
+            "room": [
+                795
+            ],
+            "clearRoom": [
+                138
+            ],
+            "sortPosition": [
+                387
+            ],
+            "clearSortPosition": [
+                138
+            ],
+            "noCommercialValue": [
+                138
+            ],
+            "__typename": [
+                795
             ]
         },
         "UpdateArrSettingsInput": {
             "currency": [
-                166
+                292
             ],
             "enabled": [
-                80
+                138
             ],
             "thresholdAmount": [
-                243
+                387
             ],
             "capAmount": [
-                243
+                387
+            ],
+            "accountCodeId": [
+                374
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "UpdateBuyerPremiumInput": {
+            "buyerPremiumId": [
+                374
+            ],
+            "name": [
+                795
+            ],
+            "calculationType": [
+                144
+            ],
+            "minimum": [
+                387
+            ],
+            "maximum": [
+                387
+            ],
+            "externalId": [
+                795
+            ],
+            "accountCodeId": [
+                374
+            ],
+            "taxCodeId": [
+                374
+            ],
+            "__typename": [
+                795
             ]
         },
         "UpdateCategoryInput": {
             "categoryId": [
-                234
+                374
             ],
             "name": [
-                540
+                795
             ],
             "slug": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UpdateChargeInput": {
             "chargeId": [
-                234
+                374
             ],
             "name": [
-                540
+                795
             ],
             "basedOn": [
-                94
+                177
             ],
             "frequency": [
-                98
+                181
             ],
-            "outcome": [
-                100
+            "outcomes": [
+                183
             ],
             "calculationType": [
-                95
+                178
             ],
             "minimum": [
-                243
+                387
             ],
             "maximum": [
-                243
+                387
+            ],
+            "accountCodeId": [
+                374
+            ],
+            "taxCodeId": [
+                374
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "UpdateClientRelationshipInput": {
+            "id": [
+                374
+            ],
+            "type": [
+                192
+            ],
+            "reason": [
+                795
+            ],
+            "__typename": [
+                795
             ]
         },
         "UpdateConsignmentInput": {
             "consignmentId": [
-                540
+                795
             ],
             "name": [
-                540
+                795
             ],
             "description": [
-                540
+                795
             ],
             "externalId": [
-                540
+                795
             ],
             "feeRules": [
-                111
+                217
+            ],
+            "reportSeparately": [
+                138
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UpdateCreatorInput": {
             "creatorId": [
-                234
+                374
             ],
             "name": [
-                540
+                795
             ],
             "slug": [
-                540
+                795
             ],
             "type": [
-                165
+                291
             ],
             "arr": [
-                80
+                138
+            ],
+            "yearFrom": [
+                795
+            ],
+            "yearTo": [
+                795
+            ],
+            "nationality": [
+                795
+            ],
+            "biography": [
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "UpdateCreatorSettingsInput": {
+            "allowNested": [
+                138
+            ],
+            "__typename": [
+                795
             ]
         },
         "UpdateDutchSaleInput": {
             "saleId": [
-                540
+                795
             ],
             "title": [
-                540
+                795
             ],
             "description": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UpdateDutchSaleItemInput": {
             "saleId": [
-                540
+                795
             ],
             "itemId": [
-                540
+                795
             ],
             "schedule": [
-                211
+                345
             ],
             "openTime": [
-                540
+                795
             ],
             "closingTime": [
-                540
+                795
             ],
             "availableUnits": [
-                243
+                387
             ],
             "title": [
-                540
+                795
             ],
             "subTitle": [
-                540
+                795
             ],
             "description": [
-                540
+                795
             ],
             "titleTemplateOverride": [
-                540
+                795
             ],
             "subTitleTemplateOverride": [
-                540
+                795
             ],
             "descriptionTemplateOverride": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UpdateGlobalClosingTimeCountdownInput": {
             "saleId": [
-                540
+                795
             ],
             "closingTimeCountdown": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UpdateGlobalDatesInput": {
             "saleId": [
-                540
+                795
             ],
             "openDate": [
-                540
+                795
             ],
             "closingDate": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UpdateGlobalIncrementTableInput": {
             "saleId": [
-                540
+                795
             ],
             "incrementTable": [
-                62
+                119
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UpdateItemInput": {
             "title": [
-                540
+                795
             ],
             "subTitle": [
-                540
+                795
+            ],
+            "conditionReportText": [
+                438
             ],
             "description": [
-                540
+                795
             ],
             "titleTemplateOverride": [
-                540
+                795
             ],
             "subTitleTemplateOverride": [
-                540
+                795
             ],
             "descriptionTemplateOverride": [
-                540
+                795
             ],
             "price": [
-                273
+                424
             ],
             "externalId": [
-                540
+                795
             ],
             "metadata": [
-                260
+                411
             ],
             "tags": [
-                540
+                795
             ],
             "specifications": [
-                278
+                429
             ],
             "valuationAmount": [
-                243
+                387
             ],
             "valuationCurrency": [
-                540
+                795
             ],
             "location": [
-                540
+                795
             ],
             "syncContentToActiveSaleItems": [
-                80
+                138
+            ],
+            "staffLeadUserId": [
+                795
+            ],
+            "citesLicenceNumber": [
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UpdateItemNumbersInput": {
             "saleId": [
-                540
+                795
             ],
             "itemNumberChanges": [
-                265
+                416
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UpdateItemTypeInput": {
             "name": [
-                540
+                795
             ],
             "schema": [
-                286
+                438
             ],
             "namespace": [
-                540
+                795
+            ],
+            "slug": [
+                795
             ],
             "titleTemplate": [
-                540
+                795
             ],
             "subTitleTemplate": [
-                540
+                795
             ],
             "descriptionTemplate": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UpdateLocationInput": {
             "locationId": [
-                540
+                795
             ],
             "parentLocationId": [
-                540
+                795
             ],
             "name": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "UpdateNoteInput": {
+            "id": [
+                795
+            ],
+            "note": [
+                795
+            ],
+            "noteTypeId": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "UpdateNoteTypeScopeInput": {
+            "id": [
+                795
+            ],
+            "scope": [
+                471
+            ],
+            "__typename": [
+                795
             ]
         },
         "UpdateOrderInput": {
             "id": [
-                234
+                374
             ],
             "title": [
-                540
+                795
             ],
             "billingAddress": [
-                300
+                452
             ],
             "shippingAddress": [
-                300
+                452
+            ],
+            "billingAddressId": [
+                374
+            ],
+            "shippingAddressId": [
+                374
+            ],
+            "dueAt": [
+                795
+            ],
+            "paymentTermsDays": [
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UpdateOrderLineFeeInput": {
             "description": [
-                540
+                795
             ],
             "amount": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UpdateOrderLineInput": {
             "id": [
-                234
+                374
             ],
             "orderId": [
-                234
+                374
             ],
             "amount": [
-                243
+                387
             ],
             "description": [
-                540
+                795
             ],
             "fees": [
-                578
+                863
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UpdatePackagingInput": {
             "itemId": [
-                540
+                795
             ],
             "packagingId": [
-                540
+                795
             ],
             "quantity": [
-                243
+                387
             ],
             "boxedHeight": [
-                222
+                357
             ],
             "boxedLength": [
-                222
+                357
             ],
             "boxedDepth": [
-                222
+                357
             ],
             "boxedMeasurementUnit": [
-                303
+                458
             ],
             "boxedWeight": [
-                222
+                357
             ],
             "boxedWeightUnit": [
-                625
+                927
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UpdatePaymentOrderInput": {
             "orderId": [
-                234
+                374
             ],
             "userId": [
-                540
+                795
             ],
             "orderLines": [
-                582
+                867
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UpdatePaymentOrderLineInput": {
             "orderLineId": [
-                234
+                374
             ],
             "amount": [
-                243
+                387
             ],
             "description": [
-                540
+                795
             ],
             "orderLineType": [
-                342
+                505
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UpdateSaleFeeInput": {
             "id": [
-                234
+                374
             ],
             "saleId": [
-                234
+                374
             ],
             "name": [
-                540
+                795
             ],
             "type": [
-                220
+                355
             ],
             "value": [
-                243
+                387
             ],
             "upperLteLimit": [
-                243
+                387
             ],
             "lowerLimit": [
-                243
+                387
             ],
             "calculationType": [
-                217
+                352
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UpdateSaleInput": {
             "dates": [
-                408
+                615
             ],
             "title": [
-                540
+                795
             ],
             "description": [
-                540
+                795
             ],
             "currency": [
-                540
+                795
             ],
             "bidIncrementTable": [
-                62
+                119
             ],
             "closingMethod": [
-                106
+                194
             ],
             "closingTimeCountdown": [
-                243
+                387
             ],
             "saleItemClosingSchedule": [
-                418
+                625
             ],
             "themeType": [
-                243
+                387
             ],
             "slug": [
-                540
+                795
             ],
             "hidden": [
-                80
+                138
             ],
             "liveStream": [
-                294
+                446
             ],
             "saleType": [
-                471
+                682
             ],
             "isTestSale": [
-                80
+                138
             ],
             "printedCatalogue": [
-                80
+                138
             ],
             "bidRestrictions": [
-                72
+                129
             ],
             "externalId": [
-                540
+                795
             ],
             "location": [
-                540
+                795
             ],
             "metafields": [
-                306
+                461
             ],
             "saleGenreId": [
-                234
+                374
             ],
             "siteId": [
-                234
+                374
             ],
             "viewingTimes": [
-                540
+                795
             ],
             "buyersNotes": [
-                540
+                795
             ],
             "feesApplyInfo": [
-                540
+                795
             ],
             "saleContactUserId": [
-                234
+                374
+            ],
+            "saleCode": [
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UpdateSaleItemFeeInput": {
             "id": [
-                234
+                374
             ],
             "saleId": [
-                234
+                374
             ],
             "itemId": [
-                234
+                374
             ],
             "name": [
-                540
+                795
             ],
             "type": [
-                220
+                355
             ],
             "value": [
-                243
+                387
             ],
             "upperLteLimit": [
-                243
+                387
             ],
             "lowerLimit": [
-                243
+                387
             ],
             "calculationType": [
-                217
+                352
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UpdateSaleItemInput": {
             "itemId": [
-                540
+                795
             ],
             "saleId": [
-                540
+                795
+            ],
+            "conditionReportText": [
+                438
             ],
             "bidIncrementTable": [
-                62
+                119
             ],
             "title": [
-                540
+                795
             ],
             "subTitle": [
-                540
+                795
             ],
             "description": [
-                540
+                795
             ],
             "titleTemplateOverride": [
-                540
+                795
             ],
             "subTitleTemplateOverride": [
-                540
+                795
             ],
             "descriptionTemplateOverride": [
-                540
+                795
             ],
             "startingBid": [
-                243
+                387
             ],
             "valuationAmount": [
-                243
+                387
             ],
             "valuationCurrency": [
-                540
+                795
             ],
             "reserve": [
-                243
+                387
             ],
             "lowEstimate": [
-                243
+                387
             ],
             "highEstimate": [
-                243
+                387
             ],
             "allowedBidTypes": [
-                74
+                131
             ],
             "openDate": [
-                540
+                795
             ],
             "closingDate": [
-                540
+                795
             ],
             "slug": [
-                540
+                795
             ],
             "hidden": [
-                80
+                138
             ],
             "closingTimeCountdown": [
-                243
+                387
             ],
             "tags": [
-                540
+                795
             ],
             "specifications": [
-                278
+                429
             ],
             "externalId": [
-                540
+                795
             ],
             "displayNumber": [
-                540
+                795
             ],
             "highlight": [
-                252
+                401
             ],
             "metafields": [
-                306
+                461
             ],
             "reserveType": [
-                397
+                603
             ],
             "schemaId": [
-                234
+                374
             ],
             "schemaData": [
-                286
+                438
             ],
             "syncContent": [
-                121
+                233
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UpdateSaleRegistrationPolicyInput": {
             "id": [
-                540
+                795
             ],
             "code": [
-                540
+                795
             ],
             "description": [
-                540
+                795
             ],
             "rule": [
-                540
+                795
             ],
             "isDefault": [
-                80
+                138
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UpdateSendGridNotificationIntegrationInput": {
             "fromEmail": [
-                540
+                795
             ],
             "fromName": [
-                540
+                795
             ],
             "replyToEmail": [
-                540
+                795
             ],
             "accountNotificationEmail": [
-                540
+                795
             ],
             "timezone": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UpdateSiteInput": {
             "siteId": [
-                540
+                795
             ],
             "name": [
-                540
+                795
             ],
             "addressLine1": [
-                540
+                795
             ],
             "addressLine2": [
-                540
+                795
             ],
             "addressCity": [
-                540
+                795
             ],
             "addressPostalCode": [
-                540
+                795
             ],
             "addressCountryIso": [
-                540
+                795
             ],
             "addressState": [
-                540
+                795
             ],
             "phone": [
-                540
+                795
             ],
             "email": [
-                540
+                795
             ],
             "openingHours": [
-                540
+                795
             ],
             "collectionInstructions": [
-                540
+                795
             ],
             "appointmentRequired": [
-                80
+                138
             ],
             "timezone": [
-                540
+                795
+            ],
+            "bookingHours": [
+                775
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UpdateSpecificationInput": {
             "itemId": [
-                540
+                795
             ],
             "specificationId": [
-                540
+                795
             ],
             "type": [
-                536
+                779
             ],
             "subType": [
-                535
+                778
             ],
             "height": [
-                222
+                357
             ],
             "length": [
-                222
+                357
             ],
             "depth": [
-                222
+                357
             ],
             "diameter": [
-                222
+                357
             ],
             "measurementUnit": [
-                303
+                458
             ],
             "weight": [
-                222
+                357
             ],
             "weightUnit": [
-                625
+                927
             ],
             "quantity": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "UpdateStaffProfileInput": {
+            "id": [
+                374
+            ],
+            "name": [
+                795
+            ],
+            "attributes": [
+                438
+            ],
+            "public": [
+                138
+            ],
+            "isPhoneClerk": [
+                138
+            ],
+            "phoneClerkNotes": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "UpdateStreamChannelInput": {
+            "name": [
+                795
+            ],
+            "location": [
+                795
+            ],
+            "description": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "UpdateTaxCodeInput": {
+            "taxCodeId": [
+                374
+            ],
+            "name": [
+                795
+            ],
+            "effectiveTo": [
+                795
+            ],
+            "accountCodeId": [
+                374
+            ],
+            "__typename": [
+                795
             ]
         },
         "UpdateUserInput": {
             "userId": [
-                540
+                795
             ],
             "idType": [
-                603
+                896
             ],
             "email": [
-                540
+                795
             ],
             "firstName": [
-                540
+                795
             ],
             "lastName": [
-                540
+                795
             ],
             "username": [
-                540
+                795
             ],
             "password": [
-                540
+                795
             ],
             "passwordHash": [
-                540
+                795
             ],
             "trustLevel": [
-                555
+                830
             ],
             "addresses": [
-                597
+                890
+            ],
+            "mailingAddresses": [
+                452
             ],
             "phones": [
-                615
+                908
             ],
             "metadata": [
-                607
+                900
             ],
             "idVerification": [
-                604
+                897
             ],
             "status": [
-                618
+                911
             ],
             "emailVerified": [
-                80
+                138
             ],
             "role": [
-                540
+                795
             ],
             "vip": [
-                80
+                138
             ],
             "tags": [
-                540
+                795
             ],
             "preferences": [
-                616
+                909
             ],
             "paymentProviderDetails": [
-                360
+                524
             ],
             "attributionChannelId": [
-                540
+                795
             ],
             "attributionSourceId": [
-                540
+                795
             ],
             "attributionSourceNote": [
-                540
+                795
+            ],
+            "clientLeadId": [
+                795
+            ],
+            "marketingConsent": [
+                455
+            ],
+            "bankDetails": [
+                114
             ],
             "skipUpdateEvent": [
-                80
+                138
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "UpdateWorkflowSettingsInput": {
+            "cataloguingWorkflowEnabled": [
+                138
+            ],
+            "requireDisplayNumbersToPublish": [
+                138
+            ],
+            "photographyWorkflowEnabled": [
+                138
+            ],
+            "conditionReportsRequireLogin": [
+                138
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "UpdateWorkflowSettingsPayload": {
+            "workflowSettings": [
+                937
+            ],
+            "__typename": [
+                795
             ]
         },
         "UploadUrl": {
             "imageId": [
-                540
+                795
             ],
             "uploadUrl": [
-                540
+                795
             ],
             "imageUrl": [
-                540
+                795
             ],
             "headers": [
-                232
+                372
             ],
             "order": [
-                243
+                387
             ],
             "externalId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "UpsertInvoiceSettingsInput": {
+            "paymentTermsDays": [
+                387
+            ],
+            "paymentInstructions": [
+                795
+            ],
+            "footerText": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "UpsertTaxSettingsInput": {
+            "regime": [
+                817
+            ],
+            "defaultHammerTaxCodeId": [
+                374
+            ],
+            "defaultChargeTaxCodeId": [
+                374
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "UpsertTaxSettingsPayload": {
+            "settings": [
+                818
+            ],
+            "seededCodes": [
+                815
+            ],
+            "__typename": [
+                795
             ]
         },
         "UpsertUserAddressInput": {
             "userId": [
-                540
+                795
             ],
             "idType": [
-                603
+                896
             ],
             "address": [
-                597
+                890
+            ],
+            "mailingAddress": [
+                452
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UpsertUserPhoneInput": {
             "userId": [
-                540
+                795
             ],
             "idType": [
-                603
+                896
             ],
             "phone": [
-                615
+                908
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "User": {
             "id": [
-                234
+                374
             ],
             "accountId": [
-                540
+                795
             ],
             "userId": [
-                540
+                795
             ],
             "created": [
-                540
+                795
             ],
             "modified": [
-                540
+                795
             ],
             "profile": [
-                606
+                899
             ],
             "tags": [
-                549
+                811
             ],
             "blocked": [
-                80
+                138
+            ],
+            "clientNumber": [
+                387
             ],
             "charges": [
-                96,
+                179,
                 {
                     "first": [
-                        243
+                        387
                     ],
                     "after": [
-                        540
+                        795
                     ],
                     "options": [
-                        99
+                        182
                     ]
                 }
             ],
+            "notes": [
+                468,
+                {
+                    "first": [
+                        387
+                    ],
+                    "after": [
+                        795
+                    ]
+                }
+            ],
+            "alerts": [
+                467
+            ],
+            "relatedParties": [
+                581
+            ],
             "__typename": [
-                540
+                795
             ]
         },
         "UserAddress": {
             "id": [
-                540
+                795
             ],
             "addressType": [
-                27
+                34
             ],
             "line1": [
-                540
+                795
             ],
             "line2": [
-                540
+                795
             ],
             "city": [
-                540
+                795
             ],
             "state": [
-                540
+                795
             ],
             "postalCode": [
-                540
+                795
             ],
             "country": [
-                540
+                795
             ],
             "name": [
-                540
+                795
             ],
             "company": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UserAddressInput": {
             "id": [
-                540
+                795
             ],
             "addressType": [
-                27
+                34
             ],
             "isPrimary": [
-                80
+                138
             ],
             "line1": [
-                540
+                795
             ],
             "line2": [
-                540
+                795
             ],
             "city": [
-                540
+                795
             ],
             "state": [
-                540
+                795
             ],
             "postalCode": [
-                540
+                795
             ],
             "country": [
-                540
+                795
             ],
             "name": [
-                540
+                795
             ],
             "company": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UserBidActivity": {
             "accountId": [
-                540
+                795
             ],
             "bidId": [
-                540
+                795
             ],
             "saleId": [
-                540
+                795
             ],
             "sale": [
-                403
+                610
             ],
             "itemId": [
-                540
+                795
             ],
             "saleItem": [
-                416
+                623
             ],
             "amount": [
-                243
+                387
             ],
             "maxAmount": [
-                243
+                387
             ],
             "userId": [
-                540
+                795
             ],
             "date": [
-                540
+                795
             ],
             "bidStatus": [
-                73
+                130
             ],
             "bidSequenceNumber": [
-                243
+                387
             ],
             "paddle": [
-                346
+                510
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UserBidActivityConnection": {
             "edges": [
-                600
+                893
             ],
             "pageInfo": [
-                349
+                513
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UserBidActivityEdge": {
             "cursor": [
-                540
+                795
             ],
             "node": [
-                598
+                891
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UserBidActivityFilter": {
             "saleId": [
-                540
+                795
             ],
             "itemId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UserEdge": {
             "node": [
-                595
+                888
             ],
             "cursor": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UserIdType": {},
         "UserIdVerificationInput": {
             "verificationId": [
-                540
+                795
             ],
             "verified": [
-                80
+                138
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UserIdVerificationStatus": {
             "verificationId": [
-                540
+                795
             ],
             "verified": [
-                80
+                138
             ],
             "modifiedAt": [
-                540
+                795
+            ],
+            "status": [
+                375
+            ],
+            "provider": [
+                795
+            ],
+            "failureReason": [
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UserInfo": {
             "userId": [
-                540
+                795
             ],
             "identityProviderId": [
-                540
+                795
+            ],
+            "hasLogin": [
+                138
             ],
             "status": [
-                618
+                911
             ],
             "emailVerified": [
-                80
+                138
             ],
             "name": [
-                540
+                795
+            ],
+            "firstName": [
+                795
+            ],
+            "lastName": [
+                795
             ],
             "email": [
-                540
+                795
             ],
             "role": [
-                540
+                795
             ],
             "vip": [
-                80
+                138
+            ],
+            "clientNumber": [
+                387
             ],
             "attributionChannelId": [
-                540
+                795
             ],
             "attributionSourceId": [
-                540
+                795
             ],
             "attributionSourceNote": [
-                540
+                795
+            ],
+            "clientLeadId": [
+                795
+            ],
+            "clientLead": [
+                294
+            ],
+            "marketingConsent": [
+                454
             ],
             "addresses": [
-                596
+                889
             ],
             "addressesV2": [
-                299
+                451
             ],
             "billingAddress": [
-                299
+                451
             ],
             "shippingAddress": [
-                299
+                451
             ],
             "paymentMethods": [
-                358
+                522
             ],
             "paymentProviderDetails": [
-                612
+                905
             ],
             "phones": [
-                364
+                528
             ],
             "companyName": [
-                540
+                795
+            ],
+            "vatNumber": [
+                795
+            ],
+            "eoriNumber": [
+                795
+            ],
+            "gunLicenceNumber": [
+                795
             ],
             "salutation": [
-                540
+                795
             ],
             "timezone": [
-                540
+                795
             ],
             "nationality": [
-                540
+                795
             ],
             "dateOfBirth": [
-                540
+                795
             ],
             "preferredLanguage": [
-                540
+                795
             ],
             "trustLevel": [
-                554
+                829
             ],
             "idVerificationStatus": [
-                605
+                898
             ],
             "username": [
-                540
+                795
             ],
             "notificationSettings": [
-                610
+                903
+            ],
+            "bankDetails": [
+                113
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UserMetadataInput": {
             "dateOfBirth": [
-                540
+                795
             ],
             "nationality": [
-                540
+                795
             ],
             "preferredLanguage": [
-                540
+                795
             ],
             "timezone": [
-                540
+                795
             ],
             "companyName": [
-                540
+                795
             ],
             "salutation": [
-                540
+                795
+            ],
+            "vatNumber": [
+                795
+            ],
+            "eoriNumber": [
+                795
+            ],
+            "gunLicenceNumber": [
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UserNotificationPreference": {
             "notification": [
-                319
+                481
             ],
             "channel": [
-                314
+                476
             ],
             "optedIn": [
-                80
+                138
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UserNotificationPreferenceInput": {
             "notification": [
-                319
+                481
             ],
             "channel": [
-                314
+                476
             ],
             "optedIn": [
-                80
+                138
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UserNotificationSettings": {
             "preferences": [
-                608
+                901
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UserNotificationsPreferenceInput": {
             "scheduled": [
-                617
+                910
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UserPaymentProviderDetails": {
             "id": [
-                540
+                795
             ],
             "on_UserStripePaymentProviderDetails": [
-                619
+                912
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UserPaymentProviderSession": {
             "on_UserStripePaymentProviderSession": [
-                620
+                913
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UserPaymentProviderSessionInput": {
             "userId": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UserPhoneInput": {
             "id": [
-                540
+                795
             ],
             "phoneType": [
-                366
+                545
             ],
             "isPrimary": [
-                80
+                138
             ],
             "phoneNumber": [
-                540
+                795
             ],
             "label": [
-                540
+                795
             ],
             "verifiedAt": [
-                551
+                823
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UserPreferenceInput": {
             "notifications": [
-                611
+                904
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UserScheduledNotificationsPreferenceInput": {
             "channels": [
-                314
+                476
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UserStatus": {},
         "UserStripePaymentProviderDetails": {
             "id": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UserStripePaymentProviderSession": {
             "publishableKey": [
-                540
+                795
             ],
             "customerSessionClientSecret": [
-                540
+                795
             ],
             "setupIntentClientSecret": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UserToken": {
             "token": [
-                540
+                795
             ],
             "expirationDate": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UserTokenInput": {
             "userID": [
-                540
+                795
             ],
             "ttlMinutes": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "UsersConnection": {
             "edges": [
-                602
+                895
             ],
             "pageInfo": [
-                349
+                513
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "ValuationRequest": {
+            "id": [
+                374
+            ],
+            "cursor": [
+                795
+            ],
+            "accountId": [
+                795
+            ],
+            "reference": [
+                795
+            ],
+            "status": [
+                923
+            ],
+            "contactName": [
+                795
+            ],
+            "contactEmail": [
+                795
+            ],
+            "contactPhone": [
+                795
+            ],
+            "items": [
+                921
+            ],
+            "assignee": [
+                918
+            ],
+            "createdAt": [
+                795
+            ],
+            "modifiedAt": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "ValuationRequestAssignee": {
+            "userId": [
+                795
+            ],
+            "name": [
+                795
+            ],
+            "email": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "ValuationRequestEdge": {
+            "cursor": [
+                795
+            ],
+            "node": [
+                917
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "ValuationRequestFilter": {
+            "statuses": [
+                923
+            ],
+            "assigneeUserId": [
+                795
+            ],
+            "unassigned": [
+                138
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "ValuationRequestItem": {
+            "itemType": [
+                431
+            ],
+            "itemTypeName": [
+                795
+            ],
+            "schemaData": [
+                438
+            ],
+            "description": [
+                795
+            ],
+            "photos": [
+                97
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "ValuationRequestSettings": {
+            "enabled": [
+                138
+            ],
+            "requiredPhotoCount": [
+                387
+            ],
+            "recipientEmails": [
+                795
+            ],
+            "__typename": [
+                795
+            ]
+        },
+        "ValuationRequestStatus": {},
+        "ValuationRequestsConnection": {
+            "edges": [
+                919
+            ],
+            "pageInfo": [
+                513
+            ],
+            "__typename": [
+                795
             ]
         },
         "Video": {
             "id": [
-                540
+                795
             ],
             "accountId": [
-                540
+                795
             ],
             "url": [
-                540
+                795
             ],
             "contentType": [
-                540
+                795
             ],
             "size": [
-                243
+                387
             ],
             "filename": [
-                540
+                795
             ],
             "externalId": [
-                540
+                795
             ],
             "created": [
-                540
+                795
             ],
             "modified": [
-                540
+                795
             ],
             "__typename": [
-                540
+                795
             ]
         },
+        "Weekday": {},
         "WeightUnit": {},
         "WorkflowDateType": {},
         "WorkflowDimensionOffset": {
             "dimension": [
-                631
+                933
             ],
             "offsetDays": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "WorkflowDimensionOffsetInput": {
             "dimension": [
-                631
+                933
             ],
             "offsetDays": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "WorkflowScheduleDate": {
             "dateType": [
-                626
+                928
             ],
             "effectiveDate": [
-                540
+                795
             ],
             "source": [
-                630
+                932
             ],
             "dimension": [
-                631
+                933
             ],
             "offsetDays": [
-                243
+                387
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "WorkflowScheduleDateSource": {},
         "WorkflowScheduleDimension": {},
         "WorkflowScheduleOffsets": {
             "rows": [
-                633
+                935
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "WorkflowScheduleRow": {
             "dateType": [
-                626
+                928
             ],
             "enabled": [
-                80
+                138
             ],
             "sortOrder": [
-                243
+                387
             ],
             "offsets": [
-                627
+                929
             ],
             "modified": [
-                80
+                138
             ],
             "__typename": [
-                540
+                795
             ]
         },
         "WorkflowScheduleRowInput": {
             "dateType": [
-                626
+                928
             ],
             "enabled": [
-                80
+                138
             ],
             "sortOrder": [
-                243
+                387
             ],
             "offsets": [
-                628
+                930
             ],
             "__typename": [
-                540
+                795
+            ]
+        },
+        "WorkflowSettings": {
+            "cataloguingWorkflowEnabled": [
+                138
+            ],
+            "requireDisplayNumbersToPublish": [
+                138
+            ],
+            "photographyWorkflowEnabled": [
+                138
+            ],
+            "conditionReportsRequireLogin": [
+                138
+            ],
+            "__typename": [
+                795
             ]
         }
     }

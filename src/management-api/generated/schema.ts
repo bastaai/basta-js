@@ -77,17 +77,89 @@ export interface Account {
     /** Default start bid as a percentage of the estimate. Null when no default is set. */
     defaultStartBidPercentage: (Scalars['Float'] | null)
     /**
+     * Template for sale page links on the organisation's own website, e.g.
+     * https://www.example.com/auction/{saleSlug}. Supports {saleSlug} and {saleId}.
+     * Null when none is set.
+     */
+    saleUrlTemplate: (Scalars['String'] | null)
+    /**
      * Artist's Resale Right configuration for this account, one entry per
      * currency. Empty when the account has no configuration.
      */
     arrSettings: ArrSettings[]
+    /**
+     * Creator settings for this account. Defaults apply when the account has not
+     * changed them.
+     */
+    creatorSettings: (CreatorSettings | null)
     /**
      * Every charge configured for this account, disabled ones included. These are
      * the charges as the account set them, before any narrower level restates
      * them, so `appliesAt` is always ACCOUNT here. Empty when there are none.
      */
     charges: ChargeConnection
+    /**
+     * Every buyer's premium configured for this account, disabled ones included,
+     * as the account set them, so `appliesAt` is always ACCOUNT here. Empty when
+     * there are none.
+     */
+    buyerPremiums: BuyerPremiumConnection
+    /** Accounting codes, ordered by code. Empty when none are set up. */
+    accountCodes: AccountCode[]
+    /**
+     * Tax codes, ordered by name and then by the date each takes effect. Codes
+     * that have ended are included. Empty when none are set up.
+     */
+    taxCodes: TaxCode[]
+    /** Live stream channels of the account, default first. */
+    streamChannels: StreamChannel[]
+    /**
+     * The tax regime and the default codes used where nothing narrower sets one.
+     * An account that has not set up tax reads as regime NONE with no defaults.
+     */
+    taxSettings: TaxSettings
+    /**
+     * The tax codes set for lots of each item type. Item types without one are
+     * left out and use the defaults in taxSettings.
+     */
+    itemTypeTaxDefaults: ItemTypeTaxDefault[]
+    /**
+     * Identity verification settings for this account. Null until set up with
+     * setIdentityVerificationProvider; the concrete type says which provider is in use.
+     */
+    identityVerification: (IdentityVerificationProvider | null)
+    /** Branding printed on the account's generated documents. Null when none is set. */
+    documentBranding: (DocumentBranding | null)
+    /**
+     * The consignment contract template used for new contracts: the newest
+     * version. Null until a template is saved.
+     */
+    consignmentContractTemplate: (ConsignmentContractTemplate | null)
+    /** Every consignment contract template version, newest first. */
+    consignmentContractTemplateVersions: ConsignmentContractTemplate[]
+    /** The account's cataloguing workflow configuration. */
+    workflowSettings: WorkflowSettings
     __typename: 'Account'
+}
+
+
+/**
+ * An accounting code, as listed in the chart of accounts of your accounting
+ * software, for example code 4120 named "Photography income". Charges, buyer's
+ * premiums and Artist's Resale Right settings can each point at one so that what
+ * they raise is filed under it. One list serves every currency.
+ */
+export interface AccountCode {
+    id: Scalars['ID']
+    /**
+     * The code as your accounting software knows it, for example 4120. Unique and
+     * fixed once created: to file under a different code, create that code and
+     * point your charges and premiums at it.
+     */
+    code: Scalars['String']
+    /** A label for the code, for example "Photography income". Can be changed. */
+    name: Scalars['String']
+    __typename: 'AccountCode'
 }
 
 export interface AccountFee {
@@ -285,6 +357,67 @@ export interface AffiliateEdge {
     __typename: 'AffiliateEdge'
 }
 
+
+/**
+ * A kind of event tracked for affiliates, such as a click or a sale. An event type is
+ * created automatically the first time the account records an event with a new name.
+ */
+export interface AffiliateEventType {
+    /** Event type ID. Matches `eventTypeId` on affiliate report data points. */
+    id: Scalars['ID']
+    /** Name the events are recorded under. */
+    name: Scalars['String']
+    /** Description of the event type. May be empty. */
+    description: Scalars['String']
+    /**
+     * JSON Schema describing the metadata recorded with events of this type. Null when no
+     * schema has been set.
+     */
+    metadataSchema: (Scalars['JSON'] | null)
+    __typename: 'AffiliateEventType'
+}
+
+
+/**
+ * Event counts for affiliates and campaigns over a date range. Periods with no events
+ * are omitted.
+ */
+export interface AffiliateReport {
+    /**
+     * Bucket size of every period in the report. Ranges of 31 days or fewer are DAILY;
+     * longer ranges are MONTHLY.
+     */
+    resolution: AffiliateReportResolution
+    /** Per-affiliate data points. */
+    dataPoints: AffiliateReportDataPoint[]
+    /** Per-campaign data points. */
+    campaignDataPoints: CampaignReportDataPoint[]
+    __typename: 'AffiliateReport'
+}
+
+
+/** Number of events of one type attributed to one affiliate in one period. */
+export interface AffiliateReportDataPoint {
+    /** Affiliate the events are attributed to. */
+    affiliateId: Scalars['ID']
+    /** ID of the event type counted. Same as `eventType.id`. */
+    eventTypeId: Scalars['ID']
+    /** Type of event counted. */
+    eventType: AffiliateEventType
+    /**
+     * Start of the period as YYYY-MM-DD: the day for DAILY reports, the first day of the
+     * month for MONTHLY reports.
+     */
+    period: Scalars['String']
+    /** Number of events in the period. */
+    eventCount: Scalars['Int']
+    __typename: 'AffiliateReportDataPoint'
+}
+
+
+/** Time bucket used for the periods in an affiliate report. */
+export type AffiliateReportResolution = 'DAILY' | 'MONTHLY'
+
 export interface Aggregator {
     name: Scalars['String']
     /** Identifier is chosen by the account and is used as a userId for bids placed on behalf of the aggregator. */
@@ -402,6 +535,510 @@ export interface ApiTokensEdge {
 
 
 /**
+ * The tax on one statement charge, as calculated for a draft or as fixed when the
+ * statement was issued, or on an order line's hammer or fee, as fixed when the
+ * order's invoice was issued. Amounts are minor currency units, signed like the
+ * charge.
+ */
+export interface AppliedTax {
+    /**
+     * The tax code the tax was taken from. Null when the code is no longer
+     * available; the figures below still stand.
+     */
+    taxCode: (TaxCode | null)
+    /** The tax code's name when the tax was calculated. */
+    codeName: Scalars['String']
+    /** How the tax was calculated and printed. */
+    application: TaxApplication
+    /** The rate in basis points: 2000 is 20%. */
+    rateBps: Scalars['Int']
+    /** The amount the tax was calculated on. */
+    basisAmount: Scalars['Int']
+    /** The tax. */
+    taxAmount: Scalars['Int']
+    /**
+     * True when the tax is shown beside the charge; false when it is included in
+     * the charge under the margin scheme, or when there is none.
+     */
+    shownSeparately: Scalars['Boolean']
+    __typename: 'AppliedTax'
+}
+
+
+/** A client's appointment at one of the account's sites. */
+export interface Appointment {
+    /** Id of the appointment. */
+    id: Scalars['ID']
+    /** Account ID */
+    accountId: Scalars['String']
+    type: AppointmentType
+    status: AppointmentStatus
+    /** Id of the client (a Basta user UUID, User.id). */
+    clientUserId: Scalars['String']
+    /** The client's user, resolved from clientUserId. Null if the user no longer exists. */
+    client: (User | null)
+    /** The site of the appointment. Null if the site no longer exists. */
+    site: (Site | null)
+    /** The start the client asked for. */
+    preferredStart: Scalars['Time']
+    /** The end the client asked for. Null when the client gave none. */
+    preferredEnd: (Scalars['Time'] | null)
+    /** The start the house confirmed. Null until confirmed. */
+    scheduledStart: (Scalars['Time'] | null)
+    /** The end the house confirmed. Null when unconfirmed or given without an end. */
+    scheduledEnd: (Scalars['Time'] | null)
+    /** The client's note. */
+    clientNote: (Scalars['String'] | null)
+    /** The house's internal note. Never shown to the client. */
+    staffNote: (Scalars['String'] | null)
+    /** Who cancelled the appointment. Null unless cancelled. */
+    cancelledBy: (AppointmentActor | null)
+    /** Why the appointment was cancelled. */
+    cancellationReason: (Scalars['String'] | null)
+    /** Invoices and statements the appointment is for. Empty for a valuation. */
+    documents: AppointmentDocument[]
+    /** When the appointment was requested. */
+    createdAt: Scalars['Time']
+    /** When the appointment was last modified. */
+    modifiedAt: Scalars['Time']
+    __typename: 'Appointment'
+}
+
+
+/** Who cancelled an appointment. */
+export type AppointmentActor = 'CLIENT' | 'HOUSE'
+
+
+/** An invoice or statement an appointment is for. */
+export interface AppointmentDocument {
+    type: AppointmentDocumentType
+    /** Id of the payment order or the statement. */
+    documentId: Scalars['ID']
+    /** The document's number when the appointment was requested. */
+    number: (Scalars['String'] | null)
+    /** The sale the document belongs to. */
+    saleId: Scalars['String']
+    /** Items the client asked to collect. Empty means every item on the document. */
+    itemIds: Scalars['String'][]
+    /** The invoice. Null when the document is not an invoice or no longer exists. */
+    invoice: (PaymentOrder | null)
+    /** The statement. Null when the document is not a statement or no longer exists. */
+    statement: (Statement | null)
+    __typename: 'AppointmentDocument'
+}
+
+export type AppointmentDocumentType = 'INVOICE' | 'STATEMENT'
+
+export interface AppointmentEdge {
+    /** Current appointment cursor */
+    cursor: Scalars['String']
+    /** Appointment node */
+    node: Appointment
+    __typename: 'AppointmentEdge'
+}
+
+export type AppointmentOrder = 'START_ASC' | 'CREATED_DESC'
+
+
+/** Settings for client appointment bookings. */
+export interface AppointmentSettings {
+    /** Whether clients can request appointments. */
+    enabled: Scalars['Boolean']
+    /** Addresses emailed when a client requests an appointment. */
+    recipientEmails: Scalars['String'][]
+    /** How many hours ahead of now a requested start must be at least. */
+    minLeadHours: Scalars['Int']
+    /** How many days ahead of now a requested start may be at most. */
+    maxDaysAhead: Scalars['Int']
+    /** How many requested or confirmed appointments a client may have at once. */
+    maxActivePerClient: Scalars['Int']
+    __typename: 'AppointmentSettings'
+}
+
+export type AppointmentStatus = 'REQUESTED' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED'
+
+export type AppointmentType = 'COLLECTION' | 'VALUATION'
+
+export interface AppointmentsConnection {
+    /** Appointment edges */
+    edges: AppointmentEdge[]
+    /** Current page information */
+    pageInfo: PageInfo
+    __typename: 'AppointmentsConnection'
+}
+
+
+/**
+ * An appraisal is a job valuing one or many of a client's items. It has one or
+ * more clients and one or more staff members.
+ */
+export interface Appraisal {
+    /** Id of the appraisal. */
+    id: Scalars['ID']
+    /** Cursor is used in pagination. */
+    cursor: Scalars['String']
+    /** Account ID */
+    accountId: Scalars['String']
+    /** Sequential per-account number assigned on creation, shared with consignments. */
+    appraisalNumber: (Scalars['Int'] | null)
+    /** Appraisal name. Empty when none was given. */
+    name: Scalars['String']
+    /** Optional notes about the appraisal. */
+    notes: (Scalars['String'] | null)
+    /** Why the valuation is done. */
+    type: AppraisalType
+    /**
+     * The attribution channel the appraisal came in through. Null when unset or when
+     * the channel no longer exists.
+     */
+    attributionChannel: (AttributionChannel | null)
+    /** Number of items in the appraisal, deleted items excluded. */
+    itemCount: Scalars['Int']
+    /** All clients of the appraisal, including the main one (isMain = true). */
+    clients: AppraisalClient[]
+    /** All staff of the appraisal, including the lead one (isLead = true). */
+    staff: AppraisalStaff[]
+    /** The items in the appraisal, paged by creation time. Deleted items are excluded. */
+    items: ItemsConnection
+    /**
+     * The items in the appraisal with their content as recorded for this appraisal,
+     * paged by creation time with the same cursors as `items`. Deleted items are excluded.
+     */
+    appraisalItems: AppraisalItemsConnection
+    /** When the appraisal was created (RFC3339). */
+    created: Scalars['String']
+    /** When the appraisal was last modified (RFC3339). */
+    modified: Scalars['String']
+    /** Id of the user that created the appraisal. */
+    createdByUserId: Scalars['String']
+    /** Id of the user that last modified the appraisal. */
+    modifiedByUserId: (Scalars['String'] | null)
+    /** The consignments items of this appraisal were moved into, oldest first. */
+    consignments: Consignment[]
+    /** The date the valuation was made (YYYY-MM-DD). Null when not set. */
+    valuationDate: (Scalars['String'] | null)
+    /** The date of death for a probate valuation (YYYY-MM-DD). Null when not set. */
+    dateOfDeath: (Scalars['String'] | null)
+    /** The person or firm who instructed the valuation. Null when not set. */
+    instructedBy: (AppraisalInstructedBy | null)
+    /** The appraisal's reference, printed on the appraisal document. Null when not set. */
+    reference: (Scalars['String'] | null)
+    /**
+     * The staff member who signs the appraisal document. Null when not set. isLead is
+     * true when the valuer is also the appraisal's lead staff member.
+     */
+    valuer: (AppraisalStaff | null)
+    /** How the appraisal document lays out its inventory. */
+    documentSettings: AppraisalDocumentSettings
+    /** Every document generated for this appraisal, newest first. */
+    documents: AppraisalDocument[]
+    __typename: 'Appraisal'
+}
+
+
+/**
+ * Lightweight appraisal type for search results: number, name, type, resolved client
+ * and lead staff names, and ids. Fetch the full Appraisal by id via appraisal() to drill in.
+ */
+export interface AppraisalBanner {
+    /** Appraisal ID */
+    id: Scalars['ID']
+    /** Account ID */
+    accountId: Scalars['String']
+    /** Sequential per-account number assigned on creation. Null when the appraisal has no number. */
+    appraisalNumber: (Scalars['Int'] | null)
+    /** Appraisal name */
+    name: Scalars['String']
+    /** Appraisal type */
+    type: AppraisalType
+    /** Internal user id of the main client. Null when the appraisal has no main client. */
+    mainClientId: (Scalars['String'] | null)
+    /** Resolved display name of the main client */
+    mainClientName: (Scalars['String'] | null)
+    /** Client number of the main client. Null when the main client has no client number. */
+    clientNumber: (Scalars['Int'] | null)
+    /** Identity-provider id of the lead staff member. Null when the appraisal has no lead. */
+    leadStaffId: (Scalars['String'] | null)
+    /** Resolved display name of the lead staff member */
+    leadStaffName: (Scalars['String'] | null)
+    /** Id of the client attribution channel. Null when none is set. */
+    attributionChannelId: (Scalars['String'] | null)
+    /** Number of items currently in the appraisal, excluding deleted items. */
+    itemCount: Scalars['Int']
+    /** Unix timestamp when the appraisal was created */
+    createdTimestamp: Scalars['Int']
+    /** Unix timestamp of the appraisal's last change */
+    modifiedTimestamp: Scalars['Int']
+    __typename: 'AppraisalBanner'
+}
+
+
+/** A client of an appraisal. An appraisal always has exactly one main client. */
+export interface AppraisalClient {
+    /** Id of the client (a Basta user UUID, User.id). */
+    userId: Scalars['String']
+    /** Whether this client is the main client. */
+    isMain: Scalars['Boolean']
+    /** Account the client belongs to. */
+    accountId: Scalars['String']
+    /** The client's user, resolved from userId. */
+    user: (User | null)
+    __typename: 'AppraisalClient'
+}
+
+
+/**
+ * One generated revision of an appraisal's document. A revision is never changed; generating
+ * again adds a new one.
+ */
+export interface AppraisalDocument {
+    id: Scalars['ID']
+    /** 1 for the first document, increasing by one with each new one. */
+    revision: Scalars['Int']
+    /** The appraisal type whose template the document was printed from. */
+    type: AppraisalType
+    /** Version of the template the document was printed from. 0 is the built-in default template. */
+    templateVersion: Scalars['Int']
+    /** Suggested file name. */
+    filename: Scalars['String']
+    generatedAt: Scalars['Time']
+    /** Id of the user that generated the document. */
+    generatedBy: Scalars['String']
+    /**
+     * A short-lived link to download the document. Null when a link could not be made; the
+     * error says why.
+     */
+    download: (DocumentDownload | null)
+    /**
+     * True when the appraisal's items, their titles, descriptions, values or rooms, or the
+     * appraisal's document details have changed since this document was generated. Null for a
+     * document that is not the newest.
+     */
+    outdated: (Scalars['Boolean'] | null)
+    __typename: 'AppraisalDocument'
+}
+
+
+/** How the appraisal document groups its inventory. */
+export type AppraisalDocumentGroupBy = 'ROOM' | 'ITEM_TYPE' | 'NONE'
+
+
+/** How the appraisal document lays out its inventory. */
+export interface AppraisalDocumentSettings {
+    /** How items are grouped. ROOM until changed. */
+    groupBy: AppraisalDocumentGroupBy
+    /** How items are ordered within a group. MANUAL until changed. */
+    sortBy: AppraisalDocumentSortBy
+    /** Whether a total is printed under each group. True until changed. */
+    sectionTotals: Scalars['Boolean']
+    __typename: 'AppraisalDocumentSettings'
+}
+
+
+/** How the appraisal document orders items within a group. */
+export type AppraisalDocumentSortBy = 'MANUAL' | 'VALUE_DESC' | 'ITEM_TYPE_THEN_VALUE'
+
+
+/**
+ * One immutable version of an account's appraisal document template for one appraisal
+ * type. Each section is sanitised rich text with {{placeholder}} tokens; an empty
+ * section is left out of the document.
+ */
+export interface AppraisalDocumentTemplate {
+    /** Null for the built-in default. */
+    id: (Scalars['ID'] | null)
+    /** The appraisal type this template is used for. */
+    type: AppraisalType
+    /**
+     * 1 for the first saved version, increasing by one with each save. 0 is the
+     * built-in default, used until a version is saved.
+     */
+    version: Scalars['Int']
+    title: Scalars['String']
+    /** The opening text. */
+    intro: Scalars['String']
+    /** Text printed before the inventory. */
+    preInventory: Scalars['String']
+    /** Text printed in the summary after the inventory. */
+    summary: Scalars['String']
+    /** The valuer's statement, printed in the sign-off. */
+    valuerStatement: Scalars['String']
+    /** Terms printed at the end of the document. */
+    terms: Scalars['String']
+    /** When this version was saved. Null for the built-in default. */
+    createdAt: (Scalars['Time'] | null)
+    /** Id of the user that saved this version. Null for the built-in default. */
+    createdBy: (Scalars['String'] | null)
+    __typename: 'AppraisalDocumentTemplate'
+}
+
+
+/** The person or firm who instructed a valuation, e.g. a probate solicitor. */
+export interface AppraisalInstructedBy {
+    /** Name of the person. Null when not given. */
+    name: (Scalars['String'] | null)
+    /** Name of the firm. Null when not given. */
+    company: (Scalars['String'] | null)
+    /** Postal address, one line per entry. */
+    addressLines: Scalars['String'][]
+    __typename: 'AppraisalInstructedBy'
+}
+
+
+/**
+ * An item as it appears in an appraisal. Until the item is consigned, its content is
+ * the item's own content and changes with it. When the item is consigned, the content
+ * is copied for the appraisal and frozen: later changes to the item no longer affect it.
+ */
+export interface AppraisalItem {
+    /** Id of the item. */
+    id: Scalars['ID']
+    /** Account ID */
+    accountId: Scalars['String']
+    /** Id of the appraisal. */
+    appraisalId: Scalars['String']
+    /** The item itself. */
+    item: Item
+    /** Title of the item in this appraisal. */
+    title: (Scalars['String'] | null)
+    /** Sub-title of the item in this appraisal. */
+    subTitle: (Scalars['String'] | null)
+    /** Description of the item in this appraisal. */
+    description: (Scalars['String'] | null)
+    /** Id of the item type of the item in this appraisal. */
+    schemaId: (Scalars['ID'] | null)
+    /** The filled-in field values of the item in this appraisal. */
+    attributes: (Scalars['JSON'] | null)
+    /** Creators of the item in this appraisal. */
+    creators: Creator[]
+    /** True once the item was consigned and its content frozen for this appraisal. */
+    frozen: Scalars['Boolean']
+    /** When the content was frozen (RFC3339, UTC). Null while not frozen. */
+    frozenAt: (Scalars['String'] | null)
+    /**
+     * The item's line number within this appraisal. Never changes and is never reused.
+     * Per appraisal; differs from inventoryNumber and from the item's position in a sale.
+     * Null until assigned.
+     */
+    lineNumber: (Scalars['Int'] | null)
+    /**
+     * The item's value, basis and room in this appraisal. Each appraisal keeps its own,
+     * whether or not the item is frozen.
+     */
+    valuation: AppraisalItemValuation
+    __typename: 'AppraisalItem'
+}
+
+
+/** An appraisal's valuation of one of its items. */
+export interface AppraisalItemValuation {
+    /** The value, or the low end of a range, in minor currency units. Null when not valued. */
+    low: (Scalars['Int'] | null)
+    /** The high end of a range in minor currency units. Null for a single figure. */
+    high: (Scalars['Int'] | null)
+    /**
+     * ISO 4217 currency of the value. Set together with low; every valued item in an
+     * appraisal has the same currency.
+     */
+    currency: (Scalars['String'] | null)
+    /** The basis printed before the value. Null when none. */
+    basis: (AppraisalValueBasis | null)
+    /** The room the item is in, used to group the appraisal document. Null when not set. */
+    room: (Scalars['String'] | null)
+    /** Position in the appraisal document's manual order. Null orders by line number. */
+    sortPosition: (Scalars['Int'] | null)
+    /**
+     * True when the item was assessed as having no commercial value; it then has no
+     * value and no basis.
+     */
+    noCommercialValue: Scalars['Boolean']
+    __typename: 'AppraisalItemValuation'
+}
+
+export interface AppraisalItemsConnection {
+    /** Appraisal item edges */
+    edges: AppraisalItemsEdge[]
+    /** Current page information */
+    pageInfo: PageInfo
+    __typename: 'AppraisalItemsConnection'
+}
+
+export interface AppraisalItemsEdge {
+    /** Current item cursor */
+    cursor: Scalars['String']
+    /** Appraisal item node */
+    node: AppraisalItem
+    __typename: 'AppraisalItemsEdge'
+}
+
+
+/** An item's line in an appraisal. */
+export interface AppraisalLine {
+    /** Id of the appraisal. */
+    appraisalId: Scalars['ID']
+    /** The appraisal. Null when it no longer exists. */
+    appraisal: (Appraisal | null)
+    /**
+     * The item's line number within the appraisal. Never changes and is never reused.
+     * Per appraisal; differs from inventoryNumber and from the item's position in a sale.
+     * Null until assigned.
+     */
+    lineNumber: (Scalars['Int'] | null)
+    __typename: 'AppraisalLine'
+}
+
+
+/** A staff member of an appraisal. An appraisal always has exactly one lead. */
+export interface AppraisalStaff {
+    /**
+     * The staff member's identity id, as issued by the dashboard identity provider
+     * (Ory Kratos). This is the same id space as DashboardMember.userId, and is not
+     * a client-user id.
+     */
+    userId: Scalars['String']
+    /** Whether this staff member is the lead. */
+    isLead: Scalars['Boolean']
+    /** Account the staff member belongs to. */
+    accountId: Scalars['String']
+    /**
+     * The staff member's display name, from the identity provider.
+     * Null if the identity could not be resolved.
+     */
+    name: (Scalars['String'] | null)
+    /**
+     * The staff member's email address, from the identity provider.
+     * Null if the identity could not be resolved.
+     */
+    email: (Scalars['String'] | null)
+    __typename: 'AppraisalStaff'
+}
+
+
+/** Why an appraisal's valuation is done. */
+export type AppraisalType = 'AUCTION' | 'INSURANCE' | 'PROBATE' | 'OTHER'
+
+
+/** The basis a value is given on, printed before the value. */
+export type AppraisalValueBasis = 'NRV' | 'NFOV' | 'SHRV' | 'ARV' | 'FV' | 'AGREED'
+
+export interface AppraisalsConnection {
+    /** Appraisal edges */
+    edges: AppraisalsEdge[]
+    /** Current page information */
+    pageInfo: PageInfo
+    __typename: 'AppraisalsConnection'
+}
+
+export interface AppraisalsEdge {
+    /** Current appraisal cursor */
+    cursor: Scalars['String']
+    /** Appraisal node */
+    node: Appraisal
+    __typename: 'AppraisalsEdge'
+}
+
+
+/**
  * One rung of the Artist's Resale Right royalty ladder. The portion of the sale
  * price between lowerLimit and upperLteLimit is charged at rate.
  */
@@ -449,6 +1086,11 @@ export interface ArrSettings {
      * charges its own rate on its own portion and the results are summed.
      */
     bands: ArrBand[]
+    /**
+     * The accounting code the royalty in this currency is filed under. Null when
+     * none is set.
+     */
+    accountCode: (AccountCode | null)
     __typename: 'ArrSettings'
 }
 
@@ -460,6 +1102,21 @@ export interface ArrSettings {
  * fields require an `... on Image` / `... on Video` / `... on Document` fragment.
  */
 export type Asset = (Document | Image | Video) & { __isUnion?: true }
+
+
+/** A page of assets. */
+export interface AssetConnection {
+    edges: AssetEdge[]
+    pageInfo: PageInfo
+    __typename: 'AssetConnection'
+}
+
+export interface AssetEdge {
+    node: Asset
+    /** Pass as `after` to read the page that follows this asset. */
+    cursor: Scalars['String']
+    __typename: 'AssetEdge'
+}
 
 
 /**
@@ -479,6 +1136,26 @@ export interface AssetUploadUrl {
     __typename: 'AssetUploadUrl'
 }
 
+export interface AttributeSuggestion {
+    /** The field's key in the item type's schema. */
+    key: Scalars['String']
+    /** The suggested value, valid against the field's schema. */
+    value: Scalars['JSON']
+    /** The field's title in the item type's schema, when it has one. */
+    label: (Scalars['String'] | null)
+    __typename: 'AttributeSuggestion'
+}
+
+export interface AttributesSuggestion {
+    /**
+     * Suggested values, in the item type's field order. Fields without a suggestion are left out,
+     * and so are fields whose current value is the suggested one.
+     * Merge them into the current attributes before saving; the update mutations replace all attributes.
+     */
+    values: AttributeSuggestion[]
+    __typename: 'AttributesSuggestion'
+}
+
 
 /**
  * An account-scoped attribution channel: how a client reached the auction house
@@ -488,6 +1165,8 @@ export interface AttributionChannel {
     id: Scalars['ID']
     accountId: Scalars['String']
     name: Scalars['String']
+    /** Whether this channel is only available through self-service (e.g. website sign-up). */
+    selfServiceOnly: Scalars['Boolean']
     /** When the channel was archived (RFC3339). Null means active. */
     archivedAt: (Scalars['String'] | null)
     /** When the channel was created (RFC3339). */
@@ -506,6 +1185,10 @@ export interface AttributionSource {
     id: Scalars['ID']
     accountId: Scalars['String']
     name: Scalars['String']
+    /** Whether this source is visible on the public website. */
+    public: Scalars['Boolean']
+    /** Channel IDs this source is associated with. Empty means available in no channels. */
+    channelIds: Scalars['String'][]
     /** When the source was archived (RFC3339). Null means active. */
     archivedAt: (Scalars['String'] | null)
     /** When the source was created (RFC3339). */
@@ -530,6 +1213,28 @@ export interface AuctionSymbol {
 /** Fixed set of auction symbol types an account can define a glyph for. */
 export type AuctionSymbolType = 'ARR' | 'VAT' | 'CITES'
 
+
+/** A staff member who authored a note. */
+export interface Author {
+    id: Scalars['ID']
+    name: Scalars['String']
+    __typename: 'Author'
+}
+
+
+/** A consignor's payout bank account. */
+export interface BankDetails {
+    /** Account holder name. */
+    accountName: Scalars['String']
+    /** 8-digit account number. */
+    accountNumber: Scalars['String']
+    /** 6-digit sort code. */
+    sortCode: Scalars['String']
+    /** ISO 3166-1 alpha-2 country of the account (e.g. "GB"). */
+    country: Scalars['String']
+    __typename: 'BankDetails'
+}
+
 export interface BastaLiveStream {
     /**
      * Is this option available for the account,
@@ -541,12 +1246,17 @@ export interface BastaLiveStream {
     ingestUrl: Scalars['String']
     /** Channel ID */
     channelId: (Scalars['String'] | null)
-    /** Stream key */
+    /** Stream key. Null for callers without permission to edit sales. */
     streamKey: (Scalars['String'] | null)
     /** Is stream live */
     isLive: Scalars['Boolean']
     /** Current viewers */
     currentViewers: (Scalars['Int'] | null)
+    /**
+     * The channel this sale streams on. The account's default channel unless another one is assigned.
+     * Null when Basta streaming is not available for the account.
+     */
+    streamChannel: (StreamChannel | null)
     __typename: 'BastaLiveStream'
 }
 
@@ -585,6 +1295,8 @@ export interface Bid {
     bidderIdentifier: Scalars['String']
     /** Optional paddle id if bid was placed with a paddle */
     paddle: (Paddle | null)
+    /** True when the bid was placed automatically by the bidder's max bid in response to a competing bid. */
+    reactiveBid: Scalars['Boolean']
     /** BidOrigin */
     bidOrigin: BidOrigin
     /** User Profile, will only resolve if the user exists in configured identity provider. */
@@ -660,8 +1372,18 @@ export interface BidPlacedSuccess {
 export interface BidRestrictions {
     /** Users need to have an accepted registration to bid on this sale */
     acceptedRegistrationRequired: Scalars['Boolean']
-    /** When true, phone registrations are open/enabled for this sale */
+    /** Whether bidders can request phone bidding on the website. Dashboard users can always create phone registrations. */
     phoneRegistrationOpen: Scalars['Boolean']
+    /**
+     * How many hours before the live start (live sales) or before the first item starts closing (timed sales)
+     * website phone registrations close. Null means no cut-off.
+     */
+    phoneRegistrationCutoffHours: (Scalars['Int'] | null)
+    /**
+     * When website phone registrations close: phoneRegistrationCutoffHours before the live start for live
+     * sales, or before the first item starts closing for timed sales. Null when there is no cut-off or no such date.
+     */
+    phoneRegistrationClosesAt: (Scalars['Time'] | null)
     __typename: 'BidRestrictions'
 }
 
@@ -697,6 +1419,138 @@ export interface BidsEdge {
 }
 
 
+/**
+ * A premium the buyer pays on top of the hammer price, in one currency. An account
+ * that sells in several currencies has a separate premium for each.
+ */
+export interface BuyerPremium {
+    /** The premium's id, the same at every level it is read from. */
+    id: Scalars['ID']
+    /**
+     * An id from your own systems, unique within the account; use a different id
+     * for each currency. Set it with createBuyerPremium or updateBuyerPremium.
+     * Null until one is set.
+     */
+    externalId: (Scalars['String'] | null)
+    /** Name shown to buyers and on invoices, unique per currency within the account. */
+    name: Scalars['String']
+    /** Currency of every amount below. Cannot be changed once the premium exists. */
+    currency: Currency
+    /** How the ladder is applied to the amount. */
+    calculationType: BuyerPremiumCalculationType
+    /** Whether the premium is charged. */
+    status: BuyerPremiumStatus
+    /** Lower bound on the amount charged, in minor currency units. 0 means no floor. */
+    minimum: Scalars['Int']
+    /** Upper bound on the amount charged, in minor currency units. 0 means no cap. */
+    maximum: Scalars['Int']
+    /** The ladder, lowest portion first. Empty when nothing is charged. */
+    bands: BuyerPremiumBand[]
+    /** The level these values came from. */
+    appliesAt: BuyerPremiumScopeType
+    /**
+     * The accounting code this premium is filed under. On a lot whose premiums are
+     * fixed, the code the premium had when they were fixed. Null when none is set.
+     */
+    accountCode: (AccountCode | null)
+    /**
+     * The tax code this premium is taxed under, whatever the lot. Null when none
+     * is set, in which case the charge code for the lot's item type or the
+     * account's default applies.
+     */
+    taxCode: (TaxCode | null)
+    __typename: 'BuyerPremium'
+}
+
+
+/**
+ * One rung of a premium ladder. The portion of the amount between lowerLimit and
+ * upperLteLimit is charged at value.
+ */
+export interface BuyerPremiumBand {
+    /** The band's id. Stable for as long as the ladder keeps this band. */
+    id: Scalars['ID']
+    /** Exclusive lower bound, in minor currency units. */
+    lowerLimit: Scalars['Int']
+    /** Inclusive upper bound, in minor currency units. Null on the open-ended top band. */
+    upperLteLimit: (Scalars['Int'] | null)
+    /** Whether `value` is a rate or a fixed sum. */
+    type: BuyerPremiumBandType
+    /** Basis points for PERCENTAGE, minor currency units for AMOUNT. */
+    value: Scalars['Int']
+    __typename: 'BuyerPremiumBand'
+}
+
+
+/** Whether a band charges a rate or a fixed sum. */
+export type BuyerPremiumBandType = 'PERCENTAGE' | 'AMOUNT'
+
+
+/** How a buyer's premium's bands combine into one amount. */
+export type BuyerPremiumCalculationType = 'FLAT' | 'PROGRESSIVE'
+
+
+/** A paginated connection of buyer's premiums, oldest first. */
+export interface BuyerPremiumConnection {
+    /** The premiums on this page, oldest first. Empty when there are none. */
+    edges: BuyerPremiumEdge[]
+    /**
+     * Cursors for this page, and whether another one follows. Premiums page
+     * forward only, so hasPreviousPage is always false.
+     */
+    pageInfo: PageInfo
+    __typename: 'BuyerPremiumConnection'
+}
+
+
+/** An edge in a buyer's premium connection. */
+export interface BuyerPremiumEdge {
+    /** The premium. */
+    node: BuyerPremium
+    /** Opaque. Pass it as `after` to resume reading from just past this premium. */
+    cursor: Scalars['String']
+    __typename: 'BuyerPremiumEdge'
+}
+
+
+/**
+ * The level a buyer's premium's values come from. From most to least specific:
+ * SALE_ITEM, ITEM_TYPE, SALE, SALE_GENRE, ACCOUNT. A lot's premiums are fixed
+ * when it closes.
+ */
+export type BuyerPremiumScopeType = 'SALE_ITEM' | 'ITEM_TYPE' | 'SALE' | 'SALE_GENRE' | 'ACCOUNT'
+
+
+/** Whether a buyer's premium is charged. A premium is disabled rather than deleted. */
+export type BuyerPremiumStatus = 'ENABLED' | 'DISABLED'
+
+
+/**
+ * A level a buyer's premium can be set at. The account level is the premium
+ * itself, edited with updateBuyerPremium and setBuyerPremiumBands.
+ */
+export type BuyerPremiumWriteScopeType = 'SALE_ITEM' | 'ITEM_TYPE' | 'SALE_GENRE'
+
+
+/** Number of events of one type attributed to one campaign in one period. */
+export interface CampaignReportDataPoint {
+    /** Campaign the events are attributed to. */
+    campaignId: Scalars['ID']
+    /** ID of the event type counted. Same as `eventType.id`. */
+    eventTypeId: Scalars['ID']
+    /** Type of event counted. */
+    eventType: AffiliateEventType
+    /**
+     * Start of the period as YYYY-MM-DD: the day for DAILY reports, the first day of the
+     * month for MONTHLY reports.
+     */
+    period: Scalars['String']
+    /** Number of events in the period. */
+    eventCount: Scalars['Int']
+    __typename: 'CampaignReportDataPoint'
+}
+
+
 /** Response when canceling latest bid on item */
 export interface CanceledLatestBidOnItem {
     removedBids: Bid[]
@@ -720,6 +1574,23 @@ export interface Card {
     /** Expiry year, four digits */
     expYear: Scalars['Int']
     __typename: 'Card'
+}
+
+
+/**
+ * Where an item sits in the cataloguing workflow, as staff catalogue and proof it
+ * ahead of a sale.
+ */
+export type CataloguingWorkflowStatus = 'AWAITING_CATALOGUING' | 'CATALOGUED' | 'PROOFED'
+
+
+/** Counts of a sale's lots, withdrawn ones excluded, by cataloguing workflow status. */
+export interface CataloguingWorkflowSummary {
+    totalItems: Scalars['Int']
+    awaitingCataloguing: Scalars['Int']
+    catalogued: Scalars['Int']
+    proofed: Scalars['Int']
+    __typename: 'CataloguingWorkflowSummary'
 }
 
 
@@ -771,6 +1642,122 @@ export interface CategoryList {
 
 
 /**
+ * An enumeration usable in a CEL expression. Values are written as
+ * `<name>.<value>`, e.g. `TrustLevel.HIGH`.
+ */
+export interface CelEnum {
+    /** Enumeration name. */
+    name: Scalars['String']
+    /** Human-readable description. */
+    description: (Scalars['String'] | null)
+    /** Allowed values. */
+    values: CelEnumValue[]
+    __typename: 'CelEnum'
+}
+
+
+/** A single value of an enumeration. */
+export interface CelEnumValue {
+    /** Value name, e.g. `HIGH`. */
+    name: Scalars['String']
+    /**
+     * Numeric value. Enumeration values can be compared numerically,
+     * e.g. `user.trustLevel >= TrustLevel.MEDIUM`.
+     */
+    number: Scalars['Int']
+    /** Human-readable description. */
+    description: (Scalars['String'] | null)
+    __typename: 'CelEnumValue'
+}
+
+
+/**
+ * A CEL (Common Expression Language) environment: the variables an expression can use,
+ * the object types reachable from them and the enumerations they use.
+ */
+export interface CelEnvironment {
+    /** Variables that can be used at the top level of an expression, such as `user`. */
+    variables: CelVariable[]
+    /** Object types reachable from the variables. */
+    types: CelType[]
+    /** Enumerations reachable from the variables, with their allowed values. */
+    enums: CelEnum[]
+    __typename: 'CelEnvironment'
+}
+
+
+/** A field of an object type in a CEL expression. */
+export interface CelField {
+    /** Field name. */
+    name: Scalars['String']
+    /** Kind of value the field holds. For lists, the kind of each element. */
+    kind: CelKind
+    /** Name of the object type or enumeration, when `kind` is OBJECT or ENUM. */
+    typeName: (Scalars['String'] | null)
+    /** True if the field holds a list of values. */
+    isList: Scalars['Boolean']
+    /** Human-readable description. */
+    description: (Scalars['String'] | null)
+    __typename: 'CelField'
+}
+
+
+/** A problem found in a CEL expression. */
+export interface CelIssue {
+    /** Description of the problem. */
+    message: Scalars['String']
+    /** Line of the problem, starting at 1. Null when the problem applies to the whole expression. */
+    line: (Scalars['Int'] | null)
+    /**
+     * Column of the problem, starting at 1 and counted in characters.
+     * Null when the problem applies to the whole expression.
+     */
+    column: (Scalars['Int'] | null)
+    __typename: 'CelIssue'
+}
+
+
+/** The kind of value a variable or field holds. Names follow CEL's own type names. */
+export type CelKind = 'BOOL' | 'INT' | 'UINT' | 'DOUBLE' | 'STRING' | 'BYTES' | 'TIMESTAMP' | 'DURATION' | 'OBJECT' | 'ENUM'
+
+
+/** An object type that can appear in a CEL expression. */
+export interface CelType {
+    /** Type name, matching `typeName` on variables and fields. */
+    name: Scalars['String']
+    /** Human-readable description. */
+    description: (Scalars['String'] | null)
+    /** Fields that can be accessed on this type, e.g. `user.identityVerified`. */
+    fields: CelField[]
+    __typename: 'CelType'
+}
+
+
+/** Result of checking a CEL expression. */
+export interface CelValidationResult {
+    /** True if the expression has no issues. */
+    valid: Scalars['Boolean']
+    /** Problems found in the expression. Empty when it is valid. */
+    issues: CelIssue[]
+    __typename: 'CelValidationResult'
+}
+
+
+/** A variable available at the top level of a CEL expression. */
+export interface CelVariable {
+    /** Name used in the expression, e.g. `user`. */
+    name: Scalars['String']
+    /** Kind of value the variable holds. */
+    kind: CelKind
+    /** Name of the object type or enumeration, when `kind` is OBJECT or ENUM. */
+    typeName: (Scalars['String'] | null)
+    /** Human-readable description. */
+    description: (Scalars['String'] | null)
+    __typename: 'CelVariable'
+}
+
+
+/**
  * A charge the account applies to lots, in one currency. An account that sells in
  * several currencies configures the same charge once per currency, and a lot is
  * only ever charged in the currency it settles in.
@@ -790,8 +1777,12 @@ export interface Charge {
     basedOn: ChargeBasedOn
     /** How often the charge is raised. See the enum values for what counts. */
     frequency: ChargeFrequency
-    /** The sale result that triggers the charge. */
-    outcome: ChargeOutcome
+    /**
+     * The sale results that trigger the charge, each listed once. The same at
+     * every level the charge is read from. Empty when the charge is never raised
+     * automatically and is only added by hand.
+     */
+    outcomes: ChargeOutcome[]
     /** How the ladder is applied to the amount. */
     calculationType: ChargeCalculationType
     /**
@@ -819,6 +1810,18 @@ export interface Charge {
      * exactly as the account configured it.
      */
     appliesAt: ChargeScopeType
+    /**
+     * The accounting code this charge is filed under, the same at every level the
+     * charge is read from. Charges already applied keep the code they were applied
+     * with when this changes. Null when none is set.
+     */
+    accountCode: (AccountCode | null)
+    /**
+     * The tax code this charge is taxed under, the same at every level the charge
+     * is read from. Null when none is set, in which case the charge code for the
+     * lot's item type or the account's default applies.
+     */
+    taxCode: (TaxCode | null)
     __typename: 'Charge'
 }
 
@@ -853,7 +1856,7 @@ export type ChargeBandType = 'PERCENTAGE' | 'AMOUNT'
 
 
 /** What a charge's bands are measured against. */
-export type ChargeBasedOn = 'HAMMER' | 'LOW_ESTIMATE'
+export type ChargeBasedOn = 'HAMMER' | 'LOW_ESTIMATE' | 'RESERVE'
 
 
 /** How a charge's bands combine into one amount. */
@@ -883,12 +1886,12 @@ export interface ChargeEdge {
 }
 
 
-/** How often a charge applies to a given buyer. */
+/** How often a charge applies across re-offers of the same item. */
 export type ChargeFrequency = 'FIRST_TIME' | 'ALWAYS'
 
 
-/** Which result a charge applies to. */
-export type ChargeOutcome = 'ITEM_WON' | 'ITEM_LOST' | 'ANY'
+/** A result for the item in the sale. */
+export type ChargeOutcome = 'ITEM_WON' | 'ITEM_LOST' | 'ITEM_WITHDRAWN'
 
 
 /**
@@ -905,11 +1908,162 @@ export type ChargeScopeType = 'SALE_ITEM' | 'CONSIGNMENT' | 'USER' | 'ITEM_TYPE'
  */
 export type ChargeStatus = 'ENABLED' | 'DISABLED'
 
+export interface ClearItemsAppraisalPayload {
+    /** The appraisal the items were removed from. */
+    appraisal: Appraisal
+    /** Number of items removed. */
+    count: Scalars['Int']
+    __typename: 'ClearItemsAppraisalPayload'
+}
+
+
+/** Client numbering for an account */
+export interface ClientNumberSettings {
+    /** The number the next created client receives */
+    nextClientNumber: Scalars['Int']
+    /** Highest client number in use in the account. Null when no client has a number. */
+    highestAssignedClientNumber: (Scalars['Int'] | null)
+    __typename: 'ClientNumberSettings'
+}
+
 export type ClientPermission = 'BID_ON_ITEM' | 'ACCESS_PRIVATE'
+
+
+/**
+ * A recorded relationship between two clients of the account: `relatedClient` holds the
+ * role named by `type` for `client`.
+ */
+export interface ClientRelationship {
+    id: Scalars['ID']
+    type: ClientRelationshipType
+    /** Free-text explanation of the relationship. Null when none was given. */
+    reason: (Scalars['String'] | null)
+    /** Null when the client can no longer be read. */
+    client: (User | null)
+    /** Null when the client can no longer be read. */
+    relatedClient: (User | null)
+    created: Scalars['String']
+    modified: Scalars['String']
+    /** The staff member who recorded the relationship. Null when it was created with an API key; a removed staff member has an empty name. */
+    createdBy: (Author | null)
+    /** The staff member who last edited the relationship. Null when it has not been edited by a staff member; a removed staff member has an empty name. */
+    modifiedBy: (Author | null)
+    __typename: 'ClientRelationship'
+}
+
+
+/** The role a related client holds for a client. */
+export type ClientRelationshipType = 'AGENT' | 'INTRODUCER' | 'EXECUTOR' | 'LEGAL_REPRESENTATIVE' | 'FAMILY_MEMBER' | 'OTHER'
 
 
 /** ClosingMethod represents how SaleItems are moved into CLOSING status and when they are CLOSED */
 export type ClosingMethod = 'ONE_BY_ONE' | 'OVERLAPPING' | 'NONE'
+
+
+/** An item's or lot's condition write-up. */
+export interface ConditionReport {
+    /**
+     * Portable Text. Inline images carry url, content_type, size and filename. An empty document ([])
+     * when the report has images but no text.
+     */
+    text: Scalars['JSON']
+    /** Condition images in display order. */
+    images: Image[]
+    __typename: 'ConditionReport'
+}
+
+
+/**
+ * A client's request for a lot's condition report. Every ask about the same lot from the same
+ * email while the request is open is one more message on it.
+ */
+export interface ConditionReportRequest {
+    /** Id of the request. */
+    id: Scalars['ID']
+    /** Short reference of the first ask, the first 8 characters of the id in upper case. Each later ask has its own reference on its message. */
+    reference: Scalars['String']
+    status: ConditionReportRequestStatus
+    /** Who asked, as given with the first ask. */
+    contact: ConditionReportRequestContact
+    /** The client's user id when they were logged in and asked with their account's email. Null otherwise. */
+    clientUserId: (Scalars['String'] | null)
+    saleId: Scalars['String']
+    itemId: Scalars['String']
+    /** The lot. Null when it no longer exists. */
+    saleItem: (SaleItem | null)
+    /** The staff member handling the request. Null when unassigned. */
+    assignee: (ConditionReportRequestAssignee | null)
+    /** Every ask on this request, oldest first. */
+    messages: ConditionReportRequestMessage[]
+    /**
+     * The item's condition report, private images included. The lot shows the same report.
+     * Null when the item has neither text nor images in its report.
+     */
+    conditionReport: (ConditionReport | null)
+    /** When the request was made (RFC3339). */
+    createdAt: Scalars['String']
+    /** When the request was last changed, by a repeat ask or an assignment (RFC3339). */
+    modifiedAt: Scalars['String']
+    __typename: 'ConditionReportRequest'
+}
+
+
+/** The staff member a condition report request is assigned to. */
+export interface ConditionReportRequestAssignee {
+    /** The staff member's identity id, the same id space as DashboardMember.userId. */
+    userId: Scalars['String']
+    /**
+     * The staff member's display name, from the identity provider.
+     * Null if the identity could not be resolved.
+     */
+    name: (Scalars['String'] | null)
+    /**
+     * The staff member's email address, from the identity provider.
+     * Null if the identity could not be resolved.
+     */
+    email: (Scalars['String'] | null)
+    __typename: 'ConditionReportRequestAssignee'
+}
+
+
+/** How a client asked for a condition report. */
+export type ConditionReportRequestChannel = 'WEBSITE' | 'PHONE' | 'EMAIL' | 'THIRD_PARTY'
+
+export interface ConditionReportRequestContact {
+    name: Scalars['String']
+    email: Scalars['String']
+    phone: (Scalars['String'] | null)
+    __typename: 'ConditionReportRequestContact'
+}
+
+export interface ConditionReportRequestEdge {
+    cursor: Scalars['String']
+    node: ConditionReportRequest
+    __typename: 'ConditionReportRequestEdge'
+}
+
+
+/** One ask on a condition report request. */
+export interface ConditionReportRequestMessage {
+    /** Id of the ask; the website submit id for website asks. */
+    id: Scalars['ID']
+    /** Short reference the client was given for this ask, the first 8 characters of its id in upper case. */
+    reference: Scalars['String']
+    channel: ConditionReportRequestChannel
+    /** What the client wrote. Null when they left no text. */
+    message: (Scalars['String'] | null)
+    /** When the ask was received (RFC3339). */
+    createdAt: Scalars['String']
+    __typename: 'ConditionReportRequestMessage'
+}
+
+export type ConditionReportRequestStatus = 'OPEN' | 'REPLIED'
+
+export interface ConditionReportRequestsConnection {
+    edges: ConditionReportRequestEdge[]
+    pageInfo: PageInfo
+    __typename: 'ConditionReportRequestsConnection'
+}
 
 
 /**
@@ -923,8 +2077,10 @@ export interface Consignment {
     cursor: Scalars['String']
     /** Account ID */
     accountId: Scalars['String']
-    /** Human-facing short code for the consignment (format CN<YY><M><D><SUFFIX>), unique per account. */
+    /** Human-facing consignment code. New consignments receive sequential numeric IDs (1, 2, …); existing consignments retain their legacy format. */
     shortId: Scalars['String']
+    /** Sequential per-account number assigned on creation. Null for legacy consignments created before numbering was introduced. */
+    consignmentNumber: (Scalars['Int'] | null)
     /**
      * @deprecated Use consignors
      * Id of the consignor (a user-service user).
@@ -950,6 +2106,11 @@ export interface Consignment {
     externalId: (Scalars['String'] | null)
     /** The consignment's fee rules. */
     feeRules: ConsignmentFeeRule[]
+    /**
+     * When true, the consignment gets its own sale advice instead of joining its main
+     * consignor's combined advice for the sale.
+     */
+    reportSeparately: Scalars['Boolean']
     /** When the consignment was created (RFC3339). */
     created: Scalars['String']
     /** When the consignment was last modified (RFC3339). */
@@ -964,7 +2125,163 @@ export interface Consignment {
      * `appliesAt` on each says which level supplied the values.
      */
     charges: ChargeConnection
+    /** Every revision of this consignment's contract, newest first. */
+    contracts: ConsignmentContract[]
+    /** The highest contract revision that is not superseded. Null when there is none. */
+    currentContract: (ConsignmentContract | null)
+    /** The highest signed contract revision. Null when no contract is signed. */
+    signedContract: (ConsignmentContract | null)
+    /** Where this consignment's contract stands. SIGNED once any revision is signed. */
+    contractState: ConsignmentContractState
+    /**
+     * True when the charges that apply now, or the consignment's items and their valuations, differ
+     * from those printed on the newest signed contract, for example after items were added to a signed
+     * consignment. False when nothing is signed or the signed contract has no fingerprint for what
+     * changed. Null when it could not be determined.
+     */
+    contractNeedsResigning: (Scalars['Boolean'] | null)
+    /**
+     * True when the current contract is GENERATED or SENT and the charges that apply now, or the
+     * consignment's items and their valuations, differ from those printed on it. False when the
+     * current contract is signed, has no fingerprint for what changed, or there is none. Null when it
+     * could not be determined.
+     */
+    contractOutdated: (Scalars['Boolean'] | null)
+    /** The appraisals items of this consignment were moved from, the origin first. */
+    appraisals: Appraisal[]
+    /**
+     * The appraisal this consignment was created from. Null when it was not created from
+     * an appraisal or that appraisal no longer exists.
+     */
+    originAppraisal: (Appraisal | null)
+    /** The consignment's transport plan. Fields are null when not set. */
+    transport: (ConsignmentTransport | null)
+    /** Every property receipt issued for this consignment, newest first. */
+    propertyReceipts: PropertyReceipt[]
     __typename: 'Consignment'
+}
+
+
+/**
+ * Lightweight consignment type for search results: CN, resolved consignor/lead
+ * names, and ids. Fetch the full Consignment by id via consignment() to drill in.
+ */
+export interface ConsignmentBanner {
+    /** Consignment ID */
+    id: Scalars['ID']
+    /** Account ID */
+    accountId: Scalars['String']
+    /** Human-facing consignment code. New consignments receive sequential numeric IDs (1, 2, …); existing consignments retain their legacy format. */
+    shortId: Scalars['String']
+    /** Sequential per-account number assigned on creation. Null for legacy consignments. */
+    consignmentNumber: (Scalars['Int'] | null)
+    /** Consignment name */
+    name: (Scalars['String'] | null)
+    /** Internal user id of the main consignor */
+    mainConsignorId: (Scalars['String'] | null)
+    /** Resolved display name of the main consignor */
+    mainConsignorName: (Scalars['String'] | null)
+    /** Identity-provider id of the lead staff member */
+    leadStaffId: (Scalars['String'] | null)
+    /** Resolved display name of the lead staff member */
+    leadStaffName: (Scalars['String'] | null)
+    /** External ID */
+    externalId: (Scalars['String'] | null)
+    /** Unix timestamp when the consignment was created */
+    createdTimestamp: Scalars['Int']
+    /** Client number of the main consignor. Null when the consignor has no client number. */
+    clientNumber: (Scalars['Int'] | null)
+    /** Signature status of the consignment's current contract revision. Null when the status is not yet known for this consignment. */
+    signatureStatus: (ConsignmentSignatureStatus | null)
+    /** Number of items currently in the consignment, excluding deleted items. */
+    itemCount: Scalars['Int']
+    __typename: 'ConsignmentBanner'
+}
+
+
+/** One revision of a consignment's contract. */
+export interface ConsignmentContract {
+    id: Scalars['ID']
+    consignmentId: Scalars['String']
+    /** 1 for the first revision, increasing by one with each new revision. */
+    revision: Scalars['Int']
+    status: ConsignmentContractStatus
+    /** Suggested file name. Null for a signature recorded without a generated document. */
+    filename: (Scalars['String'] | null)
+    /** Lowercase hex SHA-256 of the document. Null when there is no document. */
+    sha256: (Scalars['String'] | null)
+    /** Version of the template the document was generated from. Null when there is no document. */
+    templateVersion: (Scalars['Int'] | null)
+    /** ISO 4217 code of the charges printed on the document. Null when there is no document. */
+    currency: (Scalars['String'] | null)
+    generatedAt: Scalars['Time']
+    /** Id of the user that generated or recorded this revision. */
+    generatedBy: Scalars['String']
+    sentAt: (Scalars['Time'] | null)
+    /** Id of the user that marked this revision as sent. */
+    sentBy: (Scalars['String'] | null)
+    /** The date the contract was signed. */
+    signedAt: (Scalars['Time'] | null)
+    signatureRecordedAt: (Scalars['Time'] | null)
+    /** Id of the user that recorded the signature. */
+    signatureRecordedBy: (Scalars['String'] | null)
+    signatureNote: (Scalars['String'] | null)
+    /** A short-lived link to download the document. Null when there is no document. */
+    download: (DocumentDownload | null)
+    /** The newest signing request sent for this revision. Null when it was never sent for signing. */
+    signingRequest: (ConsignmentContractSigningRequest | null)
+    /**
+     * A short-lived link to download the electronically signed copy: the document with the signer's
+     * name and a signature certificate page. Null unless the status is SIGNED_ELECTRONIC.
+     */
+    signedDownload: (DocumentDownload | null)
+    __typename: 'ConsignmentContract'
+}
+
+
+/** An emailed request to the main consignor to sign one contract revision. */
+export interface ConsignmentContractSigningRequest {
+    id: Scalars['ID']
+    status: ConsignmentContractSigningRequestStatus
+    /** The address the signing link was sent to. */
+    recipientEmail: Scalars['String']
+    createdAt: Scalars['Time']
+    /** Id of the user that sent the request. */
+    createdBy: Scalars['String']
+    /** The signing link stops working at this time. */
+    expiresAt: Scalars['Time']
+    completedAt: (Scalars['Time'] | null)
+    cancelledAt: (Scalars['Time'] | null)
+    /** The full name the consignor typed when signing. Null until signed. */
+    signerName: (Scalars['String'] | null)
+    __typename: 'ConsignmentContractSigningRequest'
+}
+
+
+/** Where an emailed request to sign a contract revision stands. */
+export type ConsignmentContractSigningRequestStatus = 'OPEN' | 'COMPLETED' | 'CANCELLED' | 'EXPIRED'
+
+
+/** Where a consignment's contract stands. */
+export type ConsignmentContractState = 'NONE' | 'GENERATED' | 'SENT' | 'SIGNED'
+
+
+/** The status of one consignment contract revision. */
+export type ConsignmentContractStatus = 'GENERATED' | 'SENT' | 'SIGNED_OFFLINE' | 'SUPERSEDED' | 'SIGNED_ELECTRONIC'
+
+
+/** One immutable version of an account's consignment contract template. */
+export interface ConsignmentContractTemplate {
+    id: Scalars['ID']
+    /** 1 for the first version, increasing by one with each save. */
+    version: Scalars['Int']
+    title: Scalars['String']
+    /** Sanitised rich text with {{placeholder}} tokens. */
+    body: Scalars['String']
+    createdAt: Scalars['Time']
+    /** Id of the user that saved this version. */
+    createdBy: Scalars['String']
+    __typename: 'ConsignmentContractTemplate'
 }
 
 
@@ -999,6 +2316,36 @@ export interface ConsignmentFeeRule {
 export type ConsignmentFeeType = 'NOT_SET' | 'PERCENTAGE' | 'AMOUNT'
 
 
+/**
+ * An item's line in a consignment. The line keeps its number after the item leaves the
+ * consignment; it is then removed.
+ */
+export interface ConsignmentLine {
+    /** Id of the consignment. */
+    consignmentId: Scalars['ID']
+    /** The consignment. Null when it no longer exists. */
+    consignment: (Consignment | null)
+    /**
+     * The line number within the consignment. Never changes and is never reused. Per
+     * consignment; differs from inventoryNumber and from the item's position in a sale.
+     */
+    lineNumber: Scalars['Int']
+    /** The item on the line. */
+    item: Item
+    /** The appraisal line the item was transferred from. Null when it was consigned directly. */
+    consignedFrom: (AppraisalLine | null)
+    /** When the item was added on this line (RFC3339, UTC). */
+    created: Scalars['String']
+    /** When the item left the consignment (RFC3339, UTC). Null while it is in it. */
+    removed: (Scalars['String'] | null)
+    __typename: 'ConsignmentLine'
+}
+
+
+/** Signature status of a consignment's current contract revision. */
+export type ConsignmentSignatureStatus = 'NONE' | 'GENERATED' | 'SENT' | 'SIGNED'
+
+
 /** A member of a consignment's staff (team) set. Exactly one is lead when the set is non-empty. */
 export interface ConsignmentStaff {
     /**
@@ -1022,6 +2369,20 @@ export interface ConsignmentStaff {
      */
     email: (Scalars['String'] | null)
     __typename: 'ConsignmentStaff'
+}
+
+
+/** How a consignment's property is expected to reach the house. Every field is optional. */
+export interface ConsignmentTransport {
+    /** The staff member coordinating the transport. */
+    coordinator: (TransportCoordinator | null)
+    /** The date the property is expected, YYYY-MM-DD. */
+    expectedDate: (Scalars['String'] | null)
+    /** The courier collecting or delivering the property. */
+    courier: (Courier | null)
+    /** The site the property is expected to arrive at. */
+    receivingSite: (Site | null)
+    __typename: 'ConsignmentTransport'
 }
 
 export interface ConsignmentsConnection {
@@ -1077,6 +2438,18 @@ export interface ContentDiff {
     entries: ContentDiffEntry[]
     /** Target keys not present as public fields in the item's schema. Names only. */
     removableKeys: Scalars['String'][]
+    /** Creator-set drift. Null when not computed (e.g. non-SALE_ITEM target). */
+    creators: (GroupSyncDiff | null)
+    /** Category-set drift. Null when not computed. */
+    categories: (GroupSyncDiff | null)
+    /** Tag-set drift. Null when not computed. */
+    tags: (GroupSyncDiff | null)
+    /** Image-set drift. Null when not computed. */
+    images: (GroupSyncDiff | null)
+    /** Template override drift (title/subTitle/description). Null when syncTemplates was off. */
+    templates: (TemplateSyncDiff | null)
+    /** True when the source and target condition reports differ in text or condition images (before the write, for a sync). Null when not compared. */
+    conditionReportChanged: (Scalars['Boolean'] | null)
     __typename: 'ContentDiff'
 }
 
@@ -1102,9 +2475,63 @@ export type ContentDiffStatus = 'ONLY_ON_ITEM' | 'ONLY_ON_TARGET' | 'CHANGED'
 /** The kind of target a ContentDiff compares against. */
 export type ContentDiffTargetKind = 'SALE_ITEM' | 'PRODUCT_VARIANT'
 
+export interface ContentIssue {
+    severity: IssueSeverity
+    /** The field the issue is about. Null when it is about the target as a whole. */
+    field: (SuggestionField | null)
+    /** The item type's field key the issue is about, when it is about one. */
+    key: (Scalars['String'] | null)
+    /** What is wrong, in the requested language. */
+    message: Scalars['String']
+    __typename: 'ContentIssue'
+}
+
+export interface ContentSuggestion {
+    field: SuggestionField
+    value: SuggestionValue
+    /**
+     * One short sentence, at most 120 characters, on what the suggestion is based on.
+     * Null when none was given, and always null for ISSUES.
+     */
+    reasoning: (Scalars['String'] | null)
+    __typename: 'ContentSuggestion'
+}
+
+export interface ContentSuggestions {
+    /**
+     * One entry per field with a suggestion. Fields without a suggestion are left out, and so are
+     * fields whose current value is a suggestion the user has already applied.
+     */
+    suggestions: ContentSuggestion[]
+    /** Number of images that were looked at. */
+    imageCount: Scalars['Int']
+    /** Requested text fields that were left out because a template generates their value. */
+    templatedFields: SuggestionField[]
+    __typename: 'ContentSuggestions'
+}
+
 
 /** Direction to sync content drift between an item and a sale item. */
 export type ContentSyncDirection = 'PROMOTE_TO_ITEM' | 'REFRESH_FROM_ITEM'
+
+
+/**
+ * A {{name}} token a consignment contract, appraisal document or property receipt
+ * template may use.
+ */
+export interface ContractPlaceholder {
+    /** The token's name, written in a template as {{name}}. */
+    name: Scalars['String']
+    description: Scalars['String']
+    /**
+     * True for a section placeholder, which must be alone in its own paragraph. A
+     * section the template leaves out is printed after the body, except a property
+     * receipt's signatures, which print only where placed. Always false for appraisal
+     * document placeholders.
+     */
+    block: Scalars['Boolean']
+    __typename: 'ContractPlaceholder'
+}
 
 
 /** ISO 3166-1 alpha-2 country codes */
@@ -1142,6 +2569,14 @@ export interface CountryInfoEdge {
 }
 
 
+/** A courier the house uses to collect or deliver property. Account-scoped. */
+export interface Courier {
+    id: Scalars['ID']
+    name: Scalars['String']
+    __typename: 'Courier'
+}
+
+
 /**
  * A hierarchical creator (Maker / Artist / Brand) describing who or what made an
  * item. A parallel taxonomy to Category, applied to items and sale items.
@@ -1171,6 +2606,14 @@ export interface Creator {
      * linked to the creator inherit this unless they set their own value.
      */
     arr: Scalars['Boolean']
+    /** Year the creator started, as free text (e.g. "1881", "c. 1900"). Null when not set. */
+    yearFrom: (Scalars['String'] | null)
+    /** Year the creator ended, as free text (e.g. "1973", "present"). Null when not set. */
+    yearTo: (Scalars['String'] | null)
+    /** Nationality of the creator, as free text. Null when not set. */
+    nationality: (Scalars['String'] | null)
+    /** Biography of the creator as sanitised rich-text HTML, at most 20 KB. Null when not set. */
+    biography: (Scalars['String'] | null)
     /** Timestamp when the creator was created. */
     createdAt: Scalars['String']
     /** Timestamp when the creator was last updated. */
@@ -1192,6 +2635,17 @@ export interface CreatorConnection {
 export interface CreatorList {
     creators: Creator[]
     __typename: 'CreatorList'
+}
+
+
+/** Per-account creator settings. */
+export interface CreatorSettings {
+    /**
+     * Whether creators can be nested under other creators. Turning it off keeps
+     * existing nested creators but blocks creating new ones.
+     */
+    allowNested: Scalars['Boolean']
+    __typename: 'CreatorSettings'
 }
 
 
@@ -1235,6 +2689,8 @@ export interface DashboardMember {
     email: (Scalars['String'] | null)
     /** Roles assigned to this user in the account. */
     roles: DashboardUserRoleAssignment[]
+    /** The staff profile linked to this user in the account. Null when none is linked. */
+    staffProfile: (StaffProfile | null)
     __typename: 'DashboardMember'
 }
 
@@ -1327,6 +2783,47 @@ export interface Document {
     created: Scalars['String']
     modified: Scalars['String']
     __typename: 'Document'
+}
+
+
+/** House branding printed on generated documents such as consignment contracts. */
+export interface DocumentBranding {
+    /** Asset id of the logo printed in the letterhead. Null when there is no logo. */
+    logoAssetId: (Scalars['String'] | null)
+    /** Accent colour in #RRGGBB form. Null for the default. */
+    accentColor: (Scalars['String'] | null)
+    /** Secondary colour in #RRGGBB form, used for subtle backgrounds. Null for the default. */
+    secondaryColor: (Scalars['String'] | null)
+    /** Hides the account name in the letterhead when a logo is set. */
+    hideAccountName: Scalars['Boolean']
+    /** The house's legal details, printed in the footer. Null when none are set. */
+    company: (DocumentBrandingCompany | null)
+    __typename: 'DocumentBranding'
+}
+
+
+/** The house's legal details printed on generated documents. */
+export interface DocumentBrandingCompany {
+    legalName: (Scalars['String'] | null)
+    /** Free-form address, one line per entry. */
+    addressLines: Scalars['String'][]
+    /** Label printed before registrationNumber, e.g. "Company No." or "EIN". */
+    registrationLabel: (Scalars['String'] | null)
+    registrationNumber: (Scalars['String'] | null)
+    /** Label printed before taxNumber, e.g. "VAT No." or "Sales tax ID". */
+    taxLabel: (Scalars['String'] | null)
+    taxNumber: (Scalars['String'] | null)
+    email: (Scalars['String'] | null)
+    phone: (Scalars['String'] | null)
+    __typename: 'DocumentBrandingCompany'
+}
+
+
+/** A short-lived link to a generated document. Treat the url as a secret. */
+export interface DocumentDownload {
+    url: Scalars['String']
+    expiresAt: Scalars['Time']
+    __typename: 'DocumentDownload'
 }
 
 export interface DutchBid {
@@ -1429,6 +2926,16 @@ export interface DutchSchedule {
     startingAmount: Scalars['Int']
     drops: DutchPriceDrop[]
     __typename: 'DutchSchedule'
+}
+
+
+/** The entity number settings for an account. Consignments and appraisals share one sequence. */
+export interface EntityNumberSettings {
+    /** The next entity number that will be allocated for this account to a new consignment or appraisal. */
+    nextNumber: Scalars['Int']
+    /** The highest entity number currently assigned to a consignment or appraisal, or null if none exist. */
+    highestAssignedNumber: (Scalars['Int'] | null)
+    __typename: 'EntityNumberSettings'
 }
 
 
@@ -1540,15 +3047,15 @@ export interface FeeRule {
      * lowerLimit — it does not prorate or repeat up to upperLteLimit.
      */
     calculationType: FeeCalculationType
-    /** Source indicates which level in the cascade hierarchy this fee originates from. */
+    /** The level this rule comes from. */
     source: FeeRuleSource
     __typename: 'FeeRule'
 }
 
 
 /**
- * Indicates which level in the cascade hierarchy the fee originates from.
- * When querying effective fees, item-level overrides sale-level which overrides account-level.
+ * The level a fee rule comes from. A lot's own rules win over its sale's, which
+ * win over the account's.
  */
 export type FeeRuleSource = 'ACCOUNT' | 'SALE' | 'ITEM'
 
@@ -1561,6 +3068,17 @@ export interface FieldChange {
     oldValue: (Scalars['JSON'] | null)
     newValue: (Scalars['JSON'] | null)
     __typename: 'FieldChange'
+}
+
+export interface GeneratePresaleAdvicesResult {
+    /**
+     * The generated revisions. An advice whose items and document are unchanged since its
+     * GENERATED revision is returned unchanged.
+     */
+    advices: PresaleAdvice[]
+    /** Items of the sale that are on no advice, with the reason. Not narrowed by the input's filters. */
+    skipped: PresaleAdviceSkippedItem[]
+    __typename: 'GeneratePresaleAdvicesResult'
 }
 
 export interface GeoLocation {
@@ -1577,6 +3095,20 @@ export interface GeoLocation {
 export interface GetItemInput {
     itemId: (Scalars['String'] | null)
     __typename: 'GetItemInput'
+}
+
+
+/** Set-replace change summary for one group (creators, categories, tags, or images). */
+export interface GroupSyncDiff {
+    /** The resulting set after the sync (the source/desired set in true-mirror order). */
+    resulting: Scalars['String'][]
+    /** Members added to the target. */
+    added: Scalars['String'][]
+    /** Members removed from the target. */
+    removed: Scalars['String'][]
+    /** True when added and removed are both empty. */
+    inSync: Scalars['Boolean']
+    __typename: 'GroupSyncDiff'
 }
 
 
@@ -1623,6 +3155,17 @@ export interface HttpHeader {
 }
 
 
+/** Stage of a user's identity verification. */
+export type IdVerificationState = 'NONE' | 'REQUESTED' | 'PROCESSING' | 'VERIFIED' | 'FAILED' | 'CANCELED'
+
+
+/**
+ * An account's identity verification settings, one member per provider. The secret key
+ * is never returned.
+ */
+export type IdentityVerificationProvider = (StripeIdentityProviderSettings) & { __isUnion?: true }
+
+
 /** Image object */
 export interface Image {
     /** ID of the image, UUID string */
@@ -1640,7 +3183,11 @@ export type ImageAssociation = (SaleItemImageAssociation | ItemImageAssociation 
 
 export type ImageIdType = 'ID' | 'EXTERNAL_ID'
 
-export type ImageType = 'ACCOUNT' | 'SALE' | 'ITEM' | 'SALE_ITEM' | 'PRODUCT' | 'PRODUCT_VARIANT' | 'COLLECTION'
+
+/** What an item or lot image is for. */
+export type ImageKind = 'LOT' | 'CONDITION'
+
+export type ImageType = 'ACCOUNT' | 'SALE' | 'ITEM' | 'SALE_ITEM' | 'PRODUCT' | 'PRODUCT_VARIANT' | 'COLLECTION' | 'STAFF_PROFILE'
 
 export interface ImageWithAssociations {
     image: Image
@@ -1673,16 +3220,81 @@ export interface InstantNotificationConfiguration {
     __typename: 'InstantNotificationConfiguration'
 }
 
+
+/**
+ * The inventory number settings for an account. Inventory numbers are sequential per
+ * account and are not the item's position in a sale.
+ */
+export interface InventoryNumberSettings {
+    /** The next inventory number that will be allocated to a new item in this account. */
+    nextNumber: Scalars['Int']
+    /** The highest inventory number currently assigned, or null if no item has one. */
+    highestAssignedNumber: (Scalars['Int'] | null)
+    __typename: 'InventoryNumberSettings'
+}
+
+
+/**
+ * The order's invoice: the revision issued through Basta, printed as
+ * `invoiceNumber`-`revision`, or one recorded from another system with
+ * `createInvoice`.
+ */
 export interface Invoice {
-    /** InvoiceId */
     invoiceId: Scalars['ID']
-    /** ExternalID */
+    /** The invoice's id in another system. Empty for one issued through Basta. */
     externalID: Scalars['String']
-    /** Due date in RFC3339 format */
+    /** Due date in RFC3339 format. */
     dueDate: Scalars['String']
-    /** Link to the invoice */
+    /** Link to the invoice in another system. Empty for one issued through Basta. */
     url: Scalars['String']
+    /**
+     * 1 for the first issue, increasing by one each time the order is published
+     * again with changes. Null for an invoice recorded from another system.
+     */
+    revision: (Scalars['Int'] | null)
+    /**
+     * UTC RFC3339 date and time this revision was issued. Null for an invoice
+     * recorded from another system.
+     */
+    issuedAt: (Scalars['String'] | null)
+    /**
+     * A short-lived link to the invoice as a PDF. Null for an invoice recorded
+     * from another system, and for a moment after issue while it renders.
+     */
+    download: (DocumentDownload | null)
     __typename: 'Invoice'
+}
+
+
+/**
+ * The account's defaults for the invoices it issues. They apply to invoices
+ * issued after they are set; invoices already issued keep what they printed.
+ */
+export interface InvoiceSettings {
+    /**
+     * Days from the issue date to the due date. An order's own due date or
+     * payment terms take precedence.
+     */
+    paymentTermsDays: Scalars['Int']
+    /** How to pay, printed on every invoice. Null when none is set. */
+    paymentInstructions: (Scalars['String'] | null)
+    /**
+     * The closing text printed at the foot of every invoice. Null when none is
+     * set.
+     */
+    footerText: (Scalars['String'] | null)
+    __typename: 'InvoiceSettings'
+}
+
+export type IssueSeverity = 'INFO' | 'WARNING'
+
+export interface IssuesSuggestion {
+    /**
+     * Problems found in the target's content, most important first, at most 8.
+     * When none are found, the ISSUES suggestion is left out.
+     */
+    issues: ContentIssue[]
+    __typename: 'IssuesSuggestion'
 }
 
 export interface Item {
@@ -1694,6 +3306,8 @@ export interface Item {
     title: (Scalars['String'] | null)
     /** Item sub-title */
     subTitle: (Scalars['String'] | null)
+    /** Condition report for the item. Null when the item has no condition text and no condition images. */
+    conditionReport: (ConditionReport | null)
     /** Account ID */
     accountId: Scalars['String']
     /** Item description */
@@ -1734,8 +3348,15 @@ export interface Item {
      * The effective schema (field definitions) for this item's item type.
      */
     schema: (Scalars['JSON'] | null)
-    /** Item Notes. */
+    /**
+     * @deprecated Use notes instead.
+     * Item Notes.
+     */
     itemNotes: ItemNoteConnection
+    /** Internal staff notes on this item. */
+    notes: NoteConnection
+    /** Alert notes for this item (notes flagged as alerts, for banner display). */
+    alerts: Note[]
     /**
      * @deprecated Use specificationsV2
      * Item specifications (dimensions, weight, type, etc.) - first specification only. Use specificationsV2 for full list.
@@ -1773,10 +3394,42 @@ export interface Item {
     metafield: (Metafield | null)
     /** The consignment this item belongs to, if any. */
     consignment: (Consignment | null)
+    /**
+     * @deprecated Use appraisals
+     * The earliest appraisal this item is in, if any.
+     */
+    appraisal: (Appraisal | null)
+    /** Appraisals this item is in, earliest first. */
+    appraisals: Appraisal[]
+    /**
+     * The item's line in each appraisal it is in, earliest link first. Line numbers are
+     * per appraisal and differ from inventoryNumber and from the item's position in a sale.
+     */
+    appraisalLines: AppraisalLine[]
+    /**
+     * The item's line number within its consignment. Never changes and is never reused.
+     * Per consignment; differs from inventoryNumber and from the item's position in a sale.
+     * Null when the item is not consigned or the number is not yet assigned.
+     */
+    consignmentLineNumber: (Scalars['Int'] | null)
+    /**
+     * The appraisal line the item was transferred from into its consignment. Null when the
+     * item is not in a consignment, was consigned directly, or its source appraisal was deleted.
+     */
+    consignedFrom: (AppraisalLine | null)
     /** The site this item currently resides at, if any. */
     site: (Site | null)
     /** The location within its site this item currently resides at, if any. */
     siteLocation: (Location | null)
+    /**
+     * Where the item physically is. AT_LOCATION when it has a site, else IN_TRANSIT
+     * while in transit, else WITH_CLIENT when it is consigned. Null otherwise.
+     */
+    locationStatus: (ItemLocationStatus | null)
+    /** When the item went into transit. Null unless locationStatus is IN_TRANSIT. */
+    inTransitSince: (Scalars['Time'] | null)
+    /** The latest property receipt issued for the item in its current consignment. Null when none. */
+    propertyReceipt: (PropertyReceiptRef | null)
     /** Categories assigned to the item */
     categories: Category[]
     /** Creators assigned to the item */
@@ -1807,6 +3460,35 @@ export interface Item {
      * marketplace product variants.
      */
     links: ItemLinkConnection
+    /**
+     * Overall lifecycle status of the item (acquisition to disposal), distinct from
+     * the item's auction status within a sale.
+     */
+    lifecycleStatus: (ItemLifecycleStatus | null)
+    /**
+     * Where the item sits in the cataloguing workflow: awaiting cataloguing, catalogued,
+     * or proofed. An item with no explicitly set status reads as awaiting cataloguing;
+     * null only if the item cannot be loaded.
+     */
+    cataloguingWorkflowStatus: (CataloguingWorkflowStatus | null)
+    /**
+     * Where the item sits in the photography workflow: to photograph, photographed, or
+     * uploaded. An item with no explicitly set status reads as to photograph; null only
+     * if the item cannot be loaded.
+     */
+    photographyWorkflowStatus: (PhotographyWorkflowStatus | null)
+    /** The dashboard member currently assigned as staff lead for this item. */
+    staffLead: (DashboardMember | null)
+    /** CITES licence number, when the item is subject to CITES regulations. */
+    citesLicenceNumber: (Scalars['String'] | null)
+    /**
+     * The account's inventory number for this item: sequential per account and assigned
+     * when the item is created. It is not the item's position in a sale.
+     * Null for items created before inventory numbers were introduced.
+     */
+    inventoryNumber: (Scalars['Int'] | null)
+    /** Timestamp when the item was created. */
+    created: Scalars['String']
     __typename: 'Item'
 }
 
@@ -1854,6 +3536,19 @@ export interface ItemBuyNowConfig {
     __typename: 'ItemBuyNowConfig'
 }
 
+
+/**
+ * Cataloguing readiness for an item: whether its required schema fields are filled.
+ * Call before promoting to catalogued/proofed to warn (soft) about blanks.
+ */
+export interface ItemCataloguingReadiness {
+    /** True when the item has no item type (schema) assigned; the field list is then empty. */
+    noItemType: Scalars['Boolean']
+    /** Required fields that are blank or missing in the item's content. */
+    missingRequiredFields: MissingRequiredField[]
+    __typename: 'ItemCataloguingReadiness'
+}
+
 export interface ItemDates {
     /** UTC+0 RFC3339 formatted date and time when item will open. */
     openDate: (Scalars['String'] | null)
@@ -1892,8 +3587,17 @@ export interface ItemHighlight {
 export interface ItemImageAssociation {
     /** The ID of the associated item */
     itemId: Scalars['String']
+    /** Which list of the item the image is in. An image in both lists has one association per kind. */
+    kind: ImageKind
     __typename: 'ItemImageAssociation'
 }
+
+
+/**
+ * Overall lifecycle status of an item, from acquisition to disposal. Distinct from
+ * ItemStatus, which is an item's auction status within a sale.
+ */
+export type ItemLifecycleStatus = 'APPRAISAL' | 'AVAILABLE' | 'ALLOCATED' | 'SOLD' | 'RETURN_TO_VENDOR'
 
 
 /**
@@ -1913,6 +3617,10 @@ export interface ItemLinkEdge {
     node: ItemLink
     __typename: 'ItemLinkEdge'
 }
+
+
+/** Where an item physically is. */
+export type ItemLocationStatus = 'WITH_CLIENT' | 'IN_TRANSIT' | 'AT_LOCATION'
 
 export interface ItemMessageNotification {
     /** Id of the notification */
@@ -2129,14 +3837,22 @@ export interface ItemSpecifications {
 
 
 /** Item statuses for items in a sale */
-export type ItemStatus = 'ITEM_NOT_OPEN' | 'ITEM_OPEN' | 'ITEM_CLOSING' | 'ITEM_PROCESSING' | 'ITEM_CLOSED' | 'ITEM_PAUSED' | 'ITEM_LIVE'
+export type ItemStatus = 'ITEM_NOT_OPEN' | 'ITEM_OPEN' | 'ITEM_CLOSING' | 'ITEM_PROCESSING' | 'ITEM_CLOSED' | 'ITEM_PAUSED' | 'ITEM_LIVE' | 'ITEM_WITHDRAWN'
 
 export interface ItemType {
     id: Scalars['ID']
     accountId: Scalars['String']
     name: Scalars['String']
-    /** Globally unique namespace used to build search filter paths for this item type's properties. */
+    /**
+     * Globally unique search key used to build search filter paths for this item type's
+     * properties (schemaData.<namespace>.<prop>). Not for display — use `slug`.
+     */
     namespace: Scalars['String']
+    /**
+     * Per-account display identifier, shown in the UI and used in item-type URLs. Unique
+     * within the account only, so two tenants can share the same slug.
+     */
+    slug: Scalars['String']
     schema: Scalars['JSON']
     parentId: (Scalars['String'] | null)
     createdAt: Scalars['String']
@@ -2152,6 +3868,11 @@ export interface ItemType {
      * `appliesAt` on each says which level supplied the values.
      */
     charges: ChargeConnection
+    /**
+     * The premiums as they apply to lots of this item type, before anything set
+     * on a single lot. `appliesAt` on each says which level supplied the values.
+     */
+    buyerPremiums: BuyerPremiumConnection
     __typename: 'ItemType'
 }
 
@@ -2161,6 +3882,21 @@ export interface ItemTypeEdge {
     node: ItemType
     cursor: Scalars['String']
     __typename: 'ItemTypeEdge'
+}
+
+
+/**
+ * The tax codes for lots of one item type. A null code falls through to the
+ * account's default.
+ */
+export interface ItemTypeTaxDefault {
+    /** The item type the codes apply to. */
+    itemTypeId: Scalars['ID']
+    /** The code for the hammer price. Null falls through to the next level. */
+    hammerTaxCode: (TaxCode | null)
+    /** The code for premiums and charges. Null falls through to the next level. */
+    chargeTaxCode: (TaxCode | null)
+    __typename: 'ItemTypeTaxDefault'
 }
 
 
@@ -2287,6 +4023,18 @@ export interface MailingAddress {
 }
 
 
+/** A client's recorded answer on marketing communications. */
+export interface MarketingConsent {
+    /** Whether the client consents to marketing communications. */
+    consented: Scalars['Boolean']
+    /** When the client gave or withdrew consent. */
+    decidedAt: Scalars['Time']
+    /** When this answer was recorded. */
+    recordedAt: Scalars['Time']
+    __typename: 'MarketingConsent'
+}
+
+
 /** ISO 4217 currency codes supported by the marketplace. */
 export type MarketplaceCurrencyCode = 'AED' | 'AFN' | 'ALL' | 'AMD' | 'ANG' | 'AOA' | 'ARS' | 'AUD' | 'AWG' | 'AZN' | 'BAM' | 'BBD' | 'BDT' | 'BGN' | 'BHD' | 'BIF' | 'BMD' | 'BND' | 'BOB' | 'BRL' | 'BSD' | 'BTN' | 'BWP' | 'BYN' | 'BZD' | 'CAD' | 'CDF' | 'CHF' | 'CLP' | 'CNY' | 'COP' | 'CRC' | 'CUC' | 'CUP' | 'CVE' | 'CZK' | 'DJF' | 'DKK' | 'DOP' | 'DZD' | 'EGP' | 'ERN' | 'ETB' | 'EUR' | 'FJD' | 'FKP' | 'GBP' | 'GEL' | 'GHS' | 'GIP' | 'GMD' | 'GNF' | 'GTQ' | 'GYD' | 'HKD' | 'HNL' | 'HRK' | 'HTG' | 'HUF' | 'IDR' | 'ILS' | 'INR' | 'IQD' | 'IRR' | 'ISK' | 'JMD' | 'JOD' | 'JPY' | 'KES' | 'KGS' | 'KHR' | 'KMF' | 'KPW' | 'KRW' | 'KWD' | 'KYD' | 'KZT' | 'LAK' | 'LBP' | 'LKR' | 'LRD' | 'LSL' | 'LYD' | 'MAD' | 'MDL' | 'MGA' | 'MKD' | 'MMK' | 'MNT' | 'MOP' | 'MRU' | 'MUR' | 'MVR' | 'MWK' | 'MXN' | 'MYR' | 'MZN' | 'NAD' | 'NGN' | 'NIO' | 'NOK' | 'NPR' | 'NZD' | 'OMR' | 'PAB' | 'PEN' | 'PGK' | 'PHP' | 'PKR' | 'PLN' | 'PYG' | 'QAR' | 'RON' | 'RSD' | 'RUB' | 'RWF' | 'SAR' | 'SBD' | 'SCR' | 'SDG' | 'SEK' | 'SGD' | 'SHP' | 'SLL' | 'SOS' | 'SRD' | 'SSP' | 'STN' | 'SVC' | 'SYP' | 'SZL' | 'THB' | 'TJS' | 'TMT' | 'TND' | 'TOP' | 'TRY' | 'TTD' | 'TWD' | 'TZS' | 'UAH' | 'UGX' | 'USD' | 'UYU' | 'UZS' | 'VES' | 'VND' | 'VUV' | 'WST' | 'XAF' | 'XCD' | 'XOF' | 'XPF' | 'YER' | 'ZAR' | 'ZMW' | 'ZWL'
 
@@ -2313,6 +4061,16 @@ export type MetafieldEntityType = 'METAFIELD_ENTITY_TYPE_SALE' | 'METAFIELD_ENTI
 /** Enum for the value type of a metafield */
 export type MetafieldValueType = 'METAFIELD_VALUE_TYPE_SINGLE_LINE_TEXT' | 'METAFIELD_VALUE_TYPE_RICH_TEXT'
 
+
+/** A required schema field that is blank or missing in an item's content. */
+export interface MissingRequiredField {
+    /** The field's schema property name. */
+    name: Scalars['String']
+    /** The field's display title. */
+    title: Scalars['String']
+    __typename: 'MissingRequiredField'
+}
+
 export interface Mutation {
     /** Update Account */
     updateAccount: Account
@@ -2325,6 +4083,32 @@ export interface Mutation {
      * Replaces all glyphs at once; an empty glyph clears that symbol.
      */
     setAuctionSymbols: Account
+    /**
+     * Replace the account's document branding. The logo must be a PNG or JPEG
+     * asset of this account whose upload is complete.
+     */
+    updateDocumentBranding: Account
+    /**
+     * Save a new version of the account's consignment contract template. It becomes
+     * the template for new contracts; earlier versions are kept unchanged.
+     */
+    createConsignmentContractTemplateVersion: ConsignmentContractTemplate
+    /**
+     * Set the number the next created client in the account receives. Must be greater than
+     * every client number already in use in the account.
+     */
+    setNextClientNumber: ClientNumberSettings
+    /**
+     * Set the number the next created sale in the account receives. Must be greater than
+     * every sale number already in use in the account.
+     */
+    setNextSaleNumber: SaleNumberSettings
+    /**
+     * Set up identity verification for the account's clients, or turn it on or off. Pass the
+     * credentials of exactly one provider; its input type documents the setup steps. Switching
+     * provider needs that provider's secret key.
+     */
+    setIdentityVerificationProvider: IdentityVerificationProvider
     /** Create a sale */
     createSale: Sale
     /** Create a Dutch sale */
@@ -2394,24 +4178,69 @@ export interface Mutation {
     openSale: Sale
     /** Close a sale, non forcefully. */
     closeSale: Sale
-    /** Set Sale State unforcefully */
+    /**
+     * Set Sale State unforcefully.
+     * Setting PUBLISHED checks the required fields of every lot that is not hidden or withdrawn, and fails with LOTS_MISSING_REQUIRED_FIELDS when any are blank.
+     */
     setSaleStatus: Sale
     /** Start to close the sale, non forcefully */
     startClosingSale: Sale
-    /** Open a sale, forcefully. */
+    /**
+     * Open a sale, forcefully.
+     * Lots' required fields are not checked.
+     */
     forceOpenSale: Sale
-    /** Close a sale, forcefully. */
+    /**
+     * Close a sale, forcefully.
+     * Lots' required fields are not checked.
+     */
     forceCloseSale: Sale
-    /** Start to close the sale, forcefully */
+    /**
+     * Start to close the sale, forcefully.
+     * Lots' required fields are not checked.
+     */
     forceStartClosingSale: Sale
-    /** Publish a sale, forcefully. */
+    /**
+     * Publish a sale.
+     * Checks the required fields of every lot that is not hidden or withdrawn, and fails with LOTS_MISSING_REQUIRED_FIELDS when any are blank.
+     */
     publishSale: Sale
+    /**
+     * Put an unpublished sale into preview: it is shown publicly with only the lots marked for preview, and bidding stays closed.
+     * Lots are not checked here; they are checked when marked for preview. Dutch sales cannot be previewed.
+     */
+    previewSale: Sale
+    /**
+     * Mark or unmark lots for preview. Only allowed before the sale is published. Returns the number of lots whose flag changed.
+     * Marking checks the lots' required fields and fails with LOTS_MISSING_REQUIRED_FIELDS when any are blank.
+     */
+    setSaleItemsPreview: Scalars['Int']
     /** Delete a sale permanently. */
     deleteSale: DeleteSalePayload
     /** Create item. This operation will create a standalone item that is not part of a sale. */
     createItem: Item
     /** Update item. This will update information about items for all sales that has not been closed. */
     updateItem: Item
+    /**
+     * Set an item's overall lifecycle status. Accepts any valid status; transition
+     * rules are not enforced.
+     */
+    setItemStatus: Item
+    /**
+     * Set an item's cataloguing workflow status. The cataloguing workflow must be
+     * enabled for the account, otherwise the mutation fails.
+     */
+    setCataloguingWorkflowStatus: SetCataloguingWorkflowStatusPayload
+    /**
+     * Set an item's photography workflow status. The photography workflow must be
+     * enabled for the account, otherwise the mutation fails. Fails with NOT_FOUND if the item does not exist or is deleted.
+     */
+    setPhotographyWorkflowStatus: SetPhotographyWorkflowStatusPayload
+    /**
+     * Set one photography workflow status on up to 1000 items. The photography workflow must be
+     * enabled for the account. Item ids that are not found or are deleted are returned in skippedItemIds instead of failing the call.
+     */
+    setPhotographyWorkflowStatuses: SetPhotographyWorkflowStatusesPayload
     /** Add specifications to an existing item. */
     addSpecifications: ItemSpecifications[]
     /** Create a consignment. */
@@ -2461,12 +4290,199 @@ export interface Mutation {
      */
     addConsignmentStaff: Consignment
     /**
+     * Set the consignment's transport: coordinator, expected date, courier and receiving site.
+     * Replaces the whole transport, so a field left out or null is cleared.
+     */
+    setConsignmentTransport: Consignment
+    /**
      * Remove one or more staff from a consignment. Removing all is allowed, and
      * removing the current lead promotes one of the remaining members in its place.
      */
     removeConsignmentStaff: Consignment
     /** Set the lead staff member for a consignment (auto-adds the user if needed). */
     setConsignmentStaffLead: Consignment
+    /** Create an appraisal. */
+    createAppraisal: Appraisal
+    /**
+     * Update an appraisal. Name and notes left out are cleared; type and attribution
+     * channel left out are kept.
+     */
+    updateAppraisal: Appraisal
+    /**
+     * Delete an appraisal. Rejected while any item that is not deleted is still in it, or
+     * once a document has been generated for it; deleted items are removed from it.
+     */
+    deleteAppraisal: Appraisal
+    /**
+     * Move items of an appraisal into a consignment. The items keep their details, images
+     * and values and stay in the appraisal; APPRAISAL items become AVAILABLE. All or
+     * nothing: when any item is missing, not in the appraisal, deleted or in another
+     * consignment, nothing changes and the error lists the ids. An item already in the
+     * target consignment is skipped, even when deleted, so a retry is safe. At most 1000 items.
+     * Requires WRITE_APPRAISAL as well as WRITE_CONSIGNMENT.
+     */
+    transferAppraisalItemsToConsignment: TransferAppraisalItemsToConsignmentPayload
+    /**
+     * Add items to an appraisal. Items already in it are left as they are, and an item
+     * can be in several appraisals. AVAILABLE items without a consignment become
+     * APPRAISAL; items in any other status keep it. All or nothing: when any item is
+     * missing or deleted, no item is added and the error lists the offending ids.
+     */
+    setItemsAppraisal: SetItemsAppraisalPayload
+    /**
+     * Remove items from an appraisal. An item with status APPRAISAL returns to AVAILABLE
+     * only when it is in no other appraisal. A removed item's valuation in this appraisal
+     * is discarded and is not restored if the item is added again. All or nothing: when
+     * any item is not in this appraisal, no item is removed and the error lists the offending ids.
+     */
+    clearItemsAppraisal: ClearItemsAppraisalPayload
+    /**
+     * Update an item in an appraisal. Rejected when the item is not in the appraisal.
+     * When the item is not frozen for the appraisal, the item itself is updated, which
+     * also requires WRITE_ITEM.
+     */
+    updateAppraisalItem: AppraisalItem
+    /** Add one or more clients to an appraisal. Existing clients are ignored. */
+    addAppraisalClients: Appraisal
+    /**
+     * Remove one or more clients from an appraisal. When the main client is removed,
+     * a remaining client becomes main. Removing every client is rejected.
+     */
+    removeAppraisalClients: Appraisal
+    /** Set the main client of an appraisal (added if not already a client). */
+    setMainAppraisalClient: Appraisal
+    /** Add one or more staff to an appraisal. Ids already on the staff set are ignored. */
+    addAppraisalStaff: Appraisal
+    /**
+     * Remove one or more staff from an appraisal. When the lead is removed, a remaining
+     * staff member becomes lead. Removing every staff member is rejected.
+     */
+    removeAppraisalStaff: Appraisal
+    /** Set the lead staff member of an appraisal (added if not already on the staff set). */
+    setAppraisalStaffLead: Appraisal
+    /**
+     * Update an item's valuation in an appraisal: value, basis, room and position.
+     * The valuation belongs to the appraisal, so this does not change the item or its
+     * valuation in other appraisals. Rejected when the item is not in the appraisal.
+     */
+    updateAppraisalItemValuation: AppraisalItem
+    /**
+     * Update the details an appraisal's document prints: dates, who instructed the
+     * valuation, reference, valuer and layout. Other appraisal fields are unchanged.
+     */
+    updateAppraisalDocumentDetails: Appraisal
+    /**
+     * Generate the appraisal's document from the account's current template for the
+     * appraisal's type, with its items, values and document details, and keep it as a new
+     * revision. When the newest revision would print exactly the same, it is returned
+     * unchanged. Fails when the appraisal has no items, or when nothing is valued and the
+     * account has no default currency.
+     */
+    generateAppraisalDocument: AppraisalDocument
+    /**
+     * Issue a property receipt for the given items from the account's current template and keep it.
+     * When location is given, the items are moved there in the same step. Issuing the same items to
+     * the same place as the consignment's newest receipt returns that receipt unchanged. Fails when an
+     * item is not in the consignment, the consignment has no consignor, or the site is archived.
+     */
+    generatePropertyReceipt: PropertyReceipt
+    /**
+     * Email a property receipt, with the document attached, to the consignment's main consignor
+     * or to recipientEmail when given, using the account's property receipt email template.
+     * Sending again is allowed and counts as another send. Fails when the consignment has no main
+     * consignor, there is no address to send to, or the account has no email template set up.
+     */
+    sendPropertyReceipt: PropertyReceipt
+    /**
+     * Save a new version of the account's appraisal document template for one appraisal
+     * type. It becomes the template for new documents of that type; earlier versions are
+     * kept unchanged.
+     */
+    createAppraisalDocumentTemplateVersion: AppraisalDocumentTemplate
+    /**
+     * Save a new version of the account's property receipt template. It becomes the
+     * template for new receipts; earlier versions are kept unchanged.
+     */
+    createPropertyReceiptTemplateVersion: PropertyReceiptTemplate
+    /** Replace the settings of the public valuation request form. */
+    setValuationRequestSettings: ValuationRequestSettings
+    /** Set the status of a valuation request. */
+    setValuationRequestStatus: ValuationRequest
+    /** Assign a valuation request to a staff member of the account. Null assigneeUserId clears the assignee. */
+    setValuationRequestAssignee: ValuationRequest
+    /** Delete a valuation request. Returns the deleted request. */
+    deleteValuationRequest: ValuationRequest
+    /**
+     * Assign a condition report request to a staff member of the account. Null userId clears the
+     * assignee. Fails when userId is not a member of the account.
+     */
+    setConditionReportRequestAssignee: ConditionReportRequest
+    /** Replace the appointment booking settings. */
+    setAppointmentSettings: AppointmentSettings
+    /**
+     * Confirm a requested appointment at a scheduled time. Confirming a confirmed appointment
+     * reschedules it. Fails for a cancelled or completed appointment.
+     */
+    confirmAppointment: Appointment
+    /** Cancel a requested or confirmed appointment on behalf of the house. */
+    cancelAppointment: Appointment
+    /** Mark a confirmed appointment as completed. */
+    completeAppointment: Appointment
+    /** Set the staff note of an appointment, in any status. */
+    setAppointmentStaffNote: Appointment
+    /**
+     * Set the next entity number to allocate for an account. Consignments and appraisals
+     * share one sequence; the number must be above the highest already assigned.
+     */
+    setNextEntityNumber: EntityNumberSettings
+    /**
+     * Set the next inventory number to allocate to a new item in an account. The number
+     * must be above the highest inventory number already assigned; later items continue from it.
+     */
+    setNextInventoryNumber: InventoryNumberSettings
+    /**
+     * Generate a contract for a consignment from the account's current template,
+     * with the consignment's charges, consignors and items. Supersedes a GENERATED
+     * or SENT revision. Generating again on the same day with nothing changed returns
+     * the current GENERATED revision unchanged. Fails when the account has no
+     * template or the consignment has no consignors.
+     */
+    generateConsignmentContract: ConsignmentContract
+    /**
+     * Render the consignment's contract as a DRAFT without recording a revision.
+     * The download expires with the draft after 30 days.
+     */
+    previewConsignmentContract: DocumentDownload
+    /** Mark a GENERATED contract revision as sent to the consignor. */
+    markConsignmentContractSent: ConsignmentContract
+    /**
+     * Email the consignment's main consignor a link to sign the contract revision, and
+     * mark it SENT. Sending again replaces the previous link. The link expires after
+     * 14 days and works once. Fails when the main consignor has no email or the
+     * account has no email template for contract signing.
+     */
+    sendConsignmentContract: ConsignmentContract
+    /** Record that a consignment's contract was signed offline. */
+    recordConsignmentContractSignature: ConsignmentContract
+    /**
+     * Render a consignor's pre-sale advice for a sale as a DRAFT without recording a revision.
+     * Without consignmentId it is the advice covering the consignor's consignments that are not
+     * reported separately; with it, the advice covering that consignment. Fails when no advice matches.
+     */
+    previewPresaleAdvice: DocumentDownload
+    /**
+     * Generate pre-sale advices for a sale. Each advice gets a new GENERATED revision that
+     * supersedes the previous one, except an advice whose items and document are unchanged since
+     * its GENERATED revision: that revision is returned as is and no new one is made. Nothing is emailed. Fails when the sale does not exist, the
+     * account has no currency set up or the sale has no date. Without branding the advices are unbranded.
+     */
+    generatePresaleAdvices: GeneratePresaleAdvicesResult
+    /**
+     * Email pre-sale advices to their main consignors with the document attached, and mark
+     * each SENT once its email went out. An advice that cannot be sent is reported in its
+     * result and does not stop the others.
+     */
+    sendPresaleAdvices: SendPresaleAdvicesResult
     /** Enable/disable offers on an item and set or clear its auto-accept threshold. */
     setItemOfferConfig: ItemOfferConfig
     /**
@@ -2481,6 +4497,13 @@ export interface Mutation {
      * buyer. Returns the updated sale item.
      */
     buyItem: SaleItem
+    /**
+     * Revert a buy-now direct sell on a closed sale item. The item stays closed, is
+     * marked unsold and has no direct sell, so it can be bought again. The buyer's
+     * order line for the item is removed; an invoiced or paid order is left unchanged.
+     * Returns the updated sale item.
+     */
+    revertDirectSell: SaleItem
     /** Accept a pending offer as an admin. */
     acceptOffer: Offer
     /** Reject a pending offer as an admin. */
@@ -2499,6 +4522,18 @@ export interface Mutation {
     removePackaging: Item
     /** Update ItemNumbers input */
     updateItemNumbers: Sale
+    /**
+     * Assign sequential display (lot) numbers to items in a sale, starting at startFrom
+     * and incrementing in itemIds order. Overwrites any existing numbers.
+     */
+    assignDisplayNumbers: Sale
+    /**
+     * Set explicit display (lot) numbers on multiple items at once, overwriting existing
+     * values. For manual bulk entry; supports alpha-numeric lot numbers.
+     */
+    setDisplayNumbers: Sale
+    /** Remove the display (lot) number from every item in the sale. */
+    unlotSale: Sale
     /** Create item and add to a sale. This operation will automatically create an item and add it to the sale. */
     createItemForSale: SaleItem
     /** Create a Dutch item in a sale */
@@ -2539,7 +4574,11 @@ export interface Mutation {
      * Sets sale item winner. Marks bid as won and closes item. Used in offer model.
      */
     setItemWinner: SaleItem
-    /** Sets sale item status. Used in offer model to close item with no winner. */
+    /**
+     * Sets sale item status. Used in offer model to close item with no winner.
+     * ITEM_WITHDRAWN withdraws the item from the sale, whatever its status: bidders
+     * can no longer see or bid on it, and it counts toward no results or totals.
+     */
     setSaleItemStatus: SaleItem
     /** Remove an item from the sale. This will not delete the item completely. */
     removeItemFromSale: Sale
@@ -2638,7 +4677,10 @@ export interface Mutation {
      *   - This completely removes an image from the system
      */
     deleteImage: Image[]
-    /** Add paddle to sale. */
+    /**
+     * @deprecated Use createSaleRegistration with status ACCEPTED.
+     * Add paddle to sale.
+     */
     addPaddleToSale: Paddle[]
     /** Remove paddle from sale. */
     removePaddleFromSale: Paddle[]
@@ -2649,6 +4691,11 @@ export interface Mutation {
      * This mutation will upsert the user if they don't exist.
      */
     updateUser: UserInfo
+    /**
+     * Remove a consignor's bank details. Idempotent — returns true even when none were
+     * on file. Resolves the user by idType, like updateUser.
+     */
+    deleteBankDetails: Scalars['Boolean']
     /**
      * Set a user's notification preferences. Only the entries given are changed.
      * The returned list covers what the account sends on, so an entry outside it is
@@ -2671,6 +4718,21 @@ export interface Mutation {
     addLiveStreamToSale: LiveStream
     /** Delete live stream from a sale */
     deleteLiveStreamFromSale: Scalars['Boolean']
+    /**
+     * Create an additional live stream channel. Requires Basta streaming to be enabled.
+     * An account can have at most 3 channels, the default channel included.
+     */
+    createStreamChannel: StreamChannel
+    /**
+     * Rename or re-describe a live stream channel, the default channel included.
+     * The ingest URL and stream key do not change.
+     */
+    updateStreamChannel: StreamChannel
+    /**
+     * Delete an additional live stream channel. Sales assigned to it use the default channel.
+     * The default channel cannot be deleted.
+     */
+    deleteStreamChannel: Scalars['Boolean']
     /** Add tag to an item */
     addTagToItem: Tag
     /** Remove tag from an item */
@@ -2689,6 +4751,7 @@ export interface Mutation {
     unblockUser: User
     /** Assign a user's external id (user_id). Write-once: fails if it is already set. */
     setUserExternalId: User
+    /** @deprecated Use addItemNote instead. */
     createItemNote: ItemNote
     /** CreateUploadUrl */
     createUploadUrl: UploadUrl
@@ -2721,6 +4784,11 @@ export interface Mutation {
      */
     reorderItemTypes: ItemType[]
     /**
+     * Delete an item type. Only succeeds when it has no child item types and no
+     * item, sale item or product variant references it. Returns true on success.
+     */
+    deleteItemType: Scalars['Boolean']
+    /**
      * @deprecated Renamed to createItemType.
      * Deprecated alias for createItemType. Kept for backward compatibility.
      */
@@ -2738,13 +4806,13 @@ export interface Mutation {
     /** Update closing time countdown globally for a sale, this will update all items in the sale. */
     updateGlobalClosingTimeCountdown: Sale
     /**
-     * PassLiveItem. Mutation only available with valid session cookie.
+     * Passes the live item.
      * Moves item to status processing and raises the reserve if it has been met.
      * Only works on "LIVE" sale type
      */
     passLiveItem: SaleItem
     /**
-     * SellLiveItem. Mutation only available with valid session cookie.
+     * Sells the live item to the current leading bid.
      * Moves item to status processing and lowers the reserve if it has not been met.
      * Only works on "LIVE" sale type
      */
@@ -2772,51 +4840,113 @@ export interface Mutation {
     createPaymentOrder: PaymentOrder
     /** Create an order */
     createOrder: PaymentOrder
-    /** Create an order line for a payment order */
+    /**
+     * Create an order line for a payment order. Refused unless the order is
+     * DRAFT or OPEN.
+     */
     createOrderLine: OrderLine
-    /** Update an order line for a payment order */
+    /**
+     * Update an order line for a payment order. Refused unless the order is
+     * DRAFT or OPEN.
+     */
     updateOrderLine: OrderLine
-    /** Delete an order line for a payment order */
+    /**
+     * Delete an order line for a payment order. Refused unless the order is
+     * DRAFT or OPEN.
+     */
     deleteOrderLine: OrderLine
     /**
      * @deprecated Use updateOrder mutation
-     * Update a payment order
+     * Update a payment order. Refused unless the order is DRAFT or OPEN.
      */
     updatePaymentOrder: PaymentOrder
-    /** Update an order */
+    /**
+     * Update an order. Refused unless the order is DRAFT or OPEN; reopen an
+     * invoiced order with `reopenOrder` first.
+     */
     updateOrder: PaymentOrder
     /**
      * @deprecated Use cancelPaymentOrder mutation
      * Delete a payment order, this will cancel order.
      */
     deletePaymentOrder: PaymentOrder
-    /** Cancel a payment order */
+    /**
+     * Cancel a payment order. An unpaid invoice issued for the order is voided.
+     * Refused when payments are recorded against the order.
+     */
     cancelPaymentOrder: PaymentOrder
-    /** Publish a payment order */
+    /**
+     * Publish a payment order. For an account that invoices through Basta, this
+     * issues the order's invoice; publishing again after a reopen issues the next
+     * revision under the same number. Publishing an order whose invoice already
+     * stands returns it unchanged. Refused when the order has no lines, its
+     * billing address has no name or country, or its due date is before today.
+     */
     publishPaymentOrder: PaymentOrder
-    /** Create Invoice for order */
+    /**
+     * Reopen an order whose invoice is issued, so it can be changed again. The
+     * invoice is withdrawn and the next publish issues a revision under the same
+     * number. Refused when a payment is recorded against the order, on a paid or
+     * cancelled order, and on an order with no issued invoice.
+     */
+    reopenOrder: PaymentOrder
+    /**
+     * Record an invoice made in another system on the order: its id, link and
+     * due date there.
+     */
     createInvoice: Invoice
     /** Create a payment for an order */
     createPayment: Payment
-    /** Create an account fee */
+    /**
+     * @deprecated Use buyerPremiums.
+     * Create an account fee
+     */
     createAccountFee: AccountFee
-    /** Update an account fee */
+    /**
+     * @deprecated Use buyerPremiums.
+     * Update an account fee
+     */
     updateAccountFee: AccountFee
-    /** Delete an account fee */
+    /**
+     * @deprecated Use buyerPremiums.
+     * Delete an account fee
+     */
     deleteAccountFee: Scalars['ID']
-    /** Create a sale-level fee rule for a specific sale. */
+    /**
+     * @deprecated Use buyerPremiums.
+     * Create a sale-level fee rule for a specific sale.
+     */
     createSaleFee: FeeRule
-    /** Update a sale-level fee rule. */
+    /**
+     * @deprecated Use buyerPremiums.
+     * Update a sale-level fee rule.
+     */
     updateSaleFee: FeeRule
-    /** Delete a sale-level fee rule. */
+    /**
+     * @deprecated Use buyerPremiums.
+     * Delete a sale-level fee rule.
+     */
     deleteSaleFee: Scalars['ID']
-    /** Reset sale fees to the account defaults, discarding any customizations. */
+    /**
+     * @deprecated Use buyerPremiums.
+     * Removes every premium set on this sale and on its lots, so they follow the
+     * account again. Lots whose premiums are already fixed are not changed.
+     */
     resetSaleFees: FeeRule[]
-    /** Create an item-level fee rule for a specific sale item. */
+    /**
+     * @deprecated Use buyerPremiums.
+     * Create an item-level fee rule for a specific sale item.
+     */
     createSaleItemFee: FeeRule
-    /** Update an item-level fee rule. */
+    /**
+     * @deprecated Use buyerPremiums.
+     * Update an item-level fee rule.
+     */
     updateSaleItemFee: FeeRule
-    /** Delete an item-level fee rule. */
+    /**
+     * @deprecated Use buyerPremiums.
+     * Delete an item-level fee rule.
+     */
     deleteSaleItemFee: Scalars['ID']
     /** Create a sale registration */
     createSaleRegistration: SaleRegistration
@@ -2885,12 +5015,52 @@ export interface Mutation {
     setSaleCategories: CategoryList
     /** Replace the categories assigned to a sale item. */
     setSaleItemCategories: CategoryList
-    /** Create a new creator. */
+    /**
+     * Create a new creator. Creating a creator with a parentId fails when the
+     * account's creatorSettings.allowNested is false.
+     */
     createCreator: Creator
     /** Update an existing creator. */
     updateCreator: Creator
     /** Delete a creator. Returns true on success. */
     deleteCreator: Scalars['Boolean']
+    /**
+     * Create a staff profile. `attributes` are validated against the account's
+     * default staff profile schema.
+     */
+    createStaffProfile: StaffProfile
+    /** Update a staff profile. Only the fields present in `input` are changed. */
+    updateStaffProfile: StaffProfile
+    /** Delete a staff profile. Returns true on success. */
+    deleteStaffProfile: Scalars['Boolean']
+    /**
+     * Replace the departments a staff profile belongs to. An empty list clears them.
+     * Every id must be a department of this account; at most 50.
+     */
+    setStaffProfileDepartments: StaffProfile
+    /**
+     * Set the staff profile's photo to an existing image of this account. Null
+     * removes the photo.
+     */
+    setStaffProfilePhoto: StaffProfile
+    /**
+     * Replace the item types a staff profile is responsible for. An empty list clears
+     * them. Every id must be an item type of this account; at most 50.
+     */
+    setStaffProfileItemTypes: StaffProfile
+    /**
+     * Link a staff profile to a dashboard member of this account. Null removes the
+     * link. A user can be linked to at most one staff profile per account; unlink the
+     * other profile first.
+     */
+    setStaffProfileDashboardMember: StaffProfile
+    /**
+     * Replace the JSON Schema of the account's default staff profile schema and
+     * return it. Asset fields are not supported.
+     */
+    updateStaffProfileSchema: Scalars['JSON']
+    /** Update the account's creator settings. */
+    updateCreatorSettings: CreatorSettings
     /** Replace the creators assigned to an item. */
     setItemCreators: CreatorList
     /** Replace the creators assigned to a sale item. */
@@ -2938,6 +5108,125 @@ export interface Mutation {
      * Succeeds whether or not the level was set.
      */
     deleteChargeAtScope: Charge
+    /**
+     * Create a buyer's premium for the account, in one currency. It charges
+     * nothing until its bands are set with setBuyerPremiumBands.
+     */
+    createBuyerPremium: BuyerPremium
+    /** Change a premium's name, calculation, bounds or external id. */
+    updateBuyerPremium: BuyerPremium
+    /**
+     * Enable or disable a premium for the whole account. There is no way to delete
+     * one: invoices already charged with it keep their meaning.
+     */
+    setBuyerPremiumStatus: BuyerPremium
+    /** Replace the ladder the account sets for a premium. */
+    setBuyerPremiumBands: BuyerPremium
+    /**
+     * Set what a premium does at one level. Returns the premium as it now applies
+     * there. A lot whose premiums are fixed cannot be changed.
+     */
+    setBuyerPremiumAtScope: BuyerPremium
+    /**
+     * Remove what a premium does at one level. Returns the premium as it now
+     * applies there. A lot whose premiums are fixed cannot be changed.
+     */
+    deleteBuyerPremiumAtScope: BuyerPremium
+    /** Add an accounting code. */
+    createAccountCode: AccountCode
+    /** Rename an accounting code. The code itself cannot be changed. */
+    updateAccountCode: AccountCode
+    /**
+     * Delete an accounting code. Refused while a charge, buyer's premium or Artist's
+     * Resale Right setting points at it, and for good once anything has been charged
+     * under it. Returns true once deleted.
+     */
+    deleteAccountCode: Scalars['Boolean']
+    /**
+     * Add a tax code. With replacesTaxCodeId, the new code is a rate change for an
+     * existing one, which is ended the day before the new code takes effect.
+     */
+    createTaxCode: TaxCode
+    /** Rename a tax code, set or clear its end date, or change its accounting code. */
+    updateTaxCode: TaxCode
+    /**
+     * Save the tax regime and default codes. Refused for an account whose
+     * invoices are not issued through Basta.
+     */
+    upsertTaxSettings: UpsertTaxSettingsPayload
+    /** Set the tax codes for lots of one item type. */
+    setItemTypeTaxDefault: ItemTypeTaxDefault
+    /**
+     * Remove an item type's tax codes, so its lots use the account's defaults.
+     * Returns true once removed.
+     */
+    deleteItemTypeTaxDefault: Scalars['Boolean']
+    /**
+     * Issue a draft statement: assign its number and fix the consignor's name and
+     * address as printed. Issuing a statement that is already issued returns it
+     * unchanged. Rejected when the statement has no lines or no address.
+     */
+    issueStatement: Statement
+    /**
+     * Set the address a draft statement will be issued to, from the consignor's saved
+     * addresses. The address is copied as it is now; later changes to it are not
+     * picked up. Rejected when the statement is issued, when the address is not one
+     * of the consignor's, or when it has no country or there is no name for it.
+     */
+    setStatementAddress: Statement
+    /**
+     * Set the amount of a charge on a draft statement by hand, or put back the
+     * amount the charge computes with a null amount. The computed amount is kept
+     * while one is set. A null amount on a charge whose amount was not set by hand
+     * leaves it unchanged. Rejected when the statement is issued, when the charge
+     * has been removed, or when the amount is above zero.
+     */
+    setStatementChargeAmount: Statement
+    /**
+     * Apply one of the house's charges to a lot on a draft statement by hand. The
+     * amount is what the charge computes for the lot at the rate that applies to
+     * it, so a consignment's own rate wins over the house's; the charge's
+     * conditions are not checked. Adding a charge that was removed from the lot
+     * puts it back as it was instead. The charge can then be edited and removed
+     * like any other. Rejected when the statement is issued, when the charge is
+     * already on the line, or, unless it is being put back, when it is disabled or
+     * in another currency.
+     */
+    addStatementCharge: Statement
+    /**
+     * Remove a charge from a lot on a draft statement. It is no longer printed or
+     * counted, and `addStatementCharge` with the same charge puts it back.
+     * Rejected when the statement is issued or the charge is already removed.
+     */
+    removeStatementCharge: Statement
+    /**
+     * Set a sold lot's hammer on a draft statement by hand, or put its winning bid
+     * back with a null hammer. Charges worked out from the hammer are worked out
+     * again for the new amount, removed ones included, unless their amount was set
+     * by hand. A null hammer on a lot whose hammer was not set by hand leaves it
+     * unchanged. Rejected when the statement is issued, when the lot did not sell,
+     * or when the hammer is not above zero.
+     */
+    setStatementLineHammer: Statement
+    /**
+     * Set the text printed on a draft statement line by hand, or put the original
+     * text back with a null description. Setting the original text again leaves
+     * the line unedited. A null description on text that was not set by hand
+     * leaves it unchanged. Rejected when the statement is issued, or when the text
+     * is empty or longer than 1000 characters.
+     */
+    setStatementLineDescription: Statement
+    /**
+     * Record money received against the order. The payment that covers the total
+     * marks it PAID. Refused on an order with no issued invoice and when the
+     * amount is more than `amountDue`.
+     */
+    recordOrderPayment: PaymentOrder
+    /**
+     * Set the account's invoice defaults. Invoices already issued keep what they
+     * printed.
+     */
+    upsertInvoiceSettings: InvoiceSettings
     /** Set or clear an item's Artist's Resale Right flag. */
     setItemArr: Item
     /**
@@ -2945,10 +5234,6 @@ export interface Mutation {
      * sold and its value is fixed.
      */
     setSaleItemArr: SaleItem
-    /** Create a new affiliate for an account. The affiliate is created in an active state. */
-    createAffiliate: Affiliate
-    /** Update an existing affiliate. Only fields present on the input are changed. */
-    updateAffiliate: Affiliate
     /**
      * Set up email notification delivery for an account through SendGrid. An
      * account has at most one integration per channel, so this fails with
@@ -3010,18 +5295,175 @@ export interface Mutation {
     unarchiveAttributionSource: AttributionSource
     /** Delete an attribution source. Fails if the source is in use; archive it instead. */
     deleteAttributionSource: AttributionSource
+    /** Set whether an attribution channel is self-service only. */
+    setAttributionChannelSelfServiceOnly: AttributionChannel
+    /** Set whether an attribution source is public (visible on the website). */
+    setAttributionSourcePublic: AttributionSource
+    /** Replace the channel associations for an attribution source. Pass an empty list to clear. */
+    setAttributionSourceChannels: AttributionSource
+    /** Create a note type for an account. */
+    createNoteType: NoteType
+    /** Rename a note type. */
+    renameNoteType: NoteType
+    /** Update which entities a note type applies to (ITEM, USER, or BOTH). */
+    updateNoteTypeScope: NoteType
+    /** Archive a note type, hiding it from active lists while preserving history. */
+    archiveNoteType: NoteType
+    /** Unarchive a previously archived note type. */
+    unarchiveNoteType: NoteType
+    /** Permanently delete a note type. */
+    deleteNoteType: NoteType
+    /** Create a note on an item. */
+    addItemNote: Note
+    /** Update an item note's text or type. */
+    updateItemNote: Note
+    /** Delete an item note (soft delete). */
+    deleteItemNote: Note
+    /** Set or remove the alert flag on an item note (alerts are shown as a banner). */
+    setItemNoteAlert: Note
+    /**
+     * Record that one client holds a role for another client of the account. Fails if the two
+     * clients already have a relationship of this type, in either direction.
+     */
+    createClientRelationship: ClientRelationship
+    /** Change the type and reason of a relationship. The two clients cannot be changed. */
+    updateClientRelationship: ClientRelationship
+    /** Delete a relationship. Returns the id of the deleted relationship. */
+    deleteClientRelationship: Scalars['ID']
+    /** Create a note on a user (client). */
+    addUserNote: Note
+    /** Update a user note's text or type. */
+    updateUserNote: Note
+    /** Delete a user note (soft delete). */
+    deleteUserNote: Note
+    /** Set or remove the alert flag on a user note (alerts are shown as a banner). */
+    setUserNoteAlert: Note
     /** Replaces this account's workflow schedule offsets and returns the resulting set. */
     setWorkflowScheduleOffsets: WorkflowScheduleOffsets
+    /** Updates the account's cataloguing workflow configuration and returns the resulting settings. */
+    updateWorkflowSettings: UpdateWorkflowSettingsPayload
     /** Sets or clears one per-sale key-date override. A non-null overrideDate sets/upserts the override; a null overrideDate clears it so the date reverts to the account-computed value. */
     setSaleWorkflowDateOverride: Sale
+    /**
+     * Puts phone clerks on a sale. Each clerk not already on it takes the lowest unnamed line, else a new
+     * line at the end, so phone bids already planned do not move. Fails for profiles that are not phone clerks.
+     */
+    assignPhoneClerksToSale: PhoneLine[]
+    /** Takes a clerk off a sale. The line stays as a numbered placeholder, so its phone bids do not move. */
+    removePhoneClerkFromSale: PhoneLine[]
+    /**
+     * Renumbers the sale's clerks in the given order; their phone bids and overrides move with them.
+     * Placeholders follow. staffProfileIds must be exactly the clerks on the sale.
+     */
+    reorderSalePhoneClerks: PhoneLine[]
+    /**
+     * Adds numbered placeholder lines at the end, or removes trailing placeholders. Fails when a line to
+     * remove has a clerk, is used by the locked plan or has an override pinning a bidder to it.
+     */
+    setSalePhoneLineCount: PhoneLine[]
+    setSalePhoneClerkConfig: SalePhoneClerkConfig
+    setPhoneClerkOverride: PhoneClerkOverride
+    /** Returns the id of the deleted override. */
+    deletePhoneClerkOverride: Scalars['ID']
+    /**
+     * Plans every accepted phone bid of the sale onto its lines as a new DRAFT, replacing an existing DRAFT.
+     * When nothing has changed since the current DRAFT or LOCKED plan, that plan is returned unless force
+     * is true. Fails when the sale has no lines. Poll the plan while its status is GENERATING.
+     */
+    generatePhoneClerkPlan: PhoneClerkPlan
+    /**
+     * Moves one phone bid to a line by hand. Records an override so the change survives regenerating,
+     * and keeps the original placement as the row's suggestion. A move that clashes with another phone bid
+     * on the line is allowed and shows up in the plan's issues.
+     */
+    assignPhoneClerk: PhoneClerkAssignment
+    /**
+     * Adds a suggested phone bid to a DRAFT or LOCKED plan. The suggestion is checked again; one that no
+     * longer fits the plan fails, and an unsupported reason is replaced with a supported one. The stored
+     * explanation is the standard text for the reason.
+     */
+    acceptPhoneClerkSuggestion: PhoneClerkAssignment
+    /**
+     * Locks a DRAFT plan, recording each line's clerk name on its phone bids, and supersedes the previous
+     * LOCKED plan. Fails when a clerk on the sale's lines no longer has a staff profile.
+     */
+    lockPhoneClerkPlan: PhoneClerkPlan
+    /** Every phone bid of the sale by item, from the LOCKED plan, else from the DRAFT with a DRAFT watermark. */
+    generatePhoneBidSummarySheet: DocumentDownload
+    /**
+     * One line's phone bids with space for the outcome, from the LOCKED plan, else from the DRAFT with a
+     * DRAFT watermark.
+     */
+    generatePhoneClerkSheet: DocumentDownload
+    /** Create a new affiliate for an account. The affiliate is created in an active state. */
+    createAffiliate: Affiliate
+    /** Update an existing affiliate. Only fields present on the input are changed. */
+    updateAffiliate: Affiliate
     __typename: 'Mutation'
 }
 
-export type Node = (AccountFee | ActionHookLog | ApiKey | ApiToken | Category | Consignment | Department | DutchSale | FeeRule | Item | Location | Offer | PaymentOrder | Sale | SaleGenre | SaleItemRegistration | SaleItemWatchlistEntry | SaleRegistration | SaleRegistrationPolicy | SaleWatchlistEntry | SectionMarker | Site | User) & { __isUnion?: true }
+export type Node = (AccountFee | ActionHookLog | ApiKey | ApiToken | Appointment | Appraisal | Category | ConditionReportRequest | Consignment | Department | DutchSale | FeeRule | Item | Location | Offer | PaymentOrder | Sale | SaleGenre | SaleItemRegistration | SaleItemWatchlistEntry | SaleRegistration | SaleRegistrationPolicy | SaleWatchlistEntry | SectionMarker | Site | StaffProfile | User | ValuationRequest) & { __isUnion?: true }
+
+
+/** Internal staff note on an item or client. */
+export interface Note {
+    id: Scalars['ID']
+    accountId: Scalars['String']
+    entityId: Scalars['String']
+    /** The note type category. Null for untyped notes. */
+    noteType: (NoteType | null)
+    /** The note type ID. Null for untyped notes. */
+    noteTypeId: (Scalars['String'] | null)
+    /** ID of the staff member who created the note. */
+    authorId: Scalars['String']
+    /** The staff member who created the note. Null if the author's account was removed. */
+    author: (Author | null)
+    note: Scalars['String']
+    /** Whether this note is flagged as an alert (shown as a banner). */
+    isAlert: Scalars['Boolean']
+    created: Scalars['String']
+    modified: Scalars['String']
+    __typename: 'Note'
+}
+
+export interface NoteConnection {
+    edges: NoteEdge[]
+    pageInfo: PageInfo
+    __typename: 'NoteConnection'
+}
+
+export interface NoteEdge {
+    cursor: Scalars['String']
+    node: Note
+    __typename: 'NoteEdge'
+}
+
+
+/**
+ * An account-scoped note type: a category for internal staff notes on
+ * items and clients (e.g. "General", "Financial", "Legal", "Shipping").
+ */
+export interface NoteType {
+    id: Scalars['ID']
+    accountId: Scalars['String']
+    name: Scalars['String']
+    scope: NoteTypeScope
+    /** When the note type was archived (RFC3339). Null means active. */
+    archivedAt: (Scalars['String'] | null)
+    /** When the note type was created (RFC3339). */
+    created: Scalars['String']
+    /** When the note type was last modified (RFC3339). */
+    modified: Scalars['String']
+    __typename: 'NoteType'
+}
+
+
+/** Entity scope for note types. */
+export type NoteTypeScope = 'ITEM' | 'USER' | 'BOTH'
 
 
 /** Who a notification is addressed to. */
-export type NotificationAudience = 'BIDDER' | 'CONSIGNOR' | 'IDENTITY'
+export type NotificationAudience = 'BIDDER' | 'CONSIGNOR' | 'IDENTITY' | 'ACCOUNT_INBOX'
 
 
 /**
@@ -3102,7 +5544,7 @@ export interface NotificationEmailSender {
 
 
 /** What a notification is about. The pair (`event`, `audience`) identifies it. */
-export type NotificationEvent = 'BID_CONFIRMATION' | 'BID_CONFIRMATION_OUTBID' | 'OUTBID' | 'AUTO_BID_PLACED' | 'SALE_REGISTRATION_PENDING' | 'SALE_REGISTRATION_ACCEPTED' | 'SALE_REGISTRATION_REJECTED' | 'SALE_ITEM_REGISTRATION_PHONE' | 'SALE_ITEM_WON' | 'SALE_ABOUT_TO_CLOSE' | 'CONSIGNOR_SALE_ITEM_OPENED' | 'CONSIGNOR_SALE_ABOUT_TO_CLOSE' | 'CONSIGNOR_SALE_ITEM_RESERVE_MET' | 'CONSIGNOR_SALE_ITEM_RESERVE_NOT_MET' | 'CONSIGNOR_SALE_ITEM_SOLD' | 'BUY_NOW_PRICE_REDUCED' | 'OFFER_PLACED_CONFIRMATION' | 'OFFER_RECEIVED' | 'OFFER_COUNTERED' | 'OFFER_REJECTED' | 'OFFER_WITHDRAWN' | 'DIRECT_SELL_WON' | 'DIRECT_SELL_SOLD' | 'IDENTITY_EMAIL_VERIFICATION' | 'IDENTITY_PASSWORD_RECOVERY' | 'IDENTITY_LOGIN_CODE' | 'IDENTITY_REGISTRATION_CODE'
+export type NotificationEvent = 'BID_CONFIRMATION' | 'BID_CONFIRMATION_OUTBID' | 'OUTBID' | 'AUTO_BID_PLACED' | 'SALE_REGISTRATION_PENDING' | 'SALE_REGISTRATION_ACCEPTED' | 'SALE_REGISTRATION_REJECTED' | 'SALE_ITEM_REGISTRATION_PHONE' | 'SALE_ITEM_WON' | 'SALE_ABOUT_TO_CLOSE' | 'CONSIGNOR_SALE_ITEM_OPENED' | 'CONSIGNOR_SALE_ABOUT_TO_CLOSE' | 'CONSIGNOR_SALE_ITEM_RESERVE_MET' | 'CONSIGNOR_SALE_ITEM_RESERVE_NOT_MET' | 'CONSIGNOR_SALE_ITEM_SOLD' | 'BUY_NOW_PRICE_REDUCED' | 'OFFER_PLACED_CONFIRMATION' | 'OFFER_RECEIVED' | 'OFFER_COUNTERED' | 'OFFER_REJECTED' | 'OFFER_WITHDRAWN' | 'DIRECT_SELL_WON' | 'DIRECT_SELL_SOLD' | 'CONSIGNOR_CONTRACT_SIGNING_REQUEST' | 'CONSIGNOR_PRESALE_ADVICE' | 'CONSIGNOR_PROPERTY_RECEIPT' | 'VALUATION_REQUEST_RECEIVED' | 'APPOINTMENT_REQUESTED' | 'IDENTITY_EMAIL_VERIFICATION' | 'IDENTITY_PASSWORD_RECOVERY' | 'IDENTITY_LOGIN_CODE' | 'IDENTITY_REGISTRATION_CODE'
 
 
 /**
@@ -3260,10 +5702,22 @@ export interface OrderLine {
     orderLineType: OrderLineType
     /** Fees associated with the order line, e.g. Buyer's Premium. */
     fees: OrderLineFee[]
-    /** Seller fees associated with the order line to be paid by the seller, e.g. Platform Fee. */
+    /**
+     * @deprecated Use platformFees
+     * Seller fees associated with the order line to be paid by the seller, e.g. Platform Fee.
+     */
     sellerFees: OrderLineFee[]
+    /** Fees Basta charges on this line. Empty when it charges none. */
+    platformFees: OrderLinePlatformFee[]
     /** Item associated with the order line. */
     item: (SaleItemOrItem | null)
+    /**
+     * The tax frozen on this line's hammer by the order's invoice. Null until an
+     * invoice is issued through Basta, for an invoice recorded from another
+     * system, when the house charges no tax, for a cancelled order, and for a
+     * line added since the invoice was last published.
+     */
+    tax: (AppliedTax | null)
     __typename: 'OrderLine'
 }
 
@@ -3283,10 +5737,45 @@ export interface OrderLineFee {
     amount: Scalars['Int']
     /** Is system defined, cannot be edited. */
     isSystemDefined: Scalars['Boolean']
+    /**
+     * The tax frozen on this fee by the order's invoice. Null until an invoice is
+     * issued through Basta, for an invoice recorded from another system, when the
+     * house charges no tax, for a cancelled order, in `sellerFees`, and for a fee
+     * the invoice cannot match: one added since the invoice was last published,
+     * or one of several fees of the same name changed by an edit.
+     */
+    tax: (AppliedTax | null)
     __typename: 'OrderLineFee'
 }
 
+
+/** A fee Basta charges on an order line. */
+export interface OrderLinePlatformFee {
+    /** What the fee is called, as printed when the buyer pays it. */
+    name: Scalars['String']
+    /** Amount in minor currency units. */
+    amount: Scalars['Int']
+    /** Who pays it. */
+    chargedTo: PlatformFeeChargedTo
+    __typename: 'OrderLinePlatformFee'
+}
+
 export type OrderLineType = 'BidAmount' | 'DirectSale'
+
+
+/** Money the house received against an order. */
+export interface OrderPayment {
+    id: Scalars['ID']
+    /** Minor units. */
+    amount: Scalars['Int']
+    /** YYYY-MM-DD the money was received. */
+    receivedOn: Scalars['String']
+    /** Bank reference or note, as entered. */
+    reference: (Scalars['String'] | null)
+    /** UTC RFC3339 date and time the payment was recorded. */
+    createdAt: Scalars['String']
+    __typename: 'OrderPayment'
+}
 
 export type OrderStatus = 'DRAFT' | 'OPEN' | 'CANCELLED' | 'INVOICE_ISSUED' | 'PAID'
 
@@ -3396,7 +5885,10 @@ export interface PaymentDetails {
     paymentProviderAccountId: Scalars['String']
     /** Payment Setup Status */
     status: PaymentProviderStatus
-    /** Account Fees */
+    /**
+     * @deprecated Use buyerPremiums.
+     * Account Fees
+     */
     accountFees: AccountFee[]
     __typename: 'PaymentDetails'
 }
@@ -3423,8 +5915,58 @@ export interface PaymentOrder {
     itemId: Scalars['String']
     /** InvoiceID of invoice sent to winner */
     invoiceId: (Scalars['String'] | null)
-    /** Invoice details */
+    /**
+     * INV-0042: taken when the order is first published and kept through
+     * revisions and reopens. Null until then.
+     */
+    invoiceNumber: (Scalars['String'] | null)
+    /**
+     * The order's standing invoice: the revision issued through Basta, or the one
+     * recorded from another system. Null until there is one.
+     */
     invoice: (Invoice | null)
+    /**
+     * UTC RFC3339 date and time the order is due, when set. When null, the
+     * order's `paymentTermsDays` apply from issue, else the account's payment
+     * terms.
+     */
+    dueAt: (Scalars['String'] | null)
+    /**
+     * Days from the issue date to the due date for this order. Null when the
+     * order has a `dueAt` or the account's payment terms apply; those are in
+     * `invoiceSettings`.
+     */
+    paymentTermsDays: (Scalars['Int'] | null)
+    /** Hammer plus buyer fees over all lines, in minor units. */
+    total: Scalars['Int']
+    /**
+     * All tax on the order's invoice, in minor units. Zero until an invoice is
+     * issued through Basta, and when the house charges no tax.
+     */
+    taxTotal: Scalars['Int']
+    /**
+     * The VAT shown separately on the order's invoice, one entry per tax code
+     * name, treatment and rate, in the order they first appear. Empty until an
+     * invoice is issued through Basta, and when none is shown separately.
+     */
+    taxBands: TaxBand[]
+    /**
+     * The part of `taxTotal` included in fees under the margin scheme and not
+     * shown separately, in minor units. The order's printed invoice includes it
+     * in the fees and never shows it as VAT.
+     */
+    taxInLieuTotal: Scalars['Int']
+    /**
+     * True when some lot on the order's invoice is sold under the margin scheme.
+     * The PDF then says so.
+     */
+    marginScheme: Scalars['Boolean']
+    /** Minor units received against the order. */
+    amountPaid: Scalars['Int']
+    /** `total` less `amountPaid`, in minor units. */
+    amountDue: Scalars['Int']
+    /** Money received against the order, oldest first. */
+    payments: OrderPayment[]
     /** PaymentID set if payment has been made on invoice */
     paymentId: (Scalars['String'] | null)
     /** UserID */
@@ -3436,10 +5978,21 @@ export interface PaymentOrder {
      * UserInfo for payment order
      */
     user: (UserInfo | null)
-    /** Billing address for the order */
+    /**
+     * Billing address for the order. When it was copied from one of
+     * `buyerAddresses`, `id` is that address's id.
+     */
     billingAddress: (MailingAddress | null)
-    /** Shipping address for the order */
+    /**
+     * Shipping address for the order. When it was copied from one of
+     * `buyerAddresses`, `id` is that address's id.
+     */
     shippingAddress: (MailingAddress | null)
+    /**
+     * The buyer's saved addresses, the ones `updateOrder` accepts as
+     * `billingAddressId` and `shippingAddressId`. Empty when the buyer has none.
+     */
+    buyerAddresses: MailingAddress[]
     /** Status of the order */
     status: OrderStatus
     /** Created */
@@ -3455,7 +6008,7 @@ export type PaymentProviderSession = (StripePaymentProviderSession) & { __isUnio
 
 export type PaymentProviderStatus = 'STARTED' | 'PROCESSING' | 'ENABLED' | 'DISABLED'
 
-export type Permission = 'READ_SALE' | 'WRITE_SALE' | 'WRITE_ITEM' | 'READ_ITEM' | 'WRITE_PRODUCT' | 'READ_CONSIGNMENT' | 'WRITE_CONSIGNMENT' | 'READ_SITE' | 'WRITE_SITE' | 'READ_ACCOUNT' | 'WRITE_ACCOUNT' | 'READ_API_TOKENS' | 'WRITE_API_TOKENS' | 'READ_API_KEYS' | 'WRITE_API_KEYS' | 'READ_ACTION_HOOKS' | 'WRITE_ACTION_HOOKS' | 'WRITE_BIDDER_TOKEN' | 'WRITE_CANCEL_BID' | 'WRITE_SHOPIFY_CONFIGURATION' | 'READ_ORDER' | 'READ_USER' | 'WRITE_USER' | 'READ_METAFIELDS' | 'WRITE_METAFIELDS' | 'READ_AFFILIATE' | 'WRITE_AFFILIATE'
+export type Permission = 'READ_SALE' | 'WRITE_SALE' | 'WRITE_ITEM' | 'READ_ITEM' | 'WRITE_PRODUCT' | 'READ_CONSIGNMENT' | 'WRITE_CONSIGNMENT' | 'READ_APPRAISAL' | 'WRITE_APPRAISAL' | 'READ_VALUATION_REQUEST' | 'WRITE_VALUATION_REQUEST' | 'READ_CONDITION_REPORT_REQUEST' | 'WRITE_CONDITION_REPORT_REQUEST' | 'READ_APPOINTMENT' | 'WRITE_APPOINTMENT' | 'READ_SITE' | 'WRITE_SITE' | 'READ_ACCOUNT' | 'WRITE_ACCOUNT' | 'READ_API_TOKENS' | 'WRITE_API_TOKENS' | 'READ_API_KEYS' | 'WRITE_API_KEYS' | 'READ_ACTION_HOOKS' | 'WRITE_ACTION_HOOKS' | 'WRITE_BIDDER_TOKEN' | 'WRITE_CANCEL_BID' | 'WRITE_SHOPIFY_CONFIGURATION' | 'READ_ORDER' | 'READ_USER' | 'WRITE_USER' | 'READ_METAFIELDS' | 'WRITE_METAFIELDS' | 'READ_AFFILIATE' | 'WRITE_AFFILIATE' | 'READ_STATEMENT' | 'WRITE_STATEMENT' | 'WRITE_BUYERS_PREMIUM' | 'WRITE_ACCOUNT_CODES' | 'WRITE_INVOICE' | 'WRITE_TAX'
 
 export interface PhoneAddress {
     /** Phone ID */
@@ -3463,9 +6016,9 @@ export interface PhoneAddress {
     /** Phone type (mobile, home, work, fax) */
     phoneType: PhoneType
     /**
-     * Full phone number in E.164 format (e.g., +15551234567)
+     * Full phone number in E.164 format (e.g., +12015550123)
      * Includes country code, number, and optional extension using RFC 3966 format
-     * Example: +1-555-123-4567;ext=1234
+     * Example: +1-201-555-0123;ext=1234
      */
     phoneNumber: Scalars['String']
     /** Label */
@@ -3485,7 +6038,281 @@ export interface PhoneBidOrigin {
     __typename: 'PhoneBidOrigin'
 }
 
+
+/** One phone bid on a plan. */
+export interface PhoneClerkAssignment {
+    id: Scalars['ID']
+    itemId: Scalars['String']
+    itemNumber: Scalars['Int']
+    saleRegistrationId: Scalars['ID']
+    /** The bidder's sale registration. Null when it no longer exists. */
+    saleRegistration: (SaleRegistration | null)
+    saleItemRegistrationId: Scalars['ID']
+    bidderUserId: Scalars['String']
+    /** Null when the phone bid has no line (NO_CLERK_AVAILABLE). */
+    lineNumber: (Scalars['Int'] | null)
+    /** The clerk's name on the line when the plan was locked. Null on unlocked plans. */
+    clerkName: (Scalars['String'] | null)
+    source: PhoneClerkAssignmentSource
+    reason: PhoneClerkReason
+    /** The planner's original placement on rows staff changed. Null otherwise. */
+    suggestion: (PhoneClerkSuggestion | null)
+    __typename: 'PhoneClerkAssignment'
+}
+
+
+/** Who placed a phone bid on its line. */
+export type PhoneClerkAssignmentSource = 'AI' | 'FALLBACK' | 'MANUAL'
+
+
+/** A clerk who called the bidder on a locked plan of an earlier sale. */
+export interface PhoneClerkHistoryEntry {
+    bidderUserId: Scalars['String']
+    staffProfileId: Scalars['ID']
+    /** The clerk's name when that plan was locked. */
+    clerkName: Scalars['String']
+    saleId: Scalars['String']
+    /** The highest item number the clerk called the bidder on in that sale. */
+    lastItemNumber: Scalars['Int']
+    lockedAt: Scalars['Time']
+    __typename: 'PhoneClerkHistoryEntry'
+}
+
+export interface PhoneClerkItemAssignments {
+    itemId: Scalars['String']
+    itemNumber: Scalars['Int']
+    assignments: PhoneClerkAssignment[]
+    __typename: 'PhoneClerkItemAssignments'
+}
+
+
+/** Pins a bidder to a line for one item, or for every item of the sale. Every plan honours it. */
+export interface PhoneClerkOverride {
+    id: Scalars['ID']
+    bidderUserId: Scalars['String']
+    /** Null when the override covers every item of the bidder in the sale. */
+    itemId: (Scalars['String'] | null)
+    lineNumber: Scalars['Int']
+    note: Scalars['String']
+    createdBy: Scalars['String']
+    createdAt: Scalars['Time']
+    __typename: 'PhoneClerkOverride'
+}
+
+export interface PhoneClerkPlan {
+    id: Scalars['ID']
+    saleId: Scalars['String']
+    version: Scalars['Int']
+    status: PhoneClerkPlanStatus
+    generator: (PhoneClerkPlanGenerator | null)
+    model: (Scalars['String'] | null)
+    /** Why generation failed, for FAILED plans. */
+    error: (Scalars['String'] | null)
+    /** Always fresh for GENERATING, FAILED and SUPERSEDED plans. */
+    staleness: PhoneClerkPlanStaleness
+    /**
+     * Problems found when the plan was made, plus clashes in the current rows of a DRAFT or LOCKED plan:
+     * SAME_ITEM when a line has two calls on one item, ITEM_GAP when two bidders' calls on a line are inside the item gap.
+     */
+    issues: PhoneClerkPlanIssue[]
+    createdBy: Scalars['String']
+    createdAt: Scalars['Time']
+    lockedBy: (Scalars['String'] | null)
+    lockedAt: (Scalars['Time'] | null)
+    /** Every row, ordered by item number then line. */
+    assignments: PhoneClerkAssignment[]
+    /** Rows grouped by item in item-number order, unassigned rows included. */
+    byItem: PhoneClerkItemAssignments[]
+    /** Every line of the sale in line order with its rows; lines with no rows are listed too. */
+    byLine: PhoneLineAssignments[]
+    __typename: 'PhoneClerkPlan'
+}
+
+export type PhoneClerkPlanGenerator = 'AI' | 'AI_WITH_FALLBACK' | 'FALLBACK'
+
+
+/** A plan-level problem that is reported but not rejected, such as two overrides that break the item gap. */
+export interface PhoneClerkPlanIssue {
+    code: Scalars['String']
+    message: Scalars['String']
+    saleItemRegistrationIds: Scalars['ID'][]
+    __typename: 'PhoneClerkPlanIssue'
+}
+
+
+/** How a plan compares with the sale's current phone bids, lines, overrides and item gap. */
+export interface PhoneClerkPlanStaleness {
+    /** True when anything the plan was made from has changed since. Naming a placeholder line does not count. */
+    isStale: Scalars['Boolean']
+    /** Accepted phone bids with no row on the plan. */
+    uncoveredRegistrationCount: Scalars['Int']
+    /** Rows whose phone bid no longer exists or is no longer accepted. */
+    removedRegistrationCount: Scalars['Int']
+    __typename: 'PhoneClerkPlanStaleness'
+}
+
+export type PhoneClerkPlanStatus = 'GENERATING' | 'DRAFT' | 'LOCKED' | 'SUPERSEDED' | 'FAILED'
+
+export interface PhoneClerkReason {
+    code: PhoneClerkReasonCode
+    explanation: Scalars['String']
+    /** The row on the same plan that supports SAME_BIDDER_IN_SALE. */
+    evidenceAssignmentId: (Scalars['ID'] | null)
+    /** The earlier sale that supports PREVIOUS_SALE_RELATIONSHIP. */
+    evidenceSaleId: (Scalars['String'] | null)
+    /** True when the stated reason was not supported by the plan and was replaced with one that is. */
+    rewritten: Scalars['Boolean']
+    /** The staff member who changed the row, for MANUAL rows. */
+    actorUserId: (Scalars['String'] | null)
+    at: (Scalars['Time'] | null)
+    __typename: 'PhoneClerkReason'
+}
+
+
+/** Why a phone bid was placed on its line. */
+export type PhoneClerkReasonCode = 'MANUAL_OVERRIDE' | 'SAME_BIDDER_IN_SALE' | 'PREVIOUS_SALE_RELATIONSHIP' | 'STAFF_NOTE_PREFERENCE' | 'LOAD_BALANCING' | 'ONLY_AVAILABLE_CLERK' | 'FALLBACK_ALGORITHM' | 'NO_CLERK_AVAILABLE'
+
+export interface PhoneClerkSuggestion {
+    /** The suggested line. Null when no line is free. */
+    lineNumber: (Scalars['Int'] | null)
+    reason: PhoneClerkReason
+    /** Phone bids already on the plan that an override forces this one to break the item gap with. */
+    conflictingSaleItemRegistrationIds: Scalars['ID'][]
+    __typename: 'PhoneClerkSuggestion'
+}
+
+
+/** A phone line of a sale: an assigned phone clerk, or a numbered placeholder. */
+export interface PhoneLine {
+    lineNumber: Scalars['Int']
+    label: (Scalars['String'] | null)
+    /** The clerk on the line. Null for a placeholder, or when the profile no longer exists. */
+    clerk: (StaffProfile | null)
+    /** The clerk's name, else the label, else "Clerk <lineNumber>". */
+    displayName: Scalars['String']
+    __typename: 'PhoneLine'
+}
+
+export interface PhoneLineAssignments {
+    line: PhoneLine
+    assignments: PhoneClerkAssignment[]
+    __typename: 'PhoneLineAssignments'
+}
+
 export type PhoneType = 'UNSPECIFIED' | 'MOBILE' | 'HOME' | 'WORK' | 'FAX'
+
+
+/**
+ * Where an item sits in the photography workflow, as staff photograph it and upload
+ * its images.
+ */
+export type PhotographyWorkflowStatus = 'TO_PHOTOGRAPH' | 'PHOTOGRAPHED' | 'UPLOADED'
+
+
+/** Counts of a sale's lots, withdrawn ones excluded, by photography workflow status. */
+export interface PhotographyWorkflowSummary {
+    totalItems: Scalars['Int']
+    toPhotograph: Scalars['Int']
+    photographed: Scalars['Int']
+    uploaded: Scalars['Int']
+    __typename: 'PhotographyWorkflowSummary'
+}
+
+
+/** Who pays Basta's platform fee. */
+export type PlatformFeeChargedTo = 'BUYER' | 'SELLER'
+
+
+/**
+ * One revision of a pre-sale advice: the letter that tells a consignor which of their items
+ * are in a sale. A main consignor gets one advice per sale covering all their consignments in
+ * it, and a separate advice for each consignment that is reported separately. Withdrawn items
+ * are left out.
+ */
+export interface PresaleAdvice {
+    id: Scalars['ID']
+    saleId: Scalars['String']
+    /** The main consignor the advice is addressed to. */
+    consignor: Consignor
+    /** The consignments whose items the advice lists. */
+    consignments: Consignment[]
+    /** Whether the advice covers a single consignment that is reported separately. */
+    reportedSeparately: Scalars['Boolean']
+    /** 1 for the first revision, increasing by one each time the advice is generated again. */
+    revision: Scalars['Int']
+    status: PresaleAdviceStatus
+    /** Suggested file name of the document. */
+    filename: Scalars['String']
+    generatedAt: Scalars['Time']
+    /** Id of the user that generated this revision. */
+    generatedBy: Scalars['String']
+    /** When this revision was last emailed. Kept when the revision is superseded. */
+    sentAt: (Scalars['Time'] | null)
+    /** Id of the user that last sent this revision. */
+    sentBy: (Scalars['String'] | null)
+    /** The address this revision was last emailed to. */
+    sentToEmail: (Scalars['String'] | null)
+    /** A short-lived link to download the document. */
+    download: (DocumentDownload | null)
+    __typename: 'PresaleAdvice'
+}
+
+
+/** A sale's pre-sale advices and the items left out of advice grouping. */
+export interface PresaleAdviceList {
+    /** The current revision of each advice, separately reported consignments included. */
+    advices: PresaleAdvice[]
+    /**
+     * Items of the sale left out of advice grouping: those in no consignment (NO_CONSIGNMENT) and
+     * those whose consignment has no main consignor (NO_MAIN_CONSIGNOR). Other items with no advice
+     * are not listed. NO_CONSIGNOR_RECORD is reported only by generatePresaleAdvices, never here.
+     */
+    skipped: PresaleAdviceSkippedItem[]
+    __typename: 'PresaleAdviceList'
+}
+
+
+/** The outcome of sending one pre-sale advice. */
+export interface PresaleAdviceSendResult {
+    presaleAdviceId: Scalars['String']
+    /** Whether the email went out. */
+    sent: Scalars['Boolean']
+    /** Why the advice was not sent, or why it was sent but not marked SENT. Null on success. */
+    error: (Scalars['String'] | null)
+    /** The advice after the attempt. Null when it does not exist. */
+    advice: (PresaleAdvice | null)
+    __typename: 'PresaleAdviceSendResult'
+}
+
+
+/** Why an item of a sale is on no pre-sale advice. */
+export type PresaleAdviceSkipReason = 'NO_CONSIGNMENT' | 'NO_MAIN_CONSIGNOR' | 'NO_CONSIGNOR_RECORD'
+
+
+/** An item of a sale that is on no pre-sale advice. */
+export interface PresaleAdviceSkippedItem {
+    itemId: Scalars['String']
+    reason: PresaleAdviceSkipReason
+    __typename: 'PresaleAdviceSkippedItem'
+}
+
+
+/** Where a pre-sale advice revision stands. */
+export type PresaleAdviceStatus = 'GENERATED' | 'SENT' | 'SUPERSEDED'
+
+
+/** A page of a consignor's pre-sale advices. */
+export interface PresaleAdvicesConnection {
+    edges: PresaleAdvicesEdge[]
+    pageInfo: PageInfo
+    __typename: 'PresaleAdvicesConnection'
+}
+
+export interface PresaleAdvicesEdge {
+    cursor: Scalars['String']
+    node: PresaleAdvice
+    __typename: 'PresaleAdvicesEdge'
+}
 
 
 /** The resolved identity of whoever performed an action. */
@@ -3579,6 +6406,90 @@ export interface ProductVariantLink {
     __typename: 'ProductVariantLink'
 }
 
+
+/**
+ * A property receipt: the house's record that it took custody of some or all of a consignment's
+ * items. A receipt is never changed; issuing again adds a new one.
+ */
+export interface PropertyReceipt {
+    id: Scalars['ID']
+    consignmentId: Scalars['String']
+    /** R<consignment number> for the first receipt, then R<n>a, R<n>b, ... for later ones. */
+    number: Scalars['String']
+    /** The items on the receipt, in consignment line order. */
+    items: PropertyReceiptItem[]
+    custody: PropertyReceiptCustody
+    /** The site the items were moved to. Null unless custody is AT_LOCATION. */
+    site: (Site | null)
+    /** The location within the site the items were moved to. Null when none was given. */
+    siteLocation: (Location | null)
+    /** Version of the template the receipt was printed from. 0 is the built-in default template. */
+    templateVersion: Scalars['Int']
+    /** Suggested file name. */
+    filename: Scalars['String']
+    issuedAt: Scalars['Time']
+    /** Id of the user that issued the receipt. */
+    issuedBy: Scalars['String']
+    /** When the receipt was last emailed. Null when it has never been sent. */
+    lastSentAt: (Scalars['Time'] | null)
+    /** Id of the user that last emailed the receipt. */
+    lastSentBy: (Scalars['String'] | null)
+    /** The address the receipt was last emailed to. */
+    lastSentTo: (Scalars['String'] | null)
+    /** How many times the receipt has been emailed. */
+    sendCount: Scalars['Int']
+    /**
+     * A short-lived link to download the receipt. Null when a link could not be made; the
+     * error says why.
+     */
+    download: (DocumentDownload | null)
+    __typename: 'PropertyReceipt'
+}
+
+
+/** How issuing a property receipt changed its items' location. */
+export type PropertyReceiptCustody = 'UNCHANGED' | 'IN_TRANSIT' | 'AT_LOCATION'
+
+
+/** An item on a property receipt. */
+export interface PropertyReceiptItem {
+    itemId: Scalars['String']
+    /** The item's consignment line when the receipt was issued. */
+    lineNumber: Scalars['Int']
+    /** The item. Null when it can no longer be read. */
+    item: (Item | null)
+    __typename: 'PropertyReceiptItem'
+}
+
+
+/** The latest property receipt issued for an item in its current consignment. */
+export interface PropertyReceiptRef {
+    id: Scalars['ID']
+    /** E.g. R457 or R457a. */
+    number: Scalars['String']
+    __typename: 'PropertyReceiptRef'
+}
+
+
+/** One immutable version of an account's property receipt template. */
+export interface PropertyReceiptTemplate {
+    /** Null for the built-in default. */
+    id: (Scalars['ID'] | null)
+    /**
+     * 1 for the first saved version, increasing by one with each save. 0 is the
+     * built-in default, used until a version is saved.
+     */
+    version: Scalars['Int']
+    title: Scalars['String']
+    /** Sanitised rich text with {{placeholder}} tokens. */
+    body: Scalars['String']
+    /** Null for the built-in default. */
+    createdAt: (Scalars['Time'] | null)
+    /** Id of the user that saved this version. Null for the built-in default. */
+    createdBy: (Scalars['String'] | null)
+    __typename: 'PropertyReceiptTemplate'
+}
+
 export interface Query {
     /** Fetch information about an account */
     account: Account
@@ -3666,7 +6577,10 @@ export interface Query {
     saleItemByExternalId: SaleItem
     /** Get API Keys that have created. */
     apiKeys: ApiKeyConnection
-    /** Get API key for searching collection */
+    /**
+     * @deprecated search key issuance is disabled
+     * Get API key for searching collection
+     */
     searchKey: SearchKey
     /**
      * @deprecated Use apiKeys query
@@ -3686,6 +6600,11 @@ export interface Query {
      * returned; pass includeArchived: true to include archived ones.
      */
     attributionSources: AttributionSource[]
+    /**
+     * List an account's note types. By default only active note types are
+     * returned; pass includeArchived: true to include archived ones.
+     */
+    noteTypes: NoteType[]
     /**
      * List the notification integrations an account has set up, at most one per channel
      * — key entries by `channel`, not by position. An empty list means nothing is set up
@@ -3707,6 +6626,14 @@ export interface Query {
     notificationCatalog: NotificationCatalog
     /** This account's full workflow schedule grid: platform defaults overlaid with the account's stored modifications. Each row's `modified` flag is true when it differs from the default. */
     workflowScheduleOffsets: WorkflowScheduleOffsets
+    /** Cataloguing workflow progress for a sale: counts of its lots by cataloguing status. Withdrawn lots are left out. A lot with no recorded status, or whose item cannot be loaded, counts as awaiting cataloguing. */
+    cataloguingWorkflowSummaryForSale: CataloguingWorkflowSummary
+    /** Photography workflow progress for a sale: counts of its lots by photography status. Withdrawn lots are left out. A lot with no recorded status, or whose item cannot be loaded, counts as to photograph. Fails with NOT_FOUND for an unknown sale and PERMISSION_DENIED for a sale in another account. */
+    photographyWorkflowSummaryForSale: PhotographyWorkflowSummary
+    /** Cataloguing readiness for an item: which required schema fields are blank. Call before promoting an item to catalogued/proofed to warn about blanks. */
+    itemCataloguingReadiness: ItemCataloguingReadiness
+    /** Required-field status of a sale's lots. Omitting itemIds returns every lot in the sale. Lots that fail block publishing and preview. */
+    saleItemsRequiredFieldStatus: SaleItemRequiredFieldStatus[]
     /** Get all Action Hook logs. */
     actionHookLogs: ActionHookLogConnection
     /** Fetch information about an Item */
@@ -3721,10 +6648,126 @@ export interface Query {
     items: ItemsConnection
     /** Get a single consignment by id. */
     consignment: Consignment
+    /**
+     * The account's couriers whose name starts with query, ignoring case, ordered by name.
+     * first defaults to 50; values above 200 are treated as 200.
+     */
+    couriers: Courier[]
     /** Get a single consignment by its human-facing short id. */
     consignmentByShortId: Consignment
+    /**
+     * Get a line of a consignment, by the consignment's number and the line number:
+     * CN2119-1 is consignmentNumber 2119, lineNumber 1. A line whose item has since left the
+     * consignment still resolves, with removed set. Null when there is no such consignment or
+     * line; consignments without a consignmentNumber cannot be looked up this way.
+     */
+    consignmentLine: (ConsignmentLine | null)
+    /** Get the entity number settings for an account. Consignments and appraisals share one sequence. */
+    entityNumberSettings: EntityNumberSettings
+    /** Get the inventory number settings for an account. */
+    inventoryNumberSettings: InventoryNumberSettings
+    /** Get a consignment contract revision by id. Null when it does not exist for this account; an id that is not a UUID is an error. */
+    consignmentContract: (ConsignmentContract | null)
+    /**
+     * The current revision of every pre-sale advice of a sale, and the items left out of advice
+     * grouping because they are in no consignment or their consignment has no main consignor.
+     */
+    presaleAdvices: PresaleAdviceList
+    /**
+     * The current revision of every pre-sale advice addressed to a consignor, across all sales,
+     * sent or not. Newest generated first. first defaults to 20; values above 100 are treated as 100.
+     * pageInfo.totalRecords is not computed and is always 0.
+     */
+    consignorPresaleAdvices: PresaleAdvicesConnection
+    /** The placeholders a consignment contract template may use. */
+    consignmentContractPlaceholders: ContractPlaceholder[]
+    /**
+     * A template body to start from: headings and every placeholder, with markers
+     * where the house's own terms go. It contains no contract terms.
+     */
+    consignmentContractTemplateStarter: Scalars['String']
+    /**
+     * Get one consignment contract template version by id. Null when it does not
+     * exist for this account; an id that is not a UUID is an error.
+     */
+    consignmentContractTemplateVersion: (ConsignmentContractTemplate | null)
     /** List consignments for an account. */
     consignments: ConsignmentsConnection
+    /** Get a single appraisal by id. Null when it does not exist for this account. */
+    appraisal: (Appraisal | null)
+    /** Get an item in an appraisal. Null when the item does not exist or is not in the appraisal. */
+    appraisalItem: (AppraisalItem | null)
+    /**
+     * Get the item on a line of an appraisal, by the appraisal's number and the line number:
+     * AP2119-2 is appraisalNumber 2119, lineNumber 2. Null when there is no such appraisal or
+     * line, or the item has since been removed from the appraisal.
+     */
+    appraisalLine: (AppraisalItem | null)
+    /**
+     * Suggest content for an item, draft item, appraisal item, sale item or sale from its images and
+     * existing content. Read-only: nothing is saved. Apply accepted values with the regular update mutations.
+     * Only available to logged-in dashboard users; API key access fails with code 403.
+     * Requires WRITE_ITEM for items and draft items, WRITE_APPRAISAL for appraisal items and WRITE_SALE
+     * for sale items and sales. Fails with code 503 when suggestions are not configured or the model is
+     * unavailable; try again later.
+     */
+    suggestContent: ContentSuggestions
+    /** List appraisals for an account. */
+    appraisals: AppraisalsConnection
+    /**
+     * The appraisal document template used for new documents of an appraisal type: the
+     * newest saved version, or the built-in default (version 0) until one is saved.
+     */
+    appraisalDocumentTemplate: AppraisalDocumentTemplate
+    /**
+     * Every saved appraisal document template version for an appraisal type, newest first.
+     * The built-in default is not listed.
+     */
+    appraisalDocumentTemplateVersions: AppraisalDocumentTemplate[]
+    /** The placeholders an appraisal document template may use. */
+    appraisalDocumentPlaceholders: ContractPlaceholder[]
+    /**
+     * The property receipt template used for new receipts: the newest saved version,
+     * or the built-in default (version 0) until one is saved.
+     */
+    propertyReceiptTemplate: PropertyReceiptTemplate
+    /**
+     * Every saved property receipt template version, newest first. The built-in
+     * default is not listed.
+     */
+    propertyReceiptTemplateVersions: PropertyReceiptTemplate[]
+    /**
+     * Get one property receipt template version by number. Version 0 is the built-in
+     * default. Null when the account has no such version; a negative version is an error.
+     */
+    propertyReceiptTemplateVersion: (PropertyReceiptTemplate | null)
+    /** The placeholders a property receipt template may use. */
+    propertyReceiptPlaceholders: ContractPlaceholder[]
+    /** Get one property receipt. Null when the account has no such receipt. */
+    propertyReceipt: (PropertyReceipt | null)
+    /**
+     * Get the settings of the public valuation request form. An account that never saved
+     * settings has the form disabled, one required photo and no recipients.
+     */
+    valuationRequestSettings: ValuationRequestSettings
+    /** List valuation requests for an account, newest first. */
+    valuationRequests: ValuationRequestsConnection
+    /** Get a single valuation request by id. Null when it does not exist for this account. */
+    valuationRequest: (ValuationRequest | null)
+    /** List condition report requests for an account, newest first. */
+    conditionReportRequests: ConditionReportRequestsConnection
+    /** Get a single condition report request by id. Null when it does not exist for this account. */
+    conditionReportRequest: (ConditionReportRequest | null)
+    /**
+     * Get the appointment booking settings. An account that never saved settings has
+     * bookings disabled, 24 lead hours, 90 days ahead, 2 active appointments per client
+     * and no recipients.
+     */
+    appointmentSettings: AppointmentSettings
+    /** List appointments for an account, earliest start first unless order says otherwise. */
+    appointments: AppointmentsConnection
+    /** Get a single appointment by id. Null when it does not exist for this account. */
+    appointment: (Appointment | null)
     /** Get a single site by id. */
     site: Site
     /** List sites for an account. Archived sites are excluded unless includeArchived is true. */
@@ -3746,6 +6789,8 @@ export interface Query {
     itemOffers: OffersConnection
     /** List offers across an account's items, with optional filters. */
     offers: OffersConnection
+    /** List bids across an account, with optional filters. */
+    bids: BidsConnection
     salesAggregate: SalesAggregate
     /** User Bid Activity */
     userBidActivity: UserBidActivityConnection
@@ -3753,18 +6798,47 @@ export interface Query {
      * Get a user node for a given account and user ID.
      * If idType is USER_ID_TYPE_IDENTITY_PROVIDER_ID, the user ID is an identity provider ID.
      * If idType is USER_ID_TYPE_USER_ID, the user ID is a user ID.
+     * If idType is BASTA_USER_ID, the user ID is the user's Basta id, as returned in
+     * `User.id` and `StatementConsignor.userId`.
      */
     user: User
+    /** Client numbering for the account: the next number to be assigned and the highest in use. */
+    clientNumberSettings: ClientNumberSettings
+    /** Sale numbering for the account: the next number to be assigned and the highest in use. */
+    saleNumberSettings: SaleNumberSettings
     /** Orders associated with an account */
     orders: OrderConnection
+    /** Get a single order by its id. */
+    order: PaymentOrder
     /** Orders associated with a user */
     userOrders: OrderConnection
+    /**
+     * Consignor statements for an account, newest first. Statements read here
+     * carry no lines; read one with `statement` for those.
+     */
+    statements: StatementConnection
+    /**
+     * One consignor statement with its lines. Returns null when the account has
+     * no statement with this id.
+     */
+    statement: (Statement | null)
+    /**
+     * The account's invoice defaults. An account that has set none gets payment
+     * terms of 14 days and no texts.
+     */
+    invoiceSettings: InvoiceSettings
     /** Get all sale registrations for a sale */
     saleRegistrations: SaleRegistrationsConnection
     /** Get image for an account, by id or external id */
     image: ImageWithAssociations
     /** Get an Asset by id. Returns null when the asset does not exist for this account. */
     asset: (Asset | null)
+    /**
+     * The account's uploaded assets, newest first. Assets still uploading and deleted
+     * assets are left out. contentTypes filters by MIME type, case-insensitively;
+     * omitted or empty means every type.
+     */
+    assets: AssetConnection
     /** Get all users for an account */
     users: UsersConnection
     /** List the followers of a consignor (by internal User.id) within an account. */
@@ -3775,6 +6849,13 @@ export interface Query {
     consignorFollowerCount: Scalars['Int']
     /** Get all sale registration policies for an account */
     saleRegistrationPolicies: SaleRegistrationPoliciesConnection
+    /** Get the variables, types and enumerations that can be used in sale registration policy rules. */
+    saleRegistrationPolicySchema: CelEnvironment
+    /**
+     * Check a sale registration policy rule without saving it.
+     * `valid` is true exactly when creating or updating a policy with this rule would accept it.
+     */
+    validateSaleRegistrationPolicyRule: CelValidationResult
     /**
      * Search across different node types in the graph.
      * 
@@ -3783,6 +6864,8 @@ export interface Query {
      * The required permission depends on the type being searched.
      * 
      * For ASSET: READ_ITEM
+     * For CONSIGNMENT: READ_CONSIGNMENT
+     * For APPRAISAL: READ_APPRAISAL
      * For every other type: READ_SALE
      * 
      * Example queries:
@@ -3821,10 +6904,33 @@ export interface Query {
     creator: (Creator | null)
     /** List creators for an account, optionally scoped to a parent. */
     creators: CreatorConnection
+    /** Get a single staff profile by id, published or not. Null when it does not exist. */
+    staffProfile: (StaffProfile | null)
+    /**
+     * List the account's staff profiles, unpublished ones included, ordered alphabetically
+     * by name. Pass the previous page's `pageInfo.endCursor` as `after`.
+     */
+    staffProfiles: StaffProfileConnection
+    /**
+     * JSON Schema of the account's default staff profile schema, which new staff
+     * profiles' `attributes` are validated against. Created on first use.
+     */
+    staffProfileSchema: Scalars['JSON']
+    /**
+     * Suggests a line for one phone bid around the sale's current plan, without changing anything.
+     * Fails when the sale has no DRAFT or LOCKED plan, or the phone bid is not accepted.
+     */
+    suggestPhoneClerk: PhoneClerkSuggestion
+    /** A phone clerk plan by id. Null when it does not exist. */
+    phoneClerkPlan: (PhoneClerkPlan | null)
+    /** The clerks who called the bidder on locked plans of earlier sales, most recent first. */
+    phoneClerkHistory: PhoneClerkHistoryEntry[]
     /** Fetch a single affiliate by ID. */
     affiliate: Affiliate
     /** List affiliates for an account, paginated. */
     affiliates: AffiliateConnection
+    /** Event counts for the account's affiliates and campaigns over a date range. */
+    affiliateReport: AffiliateReport
     __typename: 'Query'
 }
 
@@ -3841,6 +6947,20 @@ export interface RangeRule {
     /** Step of the rule */
     step: Scalars['Int']
     __typename: 'RangeRule'
+}
+
+
+/** A relationship seen from one client: `party` is the other client. */
+export interface RelatedParty {
+    /** The other client in the relationship. Null when the client can no longer be read. */
+    party: (User | null)
+    /**
+     * True when `party` holds the role for this client (for example, `party` is this client's
+     * agent). False when this client holds the role for `party`.
+     */
+    partyHoldsRole: Scalars['Boolean']
+    relationship: ClientRelationship
+    __typename: 'RelatedParty'
 }
 
 export type ReserveAutoBidMethod = 'STANDARD' | 'MAX_BID_BELOW_RESERVE_IS_MET'
@@ -3886,6 +7006,16 @@ export interface Sale {
     participants: ParticipantsConnection
     /** Sequence number of this sale. */
     sequenceNumber: Scalars['Int']
+    /**
+     * @deprecated Use saleCode.
+     * The sale code as a number. Null when the code is not a plain number, e.g. "021226".
+     */
+    saleNumber: (Scalars['Int'] | null)
+    /**
+     * The sale's code, e.g. "6622" or "021226". Assigned when the sale is created, unique within the account
+     * and stored in lowercase. Change it with updateSale.
+     */
+    saleCode: (Scalars['String'] | null)
     /** Chosen ClosingMethod */
     closingMethod: (ClosingMethod | null)
     /**
@@ -3903,6 +7033,11 @@ export interface Sale {
     themeType: (Scalars['Int'] | null)
     /** Slug for the sale (pretty URL). Present when the account has sale slugs (e.g. Basta bid client or B2B with slug). Null when no slug exists. */
     slug: (Scalars['String'] | null)
+    /**
+     * Link to this sale on the organisation's own website, built from the account's
+     * saleUrlTemplate. Null when no template is set or the sale lacks a value it needs.
+     */
+    websiteUrl: (Scalars['String'] | null)
     /**
      * This setting governs the auction's reserve bid logic.
      * By default, it is set to STANDARD, meaning the reserve must be met or exceeded through standard bidding.
@@ -3960,15 +7095,14 @@ export interface Sale {
     /** Sale item closing schedule */
     saleItemClosingSchedule: SaleItemClosingSchedule
     /**
-     * Effective fee rules for this sale. Returns sale-level fees if configured,
-     * otherwise falls back to account-level fees. Only empty if no fees are
-     * configured at any level. Check the source field on each rule to see which
-     * level was used.
+     * @deprecated Use buyerPremiums.
+     * The premiums that apply to lots of this sale that set nothing of their own,
+     * one rule per band. Check `source` on each rule for the level it came from.
      */
     feeRules: FeeRule[]
     /**
-     * Whether the sale's fee rules are the default snapshot from account fees,
-     * meaning they have not been customized.
+     * @deprecated Use buyerPremiums.
+     * True when the sale sets no premium of its own.
      */
     hasDefaultSaleFees: Scalars['Boolean']
     /** Users who have favourited (watchlisted) this sale, paginated. */
@@ -3994,6 +7128,17 @@ export interface Sale {
      * and titles may repeat.
      */
     sectionMarkers: SectionMarker[]
+    /** Number of items in the sale that have no display (lot) number. */
+    itemsMissingDisplayNumberCount: Scalars['Int']
+    /** Every phone line of the sale in line order: assigned phone clerks and numbered placeholders. */
+    phoneClerks: PhoneLine[]
+    /** Phone clerk planning setup. Defaults when nothing is saved. */
+    phoneClerkConfig: SalePhoneClerkConfig
+    /** The open plan (GENERATING or DRAFT) if any, else the LOCKED one. Null when the sale has neither. */
+    phoneClerkPlan: (PhoneClerkPlan | null)
+    /** The LOCKED plan, which the phone bid sheets print. Null when none is locked. */
+    lockedPhoneClerkPlan: (PhoneClerkPlan | null)
+    phoneClerkOverrides: PhoneClerkOverride[]
     __typename: 'Sale'
 }
 
@@ -4042,6 +7187,13 @@ export interface SaleBanner {
     location: (Scalars['String'] | null)
     /** Whether the sale is a test sale */
     isTestSale: Scalars['Boolean']
+    /**
+     * @deprecated Use saleCode.
+     * The sale code as a number. Null when the code is not a plain number, e.g. "021226".
+     */
+    saleNumber: (Scalars['Int'] | null)
+    /** The sale's code in lowercase, e.g. "6622" or "021226". Unique within the account. */
+    saleCode: (Scalars['String'] | null)
     /** Sale statistics */
     statistics: (SaleStatistics | null)
     __typename: 'SaleBanner'
@@ -4090,6 +7242,12 @@ export interface SaleGenre {
      * `appliesAt` on each says which level supplied the values.
      */
     charges: ChargeConnection
+    /**
+     * The premiums as they apply to lots in sales of this genre, before anything
+     * set on an item type, a sale or a single lot. `appliesAt` on each says which
+     * level supplied the values.
+     */
+    buyerPremiums: BuyerPremiumConnection
     __typename: 'SaleGenre'
 }
 
@@ -4130,10 +7288,19 @@ export interface SaleItem {
     title: (Scalars['String'] | null)
     /** Item sub-title */
     subTitle: (Scalars['String'] | null)
+    /** Condition report for the lot. Null when the lot has no condition text and no condition images. */
+    conditionReport: (ConditionReport | null)
     /** Number of bids that have been placed on the item */
     totalBids: Scalars['Int']
     /** Item description */
     description: (Scalars['String'] | null)
+    /** Where the item sits in the cataloguing workflow, read from the master item. */
+    cataloguingWorkflowStatus: (CataloguingWorkflowStatus | null)
+    /**
+     * Where the item sits in the photography workflow, read from the master item. An item
+     * with no explicitly set status reads as to photograph; null only if the item cannot be loaded.
+     */
+    photographyWorkflowStatus: (PhotographyWorkflowStatus | null)
     /** Field Output token templates for an item's output fields, e.g. `{brand} {model}`. */
     titleTemplateOverride: (Scalars['String'] | null)
     subTitleTemplateOverride: (Scalars['String'] | null)
@@ -4170,10 +7337,7 @@ export interface SaleItem {
     itemNumber: Scalars['Int']
     /** Scheduled closing timestamp for the item. */
     dates: ItemDates
-    /**
-     * Allowed BidTypes on the item.
-     * Defaults to allowing only Max bids if not supplied.
-     */
+    /** Bid types this item accepts. */
     allowedBidTypes: (BidType[] | null)
     /** Images attached to saleItem */
     images: Image[]
@@ -4188,6 +7352,8 @@ export interface SaleItem {
     paymentOrders: (PaymentOrder[] | null)
     /** Is item hidden for public, and not shown on your sale page. */
     hidden: Scalars['Boolean']
+    /** Shown while the sale is in preview. Hidden lots stay hidden. */
+    preview: Scalars['Boolean']
     /** Next asks for the item in minor currency units. */
     nextAsks: Scalars['Int'][]
     /**
@@ -4271,10 +7437,9 @@ export interface SaleItem {
     /** Get list of registrations for this sale item */
     registrations: SaleItemRegistrationsConnection
     /**
-     * Effective fee rules for this item. Returns item-level fees if configured,
-     * then sale-level fees, otherwise falls back to account-level fees. Only empty
-     * if no fees are configured at any level. Check the source field on each rule
-     * to see which level was used.
+     * @deprecated Use buyerPremiums.
+     * The premiums that apply to this lot, one rule per band. Fixed once the lot
+     * closes.
      */
     feeRules: FeeRule[]
     /** Location of the item */
@@ -4291,6 +7456,8 @@ export interface SaleItem {
     metafield: (Metafield | null)
     /** Users who have favourited (watchlisted) this sale item, paginated. */
     watchlist: SaleItemWatchlistConnection
+    /** Number of users watching this sale item. */
+    watcherCount: Scalars['Int']
     /** Categories assigned to the sale item */
     categories: Category[]
     /** Creators assigned to the sale item */
@@ -4306,6 +7473,13 @@ export interface SaleItem {
     offers: OffersConnection
     /** Buy-now configuration for this item; null when the item cannot be bought outright. */
     buyNowConfig: (ItemBuyNowConfig | null)
+    /** Whether this item is accepting offers. False when offers are disabled or not configured. */
+    offerEnabled: Scalars['Boolean']
+    /**
+     * Whether this item can be bought outright at a fixed price. False when buy-now is
+     * disabled or not configured.
+     */
+    buyNowEnabled: Scalars['Boolean']
     /**
      * The terminal non-auction sale of this item (an accepted offer or a buy-now),
      * if any. Sourced from the sale aggregate.
@@ -4320,6 +7494,14 @@ export interface SaleItem {
      * considered here. Defaults to the lot's own currency.
      */
     charges: ChargeConnection
+    /**
+     * The premiums that apply to this lot, disabled ones included, always in the
+     * sale's currency. Once the lot closes these are the premiums it was charged,
+     * and they no longer change. `options.currency` is ignored.
+     */
+    buyerPremiums: BuyerPremiumConnection
+    /** When this lot's premiums were fixed. Null while they still follow the levels above. */
+    buyerPremiumsFixedAt: (Scalars['Time'] | null)
     __typename: 'SaleItem'
 }
 
@@ -4341,6 +7523,8 @@ export interface SaleItemImageAssociation {
     itemId: Scalars['String']
     /** The ID of the associated sale */
     saleId: Scalars['String']
+    /** Which list of the lot the image is in. An image in both lists has one association per kind. */
+    kind: ImageKind
     __typename: 'SaleItemImageAssociation'
 }
 
@@ -4404,6 +7588,19 @@ export interface SaleItemRegistrationsConnection {
     /** Total number of item registrations */
     totalCount: Scalars['Int']
     __typename: 'SaleItemRegistrationsConnection'
+}
+
+
+/** Required-field status of a lot's content. */
+export interface SaleItemRequiredFieldStatus {
+    itemId: Scalars['ID']
+    /** False when the lot has no content yet; such a lot cannot be made public. */
+    found: Scalars['Boolean']
+    /** True when the lot has no item type (schema) assigned; it then has no required fields. */
+    noItemType: Scalars['Boolean']
+    /** Required fields that are blank or missing in the lot's content. */
+    missingRequiredFields: MissingRequiredField[]
+    __typename: 'SaleItemRequiredFieldStatus'
 }
 
 
@@ -4508,6 +7705,10 @@ export interface SaleMetrics {
     currentBidOverReserveTotal: Scalars['Int']
     /** Sum of current highest bids across all items in the sale (in minor currency). */
     currentBidTotal: Scalars['Int']
+    /** Sum of hammer prices of sold items in the sale (in minor currency). */
+    soldHammerTotal: Scalars['Int']
+    /** Expected total hammer for the sale (in minor currency): hammer prices of sold items plus the current highest bid of items not yet closed that are at or above their reserve. Passed items are excluded. */
+    expectedHammerTotal: Scalars['Int']
     /** Sum of maximum bid amounts across all items in the sale (in minor currency). */
     maxBidsTotal: Scalars['Int']
     /** Percentage of items that have received bids at or above their reserve price. */
@@ -4527,6 +7728,29 @@ export interface SaleMetrics {
     /** Timestamp when the sale metrics were last calculated. */
     calculatedAt: Scalars['String']
     __typename: 'SaleMetrics'
+}
+
+
+/** Sale numbering for an account */
+export interface SaleNumberSettings {
+    /** The number the next created sale receives */
+    nextSaleNumber: Scalars['Int']
+    /** Highest sale number in use in the account. Null when no sale has a number. */
+    highestAssignedSaleNumber: (Scalars['Int'] | null)
+    __typename: 'SaleNumberSettings'
+}
+
+export interface SalePhoneClerkConfig {
+    /**
+     * Minimum number of items between two calls with different bidders on one line. With 0 they may sit on
+     * adjacent items, but never on the same item.
+     */
+    itemGap: Scalars['Int']
+    /** Free-text guidance for the planner. */
+    planningNotes: Scalars['String']
+    /** Null until the sale's configuration is first saved. */
+    updatedAt: (Scalars['Time'] | null)
+    __typename: 'SalePhoneClerkConfig'
 }
 
 
@@ -4889,7 +8113,7 @@ export interface SaleStatsYoyGmv {
 
 
 /** Sale Status represent what status a sale is currently running in. */
-export type SaleStatus = 'UNPUBLISHED' | 'PUBLISHED' | 'OPENED' | 'CLOSED' | 'CLOSING' | 'PAUSED' | 'PROCESSING' | 'LIVE'
+export type SaleStatus = 'UNPUBLISHED' | 'PREVIEW' | 'PUBLISHED' | 'OPENED' | 'CLOSED' | 'CLOSING' | 'PAUSED' | 'PROCESSING' | 'LIVE'
 
 
 /** SaleType represents the type of sale */
@@ -4960,6 +8184,8 @@ export interface SalesAggregate {
     published: Scalars['Int']
     /** Number of unpublished sales */
     unpublished: Scalars['Int']
+    /** Number of sales in preview */
+    preview: Scalars['Int']
     __typename: 'SalesAggregate'
 }
 
@@ -5064,11 +8290,11 @@ export interface SearchResultEdge {
 
 
 /** Union type representing a search result item. */
-export type SearchResultItem = (User | SaleRegistration | SaleItem | SaleBanner | Item | Offer | Image | Video | Document | Activity) & { __isUnion?: true }
+export type SearchResultItem = (User | SaleRegistration | SaleItem | SaleBanner | Item | Offer | Image | Video | Document | Activity | ConsignmentBanner | AppraisalBanner) & { __isUnion?: true }
 
 
 /** Search type enum specifies what type of node to search for. */
-export type SearchType = 'USER' | 'SALE_REGISTRATION' | 'SALE_ITEM' | 'SALE' | 'ITEM' | 'OFFER' | 'ASSET' | 'ACTIVITY'
+export type SearchType = 'USER' | 'SALE_REGISTRATION' | 'SALE_ITEM' | 'SALE' | 'ITEM' | 'OFFER' | 'ASSET' | 'ACTIVITY' | 'CONSIGNMENT' | 'APPRAISAL'
 
 
 /**
@@ -5161,6 +8387,38 @@ export interface SendGridNotificationIntegration {
     __typename: 'SendGridNotificationIntegration'
 }
 
+export interface SendPresaleAdvicesResult {
+    /** One result per distinct requested advice id, in the order each id was first requested. */
+    results: PresaleAdviceSendResult[]
+    __typename: 'SendPresaleAdvicesResult'
+}
+
+export interface SetCataloguingWorkflowStatusPayload {
+    item: Item
+    __typename: 'SetCataloguingWorkflowStatusPayload'
+}
+
+export interface SetItemsAppraisalPayload {
+    /** The appraisal the items were added to. */
+    appraisal: Appraisal
+    /** Number of items added. */
+    count: Scalars['Int']
+    __typename: 'SetItemsAppraisalPayload'
+}
+
+export interface SetPhotographyWorkflowStatusPayload {
+    item: Item
+    __typename: 'SetPhotographyWorkflowStatusPayload'
+}
+
+export interface SetPhotographyWorkflowStatusesPayload {
+    /** The items that were found, with their status after the change. */
+    items: Item[]
+    /** Requested item ids that were not found in the account or are deleted. These were not changed. */
+    skippedItemIds: Scalars['ID'][]
+    __typename: 'SetPhotographyWorkflowStatusesPayload'
+}
+
 export interface ShopifyConfiguration {
     /** Shopify Shop Id */
     shopId: (Scalars['String'] | null)
@@ -5214,6 +8472,11 @@ export interface Site {
      * Europe/London, not europe/london), or null when unset.
      */
     timezone: (Scalars['String'] | null)
+    /**
+     * Hours clients can request appointments at this site. Null means any time
+     * within the house's booking window. Staff can confirm any time.
+     */
+    bookingHours: (SiteBookingHours | null)
     /** When the site was archived (RFC3339), or null when active. */
     archivedAt: (Scalars['String'] | null)
     /** When the site was created (RFC3339). */
@@ -5225,6 +8488,24 @@ export interface Site {
     /** Id of the user that last modified the site. */
     modifiedByUserId: (Scalars['String'] | null)
     __typename: 'Site'
+}
+
+
+/**
+ * One daily window, in the site's timezone, during which clients can request an
+ * appointment start. Applies to each listed weekday.
+ */
+export interface SiteBookingHours {
+    /** Days the window applies to, Monday first. */
+    weekdays: Weekday[]
+    /** Opening time, HH:MM 24-hour, inclusive. */
+    opens: Scalars['String']
+    /**
+     * Closing time, HH:MM 24-hour. A requested start must be before it and a
+     * requested end at or before it.
+     */
+    closes: Scalars['String']
+    __typename: 'SiteBookingHours'
 }
 
 export interface SiteConnection {
@@ -5251,6 +8532,79 @@ export type SpecificationSubType = 'NOT_SET' | 'PAINTING_UNFRAMED' | 'PAINTING_F
 /** Specification type enum */
 export type SpecificationType = 'NOT_SET' | 'ART' | 'FURNITURE' | 'JEWELRY' | 'DECORATIVE_ARTS' | 'COLLECTIBLES' | 'ALCOHOL' | 'AUTOMOTIVE' | 'FASHION' | 'OTHER' | 'CLIENT_PACKAGE'
 
+
+/**
+ * A member of the auction house's staff, shown on the account's website and in the
+ * dashboard. A staff profile can be linked to one dashboard member of the account.
+ */
+export interface StaffProfile {
+    /** Id of the staff profile. */
+    id: Scalars['ID']
+    /** Account that owns the staff profile. */
+    accountId: Scalars['ID']
+    /** Full name of the staff member. */
+    name: Scalars['String']
+    /** Profile photo. Null when no photo is set. */
+    photo: (Image | null)
+    /**
+     * Departments the staff member belongs to. Departments that no longer exist are
+     * omitted.
+     */
+    departments: Department[]
+    /**
+     * Item types the staff member is responsible for. Item types that no longer exist
+     * are omitted.
+     */
+    itemTypes: ItemType[]
+    /**
+     * The dashboard member this profile belongs to. Null when not linked or when the
+     * user is no longer a member of the account.
+     */
+    dashboardMember: (DashboardMember | null)
+    /**
+     * The profile's filled-in field values, conforming to `effectiveSchema`. Fields
+     * marked private in the schema are included here.
+     */
+    attributes: (Scalars['JSON'] | null)
+    /** JSON Schema that `attributes` conforms to, including private fields. */
+    effectiveSchema: (Scalars['JSON'] | null)
+    /** Id of the staff profile schema that `attributes` is validated against. */
+    schemaId: (Scalars['ID'] | null)
+    /**
+     * Whether the profile is published on the public website. Unpublished profiles
+     * are still returned here.
+     */
+    public: Scalars['Boolean']
+    /** Whether the staff member can take phone bids during live auctions. */
+    isPhoneClerk: Scalars['Boolean']
+    /**
+     * Free-text notes about the staff member as a phone clerk, such as languages or
+     * availability. Empty when not set.
+     */
+    phoneClerkNotes: Scalars['String']
+    /** Timestamp when the staff profile was created. */
+    created: Scalars['String']
+    /** Timestamp when the staff profile was last updated. */
+    modified: Scalars['String']
+    __typename: 'StaffProfile'
+}
+
+
+/** A paginated connection of staff profiles, ordered alphabetically by name. */
+export interface StaffProfileConnection {
+    edges: StaffProfileEdge[]
+    pageInfo: PageInfo
+    __typename: 'StaffProfileConnection'
+}
+
+
+/** An edge in a staff profile connection. */
+export interface StaffProfileEdge {
+    node: StaffProfile
+    cursor: Scalars['String']
+    __typename: 'StaffProfileEdge'
+}
+
 export interface StaggeredSaleItemScheduleConfiguration {
     /** The date and time when the first item should start closing. */
     firstItemClosingDate: Scalars['String']
@@ -5262,6 +8616,223 @@ export interface StaggeredSaleItemScheduleConfiguration {
      */
     spacingMs: Scalars['Int']
     __typename: 'StaggeredSaleItemScheduleConfiguration'
+}
+
+
+/**
+ * A consignor's statement for one sale: what each of their lots fetched, less
+ * the charges the house raised against them, in one currency. A statement appears
+ * once its sale has closed, as a draft that can be changed until it is issued.
+ */
+export interface Statement {
+    /** Unique identifier for the statement. */
+    id: Scalars['ID']
+    /**
+     * The house's document number, assigned when the statement is issued. Null
+     * on a draft.
+     */
+    number: (Scalars['String'] | null)
+    /** Whether the statement is still a draft or has been issued. */
+    status: StatementStatus
+    /** The consignor the statement is addressed to. */
+    consignor: StatementConsignor
+    /** The sale the statement covers. */
+    saleId: Scalars['ID']
+    /** Currency of the total and of every line. */
+    currency: Currency
+    /**
+     * The statement's heading, such as the sale's title. Set when the statement is
+     * issued; may be null on a draft.
+     */
+    title: (Scalars['String'] | null)
+    /**
+     * The sum of the lines, tax included, in minor currency units. Positive is
+     * owed to the consignor; negative is owed by them.
+     */
+    total: Scalars['Int']
+    /**
+     * The sum of the lots' winning bids, in minor currency units. A lot that did
+     * not sell adds nothing. Filled on statements read from `statements` too.
+     */
+    hammerTotal: Scalars['Int']
+    /**
+     * The sum of every charge on the statement before tax, in minor currency
+     * units, signed like `total`. `total` is `hammerTotal` plus `chargesTotal`
+     * plus `taxTotal`. Filled on statements read from `statements` too.
+     */
+    chargesTotal: Scalars['Int']
+    /**
+     * All tax on the statement's charges, in minor currency units, signed like
+     * `total`: the tax shown separately and the tax included in charges. Zero
+     * when the house charges no tax. Filled on statements read from `statements`
+     * too.
+     */
+    taxTotal: Scalars['Int']
+    /**
+     * The tax shown separately, one entry per tax code name, treatment and rate,
+     * in the order they first appear. Empty when no tax is shown separately, and
+     * on statements read from `statements`.
+     */
+    taxBands: TaxBand[]
+    /**
+     * The part of `taxTotal` included in charges under the margin scheme and not
+     * shown separately, in minor currency units, signed like `total`. Zero on
+     * statements read from `statements`.
+     */
+    taxInLieuTotal: Scalars['Int']
+    /**
+     * True when some charge includes its tax under the margin scheme. The PDF
+     * then states that the supply is under the margin scheme. False on statements
+     * read from `statements`.
+     */
+    marginScheme: Scalars['Boolean']
+    /** UTC+0 RFC3339 date and time the statement was issued. Null on a draft. */
+    issuedAt: (Scalars['String'] | null)
+    /** UTC+0 RFC3339 date and time the statement was started. */
+    createdAt: Scalars['String']
+    /**
+     * The statement's lines, in the order they were added. Returned only when a
+     * single statement is read with `statement`; empty on statements read from
+     * `statements`.
+     */
+    lines: StatementLine[]
+    /**
+     * A short-lived link to download the issued statement as a PDF. Null on a
+     * draft. When read on a single statement, the PDF is prepared if it is not
+     * ready yet, which can take a few seconds; on a list of statements it is null
+     * until the PDF is ready.
+     */
+    download: (DocumentDownload | null)
+    __typename: 'Statement'
+}
+
+
+/** A paginated connection of statements, newest first. */
+export interface StatementConnection {
+    /** The statements on this page, newest first. Empty when none match. */
+    edges: StatementEdge[]
+    /**
+     * Cursors for this page, and whether another one follows. Statements page
+     * forward only, so hasPreviousPage is always false.
+     */
+    pageInfo: PageInfo
+    __typename: 'StatementConnection'
+}
+
+
+/** The consignor a statement is addressed to. */
+export interface StatementConsignor {
+    /** The consignor's user id. */
+    userId: Scalars['ID']
+    /**
+     * The consignor's name and address for the statement. On a draft, the address it
+     * will be issued to, or null when none is set yet. Once issued, as printed.
+     */
+    address: (MailingAddress | null)
+    /**
+     * The id of the consignor's saved address that `address` was taken from. Null
+     * when it is not known.
+     */
+    addressId: (Scalars['ID'] | null)
+    __typename: 'StatementConsignor'
+}
+
+
+/** An edge in a statement connection. */
+export interface StatementEdge {
+    /** The statement, without its lines. Read it with `statement` for those. */
+    node: Statement
+    /** Opaque. Pass it as `after` to resume reading from just past this statement. */
+    cursor: Scalars['String']
+    __typename: 'StatementEdge'
+}
+
+
+/** One line on a statement: a lot and the charges raised on it. */
+export interface StatementLine {
+    /** Unique identifier for the line. */
+    id: Scalars['ID']
+    /** The lot the line is for. */
+    itemId: Scalars['ID']
+    /** The lot's number as printed, e.g. "12A". Null when the lot has none. */
+    lotNumber: (Scalars['String'] | null)
+    /**
+     * The lot's hammer in minor currency units: its winning bid, or the amount set
+     * by hand in its place. Null when it did not sell.
+     */
+    hammer: (Scalars['Int'] | null)
+    /** Text printed on the line. */
+    description: Scalars['String']
+    /** Charges the house raised on this lot, in the order they were applied. */
+    charges: StatementLineCharge[]
+    /**
+     * The hammer plus its charges and their tax, in minor currency units.
+     * Positive is owed to the consignor; negative is owed by them.
+     */
+    total: Scalars['Int']
+    /**
+     * The sum of this lot's charges before tax, in minor currency units, signed
+     * like `total`.
+     */
+    chargesTotal: Scalars['Int']
+    /** The tax on this lot's charges, in minor currency units, signed like `total`. */
+    taxTotal: Scalars['Int']
+    __typename: 'StatementLine'
+}
+
+
+/** A charge the house raised on a lot. */
+export interface StatementLineCharge {
+    /** Unique identifier for the charge on the line. */
+    id: Scalars['ID']
+    /** The charge rule that applied. */
+    chargeId: Scalars['ID']
+    /** Text printed for the charge. */
+    description: Scalars['String']
+    /** Minor currency units before tax, zero or negative. */
+    amount: Scalars['Int']
+    /** The tax on the charge. Null when the house charges no tax on it. */
+    tax: (AppliedTax | null)
+    __typename: 'StatementLineCharge'
+}
+
+
+/** Whether a statement can still change. */
+export type StatementStatus = 'DRAFT' | 'ISSUED'
+
+
+/** A Basta live stream channel the account can broadcast to. */
+export interface StreamChannel {
+    /** Channel identifier. Use it to assign the channel to a sale. */
+    channelId: Scalars['String']
+    /** True for the account's default channel, used by every sale with no channel assigned. */
+    isDefault: Scalars['Boolean']
+    /** Name of the channel. */
+    name: Scalars['String']
+    /** Free-text location of the channel, for example a studio or room. */
+    location: (Scalars['String'] | null)
+    /** Description of the channel. */
+    description: (Scalars['String'] | null)
+    /** RTMPS ingest URL to broadcast to. */
+    ingestUrl: Scalars['String']
+    /** Stream key to broadcast with. Null for callers without permission to edit sales. */
+    streamKey: (Scalars['String'] | null)
+    __typename: 'StreamChannel'
+}
+
+
+/** Identity verification through Stripe Identity on the account's own Stripe account. */
+export interface StripeIdentityProviderSettings {
+    /** True when the account's clients can verify their identity. */
+    enabled: Scalars['Boolean']
+    /**
+     * True when the saved key is a live key. Verifications made with a sandbox key are test
+     * verifications only.
+     */
+    livemode: Scalars['Boolean']
+    /** The saved publishable key. Null when none is saved. */
+    publishableKey: (Scalars['String'] | null)
+    __typename: 'StripeIdentityProviderSettings'
 }
 
 
@@ -5286,6 +8857,19 @@ export interface Subscription {
     __typename: 'Subscription'
 }
 
+export interface SuggestedTag {
+    name: Scalars['String']
+    /** True when the account already uses this tag. */
+    existing: Scalars['Boolean']
+    __typename: 'SuggestedTag'
+}
+
+
+/** A content field that can be suggested. */
+export type SuggestionField = 'TITLE' | 'SUB_TITLE' | 'DESCRIPTION' | 'TAGS' | 'ATTRIBUTES' | 'ISSUES'
+
+export type SuggestionValue = (TextSuggestion | TagsSuggestion | AttributesSuggestion | IssuesSuggestion) & { __isUnion?: true }
+
 export interface Tag {
     /** id of tag */
     id: Scalars['ID']
@@ -5296,6 +8880,111 @@ export interface Tag {
     /** Associated date */
     associated: Scalars['String']
     __typename: 'Tag'
+}
+
+export interface TagsSuggestion {
+    /**
+     * Suggested tags, best first. Tags already on the target are left out, including suggested
+     * tags the user has applied.
+     */
+    tags: SuggestedTag[]
+    __typename: 'TagsSuggestion'
+}
+
+
+/** How a tax code calculates tax and how it prints on invoices. */
+export type TaxApplication = 'STANDARD' | 'MARGIN' | 'IMPORT' | 'EXEMPT' | 'OUTSIDE_SCOPE'
+
+
+/**
+ * The tax shown separately on a statement or an invoice for one tax code name,
+ * treatment and rate. Amounts are minor currency units, signed like the
+ * document's amounts: negative on a statement, positive on an invoice.
+ */
+export interface TaxBand {
+    /** The tax code's name when the tax was calculated. */
+    codeName: Scalars['String']
+    /** How the tax was calculated. */
+    application: TaxApplication
+    /** The rate in basis points: 2000 is 20%. */
+    rateBps: Scalars['Int']
+    /** The sum of the amounts taxed in this band. */
+    basisTotal: Scalars['Int']
+    /** The tax on them. */
+    taxTotal: Scalars['Int']
+    __typename: 'TaxBand'
+}
+
+
+/**
+ * A tax rate with the way it applies, in force between two dates. The
+ * application, rate and start date are fixed once created: to change a rate,
+ * create a code that replaces this one from the date the new rate takes effect.
+ */
+export interface TaxCode {
+    /** Identifies the code wherever one is set. */
+    id: Scalars['ID']
+    /** A label for the code, for example "Standard 20%". Can be changed. */
+    name: Scalars['String']
+    /** How the code calculates tax and prints on invoices. Fixed once created. */
+    application: TaxApplication
+    /** The rate in basis points: 2000 is 20%. */
+    rateBps: Scalars['Int']
+    /** The first day the code is in force, as YYYY-MM-DD. */
+    effectiveFrom: Scalars['String']
+    /**
+     * The last day the code is in force, as YYYY-MM-DD. Null while it is in force
+     * until ended.
+     */
+    effectiveTo: (Scalars['String'] | null)
+    /** Whether the code is in force today, from its effective dates. */
+    status: TaxCodeStatus
+    /** The accounting code tax under this code is filed under. Null when none is set. */
+    accountCode: (AccountCode | null)
+    /** The code this one replaced. Null when it replaced none. */
+    replaces: (TaxCode | null)
+    __typename: 'TaxCode'
+}
+
+
+/** Where a tax code stands today, worked out from its effective dates. */
+export type TaxCodeStatus = 'SCHEDULED' | 'ACTIVE' | 'EXPIRED'
+
+
+/** The tax regime the account invoices under. */
+export type TaxRegime = 'NONE' | 'UK_VAT' | 'OTHER'
+
+
+/**
+ * How tax is calculated, and the codes used for a lot and its charges when
+ * neither its item type nor the charge sets one.
+ */
+export interface TaxSettings {
+    /** The tax system the account invoices under; NONE calculates no tax. */
+    regime: TaxRegime
+    /** The code for the hammer price. Set whenever the regime is not NONE. */
+    defaultHammerTaxCode: (TaxCode | null)
+    /** The code for buyer's premiums and charges. Set whenever the regime is not NONE. */
+    defaultChargeTaxCode: (TaxCode | null)
+    __typename: 'TaxSettings'
+}
+
+export interface TemplateFieldChange {
+    /** The override on the target before the sync. Null when unset. */
+    before: (Scalars['String'] | null)
+    /** The source override (the value that would be or was synced). Null when the source has no override. */
+    after: (Scalars['String'] | null)
+    /** True when the source and target values differ. */
+    changed: Scalars['Boolean']
+    __typename: 'TemplateFieldChange'
+}
+
+export interface TemplateSyncDiff {
+    /** Per-field before/after for each output-template override that was synced. */
+    title: (TemplateFieldChange | null)
+    subTitle: (TemplateFieldChange | null)
+    description: (TemplateFieldChange | null)
+    __typename: 'TemplateSyncDiff'
 }
 
 
@@ -5311,6 +9000,41 @@ export interface TestActionHookResponse {
     responseBody: (Scalars['String'] | null)
     statusCode: Scalars['Int']
     __typename: 'TestActionHookResponse'
+}
+
+export interface TextSuggestion {
+    text: Scalars['String']
+    __typename: 'TextSuggestion'
+}
+
+export interface TransferAppraisalItemsToConsignmentPayload {
+    /** The consignment the items were moved into. */
+    consignment: Consignment
+    /** The appraisal the items came from. */
+    appraisal: Appraisal
+    /** Number of items newly moved into the consignment. Items already in it are not counted. */
+    transferredCount: Scalars['Int']
+    /** True when the consignment was created by this call. */
+    consignmentCreated: Scalars['Boolean']
+    __typename: 'TransferAppraisalItemsToConsignmentPayload'
+}
+
+
+/** The staff member coordinating a consignment's transport. */
+export interface TransportCoordinator {
+    /** Dashboard identity id (Ory Kratos), the same id space as DashboardMember.userId. */
+    userId: Scalars['String']
+    /**
+     * The coordinator's display name, from the identity provider.
+     * Null if the identity could not be resolved.
+     */
+    name: (Scalars['String'] | null)
+    /**
+     * The coordinator's email address, from the identity provider.
+     * Null if the identity could not be resolved.
+     */
+    email: (Scalars['String'] | null)
+    __typename: 'TransportCoordinator'
 }
 
 export type TrustLevel = 'TRUST_LEVEL_NONE' | 'TRUST_LEVEL_LOW' | 'TRUST_LEVEL_MEDIUM' | 'TRUST_LEVEL_HIGH' | 'TRUST_LEVEL_FULL'
@@ -5341,6 +9065,11 @@ export interface TwilioNotificationIntegration {
     __typename: 'TwilioNotificationIntegration'
 }
 
+export interface UpdateWorkflowSettingsPayload {
+    workflowSettings: WorkflowSettings
+    __typename: 'UpdateWorkflowSettingsPayload'
+}
+
 export interface UploadUrl {
     /** Image ID */
     imageId: Scalars['String']
@@ -5355,6 +9084,20 @@ export interface UploadUrl {
     /** Optional unique external identifier. */
     externalId: (Scalars['String'] | null)
     __typename: 'UploadUrl'
+}
+
+
+/** The result of saving tax settings. */
+export interface UpsertTaxSettingsPayload {
+    /** The tax settings as saved. */
+    settings: TaxSettings
+    /**
+     * The standard UK VAT codes created when an account with no tax codes moved
+     * to UK_VAT without naming defaults; they are also set as the defaults.
+     * Empty when nothing was created.
+     */
+    seededCodes: TaxCode[]
+    __typename: 'UpsertTaxSettingsPayload'
 }
 
 
@@ -5377,14 +9120,30 @@ export interface User {
     /** Whether the user is blocked from transacting on the platform */
     blocked: Scalars['Boolean']
     /**
+     * Number identifying the client within the account, assigned automatically when the client
+     * is created. Null while the client has not been numbered.
+     */
+    clientNumber: (Scalars['Int'] | null)
+    /**
      * The charges that apply to lots bought by this user, already restated for
      * them. Falls back to the account when this user does not restate one;
      * `appliesAt` on each says which level supplied the values.
      */
     charges: ChargeConnection
+    /** Internal staff notes on this client. */
+    notes: NoteConnection
+    /** Alert notes for this client (notes flagged as alerts, for banner display). */
+    alerts: Note[]
+    /** Clients related to this client, from either side of the relationship, oldest first. */
+    relatedParties: RelatedParty[]
     __typename: 'User'
 }
 
+
+/**
+ * A user address.
+ * This type is deprecated in favour of MailingAddress.
+ */
 export interface UserAddress {
     id: Scalars['String']
     addressType: AddressType
@@ -5455,7 +9214,7 @@ export interface UserEdge {
 
 
 /** Type of user ID to get */
-export type UserIdType = 'USER_ID' | 'IDENTITY_PROVIDER_ID' | 'BASTA_USER_ID'
+export type UserIdType = 'USER_ID' | 'IDENTITY_PROVIDER_ID' | 'BASTA_USER_ID' | 'CLIENT_NUMBER'
 
 
 /** User ID verification status with modification tracking */
@@ -5466,6 +9225,18 @@ export interface UserIdVerificationStatus {
     verified: Scalars['Boolean']
     /** When the verification status was last modified */
     modifiedAt: Scalars['String']
+    /** Current stage of the user's identity verification. */
+    status: IdVerificationState
+    /**
+     * Who verified the user, e.g. MANUAL when set through updateUser or STRIPE when the user
+     * verified themselves. Empty when no verification has been recorded.
+     */
+    provider: Scalars['String']
+    /**
+     * Why the last verification attempt failed, suitable for showing to the user. Null unless
+     * the last attempt failed.
+     */
+    failureReason: (Scalars['String'] | null)
     __typename: 'UserIdVerificationStatus'
 }
 
@@ -5474,15 +9245,21 @@ export interface UserIdVerificationStatus {
 export interface UserInfo {
     /** UserId */
     userId: Scalars['String']
-    /** Identity provider ID */
+    /** Identity provider ID. Empty when the client has no login. */
     identityProviderId: Scalars['String']
+    /** Whether the client has a login in the account's identity provider. Clients created without an email have none. */
+    hasLogin: Scalars['Boolean']
     /** User status (active or inactive) */
     status: UserStatus
     /** Whether the user's email address has been verified */
     emailVerified: Scalars['Boolean']
     /** Name */
     name: Scalars['String']
-    /** Email */
+    /** First name. Empty when unset. */
+    firstName: Scalars['String']
+    /** Last name. Empty when unset. */
+    lastName: Scalars['String']
+    /** Email. Empty when the client has no email. */
     email: Scalars['String']
     /**
      * Free-form user role (e.g. "admin" or "store"). Null when unset. Mirrored from the
@@ -5491,12 +9268,29 @@ export interface UserInfo {
     role: (Scalars['String'] | null)
     /** Whether this client is flagged as a VIP. */
     vip: Scalars['Boolean']
+    /**
+     * Number identifying the client within the account, assigned automatically when the client
+     * is created. Null while the client has not been numbered.
+     */
+    clientNumber: (Scalars['Int'] | null)
     /** Attribution channel id the client came in through. Null when unset. */
     attributionChannelId: (Scalars['String'] | null)
     /** Attribution source id the client came in through. Null when unset. */
     attributionSourceId: (Scalars['String'] | null)
     /** Free-text note about how the client was attributed. Null when unset. */
     attributionSourceNote: (Scalars['String'] | null)
+    /**
+     * Dashboard identity id (Ory Kratos) of the staff member assigned as this client's
+     * lead. Null when unset.
+     */
+    clientLeadId: (Scalars['String'] | null)
+    /**
+     * The staff member assigned as this client's lead, resolved from the dashboard
+     * identity. Null when unset.
+     */
+    clientLead: (DashboardMember | null)
+    /** The client's answer on marketing communications. Null when the client has not been asked. */
+    marketingConsent: (MarketingConsent | null)
     /**
      * @deprecated Use addressesV2 instead, this will be removed in the next version of the schema
      * Addresses
@@ -5522,6 +9316,12 @@ export interface UserInfo {
     phones: PhoneAddress[]
     /** Company name */
     companyName: (Scalars['String'] | null)
+    /** VAT number (free-form, no validation). Null when unset. */
+    vatNumber: (Scalars['String'] | null)
+    /** EORI number (free-form, no validation). Null when unset. */
+    eoriNumber: (Scalars['String'] | null)
+    /** Gun licence number (free-form, no validation). Null when unset. */
+    gunLicenceNumber: (Scalars['String'] | null)
     /** Salutation */
     salutation: (Scalars['String'] | null)
     /** Timezone */
@@ -5540,6 +9340,8 @@ export interface UserInfo {
     username: (Scalars['String'] | null)
     /** Notification settings for the user on this account. */
     notificationSettings: UserNotificationSettings
+    /** Consignor payout bank details. Null when none are on file. */
+    bankDetails: (BankDetails | null)
     __typename: 'UserInfo'
 }
 
@@ -5625,6 +9427,95 @@ export interface UsersConnection {
 }
 
 
+/** A request for a valuation, submitted through the account's public form. */
+export interface ValuationRequest {
+    /** Id of the valuation request. */
+    id: Scalars['ID']
+    /** Cursor is used in pagination. */
+    cursor: Scalars['String']
+    /** Account ID */
+    accountId: Scalars['String']
+    /** Short reference for the request, the first 8 characters of its id in upper case. */
+    reference: Scalars['String']
+    status: ValuationRequestStatus
+    contactName: Scalars['String']
+    contactEmail: Scalars['String']
+    contactPhone: (Scalars['String'] | null)
+    /** The items to value, 1 to 10, in the order the submitter gave them. */
+    items: ValuationRequestItem[]
+    /** The staff member handling the request. Null when unassigned. */
+    assignee: (ValuationRequestAssignee | null)
+    /** When the request was submitted (RFC3339). */
+    createdAt: Scalars['String']
+    /** When the request was last modified (RFC3339). */
+    modifiedAt: Scalars['String']
+    __typename: 'ValuationRequest'
+}
+
+
+/** The staff member a valuation request is assigned to. */
+export interface ValuationRequestAssignee {
+    /** The staff member's identity id, the same id space as DashboardMember.userId. */
+    userId: Scalars['String']
+    /**
+     * The staff member's display name, from the identity provider.
+     * Null if the identity could not be resolved.
+     */
+    name: (Scalars['String'] | null)
+    /**
+     * The staff member's email address, from the identity provider.
+     * Null if the identity could not be resolved.
+     */
+    email: (Scalars['String'] | null)
+    __typename: 'ValuationRequestAssignee'
+}
+
+export interface ValuationRequestEdge {
+    /** Current valuation request cursor */
+    cursor: Scalars['String']
+    /** Valuation request node */
+    node: ValuationRequest
+    __typename: 'ValuationRequestEdge'
+}
+
+
+/** One item in a valuation request. */
+export interface ValuationRequestItem {
+    /** The item type chosen for this item. Null when none was chosen or it was deleted since. */
+    itemType: (ItemType | null)
+    /** Name of the item type when the request was submitted. */
+    itemTypeName: (Scalars['String'] | null)
+    /** Field values as submitted. */
+    schemaData: Scalars['JSON']
+    description: Scalars['String']
+    /** Submitted photos, in the display order the submitter gave them. */
+    photos: Asset[]
+    __typename: 'ValuationRequestItem'
+}
+
+
+/** Settings for the public valuation request form. */
+export interface ValuationRequestSettings {
+    /** Whether the public form accepts submissions. */
+    enabled: Scalars['Boolean']
+    /** Number of photos each item in a submission must include. */
+    requiredPhotoCount: Scalars['Int']
+    /** Addresses emailed when a request is submitted. */
+    recipientEmails: Scalars['String'][]
+    __typename: 'ValuationRequestSettings'
+}
+
+export type ValuationRequestStatus = 'NEW' | 'IN_PROGRESS' | 'CLOSED'
+
+export interface ValuationRequestsConnection {
+    /** Valuation request edges */
+    edges: ValuationRequestEdge[]
+    /** Current page information */
+    pageInfo: PageInfo
+    __typename: 'ValuationRequestsConnection'
+}
+
+
 /** An Asset with a video MIME type. */
 export interface Video {
     id: Scalars['String']
@@ -5639,6 +9530,10 @@ export interface Video {
     modified: Scalars['String']
     __typename: 'Video'
 }
+
+
+/** Day of the week. */
+export type Weekday = 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY'
 
 
 /** Weight unit enum */
@@ -5693,6 +9588,29 @@ export interface WorkflowScheduleRow {
     modified: Scalars['Boolean']
     __typename: 'WorkflowScheduleRow'
 }
+
+
+/** The account's workflow settings: per-account toggles for optional workflows. */
+export interface WorkflowSettings {
+    /** Whether the cataloguing workflow (awaiting cataloguing, catalogued, proofed) is enabled for this account. */
+    cataloguingWorkflowEnabled: Scalars['Boolean']
+    /** Whether the AMS should warn before publishing a sale that has items without a display (lot) number. Defaults to false. */
+    requireDisplayNumbersToPublish: Scalars['Boolean']
+    /** Whether the photography workflow (to photograph, photographed, uploaded) is enabled for this account. Defaults to false. */
+    photographyWorkflowEnabled: Scalars['Boolean']
+    /** Whether clients must be logged in to view and request condition reports on the house's website. Defaults to false. */
+    conditionReportsRequireLogin: Scalars['Boolean']
+    __typename: 'WorkflowSettings'
+}
+
+
+/**
+ * The suggestion as returned by suggestPhoneClerk. The stored explanation is written by the server from the
+ * reason code and evidence.
+ */
+export interface AcceptPhoneClerkSuggestionInput {planId: Scalars['ID'],saleItemRegistrationId: Scalars['ID'],
+/** Omit to add the phone bid without a line, which is only accepted when no line is free. */
+lineNumber?: (Scalars['Int'] | null),reasonCode: PhoneClerkReasonCode,evidenceAssignmentId?: (Scalars['ID'] | null),evidenceSaleId?: (Scalars['String'] | null)}
 
 
 /** Input for accepting a sale registration */
@@ -5764,16 +9682,89 @@ export interface AccountGenqlSelection{
     /** Default start bid as a percentage of the estimate. Null when no default is set. */
     defaultStartBidPercentage?: boolean | number
     /**
+     * Template for sale page links on the organisation's own website, e.g.
+     * https://www.example.com/auction/{saleSlug}. Supports {saleSlug} and {saleId}.
+     * Null when none is set.
+     */
+    saleUrlTemplate?: boolean | number
+    /**
      * Artist's Resale Right configuration for this account, one entry per
      * currency. Empty when the account has no configuration.
      */
     arrSettings?: ArrSettingsGenqlSelection
+    /**
+     * Creator settings for this account. Defaults apply when the account has not
+     * changed them.
+     */
+    creatorSettings?: CreatorSettingsGenqlSelection
     /**
      * Every charge configured for this account, disabled ones included. These are
      * the charges as the account set them, before any narrower level restates
      * them, so `appliesAt` is always ACCOUNT here. Empty when there are none.
      */
     charges?: (ChargeConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), options?: (ChargeOptions | null)} })
+    /**
+     * Every buyer's premium configured for this account, disabled ones included,
+     * as the account set them, so `appliesAt` is always ACCOUNT here. Empty when
+     * there are none.
+     */
+    buyerPremiums?: (BuyerPremiumConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), options?: (BuyerPremiumOptions | null)} })
+    /** Accounting codes, ordered by code. Empty when none are set up. */
+    accountCodes?: AccountCodeGenqlSelection
+    /**
+     * Tax codes, ordered by name and then by the date each takes effect. Codes
+     * that have ended are included. Empty when none are set up.
+     */
+    taxCodes?: TaxCodeGenqlSelection
+    /** Live stream channels of the account, default first. */
+    streamChannels?: StreamChannelGenqlSelection
+    /**
+     * The tax regime and the default codes used where nothing narrower sets one.
+     * An account that has not set up tax reads as regime NONE with no defaults.
+     */
+    taxSettings?: TaxSettingsGenqlSelection
+    /**
+     * The tax codes set for lots of each item type. Item types without one are
+     * left out and use the defaults in taxSettings.
+     */
+    itemTypeTaxDefaults?: ItemTypeTaxDefaultGenqlSelection
+    /**
+     * Identity verification settings for this account. Null until set up with
+     * setIdentityVerificationProvider; the concrete type says which provider is in use.
+     */
+    identityVerification?: IdentityVerificationProviderGenqlSelection
+    /** Branding printed on the account's generated documents. Null when none is set. */
+    documentBranding?: DocumentBrandingGenqlSelection
+    /**
+     * The consignment contract template used for new contracts: the newest
+     * version. Null until a template is saved.
+     */
+    consignmentContractTemplate?: ConsignmentContractTemplateGenqlSelection
+    /** Every consignment contract template version, newest first. */
+    consignmentContractTemplateVersions?: ConsignmentContractTemplateGenqlSelection
+    /** The account's cataloguing workflow configuration. */
+    workflowSettings?: WorkflowSettingsGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/**
+ * An accounting code, as listed in the chart of accounts of your accounting
+ * software, for example code 4120 named "Photography income". Charges, buyer's
+ * premiums and Artist's Resale Right settings can each point at one so that what
+ * they raise is filed under it. One list serves every currency.
+ */
+export interface AccountCodeGenqlSelection{
+    id?: boolean | number
+    /**
+     * The code as your accounting software knows it, for example 4120. Unique and
+     * fixed once created: to file under a different code, create that code and
+     * point your charges and premiums at it.
+     */
+    code?: boolean | number
+    /** A label for the code, for example "Photography income". Can be changed. */
+    name?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -5938,6 +9929,22 @@ export interface ActivityGenqlSelection{
     __scalar?: boolean | number
 }
 
+export interface AddAppraisalClientsInput {appraisalId: Scalars['String'],
+/**
+ * Basta user UUIDs to add to the client set. Each must be a client user of the
+ * account. Added as non-main, except that when the appraisal has no clients yet
+ * one of them becomes main.
+ */
+clientUserIds: Scalars['String'][]}
+
+export interface AddAppraisalStaffInput {appraisalId: Scalars['String'],
+/**
+ * Staff identity ids (Ory Kratos) to add to the staff set. Each must be a member
+ * of the account. Added as non-lead, except that when the appraisal has no
+ * staff yet one of them becomes lead.
+ */
+staffUserIds: Scalars['String'][]}
+
 export interface AddConsignmentStaffInput {consignmentId: Scalars['String'],
 /**
  * Staff identity ids (Ory Kratos) to add to the staff set. Each must be a member
@@ -5962,6 +9969,8 @@ itemId: Scalars['String'],
 /** Sale ID */
 saleId: Scalars['String']}
 
+export interface AddItemNoteInput {itemId: Scalars['String'],noteTypeId?: (Scalars['String'] | null),note: Scalars['String'],isAlert?: (Scalars['Boolean'] | null)}
+
 
 /** Add a current item to a sale. */
 export interface AddItemToSaleInput {
@@ -5981,10 +9990,7 @@ lowEstimate?: (Scalars['Int'] | null),
 highEstimate?: (Scalars['Int'] | null),
 /** Item number is used to order items (optional) */
 ItemNumber?: (Scalars['Int'] | null),
-/**
- * Allowed BidTypes on the item.
- * Defaults to allowing only Max bids if not supplied.
- */
+/** Bid types this item accepts. Defaults to normal and max bids. */
 allowedBidTypes?: (BidType[] | null),
 /**
  * Date and time when item should open up for bidding.
@@ -6027,7 +10033,12 @@ saleId: Scalars['String'],
 /** Live Stream URL */
 url: Scalars['String'],
 /** Live Stream Type */
-type: LiveStreamType}
+type: LiveStreamType,
+/**
+ * Channel to stream this sale on; only for BASTA_LIVE. Omit to keep the current
+ * assignment. An empty string uses the account's default channel.
+ */
+streamChannelId?: (Scalars['String'] | null)}
 
 export interface AddMessageNotificationToItemInput {
 /** Item ID */
@@ -6055,6 +10066,16 @@ type: PaddleType}
 /** Input for adding specifications to an existing item */
 export interface AddSpecificationsInput {itemId: Scalars['String'],specifications: ItemSpecificationsInput[]}
 
+
+/** Input for applying one of the house's charges to a lot on a draft statement. */
+export interface AddStatementChargeInput {
+/** The line on the statement. */
+lineId: Scalars['ID'],
+/** The house's charge to apply. */
+chargeId: Scalars['ID'],
+/** Why the change was made, up to 1000 characters. Kept with the edit. */
+note?: (Scalars['String'] | null)}
+
 export interface AddTagToItemInput {
 /** Item ID */
 itemId: Scalars['String'],
@@ -6074,6 +10095,8 @@ export interface AddTagToUserInput {
 userId: Scalars['String'],
 /** Tag Name */
 name: Scalars['String']}
+
+export interface AddUserNoteInput {userId: Scalars['String'],noteTypeId?: (Scalars['String'] | null),note: Scalars['String'],isAlert?: (Scalars['Boolean'] | null)}
 
 
 /**
@@ -6125,6 +10148,81 @@ export interface AffiliateEdgeGenqlSelection{
     __typename?: boolean | number
     __scalar?: boolean | number
 }
+
+
+/**
+ * A kind of event tracked for affiliates, such as a click or a sale. An event type is
+ * created automatically the first time the account records an event with a new name.
+ */
+export interface AffiliateEventTypeGenqlSelection{
+    /** Event type ID. Matches `eventTypeId` on affiliate report data points. */
+    id?: boolean | number
+    /** Name the events are recorded under. */
+    name?: boolean | number
+    /** Description of the event type. May be empty. */
+    description?: boolean | number
+    /**
+     * JSON Schema describing the metadata recorded with events of this type. Null when no
+     * schema has been set.
+     */
+    metadataSchema?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/**
+ * Event counts for affiliates and campaigns over a date range. Periods with no events
+ * are omitted.
+ */
+export interface AffiliateReportGenqlSelection{
+    /**
+     * Bucket size of every period in the report. Ranges of 31 days or fewer are DAILY;
+     * longer ranges are MONTHLY.
+     */
+    resolution?: boolean | number
+    /** Per-affiliate data points. */
+    dataPoints?: AffiliateReportDataPointGenqlSelection
+    /** Per-campaign data points. */
+    campaignDataPoints?: CampaignReportDataPointGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Number of events of one type attributed to one affiliate in one period. */
+export interface AffiliateReportDataPointGenqlSelection{
+    /** Affiliate the events are attributed to. */
+    affiliateId?: boolean | number
+    /** ID of the event type counted. Same as `eventType.id`. */
+    eventTypeId?: boolean | number
+    /** Type of event counted. */
+    eventType?: AffiliateEventTypeGenqlSelection
+    /**
+     * Start of the period as YYYY-MM-DD: the day for DAILY reports, the first day of the
+     * month for MONTHLY reports.
+     */
+    period?: boolean | number
+    /** Number of events in the period. */
+    eventCount?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Filter for an affiliate report. */
+export interface AffiliateReportInput {
+/** Affiliates to include, at most 50. Omitted or empty includes every affiliate. */
+affiliateIds?: (Scalars['ID'][] | null),
+/** Campaigns to include, at most 50. Omitted or empty includes every campaign. */
+campaignIds?: (Scalars['ID'][] | null),
+/** First day of the range, inclusive, as YYYY-MM-DD. */
+startDate: Scalars['String'],
+/**
+ * Last day of the range, inclusive, as YYYY-MM-DD. Must not be before startDate; the
+ * range may span at most 366 days.
+ */
+endDate: Scalars['String']}
 
 
 /** Filter/pagination input for listing affiliates. */
@@ -6266,6 +10364,553 @@ export interface ApiTokensEdgeGenqlSelection{
 
 
 /**
+ * The tax on one statement charge, as calculated for a draft or as fixed when the
+ * statement was issued, or on an order line's hammer or fee, as fixed when the
+ * order's invoice was issued. Amounts are minor currency units, signed like the
+ * charge.
+ */
+export interface AppliedTaxGenqlSelection{
+    /**
+     * The tax code the tax was taken from. Null when the code is no longer
+     * available; the figures below still stand.
+     */
+    taxCode?: TaxCodeGenqlSelection
+    /** The tax code's name when the tax was calculated. */
+    codeName?: boolean | number
+    /** How the tax was calculated and printed. */
+    application?: boolean | number
+    /** The rate in basis points: 2000 is 20%. */
+    rateBps?: boolean | number
+    /** The amount the tax was calculated on. */
+    basisAmount?: boolean | number
+    /** The tax. */
+    taxAmount?: boolean | number
+    /**
+     * True when the tax is shown beside the charge; false when it is included in
+     * the charge under the margin scheme, or when there is none.
+     */
+    shownSeparately?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** A client's appointment at one of the account's sites. */
+export interface AppointmentGenqlSelection{
+    /** Id of the appointment. */
+    id?: boolean | number
+    /** Account ID */
+    accountId?: boolean | number
+    type?: boolean | number
+    status?: boolean | number
+    /** Id of the client (a Basta user UUID, User.id). */
+    clientUserId?: boolean | number
+    /** The client's user, resolved from clientUserId. Null if the user no longer exists. */
+    client?: UserGenqlSelection
+    /** The site of the appointment. Null if the site no longer exists. */
+    site?: SiteGenqlSelection
+    /** The start the client asked for. */
+    preferredStart?: boolean | number
+    /** The end the client asked for. Null when the client gave none. */
+    preferredEnd?: boolean | number
+    /** The start the house confirmed. Null until confirmed. */
+    scheduledStart?: boolean | number
+    /** The end the house confirmed. Null when unconfirmed or given without an end. */
+    scheduledEnd?: boolean | number
+    /** The client's note. */
+    clientNote?: boolean | number
+    /** The house's internal note. Never shown to the client. */
+    staffNote?: boolean | number
+    /** Who cancelled the appointment. Null unless cancelled. */
+    cancelledBy?: boolean | number
+    /** Why the appointment was cancelled. */
+    cancellationReason?: boolean | number
+    /** Invoices and statements the appointment is for. Empty for a valuation. */
+    documents?: AppointmentDocumentGenqlSelection
+    /** When the appointment was requested. */
+    createdAt?: boolean | number
+    /** When the appointment was last modified. */
+    modifiedAt?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** An invoice or statement an appointment is for. */
+export interface AppointmentDocumentGenqlSelection{
+    type?: boolean | number
+    /** Id of the payment order or the statement. */
+    documentId?: boolean | number
+    /** The document's number when the appointment was requested. */
+    number?: boolean | number
+    /** The sale the document belongs to. */
+    saleId?: boolean | number
+    /** Items the client asked to collect. Empty means every item on the document. */
+    itemIds?: boolean | number
+    /** The invoice. Null when the document is not an invoice or no longer exists. */
+    invoice?: PaymentOrderGenqlSelection
+    /** The statement. Null when the document is not a statement or no longer exists. */
+    statement?: StatementGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Appointments for any of the given documents of one type. */
+export interface AppointmentDocumentFilter {type: AppointmentDocumentType,
+/** Payment order or statement ids, at least one. */
+ids: Scalars['String'][]}
+
+export interface AppointmentEdgeGenqlSelection{
+    /** Current appointment cursor */
+    cursor?: boolean | number
+    /** Appointment node */
+    node?: AppointmentGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface AppointmentFilter {
+/** Empty or omitted: every status. */
+statuses?: (AppointmentStatus[] | null),
+/** Empty or omitted: every type. */
+types?: (AppointmentType[] | null),
+/** Only appointments at this site. */
+siteId?: (Scalars['String'] | null),
+/** Only appointments of this client (User.id). */
+clientUserId?: (Scalars['String'] | null),
+/**
+ * Only appointments starting at or after this time, by the scheduled start or the
+ * preferred start until confirmed.
+ */
+startFrom?: (Scalars['Time'] | null),
+/** Only appointments starting before this time, by the same start as startFrom. */
+startTo?: (Scalars['Time'] | null),
+/** Only appointments for these documents. */
+document?: (AppointmentDocumentFilter | null)}
+
+
+/** Settings for client appointment bookings. */
+export interface AppointmentSettingsGenqlSelection{
+    /** Whether clients can request appointments. */
+    enabled?: boolean | number
+    /** Addresses emailed when a client requests an appointment. */
+    recipientEmails?: boolean | number
+    /** How many hours ahead of now a requested start must be at least. */
+    minLeadHours?: boolean | number
+    /** How many days ahead of now a requested start may be at most. */
+    maxDaysAhead?: boolean | number
+    /** How many requested or confirmed appointments a client may have at once. */
+    maxActivePerClient?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface AppointmentsConnectionGenqlSelection{
+    /** Appointment edges */
+    edges?: AppointmentEdgeGenqlSelection
+    /** Current page information */
+    pageInfo?: PageInfoGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/**
+ * An appraisal is a job valuing one or many of a client's items. It has one or
+ * more clients and one or more staff members.
+ */
+export interface AppraisalGenqlSelection{
+    /** Id of the appraisal. */
+    id?: boolean | number
+    /** Cursor is used in pagination. */
+    cursor?: boolean | number
+    /** Account ID */
+    accountId?: boolean | number
+    /** Sequential per-account number assigned on creation, shared with consignments. */
+    appraisalNumber?: boolean | number
+    /** Appraisal name. Empty when none was given. */
+    name?: boolean | number
+    /** Optional notes about the appraisal. */
+    notes?: boolean | number
+    /** Why the valuation is done. */
+    type?: boolean | number
+    /**
+     * The attribution channel the appraisal came in through. Null when unset or when
+     * the channel no longer exists.
+     */
+    attributionChannel?: AttributionChannelGenqlSelection
+    /** Number of items in the appraisal, deleted items excluded. */
+    itemCount?: boolean | number
+    /** All clients of the appraisal, including the main one (isMain = true). */
+    clients?: AppraisalClientGenqlSelection
+    /** All staff of the appraisal, including the lead one (isLead = true). */
+    staff?: AppraisalStaffGenqlSelection
+    /** The items in the appraisal, paged by creation time. Deleted items are excluded. */
+    items?: (ItemsConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), direction?: (PaginationDirection | null)} })
+    /**
+     * The items in the appraisal with their content as recorded for this appraisal,
+     * paged by creation time with the same cursors as `items`. Deleted items are excluded.
+     */
+    appraisalItems?: (AppraisalItemsConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), direction?: (PaginationDirection | null), 
+    /**
+     * Null lists all items; true only items currently in a consignment; false only
+     * items not yet consigned.
+     */
+    consigned?: (Scalars['Boolean'] | null)} })
+    /** When the appraisal was created (RFC3339). */
+    created?: boolean | number
+    /** When the appraisal was last modified (RFC3339). */
+    modified?: boolean | number
+    /** Id of the user that created the appraisal. */
+    createdByUserId?: boolean | number
+    /** Id of the user that last modified the appraisal. */
+    modifiedByUserId?: boolean | number
+    /** The consignments items of this appraisal were moved into, oldest first. */
+    consignments?: ConsignmentGenqlSelection
+    /** The date the valuation was made (YYYY-MM-DD). Null when not set. */
+    valuationDate?: boolean | number
+    /** The date of death for a probate valuation (YYYY-MM-DD). Null when not set. */
+    dateOfDeath?: boolean | number
+    /** The person or firm who instructed the valuation. Null when not set. */
+    instructedBy?: AppraisalInstructedByGenqlSelection
+    /** The appraisal's reference, printed on the appraisal document. Null when not set. */
+    reference?: boolean | number
+    /**
+     * The staff member who signs the appraisal document. Null when not set. isLead is
+     * true when the valuer is also the appraisal's lead staff member.
+     */
+    valuer?: AppraisalStaffGenqlSelection
+    /** How the appraisal document lays out its inventory. */
+    documentSettings?: AppraisalDocumentSettingsGenqlSelection
+    /** Every document generated for this appraisal, newest first. */
+    documents?: AppraisalDocumentGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/**
+ * Lightweight appraisal type for search results: number, name, type, resolved client
+ * and lead staff names, and ids. Fetch the full Appraisal by id via appraisal() to drill in.
+ */
+export interface AppraisalBannerGenqlSelection{
+    /** Appraisal ID */
+    id?: boolean | number
+    /** Account ID */
+    accountId?: boolean | number
+    /** Sequential per-account number assigned on creation. Null when the appraisal has no number. */
+    appraisalNumber?: boolean | number
+    /** Appraisal name */
+    name?: boolean | number
+    /** Appraisal type */
+    type?: boolean | number
+    /** Internal user id of the main client. Null when the appraisal has no main client. */
+    mainClientId?: boolean | number
+    /** Resolved display name of the main client */
+    mainClientName?: boolean | number
+    /** Client number of the main client. Null when the main client has no client number. */
+    clientNumber?: boolean | number
+    /** Identity-provider id of the lead staff member. Null when the appraisal has no lead. */
+    leadStaffId?: boolean | number
+    /** Resolved display name of the lead staff member */
+    leadStaffName?: boolean | number
+    /** Id of the client attribution channel. Null when none is set. */
+    attributionChannelId?: boolean | number
+    /** Number of items currently in the appraisal, excluding deleted items. */
+    itemCount?: boolean | number
+    /** Unix timestamp when the appraisal was created */
+    createdTimestamp?: boolean | number
+    /** Unix timestamp of the appraisal's last change */
+    modifiedTimestamp?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** A client of an appraisal. An appraisal always has exactly one main client. */
+export interface AppraisalClientGenqlSelection{
+    /** Id of the client (a Basta user UUID, User.id). */
+    userId?: boolean | number
+    /** Whether this client is the main client. */
+    isMain?: boolean | number
+    /** Account the client belongs to. */
+    accountId?: boolean | number
+    /** The client's user, resolved from userId. */
+    user?: UserGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Where appraisal items are moved. Set exactly one field. */
+export interface AppraisalConsignmentTargetInput {
+/** A new consignment; the appraisal's clients become its consignors. */
+newConsignment?: (NewConsignmentFromAppraisalInput | null),
+/** An existing consignment with the same main client. If its contract is signed, it then needs re-signing. */
+consignmentId?: (Scalars['String'] | null)}
+
+
+/**
+ * One generated revision of an appraisal's document. A revision is never changed; generating
+ * again adds a new one.
+ */
+export interface AppraisalDocumentGenqlSelection{
+    id?: boolean | number
+    /** 1 for the first document, increasing by one with each new one. */
+    revision?: boolean | number
+    /** The appraisal type whose template the document was printed from. */
+    type?: boolean | number
+    /** Version of the template the document was printed from. 0 is the built-in default template. */
+    templateVersion?: boolean | number
+    /** Suggested file name. */
+    filename?: boolean | number
+    generatedAt?: boolean | number
+    /** Id of the user that generated the document. */
+    generatedBy?: boolean | number
+    /**
+     * A short-lived link to download the document. Null when a link could not be made; the
+     * error says why.
+     */
+    download?: DocumentDownloadGenqlSelection
+    /**
+     * True when the appraisal's items, their titles, descriptions, values or rooms, or the
+     * appraisal's document details have changed since this document was generated. Null for a
+     * document that is not the newest.
+     */
+    outdated?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** How the appraisal document lays out its inventory. */
+export interface AppraisalDocumentSettingsGenqlSelection{
+    /** How items are grouped. ROOM until changed. */
+    groupBy?: boolean | number
+    /** How items are ordered within a group. MANUAL until changed. */
+    sortBy?: boolean | number
+    /** Whether a total is printed under each group. True until changed. */
+    sectionTotals?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/**
+ * One immutable version of an account's appraisal document template for one appraisal
+ * type. Each section is sanitised rich text with {{placeholder}} tokens; an empty
+ * section is left out of the document.
+ */
+export interface AppraisalDocumentTemplateGenqlSelection{
+    /** Null for the built-in default. */
+    id?: boolean | number
+    /** The appraisal type this template is used for. */
+    type?: boolean | number
+    /**
+     * 1 for the first saved version, increasing by one with each save. 0 is the
+     * built-in default, used until a version is saved.
+     */
+    version?: boolean | number
+    title?: boolean | number
+    /** The opening text. */
+    intro?: boolean | number
+    /** Text printed before the inventory. */
+    preInventory?: boolean | number
+    /** Text printed in the summary after the inventory. */
+    summary?: boolean | number
+    /** The valuer's statement, printed in the sign-off. */
+    valuerStatement?: boolean | number
+    /** Terms printed at the end of the document. */
+    terms?: boolean | number
+    /** When this version was saved. Null for the built-in default. */
+    createdAt?: boolean | number
+    /** Id of the user that saved this version. Null for the built-in default. */
+    createdBy?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** The person or firm who instructed a valuation, e.g. a probate solicitor. */
+export interface AppraisalInstructedByGenqlSelection{
+    /** Name of the person. Null when not given. */
+    name?: boolean | number
+    /** Name of the firm. Null when not given. */
+    company?: boolean | number
+    /** Postal address, one line per entry. */
+    addressLines?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface AppraisalInstructedByInput {name?: (Scalars['String'] | null),company?: (Scalars['String'] | null),addressLines?: (Scalars['String'][] | null)}
+
+
+/**
+ * An item as it appears in an appraisal. Until the item is consigned, its content is
+ * the item's own content and changes with it. When the item is consigned, the content
+ * is copied for the appraisal and frozen: later changes to the item no longer affect it.
+ */
+export interface AppraisalItemGenqlSelection{
+    /** Id of the item. */
+    id?: boolean | number
+    /** Account ID */
+    accountId?: boolean | number
+    /** Id of the appraisal. */
+    appraisalId?: boolean | number
+    /** The item itself. */
+    item?: ItemGenqlSelection
+    /** Title of the item in this appraisal. */
+    title?: boolean | number
+    /** Sub-title of the item in this appraisal. */
+    subTitle?: boolean | number
+    /** Description of the item in this appraisal. */
+    description?: boolean | number
+    /** Id of the item type of the item in this appraisal. */
+    schemaId?: boolean | number
+    /** The filled-in field values of the item in this appraisal. */
+    attributes?: boolean | number
+    /** Creators of the item in this appraisal. */
+    creators?: CreatorGenqlSelection
+    /** True once the item was consigned and its content frozen for this appraisal. */
+    frozen?: boolean | number
+    /** When the content was frozen (RFC3339, UTC). Null while not frozen. */
+    frozenAt?: boolean | number
+    /**
+     * The item's line number within this appraisal. Never changes and is never reused.
+     * Per appraisal; differs from inventoryNumber and from the item's position in a sale.
+     * Null until assigned.
+     */
+    lineNumber?: boolean | number
+    /**
+     * The item's value, basis and room in this appraisal. Each appraisal keeps its own,
+     * whether or not the item is frozen.
+     */
+    valuation?: AppraisalItemValuationGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface AppraisalItemRefInput {appraisalId: Scalars['String'],itemId: Scalars['String']}
+
+
+/** An appraisal's valuation of one of its items. */
+export interface AppraisalItemValuationGenqlSelection{
+    /** The value, or the low end of a range, in minor currency units. Null when not valued. */
+    low?: boolean | number
+    /** The high end of a range in minor currency units. Null for a single figure. */
+    high?: boolean | number
+    /**
+     * ISO 4217 currency of the value. Set together with low; every valued item in an
+     * appraisal has the same currency.
+     */
+    currency?: boolean | number
+    /** The basis printed before the value. Null when none. */
+    basis?: boolean | number
+    /** The room the item is in, used to group the appraisal document. Null when not set. */
+    room?: boolean | number
+    /** Position in the appraisal document's manual order. Null orders by line number. */
+    sortPosition?: boolean | number
+    /**
+     * True when the item was assessed as having no commercial value; it then has no
+     * value and no basis.
+     */
+    noCommercialValue?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface AppraisalItemValueInput {
+/** The value, or the low end of a range, in minor currency units. At least 0. */
+low: Scalars['Int'],
+/** The high end of a range in minor currency units, at least low. Omitted gives a single figure. */
+high?: (Scalars['Int'] | null),
+/** Upper-case ISO 4217 code. Must match the currency of the appraisal's other valued items. */
+currency: Scalars['String']}
+
+export interface AppraisalItemsConnectionGenqlSelection{
+    /** Appraisal item edges */
+    edges?: AppraisalItemsEdgeGenqlSelection
+    /** Current page information */
+    pageInfo?: PageInfoGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface AppraisalItemsEdgeGenqlSelection{
+    /** Current item cursor */
+    cursor?: boolean | number
+    /** Appraisal item node */
+    node?: AppraisalItemGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** An item's line in an appraisal. */
+export interface AppraisalLineGenqlSelection{
+    /** Id of the appraisal. */
+    appraisalId?: boolean | number
+    /** The appraisal. Null when it no longer exists. */
+    appraisal?: AppraisalGenqlSelection
+    /**
+     * The item's line number within the appraisal. Never changes and is never reused.
+     * Per appraisal; differs from inventoryNumber and from the item's position in a sale.
+     * Null until assigned.
+     */
+    lineNumber?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** A staff member of an appraisal. An appraisal always has exactly one lead. */
+export interface AppraisalStaffGenqlSelection{
+    /**
+     * The staff member's identity id, as issued by the dashboard identity provider
+     * (Ory Kratos). This is the same id space as DashboardMember.userId, and is not
+     * a client-user id.
+     */
+    userId?: boolean | number
+    /** Whether this staff member is the lead. */
+    isLead?: boolean | number
+    /** Account the staff member belongs to. */
+    accountId?: boolean | number
+    /**
+     * The staff member's display name, from the identity provider.
+     * Null if the identity could not be resolved.
+     */
+    name?: boolean | number
+    /**
+     * The staff member's email address, from the identity provider.
+     * Null if the identity could not be resolved.
+     */
+    email?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface AppraisalsConnectionGenqlSelection{
+    /** Appraisal edges */
+    edges?: AppraisalsEdgeGenqlSelection
+    /** Current page information */
+    pageInfo?: PageInfoGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface AppraisalsEdgeGenqlSelection{
+    /** Current appraisal cursor */
+    cursor?: boolean | number
+    /** Appraisal node */
+    node?: AppraisalGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/**
  * One rung of the Artist's Resale Right royalty ladder. The portion of the sale
  * price between lowerLimit and upperLteLimit is charged at rate.
  */
@@ -6322,6 +10967,11 @@ export interface ArrSettingsGenqlSelection{
      * charges its own rate on its own portion and the results are summed.
      */
     bands?: ArrBandGenqlSelection
+    /**
+     * The accounting code the royalty in this currency is filed under. Null when
+     * none is set.
+     */
+    accountCode?: AccountCodeGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -6348,6 +10998,23 @@ export interface AssetGenqlSelection{
 }
 
 
+/** A page of assets. */
+export interface AssetConnectionGenqlSelection{
+    edges?: AssetEdgeGenqlSelection
+    pageInfo?: PageInfoGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface AssetEdgeGenqlSelection{
+    node?: AssetGenqlSelection
+    /** Pass as `after` to read the page that follows this asset. */
+    cursor?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
 /**
  * The signed URL and metadata returned by createAssetUploadUrl. The client PUTs
  * the file bytes to uploadUrl within its expiry window; assetUrl becomes fetchable
@@ -6365,6 +11032,14 @@ export interface AssetUploadUrlGenqlSelection{
     __typename?: boolean | number
     __scalar?: boolean | number
 }
+
+export interface AssignDisplayNumbersInput {saleId: Scalars['String'],
+/** First lot number to assign. Subsequent items get startFrom+1, +2, … in itemIds order. */
+startFrom: Scalars['Int'],
+/** Items to lot, in the order the numbers should be applied. Existing numbers are overwritten. */
+itemIds: Scalars['ID'][]}
+
+export interface AssignPhoneClerkInput {saleId: Scalars['String'],assignmentId: Scalars['ID'],lineNumber: Scalars['Int'],note?: (Scalars['String'] | null)}
 
 export interface AssociateUserToAccountInput {
 /**
@@ -6387,6 +11062,28 @@ saleId: Scalars['String'],
 /** Policy IDs to attach */
 policyIds: Scalars['String'][]}
 
+export interface AttributeSuggestionGenqlSelection{
+    /** The field's key in the item type's schema. */
+    key?: boolean | number
+    /** The suggested value, valid against the field's schema. */
+    value?: boolean | number
+    /** The field's title in the item type's schema, when it has one. */
+    label?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface AttributesSuggestionGenqlSelection{
+    /**
+     * Suggested values, in the item type's field order. Fields without a suggestion are left out,
+     * and so are fields whose current value is the suggested one.
+     * Merge them into the current attributes before saving; the update mutations replace all attributes.
+     */
+    values?: AttributeSuggestionGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
 
 /**
  * An account-scoped attribution channel: how a client reached the auction house
@@ -6396,6 +11093,8 @@ export interface AttributionChannelGenqlSelection{
     id?: boolean | number
     accountId?: boolean | number
     name?: boolean | number
+    /** Whether this channel is only available through self-service (e.g. website sign-up). */
+    selfServiceOnly?: boolean | number
     /** When the channel was archived (RFC3339). Null means active. */
     archivedAt?: boolean | number
     /** When the channel was created (RFC3339). */
@@ -6415,6 +11114,10 @@ export interface AttributionSourceGenqlSelection{
     id?: boolean | number
     accountId?: boolean | number
     name?: boolean | number
+    /** Whether this source is visible on the public website. */
+    public?: boolean | number
+    /** Channel IDs this source is associated with. Empty means available in no channels. */
+    channelIds?: boolean | number
     /** When the source was archived (RFC3339). Null means active. */
     archivedAt?: boolean | number
     /** When the source was created (RFC3339). */
@@ -6441,6 +11144,49 @@ export interface AuctionSymbolGenqlSelection{
 /** Input for a single auction symbol glyph. */
 export interface AuctionSymbolInput {type: AuctionSymbolType,glyph?: (Scalars['String'] | null)}
 
+
+/** A staff member who authored a note. */
+export interface AuthorGenqlSelection{
+    id?: boolean | number
+    name?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** A consignor's payout bank account. */
+export interface BankDetailsGenqlSelection{
+    /** Account holder name. */
+    accountName?: boolean | number
+    /** 8-digit account number. */
+    accountNumber?: boolean | number
+    /** 6-digit sort code. */
+    sortCode?: boolean | number
+    /** ISO 3166-1 alpha-2 country of the account (e.g. "GB"). */
+    country?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/**
+ * Consignor payout bank details to set. Name/account/sort are required and replace the
+ * stored set. Shape is validated server-side (8-digit account number, 6-digit sort
+ * code); existence is not checked.
+ */
+export interface BankDetailsInput {
+/** Account holder name. */
+accountName: Scalars['String'],
+/** 8-digit account number. */
+accountNumber: Scalars['String'],
+/** 6-digit sort code. */
+sortCode: Scalars['String'],
+/**
+ * ISO 3166-1 alpha-2 country of the account. Optional; defaults to "GB". Only GB is
+ * supported for now.
+ */
+country?: (Scalars['String'] | null)}
+
 export interface BastaLiveStreamGenqlSelection{
     /**
      * Is this option available for the account,
@@ -6452,12 +11198,17 @@ export interface BastaLiveStreamGenqlSelection{
     ingestUrl?: boolean | number
     /** Channel ID */
     channelId?: boolean | number
-    /** Stream key */
+    /** Stream key. Null for callers without permission to edit sales. */
     streamKey?: boolean | number
     /** Is stream live */
     isLive?: boolean | number
     /** Current viewers */
     currentViewers?: boolean | number
+    /**
+     * The channel this sale streams on. The account's default channel unless another one is assigned.
+     * Null when Basta streaming is not available for the account.
+     */
+    streamChannel?: StreamChannelGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -6497,6 +11248,8 @@ export interface BidGenqlSelection{
     bidderIdentifier?: boolean | number
     /** Optional paddle id if bid was placed with a paddle */
     paddle?: PaddleGenqlSelection
+    /** True when the bid was placed automatically by the bidder's max bid in response to a competing bid. */
+    reactiveBid?: boolean | number
     /** BidOrigin */
     bidOrigin?: BidOriginGenqlSelection
     /** User Profile, will only resolve if the user exists in configured identity provider. */
@@ -6607,8 +11360,18 @@ export interface BidPlacedSuccessGenqlSelection{
 export interface BidRestrictionsGenqlSelection{
     /** Users need to have an accepted registration to bid on this sale */
     acceptedRegistrationRequired?: boolean | number
-    /** When true, phone registrations are open/enabled for this sale */
+    /** Whether bidders can request phone bidding on the website. Dashboard users can always create phone registrations. */
     phoneRegistrationOpen?: boolean | number
+    /**
+     * How many hours before the live start (live sales) or before the first item starts closing (timed sales)
+     * website phone registrations close. Null means no cut-off.
+     */
+    phoneRegistrationCutoffHours?: boolean | number
+    /**
+     * When website phone registrations close: phoneRegistrationCutoffHours before the live start for live
+     * sales, or before the first item starts closing for timed sales. Null when there is no cut-off or no such date.
+     */
+    phoneRegistrationClosesAt?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -6619,10 +11382,15 @@ export interface BidRestrictionsInput {
 /** Users need to have an accepted registration to bid on this sale */
 acceptedRegistrationRequired: Scalars['Boolean'],
 /**
- * When true, phone registrations are open/enabled for this sale.
+ * Whether bidders can request phone bidding on the website. Dashboard users can always create phone registrations.
  * Defaults to true if not specified (backwards compatible).
  */
-phoneRegistrationOpen?: (Scalars['Boolean'] | null)}
+phoneRegistrationOpen?: (Scalars['Boolean'] | null),
+/**
+ * How many hours before the live start (live sales) or before the first item starts closing (timed sales)
+ * website phone registrations close, 0 to 8760. Null clears the cut-off; omitted keeps the current value.
+ */
+phoneRegistrationCutoffHours?: (Scalars['Int'] | null)}
 
 
 /**
@@ -6656,6 +11424,14 @@ export interface BidsEdgeGenqlSelection{
     __scalar?: boolean | number
 }
 
+
+/** Optional, AND-combined filters for the account-wide bids query. */
+export interface BidsFilter {
+/** Returns only bids placed in this sale. */
+saleId?: (Scalars['String'] | null),
+/** Returns only bids placed on this item. */
+itemId?: (Scalars['String'] | null)}
+
 export interface BlockUserInput {
 /** User ID */
 userId: Scalars['String']}
@@ -6670,6 +11446,148 @@ userId: Scalars['String']}
 export interface BuyItemInput {itemId: Scalars['String'],saleId: Scalars['String'],
 /** Basta user id (`User.id`) of the buyer the buy is made on behalf of. */
 buyerUserId: Scalars['String'],expectedPrice: Scalars['Int'],currency: Scalars['String']}
+
+
+/**
+ * A premium the buyer pays on top of the hammer price, in one currency. An account
+ * that sells in several currencies has a separate premium for each.
+ */
+export interface BuyerPremiumGenqlSelection{
+    /** The premium's id, the same at every level it is read from. */
+    id?: boolean | number
+    /**
+     * An id from your own systems, unique within the account; use a different id
+     * for each currency. Set it with createBuyerPremium or updateBuyerPremium.
+     * Null until one is set.
+     */
+    externalId?: boolean | number
+    /** Name shown to buyers and on invoices, unique per currency within the account. */
+    name?: boolean | number
+    /** Currency of every amount below. Cannot be changed once the premium exists. */
+    currency?: boolean | number
+    /** How the ladder is applied to the amount. */
+    calculationType?: boolean | number
+    /** Whether the premium is charged. */
+    status?: boolean | number
+    /** Lower bound on the amount charged, in minor currency units. 0 means no floor. */
+    minimum?: boolean | number
+    /** Upper bound on the amount charged, in minor currency units. 0 means no cap. */
+    maximum?: boolean | number
+    /** The ladder, lowest portion first. Empty when nothing is charged. */
+    bands?: BuyerPremiumBandGenqlSelection
+    /** The level these values came from. */
+    appliesAt?: boolean | number
+    /**
+     * The accounting code this premium is filed under. On a lot whose premiums are
+     * fixed, the code the premium had when they were fixed. Null when none is set.
+     */
+    accountCode?: AccountCodeGenqlSelection
+    /**
+     * The tax code this premium is taxed under, whatever the lot. Null when none
+     * is set, in which case the charge code for the lot's item type or the
+     * account's default applies.
+     */
+    taxCode?: TaxCodeGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/**
+ * One rung of a premium ladder. The portion of the amount between lowerLimit and
+ * upperLteLimit is charged at value.
+ */
+export interface BuyerPremiumBandGenqlSelection{
+    /** The band's id. Stable for as long as the ladder keeps this band. */
+    id?: boolean | number
+    /** Exclusive lower bound, in minor currency units. */
+    lowerLimit?: boolean | number
+    /** Inclusive upper bound, in minor currency units. Null on the open-ended top band. */
+    upperLteLimit?: boolean | number
+    /** Whether `value` is a rate or a fixed sum. */
+    type?: boolean | number
+    /** Basis points for PERCENTAGE, minor currency units for AMOUNT. */
+    value?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** One band of a premium ladder. */
+export interface BuyerPremiumBandInput {
+/** Exclusive lower bound, in minor currency units. */
+lowerLimit: Scalars['Int'],
+/** Inclusive upper bound, in minor currency units. Omit on the open-ended top band. */
+upperLteLimit?: (Scalars['Int'] | null),
+/** Whether `value` is a rate or a fixed sum. */
+type: BuyerPremiumBandType,
+/** Basis points for PERCENTAGE, minor currency units for AMOUNT. */
+value: Scalars['Int']}
+
+
+/** A paginated connection of buyer's premiums, oldest first. */
+export interface BuyerPremiumConnectionGenqlSelection{
+    /** The premiums on this page, oldest first. Empty when there are none. */
+    edges?: BuyerPremiumEdgeGenqlSelection
+    /**
+     * Cursors for this page, and whether another one follows. Premiums page
+     * forward only, so hasPreviousPage is always false.
+     */
+    pageInfo?: PageInfoGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** An edge in a buyer's premium connection. */
+export interface BuyerPremiumEdgeGenqlSelection{
+    /** The premium. */
+    node?: BuyerPremiumGenqlSelection
+    /** Opaque. Pass it as `after` to resume reading from just past this premium. */
+    cursor?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Optional settings applied when reading buyer's premiums. */
+export interface BuyerPremiumOptions {
+/** Read only premiums in this currency. Omit to read every currency. */
+currency?: (Currency | null)}
+
+
+/** The level a premium is set at. */
+export interface BuyerPremiumScopeInput {
+/** Which level `id` refers to. */
+type: BuyerPremiumWriteScopeType,
+/** The item for SALE_ITEM, the item type for ITEM_TYPE, the sale genre for SALE_GENRE. */
+id: Scalars['ID'],
+/** Required for SALE_ITEM and rejected on every other level. */
+saleId?: (Scalars['ID'] | null)}
+
+
+/** Number of events of one type attributed to one campaign in one period. */
+export interface CampaignReportDataPointGenqlSelection{
+    /** Campaign the events are attributed to. */
+    campaignId?: boolean | number
+    /** ID of the event type counted. Same as `eventType.id`. */
+    eventTypeId?: boolean | number
+    /** Type of event counted. */
+    eventType?: AffiliateEventTypeGenqlSelection
+    /**
+     * Start of the period as YYYY-MM-DD: the day for DAILY reports, the first day of the
+     * month for MONTHLY reports.
+     */
+    period?: boolean | number
+    /** Number of events in the period. */
+    eventCount?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface CancelAppointmentInput {appointmentId: Scalars['ID'],
+/** Why the appointment is cancelled, at most 1000 characters. */
+reason?: (Scalars['String'] | null)}
 
 
 /**
@@ -6715,6 +11633,17 @@ export interface CardGenqlSelection{
     expMonth?: boolean | number
     /** Expiry year, four digits */
     expYear?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Counts of a sale's lots, withdrawn ones excluded, by cataloguing workflow status. */
+export interface CataloguingWorkflowSummaryGenqlSelection{
+    totalItems?: boolean | number
+    awaitingCataloguing?: boolean | number
+    catalogued?: boolean | number
+    proofed?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -6772,6 +11701,126 @@ export interface CategoryListGenqlSelection{
 
 
 /**
+ * An enumeration usable in a CEL expression. Values are written as
+ * `<name>.<value>`, e.g. `TrustLevel.HIGH`.
+ */
+export interface CelEnumGenqlSelection{
+    /** Enumeration name. */
+    name?: boolean | number
+    /** Human-readable description. */
+    description?: boolean | number
+    /** Allowed values. */
+    values?: CelEnumValueGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** A single value of an enumeration. */
+export interface CelEnumValueGenqlSelection{
+    /** Value name, e.g. `HIGH`. */
+    name?: boolean | number
+    /**
+     * Numeric value. Enumeration values can be compared numerically,
+     * e.g. `user.trustLevel >= TrustLevel.MEDIUM`.
+     */
+    number?: boolean | number
+    /** Human-readable description. */
+    description?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/**
+ * A CEL (Common Expression Language) environment: the variables an expression can use,
+ * the object types reachable from them and the enumerations they use.
+ */
+export interface CelEnvironmentGenqlSelection{
+    /** Variables that can be used at the top level of an expression, such as `user`. */
+    variables?: CelVariableGenqlSelection
+    /** Object types reachable from the variables. */
+    types?: CelTypeGenqlSelection
+    /** Enumerations reachable from the variables, with their allowed values. */
+    enums?: CelEnumGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** A field of an object type in a CEL expression. */
+export interface CelFieldGenqlSelection{
+    /** Field name. */
+    name?: boolean | number
+    /** Kind of value the field holds. For lists, the kind of each element. */
+    kind?: boolean | number
+    /** Name of the object type or enumeration, when `kind` is OBJECT or ENUM. */
+    typeName?: boolean | number
+    /** True if the field holds a list of values. */
+    isList?: boolean | number
+    /** Human-readable description. */
+    description?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** A problem found in a CEL expression. */
+export interface CelIssueGenqlSelection{
+    /** Description of the problem. */
+    message?: boolean | number
+    /** Line of the problem, starting at 1. Null when the problem applies to the whole expression. */
+    line?: boolean | number
+    /**
+     * Column of the problem, starting at 1 and counted in characters.
+     * Null when the problem applies to the whole expression.
+     */
+    column?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** An object type that can appear in a CEL expression. */
+export interface CelTypeGenqlSelection{
+    /** Type name, matching `typeName` on variables and fields. */
+    name?: boolean | number
+    /** Human-readable description. */
+    description?: boolean | number
+    /** Fields that can be accessed on this type, e.g. `user.identityVerified`. */
+    fields?: CelFieldGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Result of checking a CEL expression. */
+export interface CelValidationResultGenqlSelection{
+    /** True if the expression has no issues. */
+    valid?: boolean | number
+    /** Problems found in the expression. Empty when it is valid. */
+    issues?: CelIssueGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** A variable available at the top level of a CEL expression. */
+export interface CelVariableGenqlSelection{
+    /** Name used in the expression, e.g. `user`. */
+    name?: boolean | number
+    /** Kind of value the variable holds. */
+    kind?: boolean | number
+    /** Name of the object type or enumeration, when `kind` is OBJECT or ENUM. */
+    typeName?: boolean | number
+    /** Human-readable description. */
+    description?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/**
  * A charge the account applies to lots, in one currency. An account that sells in
  * several currencies configures the same charge once per currency, and a lot is
  * only ever charged in the currency it settles in.
@@ -6791,8 +11840,12 @@ export interface ChargeGenqlSelection{
     basedOn?: boolean | number
     /** How often the charge is raised. See the enum values for what counts. */
     frequency?: boolean | number
-    /** The sale result that triggers the charge. */
-    outcome?: boolean | number
+    /**
+     * The sale results that trigger the charge, each listed once. The same at
+     * every level the charge is read from. Empty when the charge is never raised
+     * automatically and is only added by hand.
+     */
+    outcomes?: boolean | number
     /** How the ladder is applied to the amount. */
     calculationType?: boolean | number
     /**
@@ -6820,6 +11873,18 @@ export interface ChargeGenqlSelection{
      * exactly as the account configured it.
      */
     appliesAt?: boolean | number
+    /**
+     * The accounting code this charge is filed under, the same at every level the
+     * charge is read from. Charges already applied keep the code they were applied
+     * with when this changes. Null when none is set.
+     */
+    accountCode?: AccountCodeGenqlSelection
+    /**
+     * The tax code this charge is taxed under, the same at every level the charge
+     * is read from. Null when none is set, in which case the charge code for the
+     * lot's item type or the account's default applies.
+     */
+    taxCode?: TaxCodeGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -6909,9 +11974,191 @@ id: Scalars['ID'],
 /** Required for SALE_ITEM and rejected on every other level. */
 saleId?: (Scalars['ID'] | null)}
 
+export interface ClearItemsAppraisalInput {appraisalId: Scalars['String'],
+/**
+ * Ids of the items to remove, at most 1000 distinct ids. Each item must be in this
+ * appraisal. An item returns from APPRAISAL to AVAILABLE only when it leaves its last
+ * appraisal.
+ */
+itemIds: Scalars['String'][]}
+
+export interface ClearItemsAppraisalPayloadGenqlSelection{
+    /** The appraisal the items were removed from. */
+    appraisal?: AppraisalGenqlSelection
+    /** Number of items removed. */
+    count?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Client numbering for an account */
+export interface ClientNumberSettingsGenqlSelection{
+    /** The number the next created client receives */
+    nextClientNumber?: boolean | number
+    /** Highest client number in use in the account. Null when no client has a number. */
+    highestAssignedClientNumber?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/**
+ * A recorded relationship between two clients of the account: `relatedClient` holds the
+ * role named by `type` for `client`.
+ */
+export interface ClientRelationshipGenqlSelection{
+    id?: boolean | number
+    type?: boolean | number
+    /** Free-text explanation of the relationship. Null when none was given. */
+    reason?: boolean | number
+    /** Null when the client can no longer be read. */
+    client?: UserGenqlSelection
+    /** Null when the client can no longer be read. */
+    relatedClient?: UserGenqlSelection
+    created?: boolean | number
+    modified?: boolean | number
+    /** The staff member who recorded the relationship. Null when it was created with an API key; a removed staff member has an empty name. */
+    createdBy?: AuthorGenqlSelection
+    /** The staff member who last edited the relationship. Null when it has not been edited by a staff member; a removed staff member has an empty name. */
+    modifiedBy?: AuthorGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
 
 /** Input object for when forcing sale to close. */
 export interface CloseSaleInput {saleId: Scalars['String']}
+
+
+/** An item's or lot's condition write-up. */
+export interface ConditionReportGenqlSelection{
+    /**
+     * Portable Text. Inline images carry url, content_type, size and filename. An empty document ([])
+     * when the report has images but no text.
+     */
+    text?: boolean | number
+    /** Condition images in display order. */
+    images?: ImageGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/**
+ * A client's request for a lot's condition report. Every ask about the same lot from the same
+ * email while the request is open is one more message on it.
+ */
+export interface ConditionReportRequestGenqlSelection{
+    /** Id of the request. */
+    id?: boolean | number
+    /** Short reference of the first ask, the first 8 characters of the id in upper case. Each later ask has its own reference on its message. */
+    reference?: boolean | number
+    status?: boolean | number
+    /** Who asked, as given with the first ask. */
+    contact?: ConditionReportRequestContactGenqlSelection
+    /** The client's user id when they were logged in and asked with their account's email. Null otherwise. */
+    clientUserId?: boolean | number
+    saleId?: boolean | number
+    itemId?: boolean | number
+    /** The lot. Null when it no longer exists. */
+    saleItem?: SaleItemGenqlSelection
+    /** The staff member handling the request. Null when unassigned. */
+    assignee?: ConditionReportRequestAssigneeGenqlSelection
+    /** Every ask on this request, oldest first. */
+    messages?: ConditionReportRequestMessageGenqlSelection
+    /**
+     * The item's condition report, private images included. The lot shows the same report.
+     * Null when the item has neither text nor images in its report.
+     */
+    conditionReport?: ConditionReportGenqlSelection
+    /** When the request was made (RFC3339). */
+    createdAt?: boolean | number
+    /** When the request was last changed, by a repeat ask or an assignment (RFC3339). */
+    modifiedAt?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** The staff member a condition report request is assigned to. */
+export interface ConditionReportRequestAssigneeGenqlSelection{
+    /** The staff member's identity id, the same id space as DashboardMember.userId. */
+    userId?: boolean | number
+    /**
+     * The staff member's display name, from the identity provider.
+     * Null if the identity could not be resolved.
+     */
+    name?: boolean | number
+    /**
+     * The staff member's email address, from the identity provider.
+     * Null if the identity could not be resolved.
+     */
+    email?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface ConditionReportRequestContactGenqlSelection{
+    name?: boolean | number
+    email?: boolean | number
+    phone?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface ConditionReportRequestEdgeGenqlSelection{
+    cursor?: boolean | number
+    node?: ConditionReportRequestGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface ConditionReportRequestFilter {
+/** Empty or omitted: every status. */
+statuses?: (ConditionReportRequestStatus[] | null),
+/** Only requests assigned to this staff member. */
+assigneeUserId?: (Scalars['String'] | null),
+/** Only requests with no assignee. Ignored when a non-blank assigneeUserId is set. */
+unassigned?: (Scalars['Boolean'] | null),
+/** Only requests for lots in this sale. */
+saleId?: (Scalars['String'] | null),
+/** Only requests for this item, in any sale. */
+itemId?: (Scalars['String'] | null)}
+
+
+/** One ask on a condition report request. */
+export interface ConditionReportRequestMessageGenqlSelection{
+    /** Id of the ask; the website submit id for website asks. */
+    id?: boolean | number
+    /** Short reference the client was given for this ask, the first 8 characters of its id in upper case. */
+    reference?: boolean | number
+    channel?: boolean | number
+    /** What the client wrote. Null when they left no text. */
+    message?: boolean | number
+    /** When the ask was received (RFC3339). */
+    createdAt?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface ConditionReportRequestsConnectionGenqlSelection{
+    edges?: ConditionReportRequestEdgeGenqlSelection
+    pageInfo?: PageInfoGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface ConfirmAppointmentInput {appointmentId: Scalars['ID'],
+/** The confirmed start. */
+scheduledStart: Scalars['Time'],
+/** The confirmed end. Must be after scheduledStart. Omitted or null: no end. */
+scheduledEnd?: (Scalars['Time'] | null),
+/**
+ * Replaces the staff note. Omitted, null or blank keeps the current note; use
+ * setAppointmentStaffNote to clear it.
+ */
+staffNote?: (Scalars['String'] | null)}
 
 
 /**
@@ -6932,8 +12179,10 @@ export interface ConsignmentGenqlSelection{
     cursor?: boolean | number
     /** Account ID */
     accountId?: boolean | number
-    /** Human-facing short code for the consignment (format CN<YY><M><D><SUFFIX>), unique per account. */
+    /** Human-facing consignment code. New consignments receive sequential numeric IDs (1, 2, …); existing consignments retain their legacy format. */
     shortId?: boolean | number
+    /** Sequential per-account number assigned on creation. Null for legacy consignments created before numbering was introduced. */
+    consignmentNumber?: boolean | number
     /**
      * @deprecated Use consignors
      * Id of the consignor (a user-service user).
@@ -6959,6 +12208,11 @@ export interface ConsignmentGenqlSelection{
     externalId?: boolean | number
     /** The consignment's fee rules. */
     feeRules?: ConsignmentFeeRuleGenqlSelection
+    /**
+     * When true, the consignment gets its own sale advice instead of joining its main
+     * consignor's combined advice for the sale.
+     */
+    reportSeparately?: boolean | number
     /** When the consignment was created (RFC3339). */
     created?: boolean | number
     /** When the consignment was last modified (RFC3339). */
@@ -6973,6 +12227,154 @@ export interface ConsignmentGenqlSelection{
      * `appliesAt` on each says which level supplied the values.
      */
     charges?: (ChargeConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), options?: (ChargeOptions | null)} })
+    /** Every revision of this consignment's contract, newest first. */
+    contracts?: ConsignmentContractGenqlSelection
+    /** The highest contract revision that is not superseded. Null when there is none. */
+    currentContract?: ConsignmentContractGenqlSelection
+    /** The highest signed contract revision. Null when no contract is signed. */
+    signedContract?: ConsignmentContractGenqlSelection
+    /** Where this consignment's contract stands. SIGNED once any revision is signed. */
+    contractState?: boolean | number
+    /**
+     * True when the charges that apply now, or the consignment's items and their valuations, differ
+     * from those printed on the newest signed contract, for example after items were added to a signed
+     * consignment. False when nothing is signed or the signed contract has no fingerprint for what
+     * changed. Null when it could not be determined.
+     */
+    contractNeedsResigning?: boolean | number
+    /**
+     * True when the current contract is GENERATED or SENT and the charges that apply now, or the
+     * consignment's items and their valuations, differ from those printed on it. False when the
+     * current contract is signed, has no fingerprint for what changed, or there is none. Null when it
+     * could not be determined.
+     */
+    contractOutdated?: boolean | number
+    /** The appraisals items of this consignment were moved from, the origin first. */
+    appraisals?: AppraisalGenqlSelection
+    /**
+     * The appraisal this consignment was created from. Null when it was not created from
+     * an appraisal or that appraisal no longer exists.
+     */
+    originAppraisal?: AppraisalGenqlSelection
+    /** The consignment's transport plan. Fields are null when not set. */
+    transport?: ConsignmentTransportGenqlSelection
+    /** Every property receipt issued for this consignment, newest first. */
+    propertyReceipts?: PropertyReceiptGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/**
+ * Lightweight consignment type for search results: CN, resolved consignor/lead
+ * names, and ids. Fetch the full Consignment by id via consignment() to drill in.
+ */
+export interface ConsignmentBannerGenqlSelection{
+    /** Consignment ID */
+    id?: boolean | number
+    /** Account ID */
+    accountId?: boolean | number
+    /** Human-facing consignment code. New consignments receive sequential numeric IDs (1, 2, …); existing consignments retain their legacy format. */
+    shortId?: boolean | number
+    /** Sequential per-account number assigned on creation. Null for legacy consignments. */
+    consignmentNumber?: boolean | number
+    /** Consignment name */
+    name?: boolean | number
+    /** Internal user id of the main consignor */
+    mainConsignorId?: boolean | number
+    /** Resolved display name of the main consignor */
+    mainConsignorName?: boolean | number
+    /** Identity-provider id of the lead staff member */
+    leadStaffId?: boolean | number
+    /** Resolved display name of the lead staff member */
+    leadStaffName?: boolean | number
+    /** External ID */
+    externalId?: boolean | number
+    /** Unix timestamp when the consignment was created */
+    createdTimestamp?: boolean | number
+    /** Client number of the main consignor. Null when the consignor has no client number. */
+    clientNumber?: boolean | number
+    /** Signature status of the consignment's current contract revision. Null when the status is not yet known for this consignment. */
+    signatureStatus?: boolean | number
+    /** Number of items currently in the consignment, excluding deleted items. */
+    itemCount?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** One revision of a consignment's contract. */
+export interface ConsignmentContractGenqlSelection{
+    id?: boolean | number
+    consignmentId?: boolean | number
+    /** 1 for the first revision, increasing by one with each new revision. */
+    revision?: boolean | number
+    status?: boolean | number
+    /** Suggested file name. Null for a signature recorded without a generated document. */
+    filename?: boolean | number
+    /** Lowercase hex SHA-256 of the document. Null when there is no document. */
+    sha256?: boolean | number
+    /** Version of the template the document was generated from. Null when there is no document. */
+    templateVersion?: boolean | number
+    /** ISO 4217 code of the charges printed on the document. Null when there is no document. */
+    currency?: boolean | number
+    generatedAt?: boolean | number
+    /** Id of the user that generated or recorded this revision. */
+    generatedBy?: boolean | number
+    sentAt?: boolean | number
+    /** Id of the user that marked this revision as sent. */
+    sentBy?: boolean | number
+    /** The date the contract was signed. */
+    signedAt?: boolean | number
+    signatureRecordedAt?: boolean | number
+    /** Id of the user that recorded the signature. */
+    signatureRecordedBy?: boolean | number
+    signatureNote?: boolean | number
+    /** A short-lived link to download the document. Null when there is no document. */
+    download?: DocumentDownloadGenqlSelection
+    /** The newest signing request sent for this revision. Null when it was never sent for signing. */
+    signingRequest?: ConsignmentContractSigningRequestGenqlSelection
+    /**
+     * A short-lived link to download the electronically signed copy: the document with the signer's
+     * name and a signature certificate page. Null unless the status is SIGNED_ELECTRONIC.
+     */
+    signedDownload?: DocumentDownloadGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** An emailed request to the main consignor to sign one contract revision. */
+export interface ConsignmentContractSigningRequestGenqlSelection{
+    id?: boolean | number
+    status?: boolean | number
+    /** The address the signing link was sent to. */
+    recipientEmail?: boolean | number
+    createdAt?: boolean | number
+    /** Id of the user that sent the request. */
+    createdBy?: boolean | number
+    /** The signing link stops working at this time. */
+    expiresAt?: boolean | number
+    completedAt?: boolean | number
+    cancelledAt?: boolean | number
+    /** The full name the consignor typed when signing. Null until signed. */
+    signerName?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** One immutable version of an account's consignment contract template. */
+export interface ConsignmentContractTemplateGenqlSelection{
+    id?: boolean | number
+    /** 1 for the first version, increasing by one with each save. */
+    version?: boolean | number
+    title?: boolean | number
+    /** Sanitised rich text with {{placeholder}} tokens. */
+    body?: boolean | number
+    createdAt?: boolean | number
+    /** Id of the user that saved this version. */
+    createdBy?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -7008,6 +12410,33 @@ upperLteLimit?: (Scalars['Int'] | null),
 calculationType?: (ConsignmentFeeCalculationType | null)}
 
 
+/**
+ * An item's line in a consignment. The line keeps its number after the item leaves the
+ * consignment; it is then removed.
+ */
+export interface ConsignmentLineGenqlSelection{
+    /** Id of the consignment. */
+    consignmentId?: boolean | number
+    /** The consignment. Null when it no longer exists. */
+    consignment?: ConsignmentGenqlSelection
+    /**
+     * The line number within the consignment. Never changes and is never reused. Per
+     * consignment; differs from inventoryNumber and from the item's position in a sale.
+     */
+    lineNumber?: boolean | number
+    /** The item on the line. */
+    item?: ItemGenqlSelection
+    /** The appraisal line the item was transferred from. Null when it was consigned directly. */
+    consignedFrom?: AppraisalLineGenqlSelection
+    /** When the item was added on this line (RFC3339, UTC). */
+    created?: boolean | number
+    /** When the item left the consignment (RFC3339, UTC). Null while it is in it. */
+    removed?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
 /** A member of a consignment's staff (team) set. Exactly one is lead when the set is non-empty. */
 export interface ConsignmentStaffGenqlSelection{
     /**
@@ -7030,6 +12459,21 @@ export interface ConsignmentStaffGenqlSelection{
      * Null if the identity could not be resolved.
      */
     email?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** How a consignment's property is expected to reach the house. Every field is optional. */
+export interface ConsignmentTransportGenqlSelection{
+    /** The staff member coordinating the transport. */
+    coordinator?: TransportCoordinatorGenqlSelection
+    /** The date the property is expected, YYYY-MM-DD. */
+    expectedDate?: boolean | number
+    /** The courier collecting or delivering the property. */
+    courier?: CourierGenqlSelection
+    /** The site the property is expected to arrive at. */
+    receivingSite?: SiteGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -7090,6 +12534,18 @@ export interface ContentDiffGenqlSelection{
     entries?: ContentDiffEntryGenqlSelection
     /** Target keys not present as public fields in the item's schema. Names only. */
     removableKeys?: boolean | number
+    /** Creator-set drift. Null when not computed (e.g. non-SALE_ITEM target). */
+    creators?: GroupSyncDiffGenqlSelection
+    /** Category-set drift. Null when not computed. */
+    categories?: GroupSyncDiffGenqlSelection
+    /** Tag-set drift. Null when not computed. */
+    tags?: GroupSyncDiffGenqlSelection
+    /** Image-set drift. Null when not computed. */
+    images?: GroupSyncDiffGenqlSelection
+    /** Template override drift (title/subTitle/description). Null when syncTemplates was off. */
+    templates?: TemplateSyncDiffGenqlSelection
+    /** True when the source and target condition reports differ in text or condition images (before the write, for a sync). Null when not compared. */
+    conditionReportChanged?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -7109,7 +12565,65 @@ export interface ContentDiffEntryGenqlSelection{
     __scalar?: boolean | number
 }
 
+export interface ContentIssueGenqlSelection{
+    severity?: boolean | number
+    /** The field the issue is about. Null when it is about the target as a whole. */
+    field?: boolean | number
+    /** The item type's field key the issue is about, when it is about one. */
+    key?: boolean | number
+    /** What is wrong, in the requested language. */
+    message?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface ContentSuggestionGenqlSelection{
+    field?: boolean | number
+    value?: SuggestionValueGenqlSelection
+    /**
+     * One short sentence, at most 120 characters, on what the suggestion is based on.
+     * Null when none was given, and always null for ISSUES.
+     */
+    reasoning?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface ContentSuggestionsGenqlSelection{
+    /**
+     * One entry per field with a suggestion. Fields without a suggestion are left out, and so are
+     * fields whose current value is a suggestion the user has already applied.
+     */
+    suggestions?: ContentSuggestionGenqlSelection
+    /** Number of images that were looked at. */
+    imageCount?: boolean | number
+    /** Requested text fields that were left out because a template generates their value. */
+    templatedFields?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
 export interface ContinueOnboardPaymentAccountInput {returnUrl: Scalars['String']}
+
+
+/**
+ * A {{name}} token a consignment contract, appraisal document or property receipt
+ * template may use.
+ */
+export interface ContractPlaceholderGenqlSelection{
+    /** The token's name, written in a template as {{name}}. */
+    name?: boolean | number
+    description?: boolean | number
+    /**
+     * True for a section placeholder, which must be alone in its own paragraph. A
+     * section the template leaves out is printed after the body, except a property
+     * receipt's signatures, which print only where placed. Always false for appraisal
+     * document placeholders.
+     */
+    block?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
 
 
 /**
@@ -7144,6 +12658,26 @@ export interface CountryInfoEdgeGenqlSelection{
     __typename?: boolean | number
     __scalar?: boolean | number
 }
+
+
+/** A courier the house uses to collect or deliver property. Account-scoped. */
+export interface CourierGenqlSelection{
+    id?: boolean | number
+    name?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Input for adding an accounting code. */
+export interface CreateAccountCodeInput {
+/**
+ * The code as your accounting software knows it, for example 4120. Must be
+ * unique and cannot be changed later.
+ */
+code: Scalars['String'],
+/** A label for the code, for example "Photography income". */
+name: Scalars['String']}
 
 export interface CreateAccountFeeInput {name: Scalars['String'],type: AccountFeeType,value: Scalars['Int'],upperLteLimit?: (Scalars['Int'] | null),
 /** Lower limit (exclusive) the fee applies from. */
@@ -7182,6 +12716,41 @@ email: Scalars['String'],
 /** Referral token. Must be unique within the account. */
 token: Scalars['String']}
 
+export interface CreateAppraisalDocumentTemplateVersionInput {
+/** The appraisal type the template is used for. */
+type: AppraisalType,
+/** At most 200 characters. */
+title: Scalars['String'],
+/**
+ * Rich text with {{placeholder}} tokens, at most 200 KB, as is every section. Each
+ * section is sanitised before it is saved; an unknown placeholder is rejected.
+ * Omitted or empty leaves the section out of the document.
+ */
+intro?: (Scalars['String'] | null),preInventory?: (Scalars['String'] | null),summary?: (Scalars['String'] | null),valuerStatement?: (Scalars['String'] | null),terms?: (Scalars['String'] | null)}
+
+export interface CreateAppraisalInput {
+/**
+ * Client user ids (Basta user UUIDs, User.id); the first is the main client.
+ * At least one is required and each must be a client user of the account.
+ */
+clientUserIds: Scalars['String'][],
+/**
+ * Staff identity ids (Ory Kratos, same id space as DashboardMember.userId); the
+ * first is the lead. At least one is required and each must be a member of the account.
+ */
+staffUserIds: Scalars['String'][],
+/** Optional appraisal name. Omitted or null stores an empty name. */
+name?: (Scalars['String'] | null),
+/** Optional notes about the appraisal. */
+notes?: (Scalars['String'] | null),
+/** Why the valuation is done. */
+type: AppraisalType,
+/**
+ * Attribution channel the appraisal came in through (optional). Must reference a
+ * non-archived attribution channel on the account.
+ */
+attributionChannelId?: (Scalars['ID'] | null)}
+
 export interface CreateAssetUploadUrlInput {
 /** MIME type of the file being uploaded. Unsupported types are rejected. */
 contentType: Scalars['String'],
@@ -7190,9 +12759,39 @@ filename: Scalars['String'],
 /** Optional client-assigned external identifier. */
 externalId?: (Scalars['String'] | null)}
 
-export interface CreateAttributionChannelInput {name: Scalars['String']}
+export interface CreateAttributionChannelInput {name: Scalars['String'],selfServiceOnly?: (Scalars['Boolean'] | null)}
 
-export interface CreateAttributionSourceInput {name: Scalars['String']}
+export interface CreateAttributionSourceInput {name: Scalars['String'],public?: (Scalars['Boolean'] | null)}
+
+
+/**
+ * Input for creating a buyer's premium. It is enabled and charges nothing until
+ * its bands are set.
+ */
+export interface CreateBuyerPremiumInput {
+/**
+ * Shown to buyers and on invoices. Must be unique among the account's premiums
+ * in the same currency.
+ */
+name: Scalars['String'],
+/** Defaults to the account's currency. Cannot be changed later. */
+currency?: (Currency | null),
+/** How the ladder is applied to the amount. */
+calculationType: BuyerPremiumCalculationType,
+/** Lower bound on the amount charged, in minor currency units. Omit or pass 0 for no floor. */
+minimum?: (Scalars['Int'] | null),
+/** Upper bound on the amount charged, in minor currency units. Omit or pass 0 for no cap. */
+maximum?: (Scalars['Int'] | null),
+/** An id from your own systems, unique within the account. Omit to leave it unset. */
+externalId?: (Scalars['String'] | null),
+/** Accounting code for the premium. Omit to leave it without one. */
+accountCodeId?: (Scalars['ID'] | null),
+/**
+ * Tax code for the premium, overriding the item type's and the account's
+ * charge code. IMPORT codes are refused: import VAT applies to the hammer only.
+ * Omit to leave it without one. Setting it requires WRITE_TAX.
+ */
+taxCodeId?: (Scalars['ID'] | null)}
 
 
 /** Input for creating a new category. */
@@ -7210,7 +12809,12 @@ name: Scalars['String'],
  * Cannot be changed later. To charge the same thing in another currency,
  * create a second charge in that currency.
  */
-currency: Currency,basedOn: ChargeBasedOn,frequency: ChargeFrequency,outcome: ChargeOutcome,calculationType: ChargeCalculationType,
+currency: Currency,basedOn: ChargeBasedOn,frequency: ChargeFrequency,
+/**
+ * The sale results that trigger the charge, each at most once. Pass an empty
+ * list for a charge that is only ever added by hand.
+ */
+outcomes: ChargeOutcome[],calculationType: ChargeCalculationType,
 /**
  * Lower bound on the amount charged, in minor currency units. Omit or pass 0
  * for no floor.
@@ -7220,7 +12824,32 @@ minimum?: (Scalars['Int'] | null),
  * Upper bound on the amount charged, in minor currency units. Omit or pass 0
  * for no cap.
  */
-maximum?: (Scalars['Int'] | null)}
+maximum?: (Scalars['Int'] | null),
+/** Accounting code for the charge. Omit to leave it without one. */
+accountCodeId?: (Scalars['ID'] | null),
+/**
+ * Tax code for the charge, overriding the item type's and the account's charge code.
+ * IMPORT codes are refused: import VAT applies to the hammer only. Omit to
+ * leave it without one. Setting it requires WRITE_TAX.
+ */
+taxCodeId?: (Scalars['ID'] | null)}
+
+export interface CreateClientRelationshipInput {
+/** Id of the client the relationship is recorded for (`User.id`). */
+userId: Scalars['ID'],
+/** Id of the client who holds the role (`User.id`). Must differ from `userId`. */
+relatedUserId: Scalars['ID'],type: ClientRelationshipType,
+/** Up to 1000 characters. Required when `type` is OTHER. */
+reason?: (Scalars['String'] | null)}
+
+export interface CreateConsignmentContractTemplateVersionInput {
+/** At most 200 characters. */
+title: Scalars['String'],
+/**
+ * Rich text with {{placeholder}} tokens, at most 200 KB. It is sanitised before it
+ * is saved; an unknown or misplaced placeholder is rejected.
+ */
+body: Scalars['String']}
 
 export interface CreateConsignmentInput {
 /**
@@ -7254,7 +12883,12 @@ consignorUserIds?: (Scalars['String'][] | null),
  * first is the lead staff member, the rest are non-lead. Each must be a member of
  * the account.
  */
-consignmentStaffUserIds?: (Scalars['String'][] | null)}
+consignmentStaffUserIds?: (Scalars['String'][] | null),
+/**
+ * When true, the consignment gets its own sale advice instead of joining its main
+ * consignor's combined advice for the sale. Omitted or null stores false.
+ */
+reportSeparately?: (Scalars['Boolean'] | null)}
 
 
 /**
@@ -7263,7 +12897,15 @@ consignmentStaffUserIds?: (Scalars['String'][] | null)}
  */
 export interface CreateCreatorInput {name: Scalars['String'],slug?: (Scalars['String'] | null),parentId?: (Scalars['ID'] | null),type?: (CreatorType | null),
 /** Whether the Artist's Resale Right applies to works by this creator. */
-arr?: (Scalars['Boolean'] | null)}
+arr?: (Scalars['Boolean'] | null),
+/** Year the creator started, as free text. Surrounding whitespace is trimmed; empty is treated as not set. */
+yearFrom?: (Scalars['String'] | null),
+/** Year the creator ended, as free text. Surrounding whitespace is trimmed; empty is treated as not set. */
+yearTo?: (Scalars['String'] | null),
+/** Nationality of the creator, as free text. Surrounding whitespace is trimmed; empty is treated as not set. */
+nationality?: (Scalars['String'] | null),
+/** Biography as rich-text HTML, at most 20 KB. Disallowed markup is removed; empty is treated as not set. */
+biography?: (Scalars['String'] | null)}
 
 
 /** Input for creating a Dutch item in a sale. */
@@ -7306,6 +12948,11 @@ externalId?: (Scalars['String'] | null),
  */
 consignmentId?: (Scalars['String'] | null),
 /**
+ * If provided, the created item is added to this appraisal, which must belong
+ * to the same account. An omitted status then defaults to APPRAISAL.
+ */
+appraisalId?: (Scalars['String'] | null),
+/**
  * If provided, the created item is located at this site. Required when
  * locationId is provided.
  */
@@ -7322,7 +12969,16 @@ tags?: (Scalars['String'][] | null),
 /** Item specifications (dimensions, weight, type, etc.) */
 specifications?: (ItemSpecificationsInput | null),valuationAmount?: (Scalars['Int'] | null),valuationCurrency?: (Scalars['String'] | null),lowEstimate?: (Scalars['Int'] | null),highEstimate?: (Scalars['Int'] | null),
 /** Location of the item */
-location?: (Scalars['String'] | null)}
+location?: (Scalars['String'] | null),
+/**
+ * Initial lifecycle status for the item. Defaults to AVAILABLE when omitted,
+ * or to APPRAISAL when appraisalId is set.
+ */
+status?: (ItemLifecycleStatus | null),
+/** Kratos identity ID of the staff member to assign as lead. */
+staffLeadUserId?: (Scalars['String'] | null),
+/** CITES licence number. */
+citesLicenceNumber?: (Scalars['String'] | null)}
 
 export interface CreateItemNoteInput {itemId: Scalars['String'],note: Scalars['String']}
 
@@ -7334,12 +12990,19 @@ export interface CreateItemNoteInput {itemId: Scalars['String'],note: Scalars['S
 export interface CreateItemTypeInput {name: Scalars['String'],schema: Scalars['JSON'],parentId?: (Scalars['String'] | null),
 /** Globally unique namespace for the item type. When omitted, one is generated automatically. */
 namespace?: (Scalars['String'] | null),
+/**
+ * Per-account display slug, shown in the UI and used in item-type URLs. When omitted,
+ * one is generated from the name. Must be unique among siblings (same parent).
+ */
+slug?: (Scalars['String'] | null),
 /** Field Output token templates for an item's output fields, e.g. `{brand} {model}`. */
 titleTemplate?: (Scalars['String'] | null),subTitleTemplate?: (Scalars['String'] | null),descriptionTemplate?: (Scalars['String'] | null)}
 
 export interface CreateLocationInput {siteId: Scalars['String'],
 /** Parent location id. Omitted or null creates a top-level location. */
 parentLocationId?: (Scalars['String'] | null),name: Scalars['String']}
+
+export interface CreateNoteTypeInput {name: Scalars['String'],scope: NoteTypeScope}
 
 export interface CreateOrderInput {
 /** SaleId that order belongs to */
@@ -7416,6 +13079,15 @@ description: Scalars['String'],
 orderLineType?: (OrderLineType | null),
 /** Fees associated with the order line, e.g. Buyer's Premium. */
 fees?: (CreatePaymentOrderLineFeeInput[] | null)}
+
+export interface CreatePropertyReceiptTemplateVersionInput {
+/** At most 200 characters. */
+title: Scalars['String'],
+/**
+ * Rich text with {{placeholder}} tokens, at most 200 KB. It is sanitised before it
+ * is saved; an unknown or misplaced placeholder is rejected.
+ */
+body: Scalars['String']}
 
 export interface CreateSaleFeeInput {saleId: Scalars['ID'],name: Scalars['String'],type: FeeRuleType,
 /**
@@ -7576,7 +13248,86 @@ export interface CreateSiteInput {name: Scalars['String'],addressLine1?: (Scalar
  * Case-sensitive canonical IANA timezone name (e.g. Europe/London, not
  * europe/london).
  */
-timezone?: (Scalars['String'] | null)}
+timezone?: (Scalars['String'] | null),
+/** Hours clients can request appointments. Requires timezone. */
+bookingHours?: (SiteBookingHoursInput | null)}
+
+
+/** Input for creating a staff profile. */
+export interface CreateStaffProfileInput {
+/** Full name of the staff member. Surrounding whitespace is trimmed; must not be blank. */
+name: Scalars['String'],
+/**
+ * Field values conforming to the account's staff profile schema. When omitted,
+ * the profile starts with no field values.
+ */
+attributes?: (Scalars['JSON'] | null),
+/**
+ * Departments the staff member belongs to. Every id must be a department of
+ * this account. At most 50.
+ */
+departmentIds?: (Scalars['ID'][] | null),
+/**
+ * Item types the staff member is responsible for. Every id must be an item type
+ * of this account. At most 50.
+ */
+itemTypeIds?: (Scalars['ID'][] | null),
+/**
+ * User id of the dashboard member this profile belongs to. Must be a dashboard
+ * member of this account and not linked to another staff profile.
+ */
+dashboardUserId?: (Scalars['String'] | null),
+/**
+ * Whether the profile is published on the public website. Defaults to false:
+ * a new profile stays unlisted until it is explicitly published.
+ */
+public?: (Scalars['Boolean'] | null),
+/** Whether the staff member can take phone bids during live auctions. Defaults to false. */
+isPhoneClerk?: (Scalars['Boolean'] | null),
+/**
+ * Free-text notes about the staff member as a phone clerk, such as languages or
+ * availability. Surrounding whitespace is trimmed; at most 2,000 characters. Defaults to empty.
+ */
+phoneClerkNotes?: (Scalars['String'] | null)}
+
+export interface CreateStreamChannelInput {
+/** Name of the channel. */
+name: Scalars['String'],
+/** Free-text location of the channel, for example a studio or room. */
+location?: (Scalars['String'] | null),
+/** Description of the channel. */
+description?: (Scalars['String'] | null)}
+
+
+/** Input for adding a tax code. */
+export interface CreateTaxCodeInput {
+/** A label for the code. */
+name: Scalars['String'],
+/** Cannot be changed later. MARGIN and IMPORT are refused under regime OTHER. */
+application: TaxApplication,
+/**
+ * The rate in basis points, 0 to 10000. Must be 0 for EXEMPT and OUTSIDE_SCOPE
+ * and above 0 for IMPORT. Cannot be changed later.
+ */
+rateBps: Scalars['Int'],
+/**
+ * The first day the code is in force, as YYYY-MM-DD. Omit for today (UTC).
+ * Cannot be changed later.
+ */
+effectiveFrom?: (Scalars['String'] | null),
+/**
+ * The last day the code is in force, as YYYY-MM-DD. Omit to keep it in force
+ * until ended.
+ */
+effectiveTo?: (Scalars['String'] | null),
+/** Accounting code for tax under this code. Omit to leave it without one. */
+accountCodeId?: (Scalars['ID'] | null),
+/**
+ * The code this one replaces, for a rate change. It must have the same
+ * application, start earlier and not have been replaced already; it is ended
+ * the day before this code takes effect.
+ */
+replacesTaxCodeId?: (Scalars['ID'] | null)}
 
 
 /** Credentials and identifiers needed to deliver text messages through Twilio. */
@@ -7611,7 +13362,14 @@ externalId?: (Scalars['String'] | null),
  * Conditional. Must be set if imageType is PRODUCT, PRODUCT_VARIANT, or COLLECTION.
  * Opaque entity ID from the marketplace system (e.g. Vendure product/variant/collection ID).
  */
-marketplaceEntityId?: (Scalars['String'] | null)}
+marketplaceEntityId?: (Scalars['String'] | null),
+/**
+ * Conditional. Must be set if imageTypes contains STAFF_PROFILE. The uploaded
+ * image becomes the staff profile's photo.
+ */
+staffProfileId?: (Scalars['String'] | null),
+/** Which list of the item or lot the image belongs to. CONDITION is only valid with the ITEM and SALE_ITEM image types. */
+kind?: (ImageKind | null)}
 
 
 /**
@@ -7643,6 +13401,14 @@ export interface CreatorGenqlSelection{
      * linked to the creator inherit this unless they set their own value.
      */
     arr?: boolean | number
+    /** Year the creator started, as free text (e.g. "1881", "c. 1900"). Null when not set. */
+    yearFrom?: boolean | number
+    /** Year the creator ended, as free text (e.g. "1973", "present"). Null when not set. */
+    yearTo?: boolean | number
+    /** Nationality of the creator, as free text. Null when not set. */
+    nationality?: boolean | number
+    /** Biography of the creator as sanitised rich-text HTML, at most 20 KB. Null when not set. */
+    biography?: boolean | number
     /** Timestamp when the creator was created. */
     createdAt?: boolean | number
     /** Timestamp when the creator was last updated. */
@@ -7665,6 +13431,18 @@ export interface CreatorConnectionGenqlSelection{
 /** A flat list of creators returned from association mutations. */
 export interface CreatorListGenqlSelection{
     creators?: CreatorGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Per-account creator settings. */
+export interface CreatorSettingsGenqlSelection{
+    /**
+     * Whether creators can be nested under other creators. Turning it off keeps
+     * existing nested creators but blocks creating new ones.
+     */
+    allowNested?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -7702,6 +13480,8 @@ export interface DashboardMemberGenqlSelection{
     email?: boolean | number
     /** Roles assigned to this user in the account. */
     roles?: DashboardUserRoleAssignmentGenqlSelection
+    /** The staff profile linked to this user in the account. Null when none is linked. */
+    staffProfile?: StaffProfileGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -7722,6 +13502,15 @@ export interface DeleteAccountFeeInput {id: Scalars['String']}
 
 /** Input to delete an Action Hook subscription. */
 export interface DeleteActionHookSubscriptionInput {id: Scalars['ID']}
+
+
+/**
+ * Input for removing what a premium does at one level, so the next level out
+ * applies there instead.
+ */
+export interface DeleteBuyerPremiumAtScopeInput {buyerPremiumId: Scalars['ID'],
+/** Removing a level that was never set is accepted unchanged. */
+scope: BuyerPremiumScopeInput}
 
 
 /**
@@ -7750,7 +13539,14 @@ imageId: Scalars['String'],
  * The entities that the image belongs to.
  * If empty or not provided, all associations will be removed and the image will be deleted.
  */
-imageTypes?: (ImageType[] | null)}
+imageTypes?: (ImageType[] | null),
+/** The staff profile identifier, needed if you are specifying the STAFF_PROFILE image type. */
+staffProfileId?: (Scalars['String'] | null),
+/**
+ * With imageTypes, which list of the item or lot to remove the image from. Ignored when imageTypes
+ * is empty, which removes every link. CONDITION is only valid with the ITEM and SALE_ITEM image types.
+ */
+kind?: (ImageKind | null)}
 
 
 /** Delete item image input */
@@ -7901,6 +13697,10 @@ export interface DisassociateUserFromAccountInput {
 /** The user ID to disassociate from the account. */
 userId: Scalars['String']}
 
+export interface DisplayNumberAssignmentInput {itemId: Scalars['ID'],
+/** Lot number to set, verbatim. May be alpha-numeric (e.g. "5A"). */
+displayNumber: Scalars['String']}
+
 
 /** An Asset that is neither an image nor a video (PDF, Word, plain text, etc.). */
 export interface DocumentGenqlSelection{
@@ -7917,6 +13717,90 @@ export interface DocumentGenqlSelection{
     __typename?: boolean | number
     __scalar?: boolean | number
 }
+
+
+/** House branding printed on generated documents such as consignment contracts. */
+export interface DocumentBrandingGenqlSelection{
+    /** Asset id of the logo printed in the letterhead. Null when there is no logo. */
+    logoAssetId?: boolean | number
+    /** Accent colour in #RRGGBB form. Null for the default. */
+    accentColor?: boolean | number
+    /** Secondary colour in #RRGGBB form, used for subtle backgrounds. Null for the default. */
+    secondaryColor?: boolean | number
+    /** Hides the account name in the letterhead when a logo is set. */
+    hideAccountName?: boolean | number
+    /** The house's legal details, printed in the footer. Null when none are set. */
+    company?: DocumentBrandingCompanyGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** The house's legal details printed on generated documents. */
+export interface DocumentBrandingCompanyGenqlSelection{
+    legalName?: boolean | number
+    /** Free-form address, one line per entry. */
+    addressLines?: boolean | number
+    /** Label printed before registrationNumber, e.g. "Company No." or "EIN". */
+    registrationLabel?: boolean | number
+    registrationNumber?: boolean | number
+    /** Label printed before taxNumber, e.g. "VAT No." or "Sales tax ID". */
+    taxLabel?: boolean | number
+    taxNumber?: boolean | number
+    email?: boolean | number
+    phone?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface DocumentBrandingCompanyInput {
+/** At most 200 characters, as is every other text field here. */
+legalName?: (Scalars['String'] | null),
+/** At most 6 lines. Blank lines are dropped. */
+addressLines?: (Scalars['String'][] | null),registrationLabel?: (Scalars['String'] | null),registrationNumber?: (Scalars['String'] | null),taxLabel?: (Scalars['String'] | null),taxNumber?: (Scalars['String'] | null),email?: (Scalars['String'] | null),phone?: (Scalars['String'] | null)}
+
+export interface DocumentBrandingInput {
+/**
+ * Asset id of a PNG or JPEG image owned by the account whose upload is complete.
+ * Null or empty means no logo.
+ */
+logoAssetId?: (Scalars['String'] | null),
+/** #RRGGBB, or null for the default. */
+accentColor?: (Scalars['String'] | null),
+/** #RRGGBB, or null for the default. */
+secondaryColor?: (Scalars['String'] | null),
+/** Hides the account name in the letterhead when a logo is set. Defaults to false. */
+hideAccountName?: (Scalars['Boolean'] | null),company?: (DocumentBrandingCompanyInput | null)}
+
+
+/** A short-lived link to a generated document. Treat the url as a secret. */
+export interface DocumentDownloadGenqlSelection{
+    url?: boolean | number
+    expiresAt?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** The current values of an unsaved item. */
+export interface DraftItemInput {
+/**
+ * The item type. Without it, attributes are ignored and ATTRIBUTES is not suggested.
+ * Fields the item type generates from a template are not suggested.
+ */
+itemTypeId?: (Scalars['ID'] | null),
+/** At most 500 characters. */
+title?: (Scalars['String'] | null),
+/** At most 500 characters. */
+subTitle?: (Scalars['String'] | null),
+/** At most 20,000 characters. */
+description?: (Scalars['String'] | null),
+/** At most 50 tags of at most 100 characters each. */
+tags?: (Scalars['String'][] | null),
+/** Values for the item type's fields. Only the item type's public fields are used. At most 64 KB. */
+attributes?: (Scalars['JSON'] | null),
+/** Image URLs from createAssetUploadUrl (assetUrl), cover first, at most 8. Other URLs are ignored. */
+imageUrls?: (Scalars['String'][] | null)}
 
 export interface DutchBidGenqlSelection{
     id?: boolean | number
@@ -8034,6 +13918,17 @@ export interface DutchScheduleGenqlSelection{
 export interface DutchScheduleInput {startingAmount: Scalars['Int'],drops: DutchPriceDropInput[]}
 
 
+/** The entity number settings for an account. Consignments and appraisals share one sequence. */
+export interface EntityNumberSettingsGenqlSelection{
+    /** The next entity number that will be allocated for this account to a new consignment or appraisal. */
+    nextNumber?: boolean | number
+    /** The highest entity number currently assigned to a consignment or appraisal, or null if none exist. */
+    highestAssignedNumber?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
 /** Estimates for an item */
 export interface EstimateGenqlSelection{
     /** Item low estimate */
@@ -8129,7 +14024,7 @@ export interface FeeRuleGenqlSelection{
      * lowerLimit — it does not prorate or repeat up to upperLteLimit.
      */
     calculationType?: boolean | number
-    /** Source indicates which level in the cascade hierarchy this fee originates from. */
+    /** The level this rule comes from. */
     source?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
@@ -8144,6 +14039,35 @@ export interface FieldChangeGenqlSelection{
     __typename?: boolean | number
     __scalar?: boolean | number
 }
+
+export interface GenerateConsignmentContractInput {consignmentId: Scalars['String'],
+/**
+ * Currency of the charges printed on the contract. Defaults to the account's
+ * default currency. Charges configured only in other currencies are left out.
+ */
+currency?: (Currency | null)}
+
+export interface GeneratePresaleAdvicesInput {saleId: Scalars['String'],
+/** Only generate the advices of these main consignors. Omitted or empty generates every advice of the sale. */
+consignorUserIds?: (Scalars['String'][] | null),
+/** Only generate the advice that covers this consignment. */
+consignmentId?: (Scalars['String'] | null)}
+
+export interface GeneratePresaleAdvicesResultGenqlSelection{
+    /**
+     * The generated revisions. An advice whose items and document are unchanged since its
+     * GENERATED revision is returned unchanged.
+     */
+    advices?: PresaleAdviceGenqlSelection
+    /** Items of the sale that are on no advice, with the reason. Not narrowed by the input's filters. */
+    skipped?: PresaleAdviceSkippedItemGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface GeneratePropertyReceiptInput {consignmentId: Scalars['String'],
+/** 1 to 1,000 distinct items, each currently in the consignment. */
+itemIds: Scalars['String'][],location?: (PropertyReceiptLocationInput | null)}
 
 export interface GeoLocationGenqlSelection{
     countryIsoCode?: boolean | number
@@ -8172,6 +14096,21 @@ export interface GetMetafieldInput {key: Scalars['String']}
 
 /** Input for getting multiple metafields connected to a specific entity, we return at max 10 metafields */
 export interface GetMetafieldsInput {keys?: (Scalars['String'][] | null)}
+
+
+/** Set-replace change summary for one group (creators, categories, tags, or images). */
+export interface GroupSyncDiffGenqlSelection{
+    /** The resulting set after the sync (the source/desired set in true-mirror order). */
+    resulting?: boolean | number
+    /** Members added to the target. */
+    added?: boolean | number
+    /** Members removed from the target. */
+    removed?: boolean | number
+    /** True when added and removed are both empty. */
+    inSync?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
 
 
 /** Input to hide items from a sale */
@@ -8227,6 +14166,25 @@ export interface HttpHeaderGenqlSelection{
 
 /** Input to include custom header key-value pairs with Action Hook requests. */
 export interface HttpHeaderInput {key: Scalars['String'],value: Scalars['String']}
+
+
+/**
+ * An account's identity verification settings, one member per provider. The secret key
+ * is never returned.
+ */
+export interface IdentityVerificationProviderGenqlSelection{
+    on_StripeIdentityProviderSettings?:StripeIdentityProviderSettingsGenqlSelection,
+    __typename?: boolean | number
+}
+
+
+/**
+ * The provider to set up, exactly one of the fields. Switching provider on a configured
+ * account needs that provider's secret key.
+ */
+export interface IdentityVerificationProviderInput {
+/** Stripe Identity on the account's own Stripe account. */
+stripeIdentity?: (StripeIdentityProviderInput | null)}
 
 
 /** Image object */
@@ -8304,15 +14262,81 @@ sender?: (NotificationEmailSenderInput | null),
  */
 replyToEmail?: (Scalars['String'] | null)}
 
+
+/**
+ * The inventory number settings for an account. Inventory numbers are sequential per
+ * account and are not the item's position in a sale.
+ */
+export interface InventoryNumberSettingsGenqlSelection{
+    /** The next inventory number that will be allocated to a new item in this account. */
+    nextNumber?: boolean | number
+    /** The highest inventory number currently assigned, or null if no item has one. */
+    highestAssignedNumber?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/**
+ * The order's invoice: the revision issued through Basta, printed as
+ * `invoiceNumber`-`revision`, or one recorded from another system with
+ * `createInvoice`.
+ */
 export interface InvoiceGenqlSelection{
-    /** InvoiceId */
     invoiceId?: boolean | number
-    /** ExternalID */
+    /** The invoice's id in another system. Empty for one issued through Basta. */
     externalID?: boolean | number
-    /** Due date in RFC3339 format */
+    /** Due date in RFC3339 format. */
     dueDate?: boolean | number
-    /** Link to the invoice */
+    /** Link to the invoice in another system. Empty for one issued through Basta. */
     url?: boolean | number
+    /**
+     * 1 for the first issue, increasing by one each time the order is published
+     * again with changes. Null for an invoice recorded from another system.
+     */
+    revision?: boolean | number
+    /**
+     * UTC RFC3339 date and time this revision was issued. Null for an invoice
+     * recorded from another system.
+     */
+    issuedAt?: boolean | number
+    /**
+     * A short-lived link to the invoice as a PDF. Null for an invoice recorded
+     * from another system, and for a moment after issue while it renders.
+     */
+    download?: DocumentDownloadGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/**
+ * The account's defaults for the invoices it issues. They apply to invoices
+ * issued after they are set; invoices already issued keep what they printed.
+ */
+export interface InvoiceSettingsGenqlSelection{
+    /**
+     * Days from the issue date to the due date. An order's own due date or
+     * payment terms take precedence.
+     */
+    paymentTermsDays?: boolean | number
+    /** How to pay, printed on every invoice. Null when none is set. */
+    paymentInstructions?: boolean | number
+    /**
+     * The closing text printed at the foot of every invoice. Null when none is
+     * set.
+     */
+    footerText?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface IssuesSuggestionGenqlSelection{
+    /**
+     * Problems found in the target's content, most important first, at most 8.
+     * When none are found, the ISSUES suggestion is left out.
+     */
+    issues?: ContentIssueGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -8326,6 +14350,8 @@ export interface ItemGenqlSelection{
     title?: boolean | number
     /** Item sub-title */
     subTitle?: boolean | number
+    /** Condition report for the item. Null when the item has no condition text and no condition images. */
+    conditionReport?: ConditionReportGenqlSelection
     /** Account ID */
     accountId?: boolean | number
     /** Item description */
@@ -8366,8 +14392,15 @@ export interface ItemGenqlSelection{
      * The effective schema (field definitions) for this item's item type.
      */
     schema?: boolean | number
-    /** Item Notes. */
+    /**
+     * @deprecated Use notes instead.
+     * Item Notes.
+     */
     itemNotes?: (ItemNoteConnectionGenqlSelection & { __args?: {take?: (Scalars['Int'] | null), cursor?: (Scalars['String'] | null), direction?: (PaginationDirection | null)} })
+    /** Internal staff notes on this item. */
+    notes?: (NoteConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null)} })
+    /** Alert notes for this item (notes flagged as alerts, for banner display). */
+    alerts?: NoteGenqlSelection
     /**
      * @deprecated Use specificationsV2
      * Item specifications (dimensions, weight, type, etc.) - first specification only. Use specificationsV2 for full list.
@@ -8405,10 +14438,42 @@ export interface ItemGenqlSelection{
     metafield?: (MetafieldGenqlSelection & { __args: {input: GetMetafieldInput} })
     /** The consignment this item belongs to, if any. */
     consignment?: ConsignmentGenqlSelection
+    /**
+     * @deprecated Use appraisals
+     * The earliest appraisal this item is in, if any.
+     */
+    appraisal?: AppraisalGenqlSelection
+    /** Appraisals this item is in, earliest first. */
+    appraisals?: AppraisalGenqlSelection
+    /**
+     * The item's line in each appraisal it is in, earliest link first. Line numbers are
+     * per appraisal and differ from inventoryNumber and from the item's position in a sale.
+     */
+    appraisalLines?: AppraisalLineGenqlSelection
+    /**
+     * The item's line number within its consignment. Never changes and is never reused.
+     * Per consignment; differs from inventoryNumber and from the item's position in a sale.
+     * Null when the item is not consigned or the number is not yet assigned.
+     */
+    consignmentLineNumber?: boolean | number
+    /**
+     * The appraisal line the item was transferred from into its consignment. Null when the
+     * item is not in a consignment, was consigned directly, or its source appraisal was deleted.
+     */
+    consignedFrom?: AppraisalLineGenqlSelection
     /** The site this item currently resides at, if any. */
     site?: SiteGenqlSelection
     /** The location within its site this item currently resides at, if any. */
     siteLocation?: LocationGenqlSelection
+    /**
+     * Where the item physically is. AT_LOCATION when it has a site, else IN_TRANSIT
+     * while in transit, else WITH_CLIENT when it is consigned. Null otherwise.
+     */
+    locationStatus?: boolean | number
+    /** When the item went into transit. Null unless locationStatus is IN_TRANSIT. */
+    inTransitSince?: boolean | number
+    /** The latest property receipt issued for the item in its current consignment. Null when none. */
+    propertyReceipt?: PropertyReceiptRefGenqlSelection
     /** Categories assigned to the item */
     categories?: CategoryGenqlSelection
     /** Creators assigned to the item */
@@ -8439,6 +14504,35 @@ export interface ItemGenqlSelection{
      * marketplace product variants.
      */
     links?: ItemLinkConnectionGenqlSelection
+    /**
+     * Overall lifecycle status of the item (acquisition to disposal), distinct from
+     * the item's auction status within a sale.
+     */
+    lifecycleStatus?: boolean | number
+    /**
+     * Where the item sits in the cataloguing workflow: awaiting cataloguing, catalogued,
+     * or proofed. An item with no explicitly set status reads as awaiting cataloguing;
+     * null only if the item cannot be loaded.
+     */
+    cataloguingWorkflowStatus?: boolean | number
+    /**
+     * Where the item sits in the photography workflow: to photograph, photographed, or
+     * uploaded. An item with no explicitly set status reads as to photograph; null only
+     * if the item cannot be loaded.
+     */
+    photographyWorkflowStatus?: boolean | number
+    /** The dashboard member currently assigned as staff lead for this item. */
+    staffLead?: DashboardMemberGenqlSelection
+    /** CITES licence number, when the item is subject to CITES regulations. */
+    citesLicenceNumber?: boolean | number
+    /**
+     * The account's inventory number for this item: sequential per account and assigned
+     * when the item is created. It is not the item's position in a sale.
+     * Null for items created before inventory numbers were introduced.
+     */
+    inventoryNumber?: boolean | number
+    /** Timestamp when the item was created. */
+    created?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -8485,6 +14579,20 @@ export interface ItemBuyNowConfigGenqlSelection{
     currency?: boolean | number
     /** When the config was last set (RFC3339); null when never set. */
     setAt?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/**
+ * Cataloguing readiness for an item: whether its required schema fields are filled.
+ * Call before promoting to catalogued/proofed to warn (soft) about blanks.
+ */
+export interface ItemCataloguingReadinessGenqlSelection{
+    /** True when the item has no item type (schema) assigned; the field list is then empty. */
+    noItemType?: boolean | number
+    /** Required fields that are blank or missing in the item's content. */
+    missingRequiredFields?: MissingRequiredFieldGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -8546,6 +14654,8 @@ export interface ItemIdsFilter {itemIds?: (Scalars['ID'][] | null)}
 export interface ItemImageAssociationGenqlSelection{
     /** The ID of the associated item */
     itemId?: boolean | number
+    /** Which list of the item the image is in. An image in both lists has one association per kind. */
+    kind?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -8878,8 +14988,16 @@ export interface ItemTypeGenqlSelection{
     id?: boolean | number
     accountId?: boolean | number
     name?: boolean | number
-    /** Globally unique namespace used to build search filter paths for this item type's properties. */
+    /**
+     * Globally unique search key used to build search filter paths for this item type's
+     * properties (schemaData.<namespace>.<prop>). Not for display — use `slug`.
+     */
     namespace?: boolean | number
+    /**
+     * Per-account display identifier, shown in the UI and used in item-type URLs. Unique
+     * within the account only, so two tenants can share the same slug.
+     */
+    slug?: boolean | number
     schema?: boolean | number
     parentId?: boolean | number
     createdAt?: boolean | number
@@ -8895,6 +15013,11 @@ export interface ItemTypeGenqlSelection{
      * `appliesAt` on each says which level supplied the values.
      */
     charges?: (ChargeConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), options?: (ChargeOptions | null)} })
+    /**
+     * The premiums as they apply to lots of this item type, before anything set
+     * on a single lot. `appliesAt` on each says which level supplied the values.
+     */
+    buyerPremiums?: (BuyerPremiumConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), options?: (BuyerPremiumOptions | null)} })
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -8904,6 +15027,22 @@ export interface ItemTypeGenqlSelection{
 export interface ItemTypeEdgeGenqlSelection{
     node?: ItemTypeGenqlSelection
     cursor?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/**
+ * The tax codes for lots of one item type. A null code falls through to the
+ * account's default.
+ */
+export interface ItemTypeTaxDefaultGenqlSelection{
+    /** The item type the codes apply to. */
+    itemTypeId?: boolean | number
+    /** The code for the hammer price. Null falls through to the next level. */
+    hammerTaxCode?: TaxCodeGenqlSelection
+    /** The code for premiums and charges. Null falls through to the next level. */
+    chargeTaxCode?: TaxCodeGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -8949,7 +15088,7 @@ export interface LinkImageByExternalIdInput {
 externalId: Scalars['String'],
 /**
  * The entities the image should be linked to. Marketplace types
- * (PRODUCT, PRODUCT_VARIANT, COLLECTION) are not supported here.
+ * (PRODUCT, PRODUCT_VARIANT, COLLECTION) and STAFF_PROFILE are not supported here.
  */
 imageTypes: ImageType[],
 /** Conditional. Must be set if imageType is Sale or SaleItem. */
@@ -8957,7 +15096,9 @@ saleId?: (Scalars['String'] | null),
 /** Conditional. Must be set if imageType is Item or SaleItem. */
 itemId?: (Scalars['String'] | null),
 /** Optional display order within the new connection. */
-order?: (Scalars['Int'] | null)}
+order?: (Scalars['Int'] | null),
+/** Which list of the item or lot the image belongs to. CONDITION is only valid with the ITEM and SALE_ITEM image types. */
+kind?: (ImageKind | null)}
 
 export interface LinkImageByIdInput {
 /** Basta image id (UUID) of an existing image to link. */
@@ -8967,7 +15108,7 @@ imageId: Scalars['String'],
  * (PRODUCT, PRODUCT_VARIANT, COLLECTION) are not supported here —
  * ImageWithAssociations cannot represent marketplace associations, so the
  * response would silently drop them. Use createUploadUrl for marketplace
- * images for now.
+ * images for now. STAFF_PROFILE is not supported; use setStaffProfilePhoto.
  */
 imageTypes: ImageType[],
 /** Conditional. Must be set if imageType is Sale or SaleItem. */
@@ -8975,7 +15116,9 @@ saleId?: (Scalars['String'] | null),
 /** Conditional. Must be set if imageType is Item or SaleItem. */
 itemId?: (Scalars['String'] | null),
 /** Optional display order within the new connection. */
-order?: (Scalars['Int'] | null)}
+order?: (Scalars['Int'] | null),
+/** Which list of the item or lot the image belongs to. CONDITION is only valid with the ITEM and SALE_ITEM image types. */
+kind?: (ImageKind | null)}
 
 export interface LinkInput {type: LinkType,url: Scalars['String']}
 
@@ -9109,6 +15252,31 @@ addressType: AddressType,
 /** Label */
 label?: (Scalars['String'] | null)}
 
+export interface MarkConsignmentContractSentInput {consignmentId: Scalars['String'],
+/** Id of a GENERATED revision of the consignment's contract. */
+contractId: Scalars['String']}
+
+
+/** A client's recorded answer on marketing communications. */
+export interface MarketingConsentGenqlSelection{
+    /** Whether the client consents to marketing communications. */
+    consented?: boolean | number
+    /** When the client gave or withdrew consent. */
+    decidedAt?: boolean | number
+    /** When this answer was recorded. */
+    recordedAt?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** A client's answer on marketing communications. A new answer replaces the stored one. */
+export interface MarketingConsentInput {
+/** Whether the client consents to marketing communications. */
+consented: Scalars['Boolean'],
+/** When the client gave or withdrew consent. Defaults to now. Must not be in the future. */
+decidedAt?: (Scalars['Time'] | null)}
+
 
 /** Max bid on behalf of a user in a sale. */
 export interface MaxBidOnBehalfInput {
@@ -9144,6 +15312,17 @@ export interface MetafieldGenqlSelection{
 /** Input for setting a single metafield connected to a specific entity */
 export interface MetafieldInput {key: Scalars['String'],value: Scalars['String'],valueType: MetafieldValueType}
 
+
+/** A required schema field that is blank or missing in an item's content. */
+export interface MissingRequiredFieldGenqlSelection{
+    /** The field's schema property name. */
+    name?: boolean | number
+    /** The field's display title. */
+    title?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
 export interface MutationGenqlSelection{
     /** Update Account */
     updateAccount?: (AccountGenqlSelection & { __args: {accountId: Scalars['String'], input: UpdateAccountInput} })
@@ -9156,6 +15335,34 @@ export interface MutationGenqlSelection{
      * Replaces all glyphs at once; an empty glyph clears that symbol.
      */
     setAuctionSymbols?: (AccountGenqlSelection & { __args: {accountId: Scalars['String'], input: AuctionSymbolInput[]} })
+    /**
+     * Replace the account's document branding. The logo must be a PNG or JPEG
+     * asset of this account whose upload is complete.
+     */
+    updateDocumentBranding?: (AccountGenqlSelection & { __args: {accountId: Scalars['String'], input: DocumentBrandingInput} })
+    /**
+     * Save a new version of the account's consignment contract template. It becomes
+     * the template for new contracts; earlier versions are kept unchanged.
+     */
+    createConsignmentContractTemplateVersion?: (ConsignmentContractTemplateGenqlSelection & { __args: {accountId: Scalars['String'], input: CreateConsignmentContractTemplateVersionInput} })
+    /**
+     * Set the number the next created client in the account receives. Must be greater than
+     * every client number already in use in the account.
+     */
+    setNextClientNumber?: (ClientNumberSettingsGenqlSelection & { __args: {accountId: Scalars['String'], nextClientNumber: Scalars['Int']} })
+    /**
+     * Set the number the next created sale in the account receives. Must be greater than
+     * every sale number already in use in the account.
+     */
+    setNextSaleNumber?: (SaleNumberSettingsGenqlSelection & { __args: {accountId: Scalars['String'], nextSaleNumber: Scalars['Int']} })
+    /**
+     * Set up identity verification for the account's clients, or turn it on or off. Pass the
+     * credentials of exactly one provider; its input type documents the setup steps. Switching
+     * provider needs that provider's secret key.
+     */
+    setIdentityVerificationProvider?: (IdentityVerificationProviderGenqlSelection & { __args: {accountId: Scalars['ID'], 
+    /** Whether the account's clients can verify their identity. */
+    enabled: Scalars['Boolean'], provider: IdentityVerificationProviderInput} })
     /** Create a sale */
     createSale?: (SaleGenqlSelection & { __args: {accountId: Scalars['String'], input: CreateSaleInput} })
     /** Create a Dutch sale */
@@ -9229,24 +15436,69 @@ export interface MutationGenqlSelection{
     openSale?: (SaleGenqlSelection & { __args: {accountId: Scalars['String'], input: OpenSaleInput} })
     /** Close a sale, non forcefully. */
     closeSale?: (SaleGenqlSelection & { __args: {accountId: Scalars['String'], input: CloseSaleInput} })
-    /** Set Sale State unforcefully */
+    /**
+     * Set Sale State unforcefully.
+     * Setting PUBLISHED checks the required fields of every lot that is not hidden or withdrawn, and fails with LOTS_MISSING_REQUIRED_FIELDS when any are blank.
+     */
     setSaleStatus?: (SaleGenqlSelection & { __args: {accountId: Scalars['String'], input: SetSaleStatusInput} })
     /** Start to close the sale, non forcefully */
     startClosingSale?: (SaleGenqlSelection & { __args: {accountId: Scalars['String'], input: StartClosingSaleInput} })
-    /** Open a sale, forcefully. */
+    /**
+     * Open a sale, forcefully.
+     * Lots' required fields are not checked.
+     */
     forceOpenSale?: (SaleGenqlSelection & { __args: {accountId: Scalars['String'], input: OpenSaleInput} })
-    /** Close a sale, forcefully. */
+    /**
+     * Close a sale, forcefully.
+     * Lots' required fields are not checked.
+     */
     forceCloseSale?: (SaleGenqlSelection & { __args: {accountId: Scalars['String'], input: CloseSaleInput} })
-    /** Start to close the sale, forcefully */
+    /**
+     * Start to close the sale, forcefully.
+     * Lots' required fields are not checked.
+     */
     forceStartClosingSale?: (SaleGenqlSelection & { __args: {accountId: Scalars['String'], input: StartClosingSaleInput} })
-    /** Publish a sale, forcefully. */
+    /**
+     * Publish a sale.
+     * Checks the required fields of every lot that is not hidden or withdrawn, and fails with LOTS_MISSING_REQUIRED_FIELDS when any are blank.
+     */
     publishSale?: (SaleGenqlSelection & { __args: {accountId: Scalars['String'], input: PublishSaleInput} })
+    /**
+     * Put an unpublished sale into preview: it is shown publicly with only the lots marked for preview, and bidding stays closed.
+     * Lots are not checked here; they are checked when marked for preview. Dutch sales cannot be previewed.
+     */
+    previewSale?: (SaleGenqlSelection & { __args: {accountId: Scalars['String'], input: PreviewSaleInput} })
+    /**
+     * Mark or unmark lots for preview. Only allowed before the sale is published. Returns the number of lots whose flag changed.
+     * Marking checks the lots' required fields and fails with LOTS_MISSING_REQUIRED_FIELDS when any are blank.
+     */
+    setSaleItemsPreview?: { __args: {accountId: Scalars['String'], input: SetSaleItemsPreviewInput} }
     /** Delete a sale permanently. */
     deleteSale?: (DeleteSalePayloadGenqlSelection & { __args: {accountId: Scalars['String'], input: DeleteSaleInput} })
     /** Create item. This operation will create a standalone item that is not part of a sale. */
     createItem?: (ItemGenqlSelection & { __args: {accountId: Scalars['String'], input: CreateItemInput} })
     /** Update item. This will update information about items for all sales that has not been closed. */
     updateItem?: (ItemGenqlSelection & { __args: {accountId: Scalars['String'], itemId: Scalars['String'], input: UpdateItemInput} })
+    /**
+     * Set an item's overall lifecycle status. Accepts any valid status; transition
+     * rules are not enforced.
+     */
+    setItemStatus?: (ItemGenqlSelection & { __args: {accountId: Scalars['String'], input: SetItemStatusInput} })
+    /**
+     * Set an item's cataloguing workflow status. The cataloguing workflow must be
+     * enabled for the account, otherwise the mutation fails.
+     */
+    setCataloguingWorkflowStatus?: (SetCataloguingWorkflowStatusPayloadGenqlSelection & { __args: {accountId: Scalars['ID'], itemId: Scalars['ID'], status: CataloguingWorkflowStatus} })
+    /**
+     * Set an item's photography workflow status. The photography workflow must be
+     * enabled for the account, otherwise the mutation fails. Fails with NOT_FOUND if the item does not exist or is deleted.
+     */
+    setPhotographyWorkflowStatus?: (SetPhotographyWorkflowStatusPayloadGenqlSelection & { __args: {accountId: Scalars['ID'], itemId: Scalars['ID'], status: PhotographyWorkflowStatus} })
+    /**
+     * Set one photography workflow status on up to 1000 items. The photography workflow must be
+     * enabled for the account. Item ids that are not found or are deleted are returned in skippedItemIds instead of failing the call.
+     */
+    setPhotographyWorkflowStatuses?: (SetPhotographyWorkflowStatusesPayloadGenqlSelection & { __args: {accountId: Scalars['ID'], itemIds: Scalars['ID'][], status: PhotographyWorkflowStatus} })
     /** Add specifications to an existing item. */
     addSpecifications?: (ItemSpecificationsGenqlSelection & { __args: {accountId: Scalars['String'], input: AddSpecificationsInput} })
     /** Create a consignment. */
@@ -9296,12 +15548,199 @@ export interface MutationGenqlSelection{
      */
     addConsignmentStaff?: (ConsignmentGenqlSelection & { __args: {accountId: Scalars['String'], input: AddConsignmentStaffInput} })
     /**
+     * Set the consignment's transport: coordinator, expected date, courier and receiving site.
+     * Replaces the whole transport, so a field left out or null is cleared.
+     */
+    setConsignmentTransport?: (ConsignmentGenqlSelection & { __args: {accountId: Scalars['String'], input: SetConsignmentTransportInput} })
+    /**
      * Remove one or more staff from a consignment. Removing all is allowed, and
      * removing the current lead promotes one of the remaining members in its place.
      */
     removeConsignmentStaff?: (ConsignmentGenqlSelection & { __args: {accountId: Scalars['String'], input: RemoveConsignmentStaffInput} })
     /** Set the lead staff member for a consignment (auto-adds the user if needed). */
     setConsignmentStaffLead?: (ConsignmentGenqlSelection & { __args: {accountId: Scalars['String'], input: SetConsignmentStaffLeadInput} })
+    /** Create an appraisal. */
+    createAppraisal?: (AppraisalGenqlSelection & { __args: {accountId: Scalars['String'], input: CreateAppraisalInput} })
+    /**
+     * Update an appraisal. Name and notes left out are cleared; type and attribution
+     * channel left out are kept.
+     */
+    updateAppraisal?: (AppraisalGenqlSelection & { __args: {accountId: Scalars['String'], input: UpdateAppraisalInput} })
+    /**
+     * Delete an appraisal. Rejected while any item that is not deleted is still in it, or
+     * once a document has been generated for it; deleted items are removed from it.
+     */
+    deleteAppraisal?: (AppraisalGenqlSelection & { __args: {accountId: Scalars['String'], appraisalId: Scalars['String']} })
+    /**
+     * Move items of an appraisal into a consignment. The items keep their details, images
+     * and values and stay in the appraisal; APPRAISAL items become AVAILABLE. All or
+     * nothing: when any item is missing, not in the appraisal, deleted or in another
+     * consignment, nothing changes and the error lists the ids. An item already in the
+     * target consignment is skipped, even when deleted, so a retry is safe. At most 1000 items.
+     * Requires WRITE_APPRAISAL as well as WRITE_CONSIGNMENT.
+     */
+    transferAppraisalItemsToConsignment?: (TransferAppraisalItemsToConsignmentPayloadGenqlSelection & { __args: {accountId: Scalars['String'], input: TransferAppraisalItemsToConsignmentInput} })
+    /**
+     * Add items to an appraisal. Items already in it are left as they are, and an item
+     * can be in several appraisals. AVAILABLE items without a consignment become
+     * APPRAISAL; items in any other status keep it. All or nothing: when any item is
+     * missing or deleted, no item is added and the error lists the offending ids.
+     */
+    setItemsAppraisal?: (SetItemsAppraisalPayloadGenqlSelection & { __args: {accountId: Scalars['String'], input: SetItemsAppraisalInput} })
+    /**
+     * Remove items from an appraisal. An item with status APPRAISAL returns to AVAILABLE
+     * only when it is in no other appraisal. A removed item's valuation in this appraisal
+     * is discarded and is not restored if the item is added again. All or nothing: when
+     * any item is not in this appraisal, no item is removed and the error lists the offending ids.
+     */
+    clearItemsAppraisal?: (ClearItemsAppraisalPayloadGenqlSelection & { __args: {accountId: Scalars['String'], input: ClearItemsAppraisalInput} })
+    /**
+     * Update an item in an appraisal. Rejected when the item is not in the appraisal.
+     * When the item is not frozen for the appraisal, the item itself is updated, which
+     * also requires WRITE_ITEM.
+     */
+    updateAppraisalItem?: (AppraisalItemGenqlSelection & { __args: {accountId: Scalars['String'], input: UpdateAppraisalItemInput} })
+    /** Add one or more clients to an appraisal. Existing clients are ignored. */
+    addAppraisalClients?: (AppraisalGenqlSelection & { __args: {accountId: Scalars['String'], input: AddAppraisalClientsInput} })
+    /**
+     * Remove one or more clients from an appraisal. When the main client is removed,
+     * a remaining client becomes main. Removing every client is rejected.
+     */
+    removeAppraisalClients?: (AppraisalGenqlSelection & { __args: {accountId: Scalars['String'], input: RemoveAppraisalClientsInput} })
+    /** Set the main client of an appraisal (added if not already a client). */
+    setMainAppraisalClient?: (AppraisalGenqlSelection & { __args: {accountId: Scalars['String'], input: SetMainAppraisalClientInput} })
+    /** Add one or more staff to an appraisal. Ids already on the staff set are ignored. */
+    addAppraisalStaff?: (AppraisalGenqlSelection & { __args: {accountId: Scalars['String'], input: AddAppraisalStaffInput} })
+    /**
+     * Remove one or more staff from an appraisal. When the lead is removed, a remaining
+     * staff member becomes lead. Removing every staff member is rejected.
+     */
+    removeAppraisalStaff?: (AppraisalGenqlSelection & { __args: {accountId: Scalars['String'], input: RemoveAppraisalStaffInput} })
+    /** Set the lead staff member of an appraisal (added if not already on the staff set). */
+    setAppraisalStaffLead?: (AppraisalGenqlSelection & { __args: {accountId: Scalars['String'], input: SetAppraisalStaffLeadInput} })
+    /**
+     * Update an item's valuation in an appraisal: value, basis, room and position.
+     * The valuation belongs to the appraisal, so this does not change the item or its
+     * valuation in other appraisals. Rejected when the item is not in the appraisal.
+     */
+    updateAppraisalItemValuation?: (AppraisalItemGenqlSelection & { __args: {accountId: Scalars['String'], input: UpdateAppraisalItemValuationInput} })
+    /**
+     * Update the details an appraisal's document prints: dates, who instructed the
+     * valuation, reference, valuer and layout. Other appraisal fields are unchanged.
+     */
+    updateAppraisalDocumentDetails?: (AppraisalGenqlSelection & { __args: {accountId: Scalars['String'], input: UpdateAppraisalDocumentDetailsInput} })
+    /**
+     * Generate the appraisal's document from the account's current template for the
+     * appraisal's type, with its items, values and document details, and keep it as a new
+     * revision. When the newest revision would print exactly the same, it is returned
+     * unchanged. Fails when the appraisal has no items, or when nothing is valued and the
+     * account has no default currency.
+     */
+    generateAppraisalDocument?: (AppraisalDocumentGenqlSelection & { __args: {accountId: Scalars['String'], appraisalId: Scalars['String']} })
+    /**
+     * Issue a property receipt for the given items from the account's current template and keep it.
+     * When location is given, the items are moved there in the same step. Issuing the same items to
+     * the same place as the consignment's newest receipt returns that receipt unchanged. Fails when an
+     * item is not in the consignment, the consignment has no consignor, or the site is archived.
+     */
+    generatePropertyReceipt?: (PropertyReceiptGenqlSelection & { __args: {accountId: Scalars['String'], input: GeneratePropertyReceiptInput} })
+    /**
+     * Email a property receipt, with the document attached, to the consignment's main consignor
+     * or to recipientEmail when given, using the account's property receipt email template.
+     * Sending again is allowed and counts as another send. Fails when the consignment has no main
+     * consignor, there is no address to send to, or the account has no email template set up.
+     */
+    sendPropertyReceipt?: (PropertyReceiptGenqlSelection & { __args: {accountId: Scalars['String'], input: SendPropertyReceiptInput} })
+    /**
+     * Save a new version of the account's appraisal document template for one appraisal
+     * type. It becomes the template for new documents of that type; earlier versions are
+     * kept unchanged.
+     */
+    createAppraisalDocumentTemplateVersion?: (AppraisalDocumentTemplateGenqlSelection & { __args: {accountId: Scalars['String'], input: CreateAppraisalDocumentTemplateVersionInput} })
+    /**
+     * Save a new version of the account's property receipt template. It becomes the
+     * template for new receipts; earlier versions are kept unchanged.
+     */
+    createPropertyReceiptTemplateVersion?: (PropertyReceiptTemplateGenqlSelection & { __args: {accountId: Scalars['String'], input: CreatePropertyReceiptTemplateVersionInput} })
+    /** Replace the settings of the public valuation request form. */
+    setValuationRequestSettings?: (ValuationRequestSettingsGenqlSelection & { __args: {accountId: Scalars['String'], input: SetValuationRequestSettingsInput} })
+    /** Set the status of a valuation request. */
+    setValuationRequestStatus?: (ValuationRequestGenqlSelection & { __args: {accountId: Scalars['String'], id: Scalars['ID'], status: ValuationRequestStatus} })
+    /** Assign a valuation request to a staff member of the account. Null assigneeUserId clears the assignee. */
+    setValuationRequestAssignee?: (ValuationRequestGenqlSelection & { __args: {accountId: Scalars['String'], id: Scalars['ID'], assigneeUserId?: (Scalars['String'] | null)} })
+    /** Delete a valuation request. Returns the deleted request. */
+    deleteValuationRequest?: (ValuationRequestGenqlSelection & { __args: {accountId: Scalars['String'], id: Scalars['ID']} })
+    /**
+     * Assign a condition report request to a staff member of the account. Null userId clears the
+     * assignee. Fails when userId is not a member of the account.
+     */
+    setConditionReportRequestAssignee?: (ConditionReportRequestGenqlSelection & { __args: {accountId: Scalars['String'], id: Scalars['ID'], userId?: (Scalars['String'] | null)} })
+    /** Replace the appointment booking settings. */
+    setAppointmentSettings?: (AppointmentSettingsGenqlSelection & { __args: {accountId: Scalars['String'], input: SetAppointmentSettingsInput} })
+    /**
+     * Confirm a requested appointment at a scheduled time. Confirming a confirmed appointment
+     * reschedules it. Fails for a cancelled or completed appointment.
+     */
+    confirmAppointment?: (AppointmentGenqlSelection & { __args: {accountId: Scalars['String'], input: ConfirmAppointmentInput} })
+    /** Cancel a requested or confirmed appointment on behalf of the house. */
+    cancelAppointment?: (AppointmentGenqlSelection & { __args: {accountId: Scalars['String'], input: CancelAppointmentInput} })
+    /** Mark a confirmed appointment as completed. */
+    completeAppointment?: (AppointmentGenqlSelection & { __args: {accountId: Scalars['String'], appointmentId: Scalars['ID']} })
+    /** Set the staff note of an appointment, in any status. */
+    setAppointmentStaffNote?: (AppointmentGenqlSelection & { __args: {accountId: Scalars['String'], input: SetAppointmentStaffNoteInput} })
+    /**
+     * Set the next entity number to allocate for an account. Consignments and appraisals
+     * share one sequence; the number must be above the highest already assigned.
+     */
+    setNextEntityNumber?: (EntityNumberSettingsGenqlSelection & { __args: {accountId: Scalars['ID'], nextNumber: Scalars['Int']} })
+    /**
+     * Set the next inventory number to allocate to a new item in an account. The number
+     * must be above the highest inventory number already assigned; later items continue from it.
+     */
+    setNextInventoryNumber?: (InventoryNumberSettingsGenqlSelection & { __args: {accountId: Scalars['ID'], nextNumber: Scalars['Int']} })
+    /**
+     * Generate a contract for a consignment from the account's current template,
+     * with the consignment's charges, consignors and items. Supersedes a GENERATED
+     * or SENT revision. Generating again on the same day with nothing changed returns
+     * the current GENERATED revision unchanged. Fails when the account has no
+     * template or the consignment has no consignors.
+     */
+    generateConsignmentContract?: (ConsignmentContractGenqlSelection & { __args: {accountId: Scalars['String'], input: GenerateConsignmentContractInput} })
+    /**
+     * Render the consignment's contract as a DRAFT without recording a revision.
+     * The download expires with the draft after 30 days.
+     */
+    previewConsignmentContract?: (DocumentDownloadGenqlSelection & { __args: {accountId: Scalars['String'], input: PreviewConsignmentContractInput} })
+    /** Mark a GENERATED contract revision as sent to the consignor. */
+    markConsignmentContractSent?: (ConsignmentContractGenqlSelection & { __args: {accountId: Scalars['String'], input: MarkConsignmentContractSentInput} })
+    /**
+     * Email the consignment's main consignor a link to sign the contract revision, and
+     * mark it SENT. Sending again replaces the previous link. The link expires after
+     * 14 days and works once. Fails when the main consignor has no email or the
+     * account has no email template for contract signing.
+     */
+    sendConsignmentContract?: (ConsignmentContractGenqlSelection & { __args: {accountId: Scalars['String'], input: SendConsignmentContractInput} })
+    /** Record that a consignment's contract was signed offline. */
+    recordConsignmentContractSignature?: (ConsignmentContractGenqlSelection & { __args: {accountId: Scalars['String'], input: RecordConsignmentContractSignatureInput} })
+    /**
+     * Render a consignor's pre-sale advice for a sale as a DRAFT without recording a revision.
+     * Without consignmentId it is the advice covering the consignor's consignments that are not
+     * reported separately; with it, the advice covering that consignment. Fails when no advice matches.
+     */
+    previewPresaleAdvice?: (DocumentDownloadGenqlSelection & { __args: {accountId: Scalars['String'], saleId: Scalars['String'], consignorUserId: Scalars['String'], consignmentId?: (Scalars['String'] | null)} })
+    /**
+     * Generate pre-sale advices for a sale. Each advice gets a new GENERATED revision that
+     * supersedes the previous one, except an advice whose items and document are unchanged since
+     * its GENERATED revision: that revision is returned as is and no new one is made. Nothing is emailed. Fails when the sale does not exist, the
+     * account has no currency set up or the sale has no date. Without branding the advices are unbranded.
+     */
+    generatePresaleAdvices?: (GeneratePresaleAdvicesResultGenqlSelection & { __args: {accountId: Scalars['String'], input: GeneratePresaleAdvicesInput} })
+    /**
+     * Email pre-sale advices to their main consignors with the document attached, and mark
+     * each SENT once its email went out. An advice that cannot be sent is reported in its
+     * result and does not stop the others.
+     */
+    sendPresaleAdvices?: (SendPresaleAdvicesResultGenqlSelection & { __args: {accountId: Scalars['String'], input: SendPresaleAdvicesInput} })
     /** Enable/disable offers on an item and set or clear its auto-accept threshold. */
     setItemOfferConfig?: (ItemOfferConfigGenqlSelection & { __args: {accountId: Scalars['String'], input: SetItemOfferConfigInput} })
     /**
@@ -9316,6 +15755,13 @@ export interface MutationGenqlSelection{
      * buyer. Returns the updated sale item.
      */
     buyItem?: (SaleItemGenqlSelection & { __args: {accountId: Scalars['String'], input: BuyItemInput} })
+    /**
+     * Revert a buy-now direct sell on a closed sale item. The item stays closed, is
+     * marked unsold and has no direct sell, so it can be bought again. The buyer's
+     * order line for the item is removed; an invoiced or paid order is left unchanged.
+     * Returns the updated sale item.
+     */
+    revertDirectSell?: (SaleItemGenqlSelection & { __args: {accountId: Scalars['String'], input: RevertDirectSellInput} })
     /** Accept a pending offer as an admin. */
     acceptOffer?: (OfferGenqlSelection & { __args: {accountId: Scalars['String'], offerId: Scalars['String']} })
     /** Reject a pending offer as an admin. */
@@ -9334,6 +15780,18 @@ export interface MutationGenqlSelection{
     removePackaging?: (ItemGenqlSelection & { __args: {accountId: Scalars['String'], input: RemovePackagingInput} })
     /** Update ItemNumbers input */
     updateItemNumbers?: (SaleGenqlSelection & { __args: {accountId: Scalars['String'], input: UpdateItemNumbersInput} })
+    /**
+     * Assign sequential display (lot) numbers to items in a sale, starting at startFrom
+     * and incrementing in itemIds order. Overwrites any existing numbers.
+     */
+    assignDisplayNumbers?: (SaleGenqlSelection & { __args: {accountId: Scalars['String'], input: AssignDisplayNumbersInput} })
+    /**
+     * Set explicit display (lot) numbers on multiple items at once, overwriting existing
+     * values. For manual bulk entry; supports alpha-numeric lot numbers.
+     */
+    setDisplayNumbers?: (SaleGenqlSelection & { __args: {accountId: Scalars['String'], input: SetDisplayNumbersInput} })
+    /** Remove the display (lot) number from every item in the sale. */
+    unlotSale?: (SaleGenqlSelection & { __args: {accountId: Scalars['String'], saleId: Scalars['String']} })
     /** Create item and add to a sale. This operation will automatically create an item and add it to the sale. */
     createItemForSale?: (SaleItemGenqlSelection & { __args: {accountId: Scalars['String'], input: SaleItemInput} })
     /** Create a Dutch item in a sale */
@@ -9374,7 +15832,11 @@ export interface MutationGenqlSelection{
      * Sets sale item winner. Marks bid as won and closes item. Used in offer model.
      */
     setItemWinner?: (SaleItemGenqlSelection & { __args: {accountId: Scalars['String'], input: SetItemWinnerInput} })
-    /** Sets sale item status. Used in offer model to close item with no winner. */
+    /**
+     * Sets sale item status. Used in offer model to close item with no winner.
+     * ITEM_WITHDRAWN withdraws the item from the sale, whatever its status: bidders
+     * can no longer see or bid on it, and it counts toward no results or totals.
+     */
     setSaleItemStatus?: (SaleItemGenqlSelection & { __args: {accountId: Scalars['String'], input: SetSaleItemStatusInput} })
     /** Remove an item from the sale. This will not delete the item completely. */
     removeItemFromSale?: (SaleGenqlSelection & { __args: {accountId: Scalars['String'], input: RemoveSaleItemInput} })
@@ -9473,7 +15935,10 @@ export interface MutationGenqlSelection{
      *   - This completely removes an image from the system
      */
     deleteImage?: (ImageGenqlSelection & { __args: {accountId: Scalars['String'], input: DeleteImageInput} })
-    /** Add paddle to sale. */
+    /**
+     * @deprecated Use createSaleRegistration with status ACCEPTED.
+     * Add paddle to sale.
+     */
     addPaddleToSale?: (PaddleGenqlSelection & { __args: {accountId: Scalars['String'], input: AddPaddleToSaleInput} })
     /** Remove paddle from sale. */
     removePaddleFromSale?: (PaddleGenqlSelection & { __args: {accountId: Scalars['String'], input: RemovePaddleFromSaleInput} })
@@ -9484,6 +15949,11 @@ export interface MutationGenqlSelection{
      * This mutation will upsert the user if they don't exist.
      */
     updateUser?: (UserInfoGenqlSelection & { __args: {accountId: Scalars['String'], input: UpdateUserInput} })
+    /**
+     * Remove a consignor's bank details. Idempotent — returns true even when none were
+     * on file. Resolves the user by idType, like updateUser.
+     */
+    deleteBankDetails?: { __args: {accountId: Scalars['String'], userId: Scalars['String'], idType: UserIdType} }
     /**
      * Set a user's notification preferences. Only the entries given are changed.
      * The returned list covers what the account sends on, so an entry outside it is
@@ -9506,6 +15976,21 @@ export interface MutationGenqlSelection{
     addLiveStreamToSale?: (LiveStreamGenqlSelection & { __args: {accountId: Scalars['String'], input: AddLiveStreamToSaleInput} })
     /** Delete live stream from a sale */
     deleteLiveStreamFromSale?: { __args: {accountId: Scalars['String'], input: DeleteLiveStreamFromSaleInput} }
+    /**
+     * Create an additional live stream channel. Requires Basta streaming to be enabled.
+     * An account can have at most 3 channels, the default channel included.
+     */
+    createStreamChannel?: (StreamChannelGenqlSelection & { __args: {accountId: Scalars['String'], input: CreateStreamChannelInput} })
+    /**
+     * Rename or re-describe a live stream channel, the default channel included.
+     * The ingest URL and stream key do not change.
+     */
+    updateStreamChannel?: (StreamChannelGenqlSelection & { __args: {accountId: Scalars['String'], channelId: Scalars['String'], input: UpdateStreamChannelInput} })
+    /**
+     * Delete an additional live stream channel. Sales assigned to it use the default channel.
+     * The default channel cannot be deleted.
+     */
+    deleteStreamChannel?: { __args: {accountId: Scalars['String'], channelId: Scalars['String']} }
     /** Add tag to an item */
     addTagToItem?: (TagGenqlSelection & { __args: {accountId: Scalars['String'], input: AddTagToItemInput} })
     /** Remove tag from an item */
@@ -9524,6 +16009,7 @@ export interface MutationGenqlSelection{
     unblockUser?: (UserGenqlSelection & { __args: {accountId: Scalars['String'], input: UnblockUserInput} })
     /** Assign a user's external id (user_id). Write-once: fails if it is already set. */
     setUserExternalId?: (UserGenqlSelection & { __args: {accountId: Scalars['String'], input: SetUserExternalIdInput} })
+    /** @deprecated Use addItemNote instead. */
     createItemNote?: (ItemNoteGenqlSelection & { __args: {accountId: Scalars['String'], input: CreateItemNoteInput} })
     /** CreateUploadUrl */
     createUploadUrl?: (UploadUrlGenqlSelection & { __args: {accountId: Scalars['String'], input: CreateUploadUrlInput} })
@@ -9556,6 +16042,11 @@ export interface MutationGenqlSelection{
      */
     reorderItemTypes?: (ItemTypeGenqlSelection & { __args: {accountId: Scalars['ID'], parentId?: (Scalars['ID'] | null), itemTypeIds: Scalars['ID'][]} })
     /**
+     * Delete an item type. Only succeeds when it has no child item types and no
+     * item, sale item or product variant references it. Returns true on success.
+     */
+    deleteItemType?: { __args: {accountId: Scalars['ID'], itemTypeId: Scalars['ID']} }
+    /**
      * @deprecated Renamed to createItemType.
      * Deprecated alias for createItemType. Kept for backward compatibility.
      */
@@ -9573,13 +16064,13 @@ export interface MutationGenqlSelection{
     /** Update closing time countdown globally for a sale, this will update all items in the sale. */
     updateGlobalClosingTimeCountdown?: (SaleGenqlSelection & { __args: {accountId: Scalars['String'], input: UpdateGlobalClosingTimeCountdownInput} })
     /**
-     * PassLiveItem. Mutation only available with valid session cookie.
+     * Passes the live item.
      * Moves item to status processing and raises the reserve if it has been met.
      * Only works on "LIVE" sale type
      */
     passLiveItem?: (SaleItemGenqlSelection & { __args: {accountId: Scalars['String'], input: PassLiveItemInput} })
     /**
-     * SellLiveItem. Mutation only available with valid session cookie.
+     * Sells the live item to the current leading bid.
      * Moves item to status processing and lowers the reserve if it has not been met.
      * Only works on "LIVE" sale type
      */
@@ -9607,51 +16098,113 @@ export interface MutationGenqlSelection{
     createPaymentOrder?: (PaymentOrderGenqlSelection & { __args: {accountId: Scalars['String'], input: CreatePaymentOrderInput} })
     /** Create an order */
     createOrder?: (PaymentOrderGenqlSelection & { __args: {accountId: Scalars['String'], input: CreateOrderInput} })
-    /** Create an order line for a payment order */
+    /**
+     * Create an order line for a payment order. Refused unless the order is
+     * DRAFT or OPEN.
+     */
     createOrderLine?: (OrderLineGenqlSelection & { __args: {accountId: Scalars['String'], input: CreateOrderLineInput} })
-    /** Update an order line for a payment order */
+    /**
+     * Update an order line for a payment order. Refused unless the order is
+     * DRAFT or OPEN.
+     */
     updateOrderLine?: (OrderLineGenqlSelection & { __args: {accountId: Scalars['String'], input: UpdateOrderLineInput} })
-    /** Delete an order line for a payment order */
+    /**
+     * Delete an order line for a payment order. Refused unless the order is
+     * DRAFT or OPEN.
+     */
     deleteOrderLine?: (OrderLineGenqlSelection & { __args: {accountId: Scalars['String'], input: DeleteOrderLineInput} })
     /**
      * @deprecated Use updateOrder mutation
-     * Update a payment order
+     * Update a payment order. Refused unless the order is DRAFT or OPEN.
      */
     updatePaymentOrder?: (PaymentOrderGenqlSelection & { __args: {accountId: Scalars['String'], input: UpdatePaymentOrderInput} })
-    /** Update an order */
+    /**
+     * Update an order. Refused unless the order is DRAFT or OPEN; reopen an
+     * invoiced order with `reopenOrder` first.
+     */
     updateOrder?: (PaymentOrderGenqlSelection & { __args: {accountId: Scalars['String'], input: UpdateOrderInput} })
     /**
      * @deprecated Use cancelPaymentOrder mutation
      * Delete a payment order, this will cancel order.
      */
     deletePaymentOrder?: (PaymentOrderGenqlSelection & { __args: {accountId: Scalars['String'], input: DeletePaymentOrderInput} })
-    /** Cancel a payment order */
+    /**
+     * Cancel a payment order. An unpaid invoice issued for the order is voided.
+     * Refused when payments are recorded against the order.
+     */
     cancelPaymentOrder?: (PaymentOrderGenqlSelection & { __args: {accountId: Scalars['String'], input: CancelPaymentOrderInput} })
-    /** Publish a payment order */
+    /**
+     * Publish a payment order. For an account that invoices through Basta, this
+     * issues the order's invoice; publishing again after a reopen issues the next
+     * revision under the same number. Publishing an order whose invoice already
+     * stands returns it unchanged. Refused when the order has no lines, its
+     * billing address has no name or country, or its due date is before today.
+     */
     publishPaymentOrder?: (PaymentOrderGenqlSelection & { __args: {accountId: Scalars['String'], input: PublishPaymentOrderInput} })
-    /** Create Invoice for order */
+    /**
+     * Reopen an order whose invoice is issued, so it can be changed again. The
+     * invoice is withdrawn and the next publish issues a revision under the same
+     * number. Refused when a payment is recorded against the order, on a paid or
+     * cancelled order, and on an order with no issued invoice.
+     */
+    reopenOrder?: (PaymentOrderGenqlSelection & { __args: {accountId: Scalars['ID'], orderId: Scalars['ID']} })
+    /**
+     * Record an invoice made in another system on the order: its id, link and
+     * due date there.
+     */
     createInvoice?: (InvoiceGenqlSelection & { __args: {accountId: Scalars['String'], input: CreateInvoiceInput} })
     /** Create a payment for an order */
     createPayment?: (PaymentGenqlSelection & { __args: {accountId: Scalars['String'], input: CreatePaymentInput} })
-    /** Create an account fee */
+    /**
+     * @deprecated Use buyerPremiums.
+     * Create an account fee
+     */
     createAccountFee?: (AccountFeeGenqlSelection & { __args: {accountId: Scalars['String'], input: CreateAccountFeeInput} })
-    /** Update an account fee */
+    /**
+     * @deprecated Use buyerPremiums.
+     * Update an account fee
+     */
     updateAccountFee?: (AccountFeeGenqlSelection & { __args: {accountId: Scalars['String'], input: UpdateAccountFeeInput} })
-    /** Delete an account fee */
+    /**
+     * @deprecated Use buyerPremiums.
+     * Delete an account fee
+     */
     deleteAccountFee?: { __args: {accountId: Scalars['String'], input: DeleteAccountFeeInput} }
-    /** Create a sale-level fee rule for a specific sale. */
+    /**
+     * @deprecated Use buyerPremiums.
+     * Create a sale-level fee rule for a specific sale.
+     */
     createSaleFee?: (FeeRuleGenqlSelection & { __args: {accountId: Scalars['String'], input: CreateSaleFeeInput} })
-    /** Update a sale-level fee rule. */
+    /**
+     * @deprecated Use buyerPremiums.
+     * Update a sale-level fee rule.
+     */
     updateSaleFee?: (FeeRuleGenqlSelection & { __args: {accountId: Scalars['String'], input: UpdateSaleFeeInput} })
-    /** Delete a sale-level fee rule. */
+    /**
+     * @deprecated Use buyerPremiums.
+     * Delete a sale-level fee rule.
+     */
     deleteSaleFee?: { __args: {accountId: Scalars['String'], input: DeleteSaleFeeInput} }
-    /** Reset sale fees to the account defaults, discarding any customizations. */
+    /**
+     * @deprecated Use buyerPremiums.
+     * Removes every premium set on this sale and on its lots, so they follow the
+     * account again. Lots whose premiums are already fixed are not changed.
+     */
     resetSaleFees?: (FeeRuleGenqlSelection & { __args: {accountId: Scalars['String'], input: ResetSaleFeesInput} })
-    /** Create an item-level fee rule for a specific sale item. */
+    /**
+     * @deprecated Use buyerPremiums.
+     * Create an item-level fee rule for a specific sale item.
+     */
     createSaleItemFee?: (FeeRuleGenqlSelection & { __args: {accountId: Scalars['String'], input: CreateSaleItemFeeInput} })
-    /** Update an item-level fee rule. */
+    /**
+     * @deprecated Use buyerPremiums.
+     * Update an item-level fee rule.
+     */
     updateSaleItemFee?: (FeeRuleGenqlSelection & { __args: {accountId: Scalars['String'], input: UpdateSaleItemFeeInput} })
-    /** Delete an item-level fee rule. */
+    /**
+     * @deprecated Use buyerPremiums.
+     * Delete an item-level fee rule.
+     */
     deleteSaleItemFee?: { __args: {accountId: Scalars['String'], input: DeleteSaleItemFeeInput} }
     /** Create a sale registration */
     createSaleRegistration?: (SaleRegistrationGenqlSelection & { __args: {accountId: Scalars['String'], input: CreateSaleRegistrationInput} })
@@ -9720,12 +16273,52 @@ export interface MutationGenqlSelection{
     setSaleCategories?: (CategoryListGenqlSelection & { __args: {accountId: Scalars['ID'], input: SetSaleCategoriesInput} })
     /** Replace the categories assigned to a sale item. */
     setSaleItemCategories?: (CategoryListGenqlSelection & { __args: {accountId: Scalars['ID'], input: SetSaleItemCategoriesInput} })
-    /** Create a new creator. */
+    /**
+     * Create a new creator. Creating a creator with a parentId fails when the
+     * account's creatorSettings.allowNested is false.
+     */
     createCreator?: (CreatorGenqlSelection & { __args: {accountId: Scalars['ID'], input: CreateCreatorInput} })
     /** Update an existing creator. */
     updateCreator?: (CreatorGenqlSelection & { __args: {accountId: Scalars['ID'], input: UpdateCreatorInput} })
     /** Delete a creator. Returns true on success. */
     deleteCreator?: { __args: {accountId: Scalars['ID'], creatorId: Scalars['ID']} }
+    /**
+     * Create a staff profile. `attributes` are validated against the account's
+     * default staff profile schema.
+     */
+    createStaffProfile?: (StaffProfileGenqlSelection & { __args: {accountId: Scalars['ID'], input: CreateStaffProfileInput} })
+    /** Update a staff profile. Only the fields present in `input` are changed. */
+    updateStaffProfile?: (StaffProfileGenqlSelection & { __args: {accountId: Scalars['ID'], input: UpdateStaffProfileInput} })
+    /** Delete a staff profile. Returns true on success. */
+    deleteStaffProfile?: { __args: {accountId: Scalars['ID'], staffProfileId: Scalars['ID']} }
+    /**
+     * Replace the departments a staff profile belongs to. An empty list clears them.
+     * Every id must be a department of this account; at most 50.
+     */
+    setStaffProfileDepartments?: (StaffProfileGenqlSelection & { __args: {accountId: Scalars['ID'], staffProfileId: Scalars['ID'], departmentIds: Scalars['ID'][]} })
+    /**
+     * Set the staff profile's photo to an existing image of this account. Null
+     * removes the photo.
+     */
+    setStaffProfilePhoto?: (StaffProfileGenqlSelection & { __args: {accountId: Scalars['ID'], staffProfileId: Scalars['ID'], imageId?: (Scalars['String'] | null)} })
+    /**
+     * Replace the item types a staff profile is responsible for. An empty list clears
+     * them. Every id must be an item type of this account; at most 50.
+     */
+    setStaffProfileItemTypes?: (StaffProfileGenqlSelection & { __args: {accountId: Scalars['ID'], staffProfileId: Scalars['ID'], itemTypeIds: Scalars['ID'][]} })
+    /**
+     * Link a staff profile to a dashboard member of this account. Null removes the
+     * link. A user can be linked to at most one staff profile per account; unlink the
+     * other profile first.
+     */
+    setStaffProfileDashboardMember?: (StaffProfileGenqlSelection & { __args: {accountId: Scalars['ID'], staffProfileId: Scalars['ID'], userId?: (Scalars['String'] | null)} })
+    /**
+     * Replace the JSON Schema of the account's default staff profile schema and
+     * return it. Asset fields are not supported.
+     */
+    updateStaffProfileSchema?: { __args: {accountId: Scalars['ID'], definition: Scalars['JSON']} }
+    /** Update the account's creator settings. */
+    updateCreatorSettings?: (CreatorSettingsGenqlSelection & { __args: {accountId: Scalars['ID'], input: UpdateCreatorSettingsInput} })
     /** Replace the creators assigned to an item. */
     setItemCreators?: (CreatorListGenqlSelection & { __args: {accountId: Scalars['ID'], input: SetItemCreatorsInput} })
     /** Replace the creators assigned to a sale item. */
@@ -9773,6 +16366,125 @@ export interface MutationGenqlSelection{
      * Succeeds whether or not the level was set.
      */
     deleteChargeAtScope?: (ChargeGenqlSelection & { __args: {accountId: Scalars['ID'], input: DeleteChargeAtScopeInput} })
+    /**
+     * Create a buyer's premium for the account, in one currency. It charges
+     * nothing until its bands are set with setBuyerPremiumBands.
+     */
+    createBuyerPremium?: (BuyerPremiumGenqlSelection & { __args: {accountId: Scalars['ID'], input: CreateBuyerPremiumInput} })
+    /** Change a premium's name, calculation, bounds or external id. */
+    updateBuyerPremium?: (BuyerPremiumGenqlSelection & { __args: {accountId: Scalars['ID'], input: UpdateBuyerPremiumInput} })
+    /**
+     * Enable or disable a premium for the whole account. There is no way to delete
+     * one: invoices already charged with it keep their meaning.
+     */
+    setBuyerPremiumStatus?: (BuyerPremiumGenqlSelection & { __args: {accountId: Scalars['ID'], input: SetBuyerPremiumStatusInput} })
+    /** Replace the ladder the account sets for a premium. */
+    setBuyerPremiumBands?: (BuyerPremiumGenqlSelection & { __args: {accountId: Scalars['ID'], input: SetBuyerPremiumBandsInput} })
+    /**
+     * Set what a premium does at one level. Returns the premium as it now applies
+     * there. A lot whose premiums are fixed cannot be changed.
+     */
+    setBuyerPremiumAtScope?: (BuyerPremiumGenqlSelection & { __args: {accountId: Scalars['ID'], input: SetBuyerPremiumAtScopeInput} })
+    /**
+     * Remove what a premium does at one level. Returns the premium as it now
+     * applies there. A lot whose premiums are fixed cannot be changed.
+     */
+    deleteBuyerPremiumAtScope?: (BuyerPremiumGenqlSelection & { __args: {accountId: Scalars['ID'], input: DeleteBuyerPremiumAtScopeInput} })
+    /** Add an accounting code. */
+    createAccountCode?: (AccountCodeGenqlSelection & { __args: {accountId: Scalars['ID'], input: CreateAccountCodeInput} })
+    /** Rename an accounting code. The code itself cannot be changed. */
+    updateAccountCode?: (AccountCodeGenqlSelection & { __args: {accountId: Scalars['ID'], input: UpdateAccountCodeInput} })
+    /**
+     * Delete an accounting code. Refused while a charge, buyer's premium or Artist's
+     * Resale Right setting points at it, and for good once anything has been charged
+     * under it. Returns true once deleted.
+     */
+    deleteAccountCode?: { __args: {accountId: Scalars['ID'], accountCodeId: Scalars['ID']} }
+    /**
+     * Add a tax code. With replacesTaxCodeId, the new code is a rate change for an
+     * existing one, which is ended the day before the new code takes effect.
+     */
+    createTaxCode?: (TaxCodeGenqlSelection & { __args: {accountId: Scalars['ID'], input: CreateTaxCodeInput} })
+    /** Rename a tax code, set or clear its end date, or change its accounting code. */
+    updateTaxCode?: (TaxCodeGenqlSelection & { __args: {accountId: Scalars['ID'], input: UpdateTaxCodeInput} })
+    /**
+     * Save the tax regime and default codes. Refused for an account whose
+     * invoices are not issued through Basta.
+     */
+    upsertTaxSettings?: (UpsertTaxSettingsPayloadGenqlSelection & { __args: {accountId: Scalars['ID'], input: UpsertTaxSettingsInput} })
+    /** Set the tax codes for lots of one item type. */
+    setItemTypeTaxDefault?: (ItemTypeTaxDefaultGenqlSelection & { __args: {accountId: Scalars['ID'], input: SetItemTypeTaxDefaultInput} })
+    /**
+     * Remove an item type's tax codes, so its lots use the account's defaults.
+     * Returns true once removed.
+     */
+    deleteItemTypeTaxDefault?: { __args: {accountId: Scalars['ID'], itemTypeId: Scalars['ID']} }
+    /**
+     * Issue a draft statement: assign its number and fix the consignor's name and
+     * address as printed. Issuing a statement that is already issued returns it
+     * unchanged. Rejected when the statement has no lines or no address.
+     */
+    issueStatement?: (StatementGenqlSelection & { __args: {accountId: Scalars['ID'], id: Scalars['ID']} })
+    /**
+     * Set the address a draft statement will be issued to, from the consignor's saved
+     * addresses. The address is copied as it is now; later changes to it are not
+     * picked up. Rejected when the statement is issued, when the address is not one
+     * of the consignor's, or when it has no country or there is no name for it.
+     */
+    setStatementAddress?: (StatementGenqlSelection & { __args: {accountId: Scalars['ID'], id: Scalars['ID'], addressId: Scalars['ID']} })
+    /**
+     * Set the amount of a charge on a draft statement by hand, or put back the
+     * amount the charge computes with a null amount. The computed amount is kept
+     * while one is set. A null amount on a charge whose amount was not set by hand
+     * leaves it unchanged. Rejected when the statement is issued, when the charge
+     * has been removed, or when the amount is above zero.
+     */
+    setStatementChargeAmount?: (StatementGenqlSelection & { __args: {accountId: Scalars['ID'], id: Scalars['ID'], input: SetStatementChargeAmountInput} })
+    /**
+     * Apply one of the house's charges to a lot on a draft statement by hand. The
+     * amount is what the charge computes for the lot at the rate that applies to
+     * it, so a consignment's own rate wins over the house's; the charge's
+     * conditions are not checked. Adding a charge that was removed from the lot
+     * puts it back as it was instead. The charge can then be edited and removed
+     * like any other. Rejected when the statement is issued, when the charge is
+     * already on the line, or, unless it is being put back, when it is disabled or
+     * in another currency.
+     */
+    addStatementCharge?: (StatementGenqlSelection & { __args: {accountId: Scalars['ID'], id: Scalars['ID'], input: AddStatementChargeInput} })
+    /**
+     * Remove a charge from a lot on a draft statement. It is no longer printed or
+     * counted, and `addStatementCharge` with the same charge puts it back.
+     * Rejected when the statement is issued or the charge is already removed.
+     */
+    removeStatementCharge?: (StatementGenqlSelection & { __args: {accountId: Scalars['ID'], id: Scalars['ID'], input: RemoveStatementChargeInput} })
+    /**
+     * Set a sold lot's hammer on a draft statement by hand, or put its winning bid
+     * back with a null hammer. Charges worked out from the hammer are worked out
+     * again for the new amount, removed ones included, unless their amount was set
+     * by hand. A null hammer on a lot whose hammer was not set by hand leaves it
+     * unchanged. Rejected when the statement is issued, when the lot did not sell,
+     * or when the hammer is not above zero.
+     */
+    setStatementLineHammer?: (StatementGenqlSelection & { __args: {accountId: Scalars['ID'], id: Scalars['ID'], input: SetStatementLineHammerInput} })
+    /**
+     * Set the text printed on a draft statement line by hand, or put the original
+     * text back with a null description. Setting the original text again leaves
+     * the line unedited. A null description on text that was not set by hand
+     * leaves it unchanged. Rejected when the statement is issued, or when the text
+     * is empty or longer than 1000 characters.
+     */
+    setStatementLineDescription?: (StatementGenqlSelection & { __args: {accountId: Scalars['ID'], id: Scalars['ID'], input: SetStatementLineDescriptionInput} })
+    /**
+     * Record money received against the order. The payment that covers the total
+     * marks it PAID. Refused on an order with no issued invoice and when the
+     * amount is more than `amountDue`.
+     */
+    recordOrderPayment?: (PaymentOrderGenqlSelection & { __args: {accountId: Scalars['ID'], orderId: Scalars['ID'], input: RecordOrderPaymentInput} })
+    /**
+     * Set the account's invoice defaults. Invoices already issued keep what they
+     * printed.
+     */
+    upsertInvoiceSettings?: (InvoiceSettingsGenqlSelection & { __args: {accountId: Scalars['ID'], input: UpsertInvoiceSettingsInput} })
     /** Set or clear an item's Artist's Resale Right flag. */
     setItemArr?: (ItemGenqlSelection & { __args: {accountId: Scalars['ID'], input: SetItemArrInput} })
     /**
@@ -9780,10 +16492,6 @@ export interface MutationGenqlSelection{
      * sold and its value is fixed.
      */
     setSaleItemArr?: (SaleItemGenqlSelection & { __args: {accountId: Scalars['ID'], input: SetSaleItemArrInput} })
-    /** Create a new affiliate for an account. The affiliate is created in an active state. */
-    createAffiliate?: (AffiliateGenqlSelection & { __args: {accountId: Scalars['ID'], input: CreateAffiliateInput} })
-    /** Update an existing affiliate. Only fields present on the input are changed. */
-    updateAffiliate?: (AffiliateGenqlSelection & { __args: {accountId: Scalars['ID'], affiliateId: Scalars['ID'], input: UpdateAffiliateInput} })
     /**
      * Set up email notification delivery for an account through SendGrid. An
      * account has at most one integration per channel, so this fails with
@@ -9845,13 +16553,135 @@ export interface MutationGenqlSelection{
     unarchiveAttributionSource?: (AttributionSourceGenqlSelection & { __args: {accountId: Scalars['String'], id: Scalars['String']} })
     /** Delete an attribution source. Fails if the source is in use; archive it instead. */
     deleteAttributionSource?: (AttributionSourceGenqlSelection & { __args: {accountId: Scalars['String'], id: Scalars['String']} })
+    /** Set whether an attribution channel is self-service only. */
+    setAttributionChannelSelfServiceOnly?: (AttributionChannelGenqlSelection & { __args: {accountId: Scalars['String'], input: SetAttributionChannelSelfServiceOnlyInput} })
+    /** Set whether an attribution source is public (visible on the website). */
+    setAttributionSourcePublic?: (AttributionSourceGenqlSelection & { __args: {accountId: Scalars['String'], input: SetAttributionSourcePublicInput} })
+    /** Replace the channel associations for an attribution source. Pass an empty list to clear. */
+    setAttributionSourceChannels?: (AttributionSourceGenqlSelection & { __args: {accountId: Scalars['String'], input: SetAttributionSourceChannelsInput} })
+    /** Create a note type for an account. */
+    createNoteType?: (NoteTypeGenqlSelection & { __args: {accountId: Scalars['String'], input: CreateNoteTypeInput} })
+    /** Rename a note type. */
+    renameNoteType?: (NoteTypeGenqlSelection & { __args: {accountId: Scalars['String'], input: RenameNoteTypeInput} })
+    /** Update which entities a note type applies to (ITEM, USER, or BOTH). */
+    updateNoteTypeScope?: (NoteTypeGenqlSelection & { __args: {accountId: Scalars['String'], input: UpdateNoteTypeScopeInput} })
+    /** Archive a note type, hiding it from active lists while preserving history. */
+    archiveNoteType?: (NoteTypeGenqlSelection & { __args: {accountId: Scalars['String'], id: Scalars['String']} })
+    /** Unarchive a previously archived note type. */
+    unarchiveNoteType?: (NoteTypeGenqlSelection & { __args: {accountId: Scalars['String'], id: Scalars['String']} })
+    /** Permanently delete a note type. */
+    deleteNoteType?: (NoteTypeGenqlSelection & { __args: {accountId: Scalars['String'], id: Scalars['String']} })
+    /** Create a note on an item. */
+    addItemNote?: (NoteGenqlSelection & { __args: {accountId: Scalars['String'], input: AddItemNoteInput} })
+    /** Update an item note's text or type. */
+    updateItemNote?: (NoteGenqlSelection & { __args: {accountId: Scalars['String'], input: UpdateNoteInput} })
+    /** Delete an item note (soft delete). */
+    deleteItemNote?: (NoteGenqlSelection & { __args: {accountId: Scalars['String'], id: Scalars['String']} })
+    /** Set or remove the alert flag on an item note (alerts are shown as a banner). */
+    setItemNoteAlert?: (NoteGenqlSelection & { __args: {accountId: Scalars['String'], id: Scalars['String'], isAlert: Scalars['Boolean']} })
+    /**
+     * Record that one client holds a role for another client of the account. Fails if the two
+     * clients already have a relationship of this type, in either direction.
+     */
+    createClientRelationship?: (ClientRelationshipGenqlSelection & { __args: {accountId: Scalars['String'], input: CreateClientRelationshipInput} })
+    /** Change the type and reason of a relationship. The two clients cannot be changed. */
+    updateClientRelationship?: (ClientRelationshipGenqlSelection & { __args: {accountId: Scalars['String'], input: UpdateClientRelationshipInput} })
+    /** Delete a relationship. Returns the id of the deleted relationship. */
+    deleteClientRelationship?: { __args: {accountId: Scalars['String'], id: Scalars['ID']} }
+    /** Create a note on a user (client). */
+    addUserNote?: (NoteGenqlSelection & { __args: {accountId: Scalars['String'], input: AddUserNoteInput} })
+    /** Update a user note's text or type. */
+    updateUserNote?: (NoteGenqlSelection & { __args: {accountId: Scalars['String'], input: UpdateNoteInput} })
+    /** Delete a user note (soft delete). */
+    deleteUserNote?: (NoteGenqlSelection & { __args: {accountId: Scalars['String'], id: Scalars['String']} })
+    /** Set or remove the alert flag on a user note (alerts are shown as a banner). */
+    setUserNoteAlert?: (NoteGenqlSelection & { __args: {accountId: Scalars['String'], id: Scalars['String'], isAlert: Scalars['Boolean']} })
     /** Replaces this account's workflow schedule offsets and returns the resulting set. */
     setWorkflowScheduleOffsets?: (WorkflowScheduleOffsetsGenqlSelection & { __args: {accountId: Scalars['ID'], input: SetWorkflowScheduleOffsetsInput} })
+    /** Updates the account's cataloguing workflow configuration and returns the resulting settings. */
+    updateWorkflowSettings?: (UpdateWorkflowSettingsPayloadGenqlSelection & { __args: {accountId: Scalars['ID'], input: UpdateWorkflowSettingsInput} })
     /** Sets or clears one per-sale key-date override. A non-null overrideDate sets/upserts the override; a null overrideDate clears it so the date reverts to the account-computed value. */
     setSaleWorkflowDateOverride?: (SaleGenqlSelection & { __args: {accountId: Scalars['ID'], saleId: Scalars['ID'], dateType: WorkflowDateType, overrideDate?: (Scalars['Time'] | null)} })
+    /**
+     * Puts phone clerks on a sale. Each clerk not already on it takes the lowest unnamed line, else a new
+     * line at the end, so phone bids already planned do not move. Fails for profiles that are not phone clerks.
+     */
+    assignPhoneClerksToSale?: (PhoneLineGenqlSelection & { __args: {accountId: Scalars['String'], saleId: Scalars['String'], staffProfileIds: Scalars['ID'][]} })
+    /** Takes a clerk off a sale. The line stays as a numbered placeholder, so its phone bids do not move. */
+    removePhoneClerkFromSale?: (PhoneLineGenqlSelection & { __args: {accountId: Scalars['String'], saleId: Scalars['String'], staffProfileId: Scalars['ID']} })
+    /**
+     * Renumbers the sale's clerks in the given order; their phone bids and overrides move with them.
+     * Placeholders follow. staffProfileIds must be exactly the clerks on the sale.
+     */
+    reorderSalePhoneClerks?: (PhoneLineGenqlSelection & { __args: {accountId: Scalars['String'], saleId: Scalars['String'], staffProfileIds: Scalars['ID'][]} })
+    /**
+     * Adds numbered placeholder lines at the end, or removes trailing placeholders. Fails when a line to
+     * remove has a clerk, is used by the locked plan or has an override pinning a bidder to it.
+     */
+    setSalePhoneLineCount?: (PhoneLineGenqlSelection & { __args: {accountId: Scalars['String'], saleId: Scalars['String'], count: Scalars['Int']} })
+    setSalePhoneClerkConfig?: (SalePhoneClerkConfigGenqlSelection & { __args: {accountId: Scalars['String'], input: SetSalePhoneClerkConfigInput} })
+    setPhoneClerkOverride?: (PhoneClerkOverrideGenqlSelection & { __args: {accountId: Scalars['String'], input: SetPhoneClerkOverrideInput} })
+    /** Returns the id of the deleted override. */
+    deletePhoneClerkOverride?: { __args: {accountId: Scalars['String'], id: Scalars['ID']} }
+    /**
+     * Plans every accepted phone bid of the sale onto its lines as a new DRAFT, replacing an existing DRAFT.
+     * When nothing has changed since the current DRAFT or LOCKED plan, that plan is returned unless force
+     * is true. Fails when the sale has no lines. Poll the plan while its status is GENERATING.
+     */
+    generatePhoneClerkPlan?: (PhoneClerkPlanGenqlSelection & { __args: {accountId: Scalars['String'], saleId: Scalars['String'], force?: (Scalars['Boolean'] | null)} })
+    /**
+     * Moves one phone bid to a line by hand. Records an override so the change survives regenerating,
+     * and keeps the original placement as the row's suggestion. A move that clashes with another phone bid
+     * on the line is allowed and shows up in the plan's issues.
+     */
+    assignPhoneClerk?: (PhoneClerkAssignmentGenqlSelection & { __args: {accountId: Scalars['String'], input: AssignPhoneClerkInput} })
+    /**
+     * Adds a suggested phone bid to a DRAFT or LOCKED plan. The suggestion is checked again; one that no
+     * longer fits the plan fails, and an unsupported reason is replaced with a supported one. The stored
+     * explanation is the standard text for the reason.
+     */
+    acceptPhoneClerkSuggestion?: (PhoneClerkAssignmentGenqlSelection & { __args: {accountId: Scalars['String'], input: AcceptPhoneClerkSuggestionInput} })
+    /**
+     * Locks a DRAFT plan, recording each line's clerk name on its phone bids, and supersedes the previous
+     * LOCKED plan. Fails when a clerk on the sale's lines no longer has a staff profile.
+     */
+    lockPhoneClerkPlan?: (PhoneClerkPlanGenqlSelection & { __args: {accountId: Scalars['String'], planId: Scalars['ID']} })
+    /** Every phone bid of the sale by item, from the LOCKED plan, else from the DRAFT with a DRAFT watermark. */
+    generatePhoneBidSummarySheet?: (DocumentDownloadGenqlSelection & { __args: {accountId: Scalars['String'], saleId: Scalars['String']} })
+    /**
+     * One line's phone bids with space for the outcome, from the LOCKED plan, else from the DRAFT with a
+     * DRAFT watermark.
+     */
+    generatePhoneClerkSheet?: (DocumentDownloadGenqlSelection & { __args: {accountId: Scalars['String'], saleId: Scalars['String'], lineNumber: Scalars['Int']} })
+    /** Create a new affiliate for an account. The affiliate is created in an active state. */
+    createAffiliate?: (AffiliateGenqlSelection & { __args: {accountId: Scalars['ID'], input: CreateAffiliateInput} })
+    /** Update an existing affiliate. Only fields present on the input are changed. */
+    updateAffiliate?: (AffiliateGenqlSelection & { __args: {accountId: Scalars['ID'], affiliateId: Scalars['ID'], input: UpdateAffiliateInput} })
     __typename?: boolean | number
     __scalar?: boolean | number
 }
+
+export interface NewConsignmentFromAppraisalInput {
+/** Name of the consignment. Defaults to the appraisal's name. */
+name?: (Scalars['String'] | null),
+/** Description of the consignment. */
+description?: (Scalars['String'] | null),
+/** Fee rules of the consignment. */
+feeRules: ConsignmentFeeRuleInput[],
+/** External id of the consignment. */
+externalId?: (Scalars['String'] | null),
+/** Whether the consignment is reported separately. */
+reportSeparately?: (Scalars['Boolean'] | null),
+/**
+ * Staff of the consignment, the first being the lead. Each must be a member of the
+ * account. Omitted copies the appraisal's staff and lead.
+ */
+staffUserIds?: (Scalars['String'][] | null),
+/**
+ * Give the consignment the appraisal's number when no consignment has it yet. When
+ * false or when the number is taken, the consignment gets the next free number.
+ */
+reuseAppraisalNumber?: (Scalars['Boolean'] | null)}
 
 export interface NodeGenqlSelection{
     /** Identification of the node. */
@@ -9860,7 +16690,10 @@ export interface NodeGenqlSelection{
     on_ActionHookLog?: ActionHookLogGenqlSelection
     on_ApiKey?: ApiKeyGenqlSelection
     on_ApiToken?: ApiTokenGenqlSelection
+    on_Appointment?: AppointmentGenqlSelection
+    on_Appraisal?: AppraisalGenqlSelection
     on_Category?: CategoryGenqlSelection
+    on_ConditionReportRequest?: ConditionReportRequestGenqlSelection
     on_Consignment?: ConsignmentGenqlSelection
     on_Department?: DepartmentGenqlSelection
     on_DutchSale?: DutchSaleGenqlSelection
@@ -9878,7 +16711,66 @@ export interface NodeGenqlSelection{
     on_SaleWatchlistEntry?: SaleWatchlistEntryGenqlSelection
     on_SectionMarker?: SectionMarkerGenqlSelection
     on_Site?: SiteGenqlSelection
+    on_StaffProfile?: StaffProfileGenqlSelection
     on_User?: UserGenqlSelection
+    on_ValuationRequest?: ValuationRequestGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Internal staff note on an item or client. */
+export interface NoteGenqlSelection{
+    id?: boolean | number
+    accountId?: boolean | number
+    entityId?: boolean | number
+    /** The note type category. Null for untyped notes. */
+    noteType?: NoteTypeGenqlSelection
+    /** The note type ID. Null for untyped notes. */
+    noteTypeId?: boolean | number
+    /** ID of the staff member who created the note. */
+    authorId?: boolean | number
+    /** The staff member who created the note. Null if the author's account was removed. */
+    author?: AuthorGenqlSelection
+    note?: boolean | number
+    /** Whether this note is flagged as an alert (shown as a banner). */
+    isAlert?: boolean | number
+    created?: boolean | number
+    modified?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface NoteConnectionGenqlSelection{
+    edges?: NoteEdgeGenqlSelection
+    pageInfo?: PageInfoGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface NoteEdgeGenqlSelection{
+    cursor?: boolean | number
+    node?: NoteGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/**
+ * An account-scoped note type: a category for internal staff notes on
+ * items and clients (e.g. "General", "Financial", "Legal", "Shipping").
+ */
+export interface NoteTypeGenqlSelection{
+    id?: boolean | number
+    accountId?: boolean | number
+    name?: boolean | number
+    scope?: boolean | number
+    /** When the note type was archived (RFC3339). Null means active. */
+    archivedAt?: boolean | number
+    /** When the note type was created (RFC3339). */
+    created?: boolean | number
+    /** When the note type was last modified (RFC3339). */
+    modified?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -10155,10 +17047,22 @@ export interface OrderLineGenqlSelection{
     orderLineType?: boolean | number
     /** Fees associated with the order line, e.g. Buyer's Premium. */
     fees?: OrderLineFeeGenqlSelection
-    /** Seller fees associated with the order line to be paid by the seller, e.g. Platform Fee. */
+    /**
+     * @deprecated Use platformFees
+     * Seller fees associated with the order line to be paid by the seller, e.g. Platform Fee.
+     */
     sellerFees?: OrderLineFeeGenqlSelection
+    /** Fees Basta charges on this line. Empty when it charges none. */
+    platformFees?: OrderLinePlatformFeeGenqlSelection
     /** Item associated with the order line. */
     item?: SaleItemOrItemGenqlSelection
+    /**
+     * The tax frozen on this line's hammer by the order's invoice. Null until an
+     * invoice is issued through Basta, for an invoice recorded from another
+     * system, when the house charges no tax, for a cancelled order, and for a
+     * line added since the invoice was last published.
+     */
+    tax?: AppliedTaxGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -10179,6 +17083,43 @@ export interface OrderLineFeeGenqlSelection{
     amount?: boolean | number
     /** Is system defined, cannot be edited. */
     isSystemDefined?: boolean | number
+    /**
+     * The tax frozen on this fee by the order's invoice. Null until an invoice is
+     * issued through Basta, for an invoice recorded from another system, when the
+     * house charges no tax, for a cancelled order, in `sellerFees`, and for a fee
+     * the invoice cannot match: one added since the invoice was last published,
+     * or one of several fees of the same name changed by an edit.
+     */
+    tax?: AppliedTaxGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** A fee Basta charges on an order line. */
+export interface OrderLinePlatformFeeGenqlSelection{
+    /** What the fee is called, as printed when the buyer pays it. */
+    name?: boolean | number
+    /** Amount in minor currency units. */
+    amount?: boolean | number
+    /** Who pays it. */
+    chargedTo?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Money the house received against an order. */
+export interface OrderPaymentGenqlSelection{
+    id?: boolean | number
+    /** Minor units. */
+    amount?: boolean | number
+    /** YYYY-MM-DD the money was received. */
+    receivedOn?: boolean | number
+    /** Bank reference or note, as entered. */
+    reference?: boolean | number
+    /** UTC RFC3339 date and time the payment was recorded. */
+    createdAt?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -10314,7 +17255,10 @@ export interface PaymentDetailsGenqlSelection{
     paymentProviderAccountId?: boolean | number
     /** Payment Setup Status */
     status?: boolean | number
-    /** Account Fees */
+    /**
+     * @deprecated Use buyerPremiums.
+     * Account Fees
+     */
     accountFees?: AccountFeeGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
@@ -10345,8 +17289,58 @@ export interface PaymentOrderGenqlSelection{
     itemId?: boolean | number
     /** InvoiceID of invoice sent to winner */
     invoiceId?: boolean | number
-    /** Invoice details */
+    /**
+     * INV-0042: taken when the order is first published and kept through
+     * revisions and reopens. Null until then.
+     */
+    invoiceNumber?: boolean | number
+    /**
+     * The order's standing invoice: the revision issued through Basta, or the one
+     * recorded from another system. Null until there is one.
+     */
     invoice?: InvoiceGenqlSelection
+    /**
+     * UTC RFC3339 date and time the order is due, when set. When null, the
+     * order's `paymentTermsDays` apply from issue, else the account's payment
+     * terms.
+     */
+    dueAt?: boolean | number
+    /**
+     * Days from the issue date to the due date for this order. Null when the
+     * order has a `dueAt` or the account's payment terms apply; those are in
+     * `invoiceSettings`.
+     */
+    paymentTermsDays?: boolean | number
+    /** Hammer plus buyer fees over all lines, in minor units. */
+    total?: boolean | number
+    /**
+     * All tax on the order's invoice, in minor units. Zero until an invoice is
+     * issued through Basta, and when the house charges no tax.
+     */
+    taxTotal?: boolean | number
+    /**
+     * The VAT shown separately on the order's invoice, one entry per tax code
+     * name, treatment and rate, in the order they first appear. Empty until an
+     * invoice is issued through Basta, and when none is shown separately.
+     */
+    taxBands?: TaxBandGenqlSelection
+    /**
+     * The part of `taxTotal` included in fees under the margin scheme and not
+     * shown separately, in minor units. The order's printed invoice includes it
+     * in the fees and never shows it as VAT.
+     */
+    taxInLieuTotal?: boolean | number
+    /**
+     * True when some lot on the order's invoice is sold under the margin scheme.
+     * The PDF then says so.
+     */
+    marginScheme?: boolean | number
+    /** Minor units received against the order. */
+    amountPaid?: boolean | number
+    /** `total` less `amountPaid`, in minor units. */
+    amountDue?: boolean | number
+    /** Money received against the order, oldest first. */
+    payments?: OrderPaymentGenqlSelection
     /** PaymentID set if payment has been made on invoice */
     paymentId?: boolean | number
     /** UserID */
@@ -10358,10 +17352,21 @@ export interface PaymentOrderGenqlSelection{
      * UserInfo for payment order
      */
     user?: UserInfoGenqlSelection
-    /** Billing address for the order */
+    /**
+     * Billing address for the order. When it was copied from one of
+     * `buyerAddresses`, `id` is that address's id.
+     */
     billingAddress?: MailingAddressGenqlSelection
-    /** Shipping address for the order */
+    /**
+     * Shipping address for the order. When it was copied from one of
+     * `buyerAddresses`, `id` is that address's id.
+     */
     shippingAddress?: MailingAddressGenqlSelection
+    /**
+     * The buyer's saved addresses, the ones `updateOrder` accepts as
+     * `billingAddressId` and `shippingAddressId`. Empty when the buyer has none.
+     */
+    buyerAddresses?: MailingAddressGenqlSelection
     /** Status of the order */
     status?: boolean | number
     /** Created */
@@ -10396,9 +17401,9 @@ export interface PhoneAddressGenqlSelection{
     /** Phone type (mobile, home, work, fax) */
     phoneType?: boolean | number
     /**
-     * Full phone number in E.164 format (e.g., +15551234567)
+     * Full phone number in E.164 format (e.g., +12015550123)
      * Includes country code, number, and optional extension using RFC 3966 format
-     * Example: +1-555-123-4567;ext=1234
+     * Example: +1-201-555-0123;ext=1234
      */
     phoneNumber?: boolean | number
     /** Label */
@@ -10419,6 +17424,278 @@ export interface PhoneBidOriginGenqlSelection{
     __typename?: boolean | number
     __scalar?: boolean | number
 }
+
+
+/** One phone bid on a plan. */
+export interface PhoneClerkAssignmentGenqlSelection{
+    id?: boolean | number
+    itemId?: boolean | number
+    itemNumber?: boolean | number
+    saleRegistrationId?: boolean | number
+    /** The bidder's sale registration. Null when it no longer exists. */
+    saleRegistration?: SaleRegistrationGenqlSelection
+    saleItemRegistrationId?: boolean | number
+    bidderUserId?: boolean | number
+    /** Null when the phone bid has no line (NO_CLERK_AVAILABLE). */
+    lineNumber?: boolean | number
+    /** The clerk's name on the line when the plan was locked. Null on unlocked plans. */
+    clerkName?: boolean | number
+    source?: boolean | number
+    reason?: PhoneClerkReasonGenqlSelection
+    /** The planner's original placement on rows staff changed. Null otherwise. */
+    suggestion?: PhoneClerkSuggestionGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** A clerk who called the bidder on a locked plan of an earlier sale. */
+export interface PhoneClerkHistoryEntryGenqlSelection{
+    bidderUserId?: boolean | number
+    staffProfileId?: boolean | number
+    /** The clerk's name when that plan was locked. */
+    clerkName?: boolean | number
+    saleId?: boolean | number
+    /** The highest item number the clerk called the bidder on in that sale. */
+    lastItemNumber?: boolean | number
+    lockedAt?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface PhoneClerkItemAssignmentsGenqlSelection{
+    itemId?: boolean | number
+    itemNumber?: boolean | number
+    assignments?: PhoneClerkAssignmentGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Pins a bidder to a line for one item, or for every item of the sale. Every plan honours it. */
+export interface PhoneClerkOverrideGenqlSelection{
+    id?: boolean | number
+    bidderUserId?: boolean | number
+    /** Null when the override covers every item of the bidder in the sale. */
+    itemId?: boolean | number
+    lineNumber?: boolean | number
+    note?: boolean | number
+    createdBy?: boolean | number
+    createdAt?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface PhoneClerkPlanGenqlSelection{
+    id?: boolean | number
+    saleId?: boolean | number
+    version?: boolean | number
+    status?: boolean | number
+    generator?: boolean | number
+    model?: boolean | number
+    /** Why generation failed, for FAILED plans. */
+    error?: boolean | number
+    /** Always fresh for GENERATING, FAILED and SUPERSEDED plans. */
+    staleness?: PhoneClerkPlanStalenessGenqlSelection
+    /**
+     * Problems found when the plan was made, plus clashes in the current rows of a DRAFT or LOCKED plan:
+     * SAME_ITEM when a line has two calls on one item, ITEM_GAP when two bidders' calls on a line are inside the item gap.
+     */
+    issues?: PhoneClerkPlanIssueGenqlSelection
+    createdBy?: boolean | number
+    createdAt?: boolean | number
+    lockedBy?: boolean | number
+    lockedAt?: boolean | number
+    /** Every row, ordered by item number then line. */
+    assignments?: PhoneClerkAssignmentGenqlSelection
+    /** Rows grouped by item in item-number order, unassigned rows included. */
+    byItem?: PhoneClerkItemAssignmentsGenqlSelection
+    /** Every line of the sale in line order with its rows; lines with no rows are listed too. */
+    byLine?: PhoneLineAssignmentsGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** A plan-level problem that is reported but not rejected, such as two overrides that break the item gap. */
+export interface PhoneClerkPlanIssueGenqlSelection{
+    code?: boolean | number
+    message?: boolean | number
+    saleItemRegistrationIds?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** How a plan compares with the sale's current phone bids, lines, overrides and item gap. */
+export interface PhoneClerkPlanStalenessGenqlSelection{
+    /** True when anything the plan was made from has changed since. Naming a placeholder line does not count. */
+    isStale?: boolean | number
+    /** Accepted phone bids with no row on the plan. */
+    uncoveredRegistrationCount?: boolean | number
+    /** Rows whose phone bid no longer exists or is no longer accepted. */
+    removedRegistrationCount?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface PhoneClerkReasonGenqlSelection{
+    code?: boolean | number
+    explanation?: boolean | number
+    /** The row on the same plan that supports SAME_BIDDER_IN_SALE. */
+    evidenceAssignmentId?: boolean | number
+    /** The earlier sale that supports PREVIOUS_SALE_RELATIONSHIP. */
+    evidenceSaleId?: boolean | number
+    /** True when the stated reason was not supported by the plan and was replaced with one that is. */
+    rewritten?: boolean | number
+    /** The staff member who changed the row, for MANUAL rows. */
+    actorUserId?: boolean | number
+    at?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface PhoneClerkSuggestionGenqlSelection{
+    /** The suggested line. Null when no line is free. */
+    lineNumber?: boolean | number
+    reason?: PhoneClerkReasonGenqlSelection
+    /** Phone bids already on the plan that an override forces this one to break the item gap with. */
+    conflictingSaleItemRegistrationIds?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** A phone line of a sale: an assigned phone clerk, or a numbered placeholder. */
+export interface PhoneLineGenqlSelection{
+    lineNumber?: boolean | number
+    label?: boolean | number
+    /** The clerk on the line. Null for a placeholder, or when the profile no longer exists. */
+    clerk?: StaffProfileGenqlSelection
+    /** The clerk's name, else the label, else "Clerk <lineNumber>". */
+    displayName?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface PhoneLineAssignmentsGenqlSelection{
+    line?: PhoneLineGenqlSelection
+    assignments?: PhoneClerkAssignmentGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Counts of a sale's lots, withdrawn ones excluded, by photography workflow status. */
+export interface PhotographyWorkflowSummaryGenqlSelection{
+    totalItems?: boolean | number
+    toPhotograph?: boolean | number
+    photographed?: boolean | number
+    uploaded?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/**
+ * One revision of a pre-sale advice: the letter that tells a consignor which of their items
+ * are in a sale. A main consignor gets one advice per sale covering all their consignments in
+ * it, and a separate advice for each consignment that is reported separately. Withdrawn items
+ * are left out.
+ */
+export interface PresaleAdviceGenqlSelection{
+    id?: boolean | number
+    saleId?: boolean | number
+    /** The main consignor the advice is addressed to. */
+    consignor?: ConsignorGenqlSelection
+    /** The consignments whose items the advice lists. */
+    consignments?: ConsignmentGenqlSelection
+    /** Whether the advice covers a single consignment that is reported separately. */
+    reportedSeparately?: boolean | number
+    /** 1 for the first revision, increasing by one each time the advice is generated again. */
+    revision?: boolean | number
+    status?: boolean | number
+    /** Suggested file name of the document. */
+    filename?: boolean | number
+    generatedAt?: boolean | number
+    /** Id of the user that generated this revision. */
+    generatedBy?: boolean | number
+    /** When this revision was last emailed. Kept when the revision is superseded. */
+    sentAt?: boolean | number
+    /** Id of the user that last sent this revision. */
+    sentBy?: boolean | number
+    /** The address this revision was last emailed to. */
+    sentToEmail?: boolean | number
+    /** A short-lived link to download the document. */
+    download?: DocumentDownloadGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** A sale's pre-sale advices and the items left out of advice grouping. */
+export interface PresaleAdviceListGenqlSelection{
+    /** The current revision of each advice, separately reported consignments included. */
+    advices?: PresaleAdviceGenqlSelection
+    /**
+     * Items of the sale left out of advice grouping: those in no consignment (NO_CONSIGNMENT) and
+     * those whose consignment has no main consignor (NO_MAIN_CONSIGNOR). Other items with no advice
+     * are not listed. NO_CONSIGNOR_RECORD is reported only by generatePresaleAdvices, never here.
+     */
+    skipped?: PresaleAdviceSkippedItemGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** The outcome of sending one pre-sale advice. */
+export interface PresaleAdviceSendResultGenqlSelection{
+    presaleAdviceId?: boolean | number
+    /** Whether the email went out. */
+    sent?: boolean | number
+    /** Why the advice was not sent, or why it was sent but not marked SENT. Null on success. */
+    error?: boolean | number
+    /** The advice after the attempt. Null when it does not exist. */
+    advice?: PresaleAdviceGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** An item of a sale that is on no pre-sale advice. */
+export interface PresaleAdviceSkippedItemGenqlSelection{
+    itemId?: boolean | number
+    reason?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** A page of a consignor's pre-sale advices. */
+export interface PresaleAdvicesConnectionGenqlSelection{
+    edges?: PresaleAdvicesEdgeGenqlSelection
+    pageInfo?: PageInfoGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface PresaleAdvicesEdgeGenqlSelection{
+    cursor?: boolean | number
+    node?: PresaleAdviceGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface PreviewConsignmentContractInput {consignmentId: Scalars['String'],
+/**
+ * Currency of the charges printed on the preview. Defaults to the account's
+ * default currency. Charges configured only in other currencies are left out.
+ */
+currency?: (Currency | null)}
+
+
+/** Input object for putting a sale into preview. */
+export interface PreviewSaleInput {saleId: Scalars['String']}
 
 
 /** The resolved identity of whoever performed an action. */
@@ -10511,6 +17788,102 @@ export interface ProductVariantLinkGenqlSelection{
     productName?: boolean | number
     variantName?: boolean | number
     sku?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/**
+ * A property receipt: the house's record that it took custody of some or all of a consignment's
+ * items. A receipt is never changed; issuing again adds a new one.
+ */
+export interface PropertyReceiptGenqlSelection{
+    id?: boolean | number
+    consignmentId?: boolean | number
+    /** R<consignment number> for the first receipt, then R<n>a, R<n>b, ... for later ones. */
+    number?: boolean | number
+    /** The items on the receipt, in consignment line order. */
+    items?: PropertyReceiptItemGenqlSelection
+    custody?: boolean | number
+    /** The site the items were moved to. Null unless custody is AT_LOCATION. */
+    site?: SiteGenqlSelection
+    /** The location within the site the items were moved to. Null when none was given. */
+    siteLocation?: LocationGenqlSelection
+    /** Version of the template the receipt was printed from. 0 is the built-in default template. */
+    templateVersion?: boolean | number
+    /** Suggested file name. */
+    filename?: boolean | number
+    issuedAt?: boolean | number
+    /** Id of the user that issued the receipt. */
+    issuedBy?: boolean | number
+    /** When the receipt was last emailed. Null when it has never been sent. */
+    lastSentAt?: boolean | number
+    /** Id of the user that last emailed the receipt. */
+    lastSentBy?: boolean | number
+    /** The address the receipt was last emailed to. */
+    lastSentTo?: boolean | number
+    /** How many times the receipt has been emailed. */
+    sendCount?: boolean | number
+    /**
+     * A short-lived link to download the receipt. Null when a link could not be made; the
+     * error says why.
+     */
+    download?: DocumentDownloadGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** An item on a property receipt. */
+export interface PropertyReceiptItemGenqlSelection{
+    itemId?: boolean | number
+    /** The item's consignment line when the receipt was issued. */
+    lineNumber?: boolean | number
+    /** The item. Null when it can no longer be read. */
+    item?: ItemGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Where the receipted items are now. Leave the whole input out to keep their current location. */
+export interface PropertyReceiptLocationInput {
+/** Marks the items in transit. Must be true. */
+inTransit?: (Scalars['Boolean'] | null),
+/** Moves the items to an active site, and optionally a location within it. */
+site?: (PropertyReceiptSiteInput | null)}
+
+
+/** The latest property receipt issued for an item in its current consignment. */
+export interface PropertyReceiptRefGenqlSelection{
+    id?: boolean | number
+    /** E.g. R457 or R457a. */
+    number?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface PropertyReceiptSiteInput {siteId: Scalars['String'],
+/** A location within the site. Leave out to place the items at the site only. */
+locationId?: (Scalars['String'] | null)}
+
+
+/** One immutable version of an account's property receipt template. */
+export interface PropertyReceiptTemplateGenqlSelection{
+    /** Null for the built-in default. */
+    id?: boolean | number
+    /**
+     * 1 for the first saved version, increasing by one with each save. 0 is the
+     * built-in default, used until a version is saved.
+     */
+    version?: boolean | number
+    title?: boolean | number
+    /** Sanitised rich text with {{placeholder}} tokens. */
+    body?: boolean | number
+    /** Null for the built-in default. */
+    createdAt?: boolean | number
+    /** Id of the user that saved this version. Null for the built-in default. */
+    createdBy?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -10610,7 +17983,10 @@ export interface QueryGenqlSelection{
     saleItemByExternalId?: (SaleItemGenqlSelection & { __args: {accountId: Scalars['String'], externalId: Scalars['String']} })
     /** Get API Keys that have created. */
     apiKeys?: (ApiKeyConnectionGenqlSelection & { __args: {accountId: Scalars['String'], first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null)} })
-    /** Get API key for searching collection */
+    /**
+     * @deprecated search key issuance is disabled
+     * Get API key for searching collection
+     */
     searchKey?: (SearchKeyGenqlSelection & { __args: {accountId: Scalars['String']} })
     /**
      * @deprecated Use apiKeys query
@@ -10630,6 +18006,11 @@ export interface QueryGenqlSelection{
      * returned; pass includeArchived: true to include archived ones.
      */
     attributionSources?: (AttributionSourceGenqlSelection & { __args: {accountId: Scalars['String'], includeArchived?: (Scalars['Boolean'] | null)} })
+    /**
+     * List an account's note types. By default only active note types are
+     * returned; pass includeArchived: true to include archived ones.
+     */
+    noteTypes?: (NoteTypeGenqlSelection & { __args: {accountId: Scalars['String'], includeArchived?: (Scalars['Boolean'] | null)} })
     /**
      * List the notification integrations an account has set up, at most one per channel
      * — key entries by `channel`, not by position. An empty list means nothing is set up
@@ -10651,6 +18032,14 @@ export interface QueryGenqlSelection{
     notificationCatalog?: (NotificationCatalogGenqlSelection & { __args: {accountId: Scalars['ID']} })
     /** This account's full workflow schedule grid: platform defaults overlaid with the account's stored modifications. Each row's `modified` flag is true when it differs from the default. */
     workflowScheduleOffsets?: (WorkflowScheduleOffsetsGenqlSelection & { __args: {accountId: Scalars['ID']} })
+    /** Cataloguing workflow progress for a sale: counts of its lots by cataloguing status. Withdrawn lots are left out. A lot with no recorded status, or whose item cannot be loaded, counts as awaiting cataloguing. */
+    cataloguingWorkflowSummaryForSale?: (CataloguingWorkflowSummaryGenqlSelection & { __args: {accountId: Scalars['ID'], saleId: Scalars['ID']} })
+    /** Photography workflow progress for a sale: counts of its lots by photography status. Withdrawn lots are left out. A lot with no recorded status, or whose item cannot be loaded, counts as to photograph. Fails with NOT_FOUND for an unknown sale and PERMISSION_DENIED for a sale in another account. */
+    photographyWorkflowSummaryForSale?: (PhotographyWorkflowSummaryGenqlSelection & { __args: {accountId: Scalars['ID'], saleId: Scalars['ID']} })
+    /** Cataloguing readiness for an item: which required schema fields are blank. Call before promoting an item to catalogued/proofed to warn about blanks. */
+    itemCataloguingReadiness?: (ItemCataloguingReadinessGenqlSelection & { __args: {accountId: Scalars['ID'], itemId: Scalars['ID']} })
+    /** Required-field status of a sale's lots. Omitting itemIds returns every lot in the sale. Lots that fail block publishing and preview. */
+    saleItemsRequiredFieldStatus?: (SaleItemRequiredFieldStatusGenqlSelection & { __args: {accountId: Scalars['ID'], saleId: Scalars['ID'], itemIds?: (Scalars['ID'][] | null)} })
     /** Get all Action Hook logs. */
     actionHookLogs?: (ActionHookLogConnectionGenqlSelection & { __args: {accountId: Scalars['String'], first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), filter?: (ActionHookFilter | null)} })
     /** Fetch information about an Item */
@@ -10665,10 +18054,126 @@ export interface QueryGenqlSelection{
     items?: (ItemsConnectionGenqlSelection & { __args: {accountId: Scalars['String'], first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), itemsFilter: ItemsFilter, direction?: (PaginationDirection | null)} })
     /** Get a single consignment by id. */
     consignment?: (ConsignmentGenqlSelection & { __args: {accountId: Scalars['String'], consignmentId: Scalars['String']} })
+    /**
+     * The account's couriers whose name starts with query, ignoring case, ordered by name.
+     * first defaults to 50; values above 200 are treated as 200.
+     */
+    couriers?: (CourierGenqlSelection & { __args: {accountId: Scalars['String'], query?: (Scalars['String'] | null), first?: (Scalars['Int'] | null)} })
     /** Get a single consignment by its human-facing short id. */
     consignmentByShortId?: (ConsignmentGenqlSelection & { __args: {accountId: Scalars['String'], shortId: Scalars['String']} })
+    /**
+     * Get a line of a consignment, by the consignment's number and the line number:
+     * CN2119-1 is consignmentNumber 2119, lineNumber 1. A line whose item has since left the
+     * consignment still resolves, with removed set. Null when there is no such consignment or
+     * line; consignments without a consignmentNumber cannot be looked up this way.
+     */
+    consignmentLine?: (ConsignmentLineGenqlSelection & { __args: {accountId: Scalars['String'], consignmentNumber: Scalars['Int'], lineNumber: Scalars['Int']} })
+    /** Get the entity number settings for an account. Consignments and appraisals share one sequence. */
+    entityNumberSettings?: (EntityNumberSettingsGenqlSelection & { __args: {accountId: Scalars['ID']} })
+    /** Get the inventory number settings for an account. */
+    inventoryNumberSettings?: (InventoryNumberSettingsGenqlSelection & { __args: {accountId: Scalars['ID']} })
+    /** Get a consignment contract revision by id. Null when it does not exist for this account; an id that is not a UUID is an error. */
+    consignmentContract?: (ConsignmentContractGenqlSelection & { __args: {accountId: Scalars['String'], contractId: Scalars['String']} })
+    /**
+     * The current revision of every pre-sale advice of a sale, and the items left out of advice
+     * grouping because they are in no consignment or their consignment has no main consignor.
+     */
+    presaleAdvices?: (PresaleAdviceListGenqlSelection & { __args: {accountId: Scalars['String'], saleId: Scalars['String']} })
+    /**
+     * The current revision of every pre-sale advice addressed to a consignor, across all sales,
+     * sent or not. Newest generated first. first defaults to 20; values above 100 are treated as 100.
+     * pageInfo.totalRecords is not computed and is always 0.
+     */
+    consignorPresaleAdvices?: (PresaleAdvicesConnectionGenqlSelection & { __args: {accountId: Scalars['String'], consignorUserId: Scalars['String'], first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null)} })
+    /** The placeholders a consignment contract template may use. */
+    consignmentContractPlaceholders?: (ContractPlaceholderGenqlSelection & { __args: {accountId: Scalars['String']} })
+    /**
+     * A template body to start from: headings and every placeholder, with markers
+     * where the house's own terms go. It contains no contract terms.
+     */
+    consignmentContractTemplateStarter?: { __args: {accountId: Scalars['String']} }
+    /**
+     * Get one consignment contract template version by id. Null when it does not
+     * exist for this account; an id that is not a UUID is an error.
+     */
+    consignmentContractTemplateVersion?: (ConsignmentContractTemplateGenqlSelection & { __args: {accountId: Scalars['String'], id: Scalars['String']} })
     /** List consignments for an account. */
     consignments?: (ConsignmentsConnectionGenqlSelection & { __args: {accountId: Scalars['String'], first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), direction?: (PaginationDirection | null)} })
+    /** Get a single appraisal by id. Null when it does not exist for this account. */
+    appraisal?: (AppraisalGenqlSelection & { __args: {accountId: Scalars['String'], appraisalId: Scalars['String']} })
+    /** Get an item in an appraisal. Null when the item does not exist or is not in the appraisal. */
+    appraisalItem?: (AppraisalItemGenqlSelection & { __args: {accountId: Scalars['String'], appraisalId: Scalars['String'], itemId: Scalars['String']} })
+    /**
+     * Get the item on a line of an appraisal, by the appraisal's number and the line number:
+     * AP2119-2 is appraisalNumber 2119, lineNumber 2. Null when there is no such appraisal or
+     * line, or the item has since been removed from the appraisal.
+     */
+    appraisalLine?: (AppraisalItemGenqlSelection & { __args: {accountId: Scalars['String'], appraisalNumber: Scalars['Int'], lineNumber: Scalars['Int']} })
+    /**
+     * Suggest content for an item, draft item, appraisal item, sale item or sale from its images and
+     * existing content. Read-only: nothing is saved. Apply accepted values with the regular update mutations.
+     * Only available to logged-in dashboard users; API key access fails with code 403.
+     * Requires WRITE_ITEM for items and draft items, WRITE_APPRAISAL for appraisal items and WRITE_SALE
+     * for sale items and sales. Fails with code 503 when suggestions are not configured or the model is
+     * unavailable; try again later.
+     */
+    suggestContent?: (ContentSuggestionsGenqlSelection & { __args: {accountId: Scalars['String'], input: SuggestContentInput} })
+    /** List appraisals for an account. */
+    appraisals?: (AppraisalsConnectionGenqlSelection & { __args: {accountId: Scalars['String'], first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), direction?: (PaginationDirection | null)} })
+    /**
+     * The appraisal document template used for new documents of an appraisal type: the
+     * newest saved version, or the built-in default (version 0) until one is saved.
+     */
+    appraisalDocumentTemplate?: (AppraisalDocumentTemplateGenqlSelection & { __args: {accountId: Scalars['String'], type: AppraisalType} })
+    /**
+     * Every saved appraisal document template version for an appraisal type, newest first.
+     * The built-in default is not listed.
+     */
+    appraisalDocumentTemplateVersions?: (AppraisalDocumentTemplateGenqlSelection & { __args: {accountId: Scalars['String'], type: AppraisalType} })
+    /** The placeholders an appraisal document template may use. */
+    appraisalDocumentPlaceholders?: (ContractPlaceholderGenqlSelection & { __args: {accountId: Scalars['String']} })
+    /**
+     * The property receipt template used for new receipts: the newest saved version,
+     * or the built-in default (version 0) until one is saved.
+     */
+    propertyReceiptTemplate?: (PropertyReceiptTemplateGenqlSelection & { __args: {accountId: Scalars['String']} })
+    /**
+     * Every saved property receipt template version, newest first. The built-in
+     * default is not listed.
+     */
+    propertyReceiptTemplateVersions?: (PropertyReceiptTemplateGenqlSelection & { __args: {accountId: Scalars['String']} })
+    /**
+     * Get one property receipt template version by number. Version 0 is the built-in
+     * default. Null when the account has no such version; a negative version is an error.
+     */
+    propertyReceiptTemplateVersion?: (PropertyReceiptTemplateGenqlSelection & { __args: {accountId: Scalars['String'], version: Scalars['Int']} })
+    /** The placeholders a property receipt template may use. */
+    propertyReceiptPlaceholders?: (ContractPlaceholderGenqlSelection & { __args: {accountId: Scalars['String']} })
+    /** Get one property receipt. Null when the account has no such receipt. */
+    propertyReceipt?: (PropertyReceiptGenqlSelection & { __args: {accountId: Scalars['String'], receiptId: Scalars['String']} })
+    /**
+     * Get the settings of the public valuation request form. An account that never saved
+     * settings has the form disabled, one required photo and no recipients.
+     */
+    valuationRequestSettings?: (ValuationRequestSettingsGenqlSelection & { __args: {accountId: Scalars['String']} })
+    /** List valuation requests for an account, newest first. */
+    valuationRequests?: (ValuationRequestsConnectionGenqlSelection & { __args: {accountId: Scalars['String'], first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), filter?: (ValuationRequestFilter | null)} })
+    /** Get a single valuation request by id. Null when it does not exist for this account. */
+    valuationRequest?: (ValuationRequestGenqlSelection & { __args: {accountId: Scalars['String'], id: Scalars['ID']} })
+    /** List condition report requests for an account, newest first. */
+    conditionReportRequests?: (ConditionReportRequestsConnectionGenqlSelection & { __args: {accountId: Scalars['String'], first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), filter?: (ConditionReportRequestFilter | null)} })
+    /** Get a single condition report request by id. Null when it does not exist for this account. */
+    conditionReportRequest?: (ConditionReportRequestGenqlSelection & { __args: {accountId: Scalars['String'], id: Scalars['ID']} })
+    /**
+     * Get the appointment booking settings. An account that never saved settings has
+     * bookings disabled, 24 lead hours, 90 days ahead, 2 active appointments per client
+     * and no recipients.
+     */
+    appointmentSettings?: (AppointmentSettingsGenqlSelection & { __args: {accountId: Scalars['String']} })
+    /** List appointments for an account, earliest start first unless order says otherwise. */
+    appointments?: (AppointmentsConnectionGenqlSelection & { __args: {accountId: Scalars['String'], first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), filter?: (AppointmentFilter | null), order?: (AppointmentOrder | null)} })
+    /** Get a single appointment by id. Null when it does not exist for this account. */
+    appointment?: (AppointmentGenqlSelection & { __args: {accountId: Scalars['String'], id: Scalars['ID']} })
     /** Get a single site by id. */
     site?: (SiteGenqlSelection & { __args: {accountId: Scalars['String'], siteId: Scalars['String']} })
     /** List sites for an account. Archived sites are excluded unless includeArchived is true. */
@@ -10690,6 +18195,8 @@ export interface QueryGenqlSelection{
     itemOffers?: (OffersConnectionGenqlSelection & { __args: {accountId: Scalars['String'], itemId: Scalars['String'], first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), status?: (OfferStatus | null), direction?: (PaginationDirection | null)} })
     /** List offers across an account's items, with optional filters. */
     offers?: (OffersConnectionGenqlSelection & { __args: {accountId: Scalars['String'], filter?: (OffersFilter | null), first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), direction?: (PaginationDirection | null)} })
+    /** List bids across an account, with optional filters. */
+    bids?: (BidsConnectionGenqlSelection & { __args: {accountId: Scalars['String'], filter?: (BidsFilter | null), first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), direction?: (PaginationDirection | null)} })
     salesAggregate?: (SalesAggregateGenqlSelection & { __args: {accountId: Scalars['String']} })
     /** User Bid Activity */
     userBidActivity?: (UserBidActivityConnectionGenqlSelection & { __args: {accountId: Scalars['String'], userId: Scalars['String'], first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), filter?: (UserBidActivityFilter | null), direction?: (PaginationDirection | null), orderBy?: (BidOrderByField | null)} })
@@ -10697,18 +18204,47 @@ export interface QueryGenqlSelection{
      * Get a user node for a given account and user ID.
      * If idType is USER_ID_TYPE_IDENTITY_PROVIDER_ID, the user ID is an identity provider ID.
      * If idType is USER_ID_TYPE_USER_ID, the user ID is a user ID.
+     * If idType is BASTA_USER_ID, the user ID is the user's Basta id, as returned in
+     * `User.id` and `StatementConsignor.userId`.
      */
     user?: (UserGenqlSelection & { __args: {accountId: Scalars['String'], userId: Scalars['String'], idType: UserIdType} })
+    /** Client numbering for the account: the next number to be assigned and the highest in use. */
+    clientNumberSettings?: (ClientNumberSettingsGenqlSelection & { __args: {accountId: Scalars['String']} })
+    /** Sale numbering for the account: the next number to be assigned and the highest in use. */
+    saleNumberSettings?: (SaleNumberSettingsGenqlSelection & { __args: {accountId: Scalars['String']} })
     /** Orders associated with an account */
     orders?: (OrderConnectionGenqlSelection & { __args: {accountId: Scalars['String'], first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), before?: (Scalars['String'] | null), last?: (Scalars['Int'] | null)} })
+    /** Get a single order by its id. */
+    order?: (PaymentOrderGenqlSelection & { __args: {accountId: Scalars['String'], orderId: Scalars['String']} })
     /** Orders associated with a user */
     userOrders?: (OrderConnectionGenqlSelection & { __args: {accountId: Scalars['String'], userID: Scalars['String'], first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), before?: (Scalars['String'] | null), last?: (Scalars['Int'] | null)} })
+    /**
+     * Consignor statements for an account, newest first. Statements read here
+     * carry no lines; read one with `statement` for those.
+     */
+    statements?: (StatementConnectionGenqlSelection & { __args: {accountId: Scalars['ID'], filter?: (StatementFilter | null), first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null)} })
+    /**
+     * One consignor statement with its lines. Returns null when the account has
+     * no statement with this id.
+     */
+    statement?: (StatementGenqlSelection & { __args: {accountId: Scalars['ID'], id: Scalars['ID']} })
+    /**
+     * The account's invoice defaults. An account that has set none gets payment
+     * terms of 14 days and no texts.
+     */
+    invoiceSettings?: (InvoiceSettingsGenqlSelection & { __args: {accountId: Scalars['ID']} })
     /** Get all sale registrations for a sale */
     saleRegistrations?: (SaleRegistrationsConnectionGenqlSelection & { __args: {accountId: Scalars['String'], first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), filter?: (SaleRegistrationsQueryFilter | null), direction?: (PaginationDirection | null), sortByField?: (SaleRegistrationSortByField | null)} })
     /** Get image for an account, by id or external id */
     image?: (ImageWithAssociationsGenqlSelection & { __args: {accountId: Scalars['String'], id: Scalars['String'], idType: ImageIdType} })
     /** Get an Asset by id. Returns null when the asset does not exist for this account. */
     asset?: (AssetGenqlSelection & { __args: {accountId: Scalars['String'], assetId: Scalars['String']} })
+    /**
+     * The account's uploaded assets, newest first. Assets still uploading and deleted
+     * assets are left out. contentTypes filters by MIME type, case-insensitively;
+     * omitted or empty means every type.
+     */
+    assets?: (AssetConnectionGenqlSelection & { __args: {accountId: Scalars['String'], contentTypes?: (Scalars['String'][] | null), first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null)} })
     /** Get all users for an account */
     users?: (UsersConnectionGenqlSelection & { __args: {accountId: Scalars['String'], first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null)} })
     /** List the followers of a consignor (by internal User.id) within an account. */
@@ -10719,6 +18255,13 @@ export interface QueryGenqlSelection{
     consignorFollowerCount?: { __args: {accountId: Scalars['String'], consignorId: Scalars['ID']} }
     /** Get all sale registration policies for an account */
     saleRegistrationPolicies?: (SaleRegistrationPoliciesConnectionGenqlSelection & { __args: {accountId: Scalars['String'], first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), last?: (Scalars['Int'] | null), before?: (Scalars['String'] | null)} })
+    /** Get the variables, types and enumerations that can be used in sale registration policy rules. */
+    saleRegistrationPolicySchema?: (CelEnvironmentGenqlSelection & { __args: {accountId: Scalars['String']} })
+    /**
+     * Check a sale registration policy rule without saving it.
+     * `valid` is true exactly when creating or updating a policy with this rule would accept it.
+     */
+    validateSaleRegistrationPolicyRule?: (CelValidationResultGenqlSelection & { __args: {accountId: Scalars['String'], rule: Scalars['String']} })
     /**
      * Search across different node types in the graph.
      * 
@@ -10727,6 +18270,8 @@ export interface QueryGenqlSelection{
      * The required permission depends on the type being searched.
      * 
      * For ASSET: READ_ITEM
+     * For CONSIGNMENT: READ_CONSIGNMENT
+     * For APPRAISAL: READ_APPRAISAL
      * For every other type: READ_SALE
      * 
      * Example queries:
@@ -10748,20 +18293,106 @@ export interface QueryGenqlSelection{
      * Fields to search in. If not specified, searches across default fields for the type.
      * 
      * For USER: email, name
+     * For ITEM: consignmentNumberSearchable, title, description and inventoryNumberSearchable.
+     *   A consignment number matches as "2119", "cn2119" or "CN2119", exactly, so "2119" never
+     *   matches consignment 21190. A query of the form CN<number>-<line>, e.g. "CN2119-3", returns
+     *   exactly that consignment line, whatever queryBy says. Leave queryBy unset to keep the
+     *   consignment-number match.
      * For SALE_ITEM: title, description, displayNumber, itemNumberSearchable
      * For SALE: saleTitle, description
+     * For CONSIGNMENT: shortId, consignmentNumberStr, clientNumberStr, name, mainConsignorName, leadStaffName, externalId
+     * For APPRAISAL: appraisalRef, appraisalNumberStr, clientNumberStr, name, mainClientName, clientNames, leadStaffName.
+     *   An appraisal number matches as "2119", "ap2119" or "AP2119", and "AP21" matches as a prefix.
+     *   A query of the form AP<number>-<line>, e.g. "AP2119-3", ranks appraisal AP2119 first.
+     *   clientNames holds the names of every client on the appraisal, not only the main client.
      */
     queryBy?: (Scalars['String'][] | null), 
     /**
      * Sort results by field and direction.
      * Format: "field:direction" (e.g., "email:asc", "name:desc")
      * If not provided, results are sorted by relevance.
+     * 
+     * For ITEM: without orderBy, a typed query sorts by relevance (newest first among equals),
+     * and an empty or "*" query sorts newest first. Sortable fields include created,
+     * consignmentNumber, consignmentLineNumber, siteLocation (the storage location name) and
+     * photographyWorkflowStatus, which sorts in workflow order: TO_PHOTOGRAPH, PHOTOGRAPHED,
+     * UPLOADED.
+     * 
+     * For CONSIGNMENT: createdAt (the default, descending), modifiedAt, clientNumber,
+     * itemCount, consignmentNumber and signatureStatus. signatureStatus sorts in
+     * contract order: NONE, GENERATED, SENT, SIGNED.
+     * 
+     * For APPRAISAL: createdAt (the default, descending), modifiedAt, appraisalNumber, clientNumber
+     * and itemCount.
      */
     orderBy?: (Scalars['String'] | null), 
     /**
      * Additional filter conditions specific to the search type.
      * 
-     * Multiple conditions can be combined with AND using &&
+     * Multiple conditions can be combined with AND using && and with OR using ||, grouped
+     * with parentheses, e.g. "(vip:=true || tags:=collector) && blocked:=false"
+     * 
+     * For ITEM:
+     *   - lifecycleStatus: APPRAISAL, AVAILABLE, ALLOCATED, SOLD, or RETURN_TO_VENDOR
+     *     e.g. "lifecycleStatus:=AVAILABLE" or "lifecycleStatus:=[ALLOCATED,SOLD]"
+     *   - siteId: site UUID
+     *   - siteLocationId: storage location UUID. A location's child locations are not
+     *     included; pass their ids too, e.g. "siteLocationId:=[<location id>,<child id>]"
+     *   - staffLeadUserId: user UUID of the assigned staff lead
+     *   - saleIds: id of any sale the item has been in, not only its latest,
+     *     e.g. "saleIds:=<sale id>"
+     *   - consignmentNumber, consignmentLineNumber: e.g. "consignmentNumber:=2119" or
+     *     "consignmentNumber:=2119 && consignmentLineNumber:=3"
+     *   - photographyWorkflowStatus: TO_PHOTOGRAPH, PHOTOGRAPHED, or UPLOADED,
+     *     e.g. "photographyWorkflowStatus:=[TO_PHOTOGRAPH,PHOTOGRAPHED]"
+     *   - hasConditionReport: true when the item's condition report has text or at least one
+     *     public condition image (private images don't count), e.g. "hasConditionReport:=false"
+     * 
+     * For USER:
+     *   - idVerificationStatus: VERIFIED or UNVERIFIED, e.g. "idVerificationStatus:=VERIFIED"
+     *   - trustLevel: TRUST_LEVEL_NONE, TRUST_LEVEL_LOW, TRUST_LEVEL_MEDIUM, TRUST_LEVEL_HIGH
+     *     or TRUST_LEVEL_FULL
+     *   - blocked, vip: true or false
+     *   - country: ISO 3166-1 alpha-2 code of the user's primary address
+     *   - tags: tag name
+     *   - marketingConsent: CONSENTED, DECLINED or NOT_ASKED (no answer recorded),
+     *     e.g. "marketingConsent:=CONSENTED"
+     *   - created: Unix timestamp of when the user was created,
+     *     e.g. "created:[1793491200..1796083199]"
+     * 
+     * For SALE:
+     *   - saleCode: the sale's code in lowercase, e.g. "saleCode:=021226". Wrap a code with spaces or
+     *     punctuation in backticks, e.g. "saleCode:=`spring 26`"
+     *   - saleNumber: deprecated, use saleCode. The sale's number, e.g. "saleNumber:=42" or "saleNumber:[10..20]"
+     * 
+     * For SALE_ITEM:
+     *   - saleId: sale UUID, used to scope results to a single sale
+     *   - saleCode: the code of the lot's sale, in lowercase, e.g. "saleCode:=021226"
+     *   - cataloguingWorkflowStatus: AWAITING_CATALOGUING, CATALOGUED, or PROOFED,
+     *     e.g. "cataloguingWorkflowStatus:=CATALOGUED" or
+     *     "cataloguingWorkflowStatus:=[CATALOGUED,PROOFED]". Also sortable via
+     *     orderBy, e.g. "cataloguingWorkflowStatus:asc".
+     *   - photographyWorkflowStatus: TO_PHOTOGRAPH, PHOTOGRAPHED, or UPLOADED,
+     *     e.g. "saleId:=<sale id> && photographyWorkflowStatus:=[TO_PHOTOGRAPH,PHOTOGRAPHED]".
+     *     Also sortable via orderBy in workflow order, e.g. "photographyWorkflowStatus:asc".
+     * 
+     * For CONSIGNMENT:
+     *   - clientNumber: the main consignor's client number, e.g. "clientNumber:=1042"
+     *   - mainConsignorId: internal user id of the main consignor
+     *   - leadStaffId: identity-provider id of the lead staff member
+     *   - signatureStatus: NONE, GENERATED, SENT or SIGNED,
+     *     e.g. "signatureStatus:=[NONE,GENERATED,SENT]" for consignments not yet signed
+     *   - itemCount: number of items, e.g. "itemCount:[2..10]" or "itemCount:=0"
+     *   - createdAt: Unix timestamp, e.g. "createdAt:[1767225600..1769904000]"
+     *   - modifiedAt: Unix timestamp of the consignment's last change, e.g. "modifiedAt:>=1767225600"
+     * 
+     * For APPRAISAL:
+     *   - appraisalType: AUCTION, INSURANCE, PROBATE or OTHER, e.g. "appraisalType:=INSURANCE"
+     *   - leadStaffId: identity-provider id of the lead staff member
+     *   - mainClientId: internal user id of the main client
+     *   - attributionChannelId: id of the client attribution channel
+     *   - createdAt: Unix timestamp, e.g. "createdAt:[1767225600..1769904000]"
+     *   - modifiedAt: Unix timestamp of the appraisal's last change, e.g. "modifiedAt:>=1767225600"
      */
     filterBy?: (Scalars['String'] | null)} })
     /**
@@ -10795,10 +18426,44 @@ export interface QueryGenqlSelection{
     creator?: (CreatorGenqlSelection & { __args: {accountId: Scalars['ID'], creatorId: Scalars['ID']} })
     /** List creators for an account, optionally scoped to a parent. */
     creators?: (CreatorConnectionGenqlSelection & { __args: {accountId: Scalars['ID'], parentId?: (Scalars['ID'] | null), includeChildren?: (Scalars['Boolean'] | null), first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null)} })
+    /** Get a single staff profile by id, published or not. Null when it does not exist. */
+    staffProfile?: (StaffProfileGenqlSelection & { __args: {accountId: Scalars['ID'], staffProfileId: Scalars['ID']} })
+    /**
+     * List the account's staff profiles, unpublished ones included, ordered alphabetically
+     * by name. Pass the previous page's `pageInfo.endCursor` as `after`.
+     */
+    staffProfiles?: (StaffProfileConnectionGenqlSelection & { __args: {accountId: Scalars['ID'], 
+    /** Page size. Defaults to 50; at most 200. */
+    first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), 
+    /** Only return staff profiles that belong to this department. */
+    departmentId?: (Scalars['ID'] | null), 
+    /** Only return staff profiles responsible for this item type. */
+    itemTypeId?: (Scalars['ID'] | null), 
+    /**
+     * When true, only return staff profiles that can take phone bids. False or
+     * omitted returns every staff profile.
+     */
+    isPhoneClerk?: (Scalars['Boolean'] | null)} })
+    /**
+     * JSON Schema of the account's default staff profile schema, which new staff
+     * profiles' `attributes` are validated against. Created on first use.
+     */
+    staffProfileSchema?: { __args: {accountId: Scalars['ID']} }
+    /**
+     * Suggests a line for one phone bid around the sale's current plan, without changing anything.
+     * Fails when the sale has no DRAFT or LOCKED plan, or the phone bid is not accepted.
+     */
+    suggestPhoneClerk?: (PhoneClerkSuggestionGenqlSelection & { __args: {accountId: Scalars['String'], saleItemRegistrationId: Scalars['ID']} })
+    /** A phone clerk plan by id. Null when it does not exist. */
+    phoneClerkPlan?: (PhoneClerkPlanGenqlSelection & { __args: {accountId: Scalars['String'], id: Scalars['ID']} })
+    /** The clerks who called the bidder on locked plans of earlier sales, most recent first. */
+    phoneClerkHistory?: (PhoneClerkHistoryEntryGenqlSelection & { __args: {accountId: Scalars['String'], bidderUserId: Scalars['String']} })
     /** Fetch a single affiliate by ID. */
     affiliate?: (AffiliateGenqlSelection & { __args: {accountId: Scalars['ID'], affiliateId: Scalars['ID']} })
     /** List affiliates for an account, paginated. */
     affiliates?: (AffiliateConnectionGenqlSelection & { __args: {accountId: Scalars['ID'], input?: (AffiliatesInput | null)} })
+    /** Event counts for the account's affiliates and campaigns over a date range. */
+    affiliateReport?: (AffiliateReportGenqlSelection & { __args: {accountId: Scalars['ID'], input: AffiliateReportInput} })
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -10835,6 +18500,30 @@ lowRange: Scalars['Int'],
 /** Step of the rule in minor currency units. */
 step: Scalars['Int']}
 
+export interface RecordConsignmentContractSignatureInput {consignmentId: Scalars['String'],
+/**
+ * Id of a GENERATED or SENT revision. Without it, a signed revision with no
+ * document is recorded, for a paper contract made outside Basta.
+ */
+contractId?: (Scalars['String'] | null),
+/**
+ * The date the contract was signed. Defaults to now; it cannot be in the future
+ * or before the revision was generated.
+ */
+signedAt?: (Scalars['Time'] | null),
+/** At most 1,000 characters. */
+note?: (Scalars['String'] | null)}
+
+
+/** Input for recording money received against an order. */
+export interface RecordOrderPaymentInput {
+/** Minor units. Positive, at most `amountDue`. */
+amount: Scalars['Int'],
+/** YYYY-MM-DD, at most one day after today. */
+receivedOn: Scalars['String'],
+/** Bank reference or note. */
+reference?: (Scalars['String'] | null)}
+
 export interface RegisterUserPaddleInput {
 /** Sale ID */
 saleId: Scalars['String'],
@@ -10856,6 +18545,32 @@ export interface RejectSaleRegistrationInput {
 registrationId: Scalars['String'],
 /** Reason for rejection */
 reason?: (Scalars['String'] | null)}
+
+
+/** A relationship seen from one client: `party` is the other client. */
+export interface RelatedPartyGenqlSelection{
+    /** The other client in the relationship. Null when the client can no longer be read. */
+    party?: UserGenqlSelection
+    /**
+     * True when `party` holds the role for this client (for example, `party` is this client's
+     * agent). False when this client holds the role for `party`.
+     */
+    partyHoldsRole?: boolean | number
+    relationship?: ClientRelationshipGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface RemoveAppraisalClientsInput {appraisalId: Scalars['String'],
+/** Basta user UUIDs to remove from the client set. */
+clientUserIds: Scalars['String'][]}
+
+export interface RemoveAppraisalStaffInput {appraisalId: Scalars['String'],
+/**
+ * Staff identity ids (Ory Kratos) to remove from the staff set. Not checked for
+ * account membership, so a stale entry can always be removed.
+ */
+staffUserIds: Scalars['String'][]}
 
 export interface RemoveConsignmentStaffInput {consignmentId: Scalars['String'],
 /**
@@ -10896,6 +18611,14 @@ itemId: Scalars['String']}
 /** Input for removing specifications from an item. Empty or omitted specificationIds removes none (item unchanged). */
 export interface RemoveSpecificationsInput {itemId: Scalars['String'],specificationIds?: (Scalars['String'][] | null)}
 
+
+/** Input for removing a charge from a lot on a draft statement. */
+export interface RemoveStatementChargeInput {
+/** The charge on one of the statement's lines. */
+lineChargeId: Scalars['ID'],
+/** Why the change was made, up to 1000 characters. Kept with the edit. */
+note?: (Scalars['String'] | null)}
+
 export interface RemoveTagFromItemInput {
 /** Item ID */
 itemId: Scalars['String'],
@@ -10920,6 +18643,8 @@ export interface RenameAttributionChannelInput {id: Scalars['String'],name: Scal
 
 export interface RenameAttributionSourceInput {id: Scalars['String'],name: Scalars['String']}
 
+export interface RenameNoteTypeInput {id: Scalars['String'],name: Scalars['String']}
+
 
 /**
  * Input for reordering highlighted items within a sale.
@@ -10943,7 +18668,9 @@ itemId?: (Scalars['String'] | null),
 /** The entity that the images belong to */
 imageType: ImageType,
 /** The new image order */
-imageOrderChanges: ImageOrderInput[]}
+imageOrderChanges: ImageOrderInput[],
+/** Which list of the item or lot the image belongs to. CONDITION is only valid with the ITEM and SALE_ITEM image types. */
+kind?: (ImageKind | null)}
 
 export interface ReorderItemImages {itemId: Scalars['String'],imageOrderChanges: ImageOrderInput[]}
 
@@ -10954,6 +18681,15 @@ export interface ResetSaleFeesInput {saleId: Scalars['ID']}
 export interface RetryActionHookInput {
 /** Action Hook log id. */
 id: Scalars['ID']}
+
+
+/** Input for reverting a direct sell on a sale item. */
+export interface RevertDirectSellInput {itemId: Scalars['String'],saleId: Scalars['String'],
+/**
+ * Basta user id (`User.id`) of the buyer the item is currently sold to. Rejected
+ * when the item is sold to a different buyer.
+ */
+buyerUserId: Scalars['String']}
 
 
 /** Input object for when revoking a API key */
@@ -11014,6 +18750,16 @@ export interface SaleGenqlSelection{
     participants?: (ParticipantsConnectionGenqlSelection & { __args?: {take?: (Scalars['Int'] | null), cursor?: (Scalars['String'] | null), direction?: (PaginationDirection | null)} })
     /** Sequence number of this sale. */
     sequenceNumber?: boolean | number
+    /**
+     * @deprecated Use saleCode.
+     * The sale code as a number. Null when the code is not a plain number, e.g. "021226".
+     */
+    saleNumber?: boolean | number
+    /**
+     * The sale's code, e.g. "6622" or "021226". Assigned when the sale is created, unique within the account
+     * and stored in lowercase. Change it with updateSale.
+     */
+    saleCode?: boolean | number
     /** Chosen ClosingMethod */
     closingMethod?: boolean | number
     /**
@@ -11031,6 +18777,11 @@ export interface SaleGenqlSelection{
     themeType?: boolean | number
     /** Slug for the sale (pretty URL). Present when the account has sale slugs (e.g. Basta bid client or B2B with slug). Null when no slug exists. */
     slug?: boolean | number
+    /**
+     * Link to this sale on the organisation's own website, built from the account's
+     * saleUrlTemplate. Null when no template is set or the sale lacks a value it needs.
+     */
+    websiteUrl?: boolean | number
     /**
      * This setting governs the auction's reserve bid logic.
      * By default, it is set to STANDARD, meaning the reserve must be met or exceeded through standard bidding.
@@ -11088,15 +18839,14 @@ export interface SaleGenqlSelection{
     /** Sale item closing schedule */
     saleItemClosingSchedule?: SaleItemClosingScheduleGenqlSelection
     /**
-     * Effective fee rules for this sale. Returns sale-level fees if configured,
-     * otherwise falls back to account-level fees. Only empty if no fees are
-     * configured at any level. Check the source field on each rule to see which
-     * level was used.
+     * @deprecated Use buyerPremiums.
+     * The premiums that apply to lots of this sale that set nothing of their own,
+     * one rule per band. Check `source` on each rule for the level it came from.
      */
     feeRules?: FeeRuleGenqlSelection
     /**
-     * Whether the sale's fee rules are the default snapshot from account fees,
-     * meaning they have not been customized.
+     * @deprecated Use buyerPremiums.
+     * True when the sale sets no premium of its own.
      */
     hasDefaultSaleFees?: boolean | number
     /** Users who have favourited (watchlisted) this sale, paginated. */
@@ -11122,6 +18872,17 @@ export interface SaleGenqlSelection{
      * and titles may repeat.
      */
     sectionMarkers?: SectionMarkerGenqlSelection
+    /** Number of items in the sale that have no display (lot) number. */
+    itemsMissingDisplayNumberCount?: boolean | number
+    /** Every phone line of the sale in line order: assigned phone clerks and numbered placeholders. */
+    phoneClerks?: PhoneLineGenqlSelection
+    /** Phone clerk planning setup. Defaults when nothing is saved. */
+    phoneClerkConfig?: SalePhoneClerkConfigGenqlSelection
+    /** The open plan (GENERATING or DRAFT) if any, else the LOCKED one. Null when the sale has neither. */
+    phoneClerkPlan?: PhoneClerkPlanGenqlSelection
+    /** The LOCKED plan, which the phone bid sheets print. Null when none is locked. */
+    lockedPhoneClerkPlan?: PhoneClerkPlanGenqlSelection
+    phoneClerkOverrides?: PhoneClerkOverrideGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -11178,6 +18939,13 @@ export interface SaleBannerGenqlSelection{
     location?: boolean | number
     /** Whether the sale is a test sale */
     isTestSale?: boolean | number
+    /**
+     * @deprecated Use saleCode.
+     * The sale code as a number. Null when the code is not a plain number, e.g. "021226".
+     */
+    saleNumber?: boolean | number
+    /** The sale's code in lowercase, e.g. "6622" or "021226". Unique within the account. */
+    saleCode?: boolean | number
     /** Sale statistics */
     statistics?: SaleStatisticsGenqlSelection
     __typename?: boolean | number
@@ -11243,6 +19011,12 @@ export interface SaleGenreGenqlSelection{
      * `appliesAt` on each says which level supplied the values.
      */
     charges?: (ChargeConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), options?: (ChargeOptions | null)} })
+    /**
+     * The premiums as they apply to lots in sales of this genre, before anything
+     * set on an item type, a sale or a single lot. `appliesAt` on each says which
+     * level supplied the values.
+     */
+    buyerPremiums?: (BuyerPremiumConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), options?: (BuyerPremiumOptions | null)} })
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -11285,10 +19059,19 @@ export interface SaleItemGenqlSelection{
     title?: boolean | number
     /** Item sub-title */
     subTitle?: boolean | number
+    /** Condition report for the lot. Null when the lot has no condition text and no condition images. */
+    conditionReport?: ConditionReportGenqlSelection
     /** Number of bids that have been placed on the item */
     totalBids?: boolean | number
     /** Item description */
     description?: boolean | number
+    /** Where the item sits in the cataloguing workflow, read from the master item. */
+    cataloguingWorkflowStatus?: boolean | number
+    /**
+     * Where the item sits in the photography workflow, read from the master item. An item
+     * with no explicitly set status reads as to photograph; null only if the item cannot be loaded.
+     */
+    photographyWorkflowStatus?: boolean | number
     /** Field Output token templates for an item's output fields, e.g. `{brand} {model}`. */
     titleTemplateOverride?: boolean | number
     subTitleTemplateOverride?: boolean | number
@@ -11325,10 +19108,7 @@ export interface SaleItemGenqlSelection{
     itemNumber?: boolean | number
     /** Scheduled closing timestamp for the item. */
     dates?: ItemDatesGenqlSelection
-    /**
-     * Allowed BidTypes on the item.
-     * Defaults to allowing only Max bids if not supplied.
-     */
+    /** Bid types this item accepts. */
     allowedBidTypes?: boolean | number
     /** Images attached to saleItem */
     images?: ImageGenqlSelection
@@ -11343,6 +19123,8 @@ export interface SaleItemGenqlSelection{
     paymentOrders?: PaymentOrderGenqlSelection
     /** Is item hidden for public, and not shown on your sale page. */
     hidden?: boolean | number
+    /** Shown while the sale is in preview. Hidden lots stay hidden. */
+    preview?: boolean | number
     /** Next asks for the item in minor currency units. */
     nextAsks?: { __args: {iterations?: (Scalars['Int'] | null)} } | boolean | number
     /**
@@ -11426,10 +19208,9 @@ export interface SaleItemGenqlSelection{
     /** Get list of registrations for this sale item */
     registrations?: (SaleItemRegistrationsConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), filter?: (SaleItemRegistrationFilter | null)} })
     /**
-     * Effective fee rules for this item. Returns item-level fees if configured,
-     * then sale-level fees, otherwise falls back to account-level fees. Only empty
-     * if no fees are configured at any level. Check the source field on each rule
-     * to see which level was used.
+     * @deprecated Use buyerPremiums.
+     * The premiums that apply to this lot, one rule per band. Fixed once the lot
+     * closes.
      */
     feeRules?: FeeRuleGenqlSelection
     /** Location of the item */
@@ -11446,6 +19227,8 @@ export interface SaleItemGenqlSelection{
     metafield?: (MetafieldGenqlSelection & { __args: {input: GetMetafieldInput} })
     /** Users who have favourited (watchlisted) this sale item, paginated. */
     watchlist?: (SaleItemWatchlistConnectionGenqlSelection & { __args?: {input?: (SaleItemWatchlistInput | null)} })
+    /** Number of users watching this sale item. */
+    watcherCount?: boolean | number
     /** Categories assigned to the sale item */
     categories?: CategoryGenqlSelection
     /** Creators assigned to the sale item */
@@ -11461,6 +19244,13 @@ export interface SaleItemGenqlSelection{
     offers?: (OffersConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), status?: (OfferStatus | null), direction?: (PaginationDirection | null)} })
     /** Buy-now configuration for this item; null when the item cannot be bought outright. */
     buyNowConfig?: ItemBuyNowConfigGenqlSelection
+    /** Whether this item is accepting offers. False when offers are disabled or not configured. */
+    offerEnabled?: boolean | number
+    /**
+     * Whether this item can be bought outright at a fixed price. False when buy-now is
+     * disabled or not configured.
+     */
+    buyNowEnabled?: boolean | number
     /**
      * The terminal non-auction sale of this item (an accepted offer or a buy-now),
      * if any. Sourced from the sale aggregate.
@@ -11475,6 +19265,14 @@ export interface SaleItemGenqlSelection{
      * considered here. Defaults to the lot's own currency.
      */
     charges?: (ChargeConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), options?: (ChargeOptions | null)} })
+    /**
+     * The premiums that apply to this lot, disabled ones included, always in the
+     * sale's currency. Once the lot closes these are the premiums it was charged,
+     * and they no longer change. `options.currency` is ignored.
+     */
+    buyerPremiums?: (BuyerPremiumConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), options?: (BuyerPremiumOptions | null)} })
+    /** When this lot's premiums were fixed. Null while they still follow the levels above. */
+    buyerPremiumsFixedAt?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -11513,6 +19311,8 @@ export interface SaleItemImageAssociationGenqlSelection{
     itemId?: boolean | number
     /** The ID of the associated sale */
     saleId?: boolean | number
+    /** Which list of the lot the image is in. An image in both lists has one association per kind. */
+    kind?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -11549,10 +19349,7 @@ lowEstimate?: (Scalars['Int'] | null),
 highEstimate?: (Scalars['Int'] | null),
 /** Item number is used to order items (optional) */
 ItemNumber?: (Scalars['Int'] | null),
-/**
- * Allowed BidTypes on the item.
- * Defaults to allowing only Max bids if not supplied.
- */
+/** Bid types this item accepts. Defaults to normal and max bids. */
 allowedBidTypes?: (BidType[] | null),
 /**
  * Date and time when item should open up for bidding.
@@ -11631,6 +19428,8 @@ export interface SaleItemOrItemGenqlSelection{
     __typename?: boolean | number
 }
 
+export interface SaleItemRefInput {saleId: Scalars['String'],itemId: Scalars['String']}
+
 
 /** Sale item registration for a specific item */
 export interface SaleItemRegistrationGenqlSelection{
@@ -11678,6 +19477,20 @@ export interface SaleItemRegistrationsConnectionGenqlSelection{
     pageInfo?: PageInfoGenqlSelection
     /** Total number of item registrations */
     totalCount?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Required-field status of a lot's content. */
+export interface SaleItemRequiredFieldStatusGenqlSelection{
+    itemId?: boolean | number
+    /** False when the lot has no content yet; such a lot cannot be made public. */
+    found?: boolean | number
+    /** True when the lot has no item type (schema) assigned; it then has no required fields. */
+    noItemType?: boolean | number
+    /** Required fields that are blank or missing in the lot's content. */
+    missingRequiredFields?: MissingRequiredFieldGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -11801,6 +19614,10 @@ export interface SaleMetricsGenqlSelection{
     currentBidOverReserveTotal?: boolean | number
     /** Sum of current highest bids across all items in the sale (in minor currency). */
     currentBidTotal?: boolean | number
+    /** Sum of hammer prices of sold items in the sale (in minor currency). */
+    soldHammerTotal?: boolean | number
+    /** Expected total hammer for the sale (in minor currency): hammer prices of sold items plus the current highest bid of items not yet closed that are at or above their reserve. Passed items are excluded. */
+    expectedHammerTotal?: boolean | number
     /** Sum of maximum bid amounts across all items in the sale (in minor currency). */
     maxBidsTotal?: boolean | number
     /** Percentage of items that have received bids at or above their reserve price. */
@@ -11819,6 +19636,31 @@ export interface SaleMetricsGenqlSelection{
     dailyBidCounts?: SaleStatisticBidCountsGenqlSelection
     /** Timestamp when the sale metrics were last calculated. */
     calculatedAt?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Sale numbering for an account */
+export interface SaleNumberSettingsGenqlSelection{
+    /** The number the next created sale receives */
+    nextSaleNumber?: boolean | number
+    /** Highest sale number in use in the account. Null when no sale has a number. */
+    highestAssignedSaleNumber?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface SalePhoneClerkConfigGenqlSelection{
+    /**
+     * Minimum number of items between two calls with different bidders on one line. With 0 they may sit on
+     * adjacent items, but never on the same item.
+     */
+    itemGap?: boolean | number
+    /** Free-text guidance for the planner. */
+    planningNotes?: boolean | number
+    /** Null until the sale's configuration is first saved. */
+    updatedAt?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -12307,6 +20149,8 @@ export interface SalesAggregateGenqlSelection{
     published?: boolean | number
     /** Number of unpublished sales */
     unpublished?: boolean | number
+    /** Number of sales in preview */
+    preview?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -12446,6 +20290,8 @@ export interface SearchResultItemGenqlSelection{
     on_Video?:VideoGenqlSelection,
     on_Document?:DocumentGenqlSelection,
     on_Activity?:ActivityGenqlSelection,
+    on_ConsignmentBanner?:ConsignmentBannerGenqlSelection,
+    on_AppraisalBanner?:AppraisalBannerGenqlSelection,
     on_Node?: NodeGenqlSelection,
     on_Asset?: AssetGenqlSelection,
     __typename?: boolean | number
@@ -12515,6 +20361,10 @@ export interface SellerTermsGenqlSelection{
     __scalar?: boolean | number
 }
 
+export interface SendConsignmentContractInput {consignmentId: Scalars['String'],
+/** Id of the current revision, GENERATED or SENT, with a document. */
+contractId: Scalars['String']}
+
 
 /** An email integration delivering through SendGrid. */
 export interface SendGridNotificationIntegrationGenqlSelection{
@@ -12543,6 +20393,47 @@ export interface SendGridNotificationIntegrationGenqlSelection{
     __scalar?: boolean | number
 }
 
+export interface SendPresaleAdvicesInput {
+/** The advice revisions to email, at most 25. A GENERATED or SENT revision can be sent; a SUPERSEDED one is refused. */
+presaleAdviceIds: Scalars['String'][]}
+
+export interface SendPresaleAdvicesResultGenqlSelection{
+    /** One result per distinct requested advice id, in the order each id was first requested. */
+    results?: PresaleAdviceSendResultGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface SendPropertyReceiptInput {receiptId: Scalars['String'],
+/**
+ * Send to this address instead of the main consignor's email. One bare address, without a
+ * display name.
+ */
+recipientEmail?: (Scalars['String'] | null)}
+
+export interface SetAppointmentSettingsInput {
+/** Whether clients can request appointments. */
+enabled: Scalars['Boolean'],
+/** Addresses emailed when a client requests an appointment. At most 3 addresses. Replaces the stored list. */
+recipientEmails: Scalars['String'][],
+/** Hours ahead of now a requested start must be at least, 0 to 720. */
+minLeadHours: Scalars['Int'],
+/** Days ahead of now a requested start may be at most, 1 to 365. */
+maxDaysAhead: Scalars['Int'],
+/** Requested or confirmed appointments a client may have at once, 1 to 50. */
+maxActivePerClient: Scalars['Int']}
+
+export interface SetAppointmentStaffNoteInput {appointmentId: Scalars['ID'],
+/** The note, at most 2000 characters. Omitted, null or blank clears it. */
+staffNote?: (Scalars['String'] | null)}
+
+export interface SetAppraisalStaffLeadInput {appraisalId: Scalars['String'],
+/**
+ * Staff identity id (Ory Kratos) to become the lead staff member. Must be a member
+ * of the account; added to the staff set if not already on it.
+ */
+staffUserId: Scalars['String']}
+
 
 /**
  * Input for replacing the whole royalty ladder. The bands must start at 0, join
@@ -12553,11 +20444,57 @@ export interface SetArrBandsInput {
 /** Currency whose ladder is being replaced. */
 currency: Currency,bands: ArrBandInput[]}
 
+export interface SetAttributionChannelSelfServiceOnlyInput {id: Scalars['String'],selfServiceOnly: Scalars['Boolean']}
+
+export interface SetAttributionSourceChannelsInput {sourceId: Scalars['String'],channelIds: Scalars['String'][]}
+
+export interface SetAttributionSourcePublicInput {id: Scalars['String'],public: Scalars['Boolean']}
+
+
+/**
+ * Input for setting what a premium does at one level, replacing whatever that
+ * level said before. Only this premium changes there; other premiums keep coming
+ * from wider levels.
+ */
+export interface SetBuyerPremiumAtScopeInput {buyerPremiumId: Scalars['ID'],scope: BuyerPremiumScopeInput,calculationType: BuyerPremiumCalculationType,
+/** DISABLED waives the premium at this level. */
+status: BuyerPremiumStatus,
+/** In minor currency units. Omit or pass 0 for no floor. */
+minimum?: (Scalars['Int'] | null),
+/** In minor currency units. Omit or pass 0 for no cap. */
+maximum?: (Scalars['Int'] | null),
+/**
+ * Must start at 0, join end to end and finish with exactly one open-ended band.
+ * May be empty only when status is DISABLED.
+ */
+bands: BuyerPremiumBandInput[]}
+
+
+/** Input for replacing the ladder the account sets for a premium. */
+export interface SetBuyerPremiumBandsInput {buyerPremiumId: Scalars['ID'],
+/**
+ * Must start at 0, join end to end and finish with exactly one open-ended band.
+ * An empty list clears the ladder, so the premium charges nothing.
+ */
+bands: BuyerPremiumBandInput[]}
+
+
+/** Input for enabling or disabling a premium for the whole account. */
+export interface SetBuyerPremiumStatusInput {buyerPremiumId: Scalars['ID'],status: BuyerPremiumStatus}
+
+export interface SetCataloguingWorkflowStatusPayloadGenqlSelection{
+    item?: ItemGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
 
 /**
  * Input for setting what a charge does at one level. A level restates the charge
- * whole, so every field is required and the ladder goes down with it — there is
- * nothing to leave unset and nothing inherited from a wider level.
+ * whole, so every field below is required and the ladder goes down with it — there
+ * is nothing to leave unset and nothing inherited from a wider level. Which sale
+ * results trigger the charge is set on the charge itself and applies at every
+ * level.
  * 
  * `scope` may not be ACCOUNT; use `updateCharge` and `setChargeBands` for that.
  */
@@ -12573,8 +20510,6 @@ scope: ChargeScopeInput,
 basedOn: ChargeBasedOn,
 /** How often the charge is raised. See the enum values for what counts. */
 frequency: ChargeFrequency,
-/** The sale result that triggers the charge. */
-outcome: ChargeOutcome,
 /** How the ladder is applied to the amount. */
 calculationType: ChargeCalculationType,
 /** Whether the charge is raised at this level. */
@@ -12613,6 +20548,25 @@ export interface SetConsignmentStaffLeadInput {consignmentId: Scalars['String'],
  * of the account; auto-added to the staff set if not already on it.
  */
 consignmentStaffUserId: Scalars['String']}
+
+
+/** Replaces the whole transport: a field left out or null is cleared. */
+export interface SetConsignmentTransportInput {consignmentId: Scalars['String'],
+/** Dashboard identity id of the coordinator. Must be a member of the account. */
+coordinatorUserId?: (Scalars['String'] | null),
+/** The date the property is expected, YYYY-MM-DD, between the years 1800 and 2200. */
+expectedDate?: (Scalars['String'] | null),
+/** Picks the account's courier with this name, ignoring case, or creates it. */
+courierName?: (Scalars['String'] | null),
+/**
+ * The site the property is expected to arrive at. Must be an active site of the account,
+ * unless it is the site already set.
+ */
+receivingSiteId?: (Scalars['String'] | null)}
+
+export interface SetDisplayNumbersInput {saleId: Scalars['String'],
+/** Explicit per-item lot numbers to set in bulk. Existing numbers are overwritten. */
+assignments: DisplayNumberAssignmentInput[]}
 
 
 /**
@@ -12662,9 +20616,47 @@ export interface SetItemSiteLocationInput {itemId: Scalars['String'],siteId: Sca
 /** When omitted or null the item is placed at the site with no location. */
 locationId?: (Scalars['String'] | null)}
 
+export interface SetItemStatusInput {itemId: Scalars['String'],status: ItemLifecycleStatus}
+
+
+/**
+ * Input for setting the tax codes of one item type. Replaces what was set, and
+ * at least one code is required.
+ */
+export interface SetItemTypeTaxDefaultInput {
+/** The item type to set the codes for. */
+itemTypeId: Scalars['ID'],
+/** Omit to use the account's default. */
+hammerTaxCodeId?: (Scalars['ID'] | null),
+/**
+ * IMPORT codes are refused: import VAT applies to the hammer only.
+ * Omit to use the account's default.
+ */
+chargeTaxCodeId?: (Scalars['ID'] | null)}
+
 
 /** Input to set an item winner and close the item. */
 export interface SetItemWinnerInput {saleId: Scalars['String'],itemId: Scalars['String'],bidId: Scalars['String']}
+
+export interface SetItemsAppraisalInput {appraisalId: Scalars['String'],
+/**
+ * Ids of the items to add, at most 1000 distinct ids. Each item must exist and
+ * not be deleted. An item can be in several appraisals.
+ */
+itemIds: Scalars['String'][]}
+
+export interface SetItemsAppraisalPayloadGenqlSelection{
+    /** The appraisal the items were added to. */
+    appraisal?: AppraisalGenqlSelection
+    /** Number of items added. */
+    count?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface SetMainAppraisalClientInput {appraisalId: Scalars['String'],
+/** Basta user UUID to become the main client (added if not already a client). */
+clientUserId: Scalars['String']}
 
 export interface SetMainConsignorInput {consignmentId: Scalars['String'],
 /** Basta user UUID to become the main consignor (auto-added if not already a consignor). */
@@ -12697,6 +20689,25 @@ export interface SetNotificationConfigurationInput {event: NotificationEvent,aud
  * put it in.
  */
 export interface SetNotificationConfigurationStatusInput {event: NotificationEvent,audience: NotificationAudience,channel: NotificationChannel,status: NotificationConfigurationStatus}
+
+export interface SetPhoneClerkOverrideInput {saleId: Scalars['String'],bidderUserId: Scalars['String'],
+/** Omit to pin every item of the bidder in the sale. Replaces the override with the same bidder and item. */
+itemId?: (Scalars['String'] | null),lineNumber: Scalars['Int'],note?: (Scalars['String'] | null)}
+
+export interface SetPhotographyWorkflowStatusPayloadGenqlSelection{
+    item?: ItemGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface SetPhotographyWorkflowStatusesPayloadGenqlSelection{
+    /** The items that were found, with their status after the change. */
+    items?: ItemGenqlSelection
+    /** Requested item ids that were not found in the account or are deleted. These were not changed. */
+    skippedItemIds?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
 
 
 /** Input for replacing the categories assigned to a sale. */
@@ -12734,6 +20745,19 @@ overrideOnConflict?: (Scalars['Boolean'] | null)}
 export interface SetSaleItemStatusInput {saleId: Scalars['String'],itemId: Scalars['String'],status: ItemStatus}
 
 
+/** Input object for marking or unmarking lots for preview. */
+export interface SetSaleItemsPreviewInput {saleId: Scalars['String'],itemIds: Scalars['String'][],preview: Scalars['Boolean']}
+
+export interface SetSalePhoneClerkConfigInput {saleId: Scalars['String'],
+/**
+ * Minimum number of items between two calls with different bidders on one line; must not be negative.
+ * Omit to keep the current value.
+ */
+itemGap?: (Scalars['Int'] | null),
+/** At most 2000 characters. Omit to keep the current value; an empty string clears the notes. */
+planningNotes?: (Scalars['String'] | null)}
+
+
 /** Input to set or update a sale slug. Creates the slug if none exists for the sale/account; updates otherwise. */
 export interface SetSaleSlugInput {
 /** Id of the sale to set the slug for. */
@@ -12755,6 +20779,45 @@ export interface SetSaleStatusInput {saleId: Scalars['String'],status: SaleStatu
  * open-ended range.
  */
 export interface SetSectionMarkerInput {id?: (Scalars['ID'] | null),title: Scalars['String'],summary?: (Scalars['String'] | null),fromItemNumber: Scalars['Int'],toItemNumber?: (Scalars['Int'] | null),imageAssetId?: (Scalars['String'] | null),isFeaturedSelection: Scalars['Boolean']}
+
+
+/** Input for setting a charge's amount on a draft statement. */
+export interface SetStatementChargeAmountInput {
+/** The charge on one of the statement's lines. */
+lineChargeId: Scalars['ID'],
+/**
+ * The new amount in minor currency units, zero or negative. Zero waives the
+ * charge. Null puts back the amount the charge computes.
+ */
+amount?: (Scalars['Int'] | null),
+/** Why the change was made, up to 1000 characters. Kept with the edit. */
+note?: (Scalars['String'] | null)}
+
+
+/** Input for setting the text printed on a draft statement line. */
+export interface SetStatementLineDescriptionInput {
+/** The line on the statement. */
+lineId: Scalars['ID'],
+/**
+ * The new text, up to 1000 characters. Leading and trailing spaces are
+ * dropped, and it must not be empty. Null puts back the original text.
+ */
+description?: (Scalars['String'] | null),
+/** Why the change was made, up to 1000 characters. Kept with the edit. */
+note?: (Scalars['String'] | null)}
+
+
+/** Input for setting a sold lot's hammer on a draft statement. */
+export interface SetStatementLineHammerInput {
+/** The line on the statement. */
+lineId: Scalars['ID'],
+/**
+ * The new hammer in minor currency units, above zero. Null puts back the
+ * lot's winning bid.
+ */
+hammer?: (Scalars['Int'] | null),
+/** Why the change was made, up to 1000 characters. Kept with the edit. */
+note?: (Scalars['String'] | null)}
 
 export interface SetUserExternalIdInput {
 /** Internal Basta user id (User.id), delivered in the user webhook payload. */
@@ -12780,6 +20843,14 @@ bidOrigin?: (BidOriginInput | null),
  * registration exists, an error is returned.
  */
 registrationId?: (Scalars['String'] | null)}
+
+export interface SetValuationRequestSettingsInput {
+/** Whether the public form accepts submissions. */
+enabled: Scalars['Boolean'],
+/** Number of photos each item in a submission must include, 1 to 10. */
+requiredPhotoCount: Scalars['Int'],
+/** Addresses emailed when a request is submitted. At most 3 addresses. Replaces the stored list. */
+recipientEmails: Scalars['String'][]}
 
 
 /** Full replacement of the account's workflow schedule grid. Rows equal to the platform default are stored as modifications only when they differ; omitted date types fall back to their platform default. */
@@ -12840,6 +20911,11 @@ export interface SiteGenqlSelection{
      * Europe/London, not europe/london), or null when unset.
      */
     timezone?: boolean | number
+    /**
+     * Hours clients can request appointments at this site. Null means any time
+     * within the house's booking window. Staff can confirm any time.
+     */
+    bookingHours?: SiteBookingHoursGenqlSelection
     /** When the site was archived (RFC3339), or null when active. */
     archivedAt?: boolean | number
     /** When the site was created (RFC3339). */
@@ -12853,6 +20929,33 @@ export interface SiteGenqlSelection{
     __typename?: boolean | number
     __scalar?: boolean | number
 }
+
+
+/**
+ * One daily window, in the site's timezone, during which clients can request an
+ * appointment start. Applies to each listed weekday.
+ */
+export interface SiteBookingHoursGenqlSelection{
+    /** Days the window applies to, Monday first. */
+    weekdays?: boolean | number
+    /** Opening time, HH:MM 24-hour, inclusive. */
+    opens?: boolean | number
+    /**
+     * Closing time, HH:MM 24-hour. A requested start must be before it and a
+     * requested end at or before it.
+     */
+    closes?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface SiteBookingHoursInput {
+/** At least one day. Duplicates are ignored. */
+weekdays: Weekday[],
+/** HH:MM 24-hour. */
+opens: Scalars['String'],
+/** HH:MM 24-hour, after opens. */
+closes: Scalars['String']}
 
 export interface SiteConnectionGenqlSelection{
     /** Site edges. */
@@ -12868,6 +20971,82 @@ export interface SiteEdgeGenqlSelection{
     cursor?: boolean | number
     /** Site node. */
     node?: SiteGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/**
+ * A member of the auction house's staff, shown on the account's website and in the
+ * dashboard. A staff profile can be linked to one dashboard member of the account.
+ */
+export interface StaffProfileGenqlSelection{
+    /** Id of the staff profile. */
+    id?: boolean | number
+    /** Account that owns the staff profile. */
+    accountId?: boolean | number
+    /** Full name of the staff member. */
+    name?: boolean | number
+    /** Profile photo. Null when no photo is set. */
+    photo?: ImageGenqlSelection
+    /**
+     * Departments the staff member belongs to. Departments that no longer exist are
+     * omitted.
+     */
+    departments?: DepartmentGenqlSelection
+    /**
+     * Item types the staff member is responsible for. Item types that no longer exist
+     * are omitted.
+     */
+    itemTypes?: ItemTypeGenqlSelection
+    /**
+     * The dashboard member this profile belongs to. Null when not linked or when the
+     * user is no longer a member of the account.
+     */
+    dashboardMember?: DashboardMemberGenqlSelection
+    /**
+     * The profile's filled-in field values, conforming to `effectiveSchema`. Fields
+     * marked private in the schema are included here.
+     */
+    attributes?: boolean | number
+    /** JSON Schema that `attributes` conforms to, including private fields. */
+    effectiveSchema?: boolean | number
+    /** Id of the staff profile schema that `attributes` is validated against. */
+    schemaId?: boolean | number
+    /**
+     * Whether the profile is published on the public website. Unpublished profiles
+     * are still returned here.
+     */
+    public?: boolean | number
+    /** Whether the staff member can take phone bids during live auctions. */
+    isPhoneClerk?: boolean | number
+    /**
+     * Free-text notes about the staff member as a phone clerk, such as languages or
+     * availability. Empty when not set.
+     */
+    phoneClerkNotes?: boolean | number
+    /** Timestamp when the staff profile was created. */
+    created?: boolean | number
+    /** Timestamp when the staff profile was last updated. */
+    modified?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** A paginated connection of staff profiles, ordered alphabetically by name. */
+export interface StaffProfileConnectionGenqlSelection{
+    edges?: StaffProfileEdgeGenqlSelection
+    pageInfo?: PageInfoGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** An edge in a staff profile connection. */
+export interface StaffProfileEdgeGenqlSelection{
+    node?: StaffProfileGenqlSelection
+    cursor?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -12902,6 +21081,224 @@ spacingMs: Scalars['Int']}
 export interface StartClosingSaleInput {saleId: Scalars['String']}
 
 
+/**
+ * A consignor's statement for one sale: what each of their lots fetched, less
+ * the charges the house raised against them, in one currency. A statement appears
+ * once its sale has closed, as a draft that can be changed until it is issued.
+ */
+export interface StatementGenqlSelection{
+    /** Unique identifier for the statement. */
+    id?: boolean | number
+    /**
+     * The house's document number, assigned when the statement is issued. Null
+     * on a draft.
+     */
+    number?: boolean | number
+    /** Whether the statement is still a draft or has been issued. */
+    status?: boolean | number
+    /** The consignor the statement is addressed to. */
+    consignor?: StatementConsignorGenqlSelection
+    /** The sale the statement covers. */
+    saleId?: boolean | number
+    /** Currency of the total and of every line. */
+    currency?: boolean | number
+    /**
+     * The statement's heading, such as the sale's title. Set when the statement is
+     * issued; may be null on a draft.
+     */
+    title?: boolean | number
+    /**
+     * The sum of the lines, tax included, in minor currency units. Positive is
+     * owed to the consignor; negative is owed by them.
+     */
+    total?: boolean | number
+    /**
+     * The sum of the lots' winning bids, in minor currency units. A lot that did
+     * not sell adds nothing. Filled on statements read from `statements` too.
+     */
+    hammerTotal?: boolean | number
+    /**
+     * The sum of every charge on the statement before tax, in minor currency
+     * units, signed like `total`. `total` is `hammerTotal` plus `chargesTotal`
+     * plus `taxTotal`. Filled on statements read from `statements` too.
+     */
+    chargesTotal?: boolean | number
+    /**
+     * All tax on the statement's charges, in minor currency units, signed like
+     * `total`: the tax shown separately and the tax included in charges. Zero
+     * when the house charges no tax. Filled on statements read from `statements`
+     * too.
+     */
+    taxTotal?: boolean | number
+    /**
+     * The tax shown separately, one entry per tax code name, treatment and rate,
+     * in the order they first appear. Empty when no tax is shown separately, and
+     * on statements read from `statements`.
+     */
+    taxBands?: TaxBandGenqlSelection
+    /**
+     * The part of `taxTotal` included in charges under the margin scheme and not
+     * shown separately, in minor currency units, signed like `total`. Zero on
+     * statements read from `statements`.
+     */
+    taxInLieuTotal?: boolean | number
+    /**
+     * True when some charge includes its tax under the margin scheme. The PDF
+     * then states that the supply is under the margin scheme. False on statements
+     * read from `statements`.
+     */
+    marginScheme?: boolean | number
+    /** UTC+0 RFC3339 date and time the statement was issued. Null on a draft. */
+    issuedAt?: boolean | number
+    /** UTC+0 RFC3339 date and time the statement was started. */
+    createdAt?: boolean | number
+    /**
+     * The statement's lines, in the order they were added. Returned only when a
+     * single statement is read with `statement`; empty on statements read from
+     * `statements`.
+     */
+    lines?: StatementLineGenqlSelection
+    /**
+     * A short-lived link to download the issued statement as a PDF. Null on a
+     * draft. When read on a single statement, the PDF is prepared if it is not
+     * ready yet, which can take a few seconds; on a list of statements it is null
+     * until the PDF is ready.
+     */
+    download?: DocumentDownloadGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** A paginated connection of statements, newest first. */
+export interface StatementConnectionGenqlSelection{
+    /** The statements on this page, newest first. Empty when none match. */
+    edges?: StatementEdgeGenqlSelection
+    /**
+     * Cursors for this page, and whether another one follows. Statements page
+     * forward only, so hasPreviousPage is always false.
+     */
+    pageInfo?: PageInfoGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** The consignor a statement is addressed to. */
+export interface StatementConsignorGenqlSelection{
+    /** The consignor's user id. */
+    userId?: boolean | number
+    /**
+     * The consignor's name and address for the statement. On a draft, the address it
+     * will be issued to, or null when none is set yet. Once issued, as printed.
+     */
+    address?: MailingAddressGenqlSelection
+    /**
+     * The id of the consignor's saved address that `address` was taken from. Null
+     * when it is not known.
+     */
+    addressId?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** An edge in a statement connection. */
+export interface StatementEdgeGenqlSelection{
+    /** The statement, without its lines. Read it with `statement` for those. */
+    node?: StatementGenqlSelection
+    /** Opaque. Pass it as `after` to resume reading from just past this statement. */
+    cursor?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/**
+ * Narrows the statements returned. Every field is optional and they combine:
+ * a statement must match all the fields that are set.
+ */
+export interface StatementFilter {
+/** Only statements for this sale. */
+saleId?: (Scalars['ID'] | null),
+/** Only statements addressed to this user. */
+consignorId?: (Scalars['ID'] | null),
+/** Only statements in this status. */
+status?: (StatementStatus | null)}
+
+
+/** One line on a statement: a lot and the charges raised on it. */
+export interface StatementLineGenqlSelection{
+    /** Unique identifier for the line. */
+    id?: boolean | number
+    /** The lot the line is for. */
+    itemId?: boolean | number
+    /** The lot's number as printed, e.g. "12A". Null when the lot has none. */
+    lotNumber?: boolean | number
+    /**
+     * The lot's hammer in minor currency units: its winning bid, or the amount set
+     * by hand in its place. Null when it did not sell.
+     */
+    hammer?: boolean | number
+    /** Text printed on the line. */
+    description?: boolean | number
+    /** Charges the house raised on this lot, in the order they were applied. */
+    charges?: StatementLineChargeGenqlSelection
+    /**
+     * The hammer plus its charges and their tax, in minor currency units.
+     * Positive is owed to the consignor; negative is owed by them.
+     */
+    total?: boolean | number
+    /**
+     * The sum of this lot's charges before tax, in minor currency units, signed
+     * like `total`.
+     */
+    chargesTotal?: boolean | number
+    /** The tax on this lot's charges, in minor currency units, signed like `total`. */
+    taxTotal?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** A charge the house raised on a lot. */
+export interface StatementLineChargeGenqlSelection{
+    /** Unique identifier for the charge on the line. */
+    id?: boolean | number
+    /** The charge rule that applied. */
+    chargeId?: boolean | number
+    /** Text printed for the charge. */
+    description?: boolean | number
+    /** Minor currency units before tax, zero or negative. */
+    amount?: boolean | number
+    /** The tax on the charge. Null when the house charges no tax on it. */
+    tax?: AppliedTaxGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** A Basta live stream channel the account can broadcast to. */
+export interface StreamChannelGenqlSelection{
+    /** Channel identifier. Use it to assign the channel to a sale. */
+    channelId?: boolean | number
+    /** True for the account's default channel, used by every sale with no channel assigned. */
+    isDefault?: boolean | number
+    /** Name of the channel. */
+    name?: boolean | number
+    /** Free-text location of the channel, for example a studio or room. */
+    location?: boolean | number
+    /** Description of the channel. */
+    description?: boolean | number
+    /** RTMPS ingest URL to broadcast to. */
+    ingestUrl?: boolean | number
+    /** Stream key to broadcast with. Null for callers without permission to edit sales. */
+    streamKey?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
 /** Stripe App customer details for associating a customer ID with a user. */
 export interface StripeAppCustomerDetailsInput {
 /** Stripe customer ID (must start with cus_). */
@@ -12912,6 +21309,46 @@ id: Scalars['String']}
 export interface StripeCustomerDetailsInput {
 /** Stripe customer ID (must start with cus_). */
 id: Scalars['String']}
+
+
+/**
+ * Credentials for Stripe Identity on the account's own Stripe account. Omit a key to keep
+ * the saved one.
+ * 
+ * Setup: activate Identity at https://dashboard.stripe.com/identity/application, then create
+ * a restricted key with exactly "Identity Verification Results: Write" and
+ * "Webhook Endpoints: Write". Basta creates the webhook endpoint automatically. A sandbox
+ * key only verifies in sandbox; whether Stripe offers Identity to the account is between the
+ * account holder and Stripe.
+ * 
+ * Rejected with an invalid argument error naming the problem: a key that is not a restricted
+ * key (rk_…), is invalid or lacks either permission; a new secret key without a publishable
+ * key; a publishable key whose mode (pk_test_ or pk_live_) differs from the secret key's.
+ */
+export interface StripeIdentityProviderInput {
+/**
+ * Restricted secret key from the account's Stripe dashboard. Write-only: it is never
+ * returned.
+ */
+secretKey?: (Scalars['String'] | null),
+/** Publishable key from the same Stripe account as the secret key. */
+publishableKey?: (Scalars['String'] | null)}
+
+
+/** Identity verification through Stripe Identity on the account's own Stripe account. */
+export interface StripeIdentityProviderSettingsGenqlSelection{
+    /** True when the account's clients can verify their identity. */
+    enabled?: boolean | number
+    /**
+     * True when the saved key is a live key. Verifications made with a sandbox key are test
+     * verifications only.
+     */
+    livemode?: boolean | number
+    /** The saved publishable key. Null when none is saved. */
+    publishableKey?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
 
 
 /**
@@ -12937,6 +21374,56 @@ export interface SubscriptionGenqlSelection{
     __scalar?: boolean | number
 }
 
+export interface SuggestContentInput {target: SuggestionTargetInput,
+/**
+ * Fields to suggest. When omitted, every field the target supports is suggested.
+ * Fields the target does not support, or whose value a template generates, are left out.
+ */
+fields?: (SuggestionField[] | null),
+/**
+ * Language to write in, as a BCP 47 tag such as "en" or "is". When omitted, the language
+ * of the target's existing text is used, or English when it has none.
+ */
+language?: (Scalars['String'] | null),
+/** Optional hint from the user, such as "mention the maker's mark". At most 500 characters. */
+instructions?: (Scalars['String'] | null),
+/**
+ * When true, new suggestions are generated for the requested fields, or for every supported
+ * field when fields is omitted. Defaults to false, which returns the earlier suggestions for the
+ * target while its content is unchanged apart from suggestions the user has applied.
+ */
+fresh?: (Scalars['Boolean'] | null)}
+
+export interface SuggestedTagGenqlSelection{
+    name?: boolean | number
+    /** True when the account already uses this tag. */
+    existing?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Target to suggest content for. Set exactly one field. */
+export interface SuggestionTargetInput {
+/** An item. */
+itemId?: (Scalars['String'] | null),
+/** An item in an appraisal. */
+appraisalItem?: (AppraisalItemRefInput | null),
+/** An item in a sale. */
+saleItem?: (SaleItemRefInput | null),
+/** A sale. */
+saleId?: (Scalars['String'] | null),
+/** An item that is not saved yet. Suggestions use only the values given here. */
+draftItem?: (DraftItemInput | null)}
+
+export interface SuggestionValueGenqlSelection{
+    on_TextSuggestion?:TextSuggestionGenqlSelection,
+    on_TagsSuggestion?:TagsSuggestionGenqlSelection,
+    on_AttributesSuggestion?:AttributesSuggestionGenqlSelection,
+    on_IssuesSuggestion?:IssuesSuggestionGenqlSelection,
+    __typename?: boolean | number
+}
+
 
 /**
  * Input for syncContent — reconcile content drift between an item and one of its sale
@@ -12954,7 +21441,34 @@ keys?: (Scalars['String'][] | null),
 /** Keys to delete from the target's schema_data, applied after the copy. */
 deleteKeys?: (Scalars['String'][] | null),
 /** Also copy the source's schemaId onto the target. Only applies to REFRESH_FROM_ITEM. */
-syncSchemaId?: (Scalars['Boolean'] | null)}
+syncSchemaId?: (Scalars['Boolean'] | null),
+/**
+ * Mirror the source's creators onto the target (REPLACE — an empty source clears it).
+ * Defaults on to prevent drift; pass false to skip. Destructive — warn before a clear.
+ */
+syncCreators?: (Scalars['Boolean'] | null),
+/**
+ * Mirror the source's tags onto the target (REPLACE — an empty source clears it).
+ * Defaults on to prevent drift; pass false to skip. Destructive — warn before a clear.
+ */
+syncTags?: (Scalars['Boolean'] | null),
+/**
+ * Mirror the source's categories onto the target (REPLACE — an empty source clears it).
+ * Defaults on to prevent drift; pass false to skip. Destructive — warn before a clear.
+ */
+syncCategories?: (Scalars['Boolean'] | null),
+/**
+ * Mirror the item's images onto the sale item, in display order (REPLACE — an empty item
+ * gallery clears the lot's). Only applies to REFRESH_FROM_ITEM. Defaults on; pass false to
+ * skip. Destructive — warn before a clear.
+ */
+syncImages?: (Scalars['Boolean'] | null),
+/**
+ * Copy the source's condition report text and condition images onto the target (an empty source
+ * clears it).
+ * Defaults on to prevent drift; pass false to skip. Destructive — warn before a clear.
+ */
+syncConditionReport?: (Scalars['Boolean'] | null)}
 
 
 /** Input for syncSchemaDataFromSaleItem. */
@@ -13007,6 +21521,105 @@ export interface TagGenqlSelection{
     __scalar?: boolean | number
 }
 
+export interface TagsSuggestionGenqlSelection{
+    /**
+     * Suggested tags, best first. Tags already on the target are left out, including suggested
+     * tags the user has applied.
+     */
+    tags?: SuggestedTagGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/**
+ * The tax shown separately on a statement or an invoice for one tax code name,
+ * treatment and rate. Amounts are minor currency units, signed like the
+ * document's amounts: negative on a statement, positive on an invoice.
+ */
+export interface TaxBandGenqlSelection{
+    /** The tax code's name when the tax was calculated. */
+    codeName?: boolean | number
+    /** How the tax was calculated. */
+    application?: boolean | number
+    /** The rate in basis points: 2000 is 20%. */
+    rateBps?: boolean | number
+    /** The sum of the amounts taxed in this band. */
+    basisTotal?: boolean | number
+    /** The tax on them. */
+    taxTotal?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/**
+ * A tax rate with the way it applies, in force between two dates. The
+ * application, rate and start date are fixed once created: to change a rate,
+ * create a code that replaces this one from the date the new rate takes effect.
+ */
+export interface TaxCodeGenqlSelection{
+    /** Identifies the code wherever one is set. */
+    id?: boolean | number
+    /** A label for the code, for example "Standard 20%". Can be changed. */
+    name?: boolean | number
+    /** How the code calculates tax and prints on invoices. Fixed once created. */
+    application?: boolean | number
+    /** The rate in basis points: 2000 is 20%. */
+    rateBps?: boolean | number
+    /** The first day the code is in force, as YYYY-MM-DD. */
+    effectiveFrom?: boolean | number
+    /**
+     * The last day the code is in force, as YYYY-MM-DD. Null while it is in force
+     * until ended.
+     */
+    effectiveTo?: boolean | number
+    /** Whether the code is in force today, from its effective dates. */
+    status?: boolean | number
+    /** The accounting code tax under this code is filed under. Null when none is set. */
+    accountCode?: AccountCodeGenqlSelection
+    /** The code this one replaced. Null when it replaced none. */
+    replaces?: TaxCodeGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/**
+ * How tax is calculated, and the codes used for a lot and its charges when
+ * neither its item type nor the charge sets one.
+ */
+export interface TaxSettingsGenqlSelection{
+    /** The tax system the account invoices under; NONE calculates no tax. */
+    regime?: boolean | number
+    /** The code for the hammer price. Set whenever the regime is not NONE. */
+    defaultHammerTaxCode?: TaxCodeGenqlSelection
+    /** The code for buyer's premiums and charges. Set whenever the regime is not NONE. */
+    defaultChargeTaxCode?: TaxCodeGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface TemplateFieldChangeGenqlSelection{
+    /** The override on the target before the sync. Null when unset. */
+    before?: boolean | number
+    /** The source override (the value that would be or was synced). Null when the source has no override. */
+    after?: boolean | number
+    /** True when the source and target values differ. */
+    changed?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface TemplateSyncDiffGenqlSelection{
+    /** Per-field before/after for each output-template override that was synced. */
+    title?: TemplateFieldChangeGenqlSelection
+    subTitle?: TemplateFieldChangeGenqlSelection
+    description?: TemplateFieldChangeGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
 
 /**
  * Action Hook response from test message.
@@ -13023,6 +21636,12 @@ export interface TestActionHookResponseGenqlSelection{
     __scalar?: boolean | number
 }
 
+export interface TextSuggestionGenqlSelection{
+    text?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
 
 /**
  * Token metadata is mandatory information that needs to be included
@@ -13035,6 +21654,47 @@ userId: Scalars['String'],
 ttl: Scalars['Int'],
 /** User permissions granted by the token, if left empty token will include all permissions. */
 permissions?: (ClientPermission[] | null)}
+
+export interface TransferAppraisalItemsToConsignmentInput {appraisalId: Scalars['String'],
+/**
+ * Ids of the items to move, at most 1000. Each item must be in the appraisal, not be
+ * deleted and not be in another consignment. Items already in the target are left as they are.
+ */
+itemIds: Scalars['String'][],
+/** The consignment the items move into. */
+target: AppraisalConsignmentTargetInput}
+
+export interface TransferAppraisalItemsToConsignmentPayloadGenqlSelection{
+    /** The consignment the items were moved into. */
+    consignment?: ConsignmentGenqlSelection
+    /** The appraisal the items came from. */
+    appraisal?: AppraisalGenqlSelection
+    /** Number of items newly moved into the consignment. Items already in it are not counted. */
+    transferredCount?: boolean | number
+    /** True when the consignment was created by this call. */
+    consignmentCreated?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** The staff member coordinating a consignment's transport. */
+export interface TransportCoordinatorGenqlSelection{
+    /** Dashboard identity id (Ory Kratos), the same id space as DashboardMember.userId. */
+    userId?: boolean | number
+    /**
+     * The coordinator's display name, from the identity provider.
+     * Null if the identity could not be resolved.
+     */
+    name?: boolean | number
+    /**
+     * The coordinator's email address, from the identity provider.
+     * Null if the identity could not be resolved.
+     */
+    email?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
 
 
 /** Trust level information with modification tracking */
@@ -13078,6 +21738,12 @@ userId: Scalars['String']}
 /** Input to unhide items from a sale */
 export interface UnhideItemsFromSaleInput {saleId: Scalars['String'],includingAndFromItemNumber: Scalars['Int']}
 
+
+/** Input for renaming an accounting code. The code itself cannot be changed. */
+export interface UpdateAccountCodeInput {accountCodeId: Scalars['ID'],
+/** The new label. */
+name: Scalars['String']}
+
 export interface UpdateAccountFeeInput {id: Scalars['String'],name: Scalars['String'],type: AccountFeeType,value: Scalars['Int'],upperLteLimit?: (Scalars['Int'] | null),
 /** Lower limit (exclusive) the fee applies from. */
 lowerLimit: Scalars['Int'],
@@ -13117,7 +21783,13 @@ homeCountryCode?: (Country | null),
  */
 organisationDetails?: (OrganisationDetailsInput | null),
 /** Default start bid as a percentage of the estimate. */
-defaultStartBidPercentage?: (Scalars['Float'] | null)}
+defaultStartBidPercentage?: (Scalars['Float'] | null),
+/**
+ * Template for sale page links on the organisation's own website, e.g.
+ * https://www.example.com/auction/{saleSlug}. Must be an https URL using
+ * {saleSlug} or {saleId}. Null or an empty string leaves it unchanged.
+ */
+saleUrlTemplate?: (Scalars['String'] | null)}
 
 
 /** Input to update an Action Hook subscription. */
@@ -13141,6 +21813,92 @@ token?: (Scalars['String'] | null)}
 
 
 /**
+ * Changes to the details an appraisal document prints. Omitted fields are left unchanged;
+ * for the text fields, an empty string clears the value. Name, notes, type, clients and
+ * staff are unchanged.
+ */
+export interface UpdateAppraisalDocumentDetailsInput {appraisalId: Scalars['String'],
+/** YYYY-MM-DD, years 1800 to 2200. */
+valuationDate?: (Scalars['String'] | null),
+/** YYYY-MM-DD, years 1800 to 2200. */
+dateOfDeath?: (Scalars['String'] | null),
+/**
+ * Replaces who instructed the valuation. Values are trimmed and blank address lines
+ * dropped; when nothing is left, it is cleared.
+ */
+instructedBy?: (AppraisalInstructedByInput | null),
+/** Removes who instructed the valuation. Rejected together with instructedBy. */
+clearInstructedBy?: (Scalars['Boolean'] | null),reference?: (Scalars['String'] | null),
+/**
+ * Staff identity id (Ory Kratos) of the valuer who signs the document. Must be a
+ * member of the account.
+ */
+valuerUserId?: (Scalars['String'] | null),groupBy?: (AppraisalDocumentGroupBy | null),sortBy?: (AppraisalDocumentSortBy | null),sectionTotals?: (Scalars['Boolean'] | null)}
+
+
+/**
+ * Replaces the appraisal's name and notes: a field left out is cleared. Type and
+ * attribution channel are kept when left out. Clients and staff are unchanged.
+ */
+export interface UpdateAppraisalInput {appraisalId: Scalars['String'],
+/** Optional appraisal name. Omitted or null stores an empty name. */
+name?: (Scalars['String'] | null),
+/** Optional notes about the appraisal. Omitted or null clears them. */
+notes?: (Scalars['String'] | null),
+/** Why the valuation is done (optional). Omitted or null keeps the current type. */
+type?: (AppraisalType | null),
+/**
+ * Attribution channel the appraisal came in through (optional). Omitted or null leaves it
+ * unchanged; empty string clears it. Must reference a non-archived attribution channel
+ * on the account, or the channel the appraisal already has.
+ */
+attributionChannelId?: (Scalars['ID'] | null)}
+
+
+/**
+ * Changes to an item in an appraisal. Omitted fields are left unchanged. When the item
+ * is not frozen for the appraisal, the changes are made to the item itself, which also
+ * changes it in every other appraisal it is not frozen in, and require WRITE_ITEM.
+ */
+export interface UpdateAppraisalItemInput {appraisalId: Scalars['String'],itemId: Scalars['String'],title?: (Scalars['String'] | null),subTitle?: (Scalars['String'] | null),description?: (Scalars['String'] | null),
+/** Field values matching the item type of the item. */
+schemaData?: (Scalars['JSON'] | null),
+/**
+ * Ids of the item's creators, replacing the current ones. Omitted leaves them
+ * unchanged; an empty list removes them all.
+ */
+creatorIds?: (Scalars['String'][] | null)}
+
+
+/**
+ * Changes to an item's valuation in an appraisal. Omitted fields are left unchanged.
+ * A field and its clear flag cannot both be set.
+ */
+export interface UpdateAppraisalItemValuationInput {appraisalId: Scalars['String'],itemId: Scalars['String'],
+/** Replaces the value: low, high and currency together. Also sets noCommercialValue to false. */
+value?: (AppraisalItemValueInput | null),
+/** Removes the value. */
+clearValue?: (Scalars['Boolean'] | null),
+/** The basis printed before the value. Also sets noCommercialValue to false. */
+basis?: (AppraisalValueBasis | null),
+/** Removes the basis. */
+clearBasis?: (Scalars['Boolean'] | null),
+/** The room the item is in. Must not be blank. */
+room?: (Scalars['String'] | null),
+/** Removes the room. */
+clearRoom?: (Scalars['Boolean'] | null),
+/** Position in the appraisal document's manual order. */
+sortPosition?: (Scalars['Int'] | null),
+/** Removes the position, so the item is ordered by its line number. */
+clearSortPosition?: (Scalars['Boolean'] | null),
+/**
+ * True marks the item as having no commercial value and removes its value and basis;
+ * rejected together with value or basis.
+ */
+noCommercialValue?: (Scalars['Boolean'] | null)}
+
+
+/**
  * Input for updating the Artist's Resale Right settings. Bands are replaced
  * separately via setArrBands.
  */
@@ -13153,7 +21911,43 @@ thresholdAmount: Scalars['Int'],
  * Upper bound on the total royalty per lot, in minor currency units. Omit for
  * an uncapped royalty.
  */
-capAmount?: (Scalars['Int'] | null)}
+capAmount?: (Scalars['Int'] | null),
+/**
+ * Accounting code for the royalty in this currency.
+ * Omit to keep the current one, or pass an empty string to remove it.
+ */
+accountCodeId?: (Scalars['ID'] | null)}
+
+
+/**
+ * Input for changing a premium's settings. Only the fields given change. The
+ * bands and the status are changed with their own mutations.
+ */
+export interface UpdateBuyerPremiumInput {buyerPremiumId: Scalars['ID'],
+/** Must stay unique among the account's premiums in the same currency. */
+name?: (Scalars['String'] | null),calculationType?: (BuyerPremiumCalculationType | null),
+/** In minor currency units. 0 means no floor. */
+minimum?: (Scalars['Int'] | null),
+/** In minor currency units. 0 means no cap. */
+maximum?: (Scalars['Int'] | null),
+/**
+ * An id from your own systems, unique within the account; use a different id
+ * for each currency. Omit to keep the current one, or pass an empty string to
+ * clear it.
+ */
+externalId?: (Scalars['String'] | null),
+/**
+ * Accounting code for the premium. Omit to keep the current one, or
+ * pass an empty string to remove it. Premiums already fixed on a lot keep the
+ * code they were fixed with.
+ */
+accountCodeId?: (Scalars['ID'] | null),
+/**
+ * Tax code for the premium. Omit to keep it, or pass an empty string to remove
+ * it. IMPORT codes are refused: import VAT applies to the hammer only.
+ * Requires WRITE_TAX.
+ */
+taxCodeId?: (Scalars['ID'] | null)}
 
 
 /** Input for updating an existing category. Omitted fields are left unchanged. */
@@ -13164,10 +21958,34 @@ export interface UpdateCategoryInput {categoryId: Scalars['ID'],name?: (Scalars[
  * Input for updating a charge. Replaces every field given here. Does not touch the
  * ladder or the status — use setChargeBands and setChargeStatus for those.
  */
-export interface UpdateChargeInput {chargeId: Scalars['ID'],name: Scalars['String'],basedOn: ChargeBasedOn,frequency: ChargeFrequency,outcome: ChargeOutcome,calculationType: ChargeCalculationType,minimum?: (Scalars['Int'] | null),maximum?: (Scalars['Int'] | null)}
+export interface UpdateChargeInput {chargeId: Scalars['ID'],name: Scalars['String'],basedOn: ChargeBasedOn,frequency: ChargeFrequency,
+/**
+ * The sale results that trigger the charge, each at most once. Pass an empty
+ * list for a charge that is only ever added by hand.
+ */
+outcomes: ChargeOutcome[],calculationType: ChargeCalculationType,minimum?: (Scalars['Int'] | null),maximum?: (Scalars['Int'] | null),
+/**
+ * Accounting code for the charge. Omit to keep the current one, or
+ * pass an empty string to remove it. Charges already applied keep the code
+ * they were applied with.
+ */
+accountCodeId?: (Scalars['ID'] | null),
+/**
+ * Tax code for the charge. Omit to keep it, or pass an empty string to remove
+ * it. IMPORT codes are refused: import VAT applies to the hammer only.
+ * Requires WRITE_TAX.
+ */
+taxCodeId?: (Scalars['ID'] | null)}
+
+export interface UpdateClientRelationshipInput {id: Scalars['ID'],type: ClientRelationshipType,
+/** Replaces the stored reason; null or empty clears it. Required when `type` is OTHER. */
+reason?: (Scalars['String'] | null)}
 
 
-/** Replaces the whole consignment record: a field left out is cleared. */
+/**
+ * Replaces the whole consignment record: a field left out is cleared, except
+ * `reportSeparately`, which is kept when left out.
+ */
 export interface UpdateConsignmentInput {consignmentId: Scalars['String'],
 /** Optional consignment name. Omitted or null stores an empty name. */
 name?: (Scalars['String'] | null),description?: (Scalars['String'] | null),
@@ -13176,7 +21994,12 @@ name?: (Scalars['String'] | null),description?: (Scalars['String'] | null),
  * Unique per account.
  * Not unique: one external consignment may be split across several here.
  */
-externalId?: (Scalars['String'] | null),feeRules: ConsignmentFeeRuleInput[]}
+externalId?: (Scalars['String'] | null),feeRules: ConsignmentFeeRuleInput[],
+/**
+ * When true, the consignment gets its own sale advice instead of joining its main
+ * consignor's combined advice for the sale. Omitted or null keeps the current value.
+ */
+reportSeparately?: (Scalars['Boolean'] | null)}
 
 
 /**
@@ -13186,7 +22009,21 @@ externalId?: (Scalars['String'] | null),feeRules: ConsignmentFeeRuleInput[]}
  */
 export interface UpdateCreatorInput {creatorId: Scalars['ID'],name?: (Scalars['String'] | null),slug?: (Scalars['String'] | null),type?: (CreatorType | null),
 /** Whether the Artist's Resale Right applies to works by this creator. */
-arr?: (Scalars['Boolean'] | null)}
+arr?: (Scalars['Boolean'] | null),
+/** Year the creator started, as free text. Surrounding whitespace is trimmed; empty string clears the value. */
+yearFrom?: (Scalars['String'] | null),
+/** Year the creator ended, as free text. Surrounding whitespace is trimmed; empty string clears the value. */
+yearTo?: (Scalars['String'] | null),
+/** Nationality of the creator, as free text. Surrounding whitespace is trimmed; empty string clears the value. */
+nationality?: (Scalars['String'] | null),
+/** Biography as rich-text HTML, at most 20 KB. Disallowed markup is removed; empty string clears the value. */
+biography?: (Scalars['String'] | null)}
+
+
+/** Input for updating the account's creator settings. */
+export interface UpdateCreatorSettingsInput {
+/** Whether creators can be nested under other creators. */
+allowNested: Scalars['Boolean']}
 
 
 /** Input for updating a Dutch sale's content. */
@@ -13221,6 +22058,8 @@ export interface UpdateItemInput {
 title?: (Scalars['String'] | null),
 /** Item sub-title */
 subTitle?: (Scalars['String'] | null),
+/** Condition report as Portable Text. Omit to leave unchanged; null or an empty document clears it. */
+conditionReportText?: (Scalars['JSON'] | null),
 /** Item description */
 description?: (Scalars['String'] | null),
 /** Field Output token templates for an item's output fields, e.g. `{brand} {model}`. */
@@ -13238,7 +22077,11 @@ specifications?: (ItemSpecificationsInput | null),valuationAmount?: (Scalars['In
 /** Location of the item */
 location?: (Scalars['String'] | null),
 /** Also copy this item's public content onto its sale items, except those in PROCESSING or CLOSED sales. Absent runs no sync. */
-syncContentToActiveSaleItems?: (Scalars['Boolean'] | null)}
+syncContentToActiveSaleItems?: (Scalars['Boolean'] | null),
+/** Kratos identity ID of the staff member to assign as lead. Send empty string to clear. */
+staffLeadUserId?: (Scalars['String'] | null),
+/** CITES licence number. Send empty string to clear. */
+citesLicenceNumber?: (Scalars['String'] | null)}
 
 export interface UpdateItemNumbersInput {saleId: Scalars['String'],itemNumberChanges: ItemNumberChangeInput[]}
 
@@ -13255,6 +22098,11 @@ export interface UpdateItemTypeInput {name?: (Scalars['String'] | null),schema?:
  */
 namespace?: (Scalars['String'] | null),
 /**
+ * Per-account display slug, used in item-type URLs. Changing it updates the URL; old
+ * links are not redirected. Must not be blank and must be unique among siblings.
+ */
+slug?: (Scalars['String'] | null),
+/**
  * Field Output token templates for an item's output fields. Supplying one (including an
  * empty string, which clears it) marks that field for update.
  */
@@ -13264,15 +22112,51 @@ titleTemplate?: (Scalars['String'] | null),subTitleTemplate?: (Scalars['String']
 /** Replaces the whole location record: a field left out is cleared. */
 export interface UpdateLocationInput {locationId: Scalars['String'],parentLocationId?: (Scalars['String'] | null),name: Scalars['String']}
 
+export interface UpdateNoteInput {id: Scalars['String'],note?: (Scalars['String'] | null),noteTypeId?: (Scalars['String'] | null)}
+
+export interface UpdateNoteTypeScopeInput {id: Scalars['String'],scope: NoteTypeScope}
+
 export interface UpdateOrderInput {
 /** Order identifier */
 id: Scalars['ID'],
 /** Order title */
 title?: (Scalars['String'] | null),
-/** Billing address for the order */
+/**
+ * Billing address for the order, as typed. Cannot be given with
+ * `billingAddressId`.
+ */
 billingAddress?: (MailingAddressInput | null),
-/** Shipping address for the order */
-shippingAddress?: (MailingAddressInput | null)}
+/**
+ * Shipping address for the order, as typed. Cannot be given with
+ * `shippingAddressId`.
+ */
+shippingAddress?: (MailingAddressInput | null),
+/**
+ * Id of one of the buyer's addresses (see `PaymentOrder.buyerAddresses`) to
+ * copy as the billing address, as it is now. Any other id is refused.
+ */
+billingAddressId?: (Scalars['ID'] | null),
+/**
+ * Id of one of the buyer's addresses (see `PaymentOrder.buyerAddresses`) to
+ * copy as the shipping address, as it is now. Any other id is refused.
+ */
+shippingAddressId?: (Scalars['ID'] | null),
+/**
+ * UTC RFC3339 date and time the order is due. Must not be before the day the
+ * invoice is issued. Setting it clears `paymentTermsDays`. Null clears only
+ * this field; omitted leaves it unchanged. Give at most one of `dueAt` and
+ * `paymentTermsDays`. With neither on the order, the account's payment terms
+ * apply.
+ */
+dueAt?: (Scalars['String'] | null),
+/**
+ * Days from the issue date to the due date for this order, 0 to 365, counted
+ * from the day each invoice revision is issued. Setting it clears `dueAt`.
+ * Null clears only this field; omitted leaves it unchanged. Give at most one
+ * of `dueAt` and `paymentTermsDays`. With neither on the order, the account's
+ * payment terms apply.
+ */
+paymentTermsDays?: (Scalars['Int'] | null)}
 
 export interface UpdateOrderLineFeeInput {
 /** Fee description */
@@ -13370,7 +22254,12 @@ buyersNotes?: (Scalars['String'] | null),
 /** Fees-apply information. Omit/null leaves it unchanged, "" clears it, a value sets it. */
 feesApplyInfo?: (Scalars['String'] | null),
 /** Sale contact member id. Omit/null leaves it unchanged, "" clears it, an id sets it. */
-saleContactUserId?: (Scalars['ID'] | null)}
+saleContactUserId?: (Scalars['ID'] | null),
+/**
+ * Sale code, up to 64 characters, saved trimmed and in lowercase. Omit/null leaves it unchanged; it cannot
+ * be blank or used by another sale in the account.
+ */
+saleCode?: (Scalars['String'] | null)}
 
 export interface UpdateSaleItemFeeInput {id: Scalars['ID'],saleId: Scalars['ID'],itemId: Scalars['ID'],name: Scalars['String'],type: FeeRuleType,
 /**
@@ -13396,6 +22285,8 @@ export interface UpdateSaleItemInput {
 itemId: Scalars['String'],
 /** Id of the sale that the item belongs to */
 saleId: Scalars['String'],
+/** Condition report as Portable Text. Omit to leave unchanged; null or an empty document clears it. */
+conditionReportText?: (Scalars['JSON'] | null),
 /** Optional bid increment table for this item. */
 bidIncrementTable?: (BidIncrementTableInput | null),
 /** Title for describing the item */
@@ -13418,11 +22309,7 @@ reserve?: (Scalars['Int'] | null),
 lowEstimate?: (Scalars['Int'] | null),
 /** High estimate of the item (optional) in minor currency unit. */
 highEstimate?: (Scalars['Int'] | null),
-/**
- * Allowed BidTypes on the item.
- * 
- * Defaults to allowing only Max bids if not supplied.
- */
+/** Bid types this item accepts. Leave out to keep the current setting. */
 allowedBidTypes?: (BidType[] | null),
 /**
  * Date and time when item should open up for bidding.
@@ -13521,20 +22408,85 @@ export interface UpdateSiteInput {siteId: Scalars['String'],name: Scalars['Strin
  * Case-sensitive canonical IANA timezone name (e.g. Europe/London, not
  * europe/london).
  */
-timezone?: (Scalars['String'] | null)}
+timezone?: (Scalars['String'] | null),
+/**
+ * Hours clients can request appointments. Omit to keep the current booking
+ * hours, set to null to remove them, or give a value to replace them. Booking
+ * hours require a timezone, including kept ones: clearing the timezone while
+ * booking hours remain is rejected.
+ */
+bookingHours?: (SiteBookingHoursInput | null)}
 
 
 /** Input for updating a single specification (by id) */
 export interface UpdateSpecificationInput {itemId: Scalars['String'],specificationId: Scalars['String'],type?: (SpecificationType | null),subType?: (SpecificationSubType | null),height?: (Scalars['Float'] | null),length?: (Scalars['Float'] | null),depth?: (Scalars['Float'] | null),diameter?: (Scalars['Float'] | null),measurementUnit?: (MeasurementUnit | null),weight?: (Scalars['Float'] | null),weightUnit?: (WeightUnit | null),quantity?: (Scalars['Int'] | null)}
 
 
+/** Input for updating a staff profile. Omitted fields are left unchanged. */
+export interface UpdateStaffProfileInput {
+/** Id of the staff profile to update. */
+id: Scalars['ID'],
+/** Full name of the staff member. Must not be blank. */
+name?: (Scalars['String'] | null),
+/** Field values conforming to the profile's schema. Replaces all existing values. */
+attributes?: (Scalars['JSON'] | null),
+/** Whether the profile is published on the public website. */
+public?: (Scalars['Boolean'] | null),
+/** Whether the staff member can take phone bids during live auctions. */
+isPhoneClerk?: (Scalars['Boolean'] | null),
+/**
+ * Free-text notes about the staff member as a phone clerk. Surrounding whitespace is
+ * trimmed; at most 2,000 characters. An empty string clears them.
+ */
+phoneClerkNotes?: (Scalars['String'] | null)}
+
+
+/** Fields to change on a live stream channel. Omitted fields are kept; at least one must be set. */
+export interface UpdateStreamChannelInput {
+/** Name of the channel. Cannot be empty. */
+name?: (Scalars['String'] | null),
+/** Free-text location of the channel. An empty string clears it. */
+location?: (Scalars['String'] | null),
+/** Description of the channel. An empty string clears it. */
+description?: (Scalars['String'] | null)}
+
+
+/**
+ * Input for changing a tax code. Only the fields given change; the application,
+ * rate and start date are fixed.
+ */
+export interface UpdateTaxCodeInput {
+/** The code to change. */
+taxCodeId: Scalars['ID'],
+/** A new label. Omit to keep the current one. */
+name?: (Scalars['String'] | null),
+/**
+ * The last day the code is in force, as YYYY-MM-DD. Omit to keep the current
+ * date, or pass an empty string to keep it in force until ended. A code that
+ * is a default cannot be ended until its replacement exists.
+ */
+effectiveTo?: (Scalars['String'] | null),
+/**
+ * Accounting code for tax under this code. Omit to keep the current one, or
+ * pass an empty string to remove it.
+ */
+accountCodeId?: (Scalars['ID'] | null)}
+
+
 /** Input for updating a user profile */
 export interface UpdateUserInput {
-/** User ID (Basta user ID or identity provider ID depending on idType) */
+/**
+ * User ID (Basta user ID or identity provider ID depending on idType). With idType USER_ID, an empty
+ * userId creates a new client with a generated user ID, except on accounts that issue their own user IDs.
+ */
 userId: Scalars['String'],
 /** Type of user ID provided (USER_ID or IDENTITY_PROVIDER_ID) */
 idType: UserIdType,
-/** Email (optional) */
+/**
+ * Email (optional). A client created without an email has no login; adding one later creates it.
+ * Creating a client without an email requires idType USER_ID and is not available on accounts that
+ * issue their own user IDs.
+ */
 email?: (Scalars['String'] | null),
 /** First name (optional) */
 firstName?: (Scalars['String'] | null),
@@ -13550,6 +22502,11 @@ passwordHash?: (Scalars['String'] | null),
 trustLevel?: (TrustLevelInput | null),
 /** Addresses to set (optional, replaces all existing addresses if provided) */
 addresses?: (UserAddressInput[] | null),
+/**
+ * Addresses to set (optional, replaces all existing addresses if provided).
+ * Cannot be combined with addresses.
+ */
+mailingAddresses?: (MailingAddressInput[] | null),
 /** Phones to set (optional, replaces all existing phones if provided) */
 phones?: (UserPhoneInput[] | null),
 /** Metadata (optional) */
@@ -13599,12 +22556,43 @@ attributionSourceId?: (Scalars['String'] | null),
  */
 attributionSourceNote?: (Scalars['String'] | null),
 /**
- * When true (the default), suppress the UserUpdated event normally emitted by the
- * user-service UpdateUserProfile RPC for this dashboard-initiated update. While
- * suppressed, no webhooks (action hooks) will fire for this change. Set to false to
- * emit the event and trigger webhooks as usual.
+ * Dashboard identity id (Ory Kratos) of the staff member to assign as this client's
+ * lead (optional). Absent leaves it unchanged; empty string clears it. Must reference
+ * a staff member of the account.
+ */
+clientLeadId?: (Scalars['String'] | null),
+/**
+ * Records the client's answer on marketing communications (optional). Absent leaves it
+ * unchanged.
+ */
+marketingConsent?: (MarketingConsentInput | null),
+/**
+ * Consignor payout bank details (optional). Absent leaves them unchanged; when
+ * provided, all three fields are required and replace the stored set.
+ */
+bankDetails?: (BankDetailsInput | null),
+/**
+ * Deprecated and ignored. An update made through this mutation always reports the
+ * change, so action hooks fire and the user is reindexed for search. To bring users
+ * across without firing anything, use the import API.
  */
 skipUpdateEvent?: (Scalars['Boolean'] | null)}
+
+
+/** New values for the account's workflow configuration. */
+export interface UpdateWorkflowSettingsInput {cataloguingWorkflowEnabled: Scalars['Boolean'],
+/** Optional. When omitted, the stored value is preserved; only an explicit value changes it. */
+requireDisplayNumbersToPublish?: (Scalars['Boolean'] | null),
+/** Optional. When omitted, the stored value is preserved; only an explicit value changes it. */
+photographyWorkflowEnabled?: (Scalars['Boolean'] | null),
+/** Optional. When omitted, the stored value is preserved; only an explicit value changes it. */
+conditionReportsRequireLogin?: (Scalars['Boolean'] | null)}
+
+export interface UpdateWorkflowSettingsPayloadGenqlSelection{
+    workflowSettings?: WorkflowSettingsGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
 
 export interface UploadUrlGenqlSelection{
     /** Image ID */
@@ -13624,14 +22612,61 @@ export interface UploadUrlGenqlSelection{
 }
 
 
+/**
+ * Input for setting the account's invoice defaults. All three are replaced:
+ * an omitted or blank text is cleared.
+ */
+export interface UpsertInvoiceSettingsInput {
+/** Days from the issue date to the due date, 0 to 365. */
+paymentTermsDays: Scalars['Int'],
+/** How to pay, printed on every invoice. */
+paymentInstructions?: (Scalars['String'] | null),
+/** The closing text printed at the foot of every invoice. */
+footerText?: (Scalars['String'] | null)}
+
+
+/** Input for saving tax settings. Replaces the settings as a whole. */
+export interface UpsertTaxSettingsInput {
+/**
+ * Any regime but NONE needs both defaults. Moving an account with no tax
+ * codes to UK_VAT without defaults creates the standard UK VAT codes and
+ * sets them as the defaults.
+ */
+regime: TaxRegime,
+/** Omit to leave it unset. */
+defaultHammerTaxCodeId?: (Scalars['ID'] | null),
+/**
+ * IMPORT codes are refused: import VAT applies to the hammer only. Omit to
+ * leave it unset.
+ */
+defaultChargeTaxCodeId?: (Scalars['ID'] | null)}
+
+
+/** The result of saving tax settings. */
+export interface UpsertTaxSettingsPayloadGenqlSelection{
+    /** The tax settings as saved. */
+    settings?: TaxSettingsGenqlSelection
+    /**
+     * The standard UK VAT codes created when an account with no tax codes moved
+     * to UK_VAT without naming defaults; they are also set as the defaults.
+     * Empty when nothing was created.
+     */
+    seededCodes?: TaxCodeGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
 /** Input for creating a user address */
 export interface UpsertUserAddressInput {
 /** User ID (Basta user ID or identity provider ID depending on idType) */
 userId: Scalars['String'],
 /** Type of user ID provided (USER_ID or IDENTITY_PROVIDER_ID) */
 idType: UserIdType,
-/** Address to create */
-address: UserAddressInput}
+/** Address to create or update */
+address?: (UserAddressInput | null),
+/** Address to create or update. Exactly one of address and mailingAddress must be set. */
+mailingAddress?: (MailingAddressInput | null)}
 
 
 /** Input for creating a user phone */
@@ -13663,15 +22698,31 @@ export interface UserGenqlSelection{
     /** Whether the user is blocked from transacting on the platform */
     blocked?: boolean | number
     /**
+     * Number identifying the client within the account, assigned automatically when the client
+     * is created. Null while the client has not been numbered.
+     */
+    clientNumber?: boolean | number
+    /**
      * The charges that apply to lots bought by this user, already restated for
      * them. Falls back to the account when this user does not restate one;
      * `appliesAt` on each says which level supplied the values.
      */
     charges?: (ChargeConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null), options?: (ChargeOptions | null)} })
+    /** Internal staff notes on this client. */
+    notes?: (NoteConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), after?: (Scalars['String'] | null)} })
+    /** Alert notes for this client (notes flagged as alerts, for banner display). */
+    alerts?: NoteGenqlSelection
+    /** Clients related to this client, from either side of the relationship, oldest first. */
+    relatedParties?: RelatedPartyGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
 
+
+/**
+ * A user address.
+ * This type is deprecated in favour of MailingAddress.
+ */
 export interface UserAddressGenqlSelection{
     id?: boolean | number
     addressType?: boolean | number
@@ -13688,7 +22739,10 @@ export interface UserAddressGenqlSelection{
 }
 
 
-/** Input for creating or updating a user address */
+/**
+ * Input for creating or updating a user address.
+ * This input is deprecated in favour of MailingAddressInput.
+ */
 export interface UserAddressInput {
 /** Address ID (optional for create, required for update) */
 id?: (Scalars['String'] | null),
@@ -13790,6 +22844,18 @@ export interface UserIdVerificationStatusGenqlSelection{
     verified?: boolean | number
     /** When the verification status was last modified */
     modifiedAt?: boolean | number
+    /** Current stage of the user's identity verification. */
+    status?: boolean | number
+    /**
+     * Who verified the user, e.g. MANUAL when set through updateUser or STRIPE when the user
+     * verified themselves. Empty when no verification has been recorded.
+     */
+    provider?: boolean | number
+    /**
+     * Why the last verification attempt failed, suitable for showing to the user. Null unless
+     * the last attempt failed.
+     */
+    failureReason?: boolean | number
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -13799,15 +22865,21 @@ export interface UserIdVerificationStatusGenqlSelection{
 export interface UserInfoGenqlSelection{
     /** UserId */
     userId?: boolean | number
-    /** Identity provider ID */
+    /** Identity provider ID. Empty when the client has no login. */
     identityProviderId?: boolean | number
+    /** Whether the client has a login in the account's identity provider. Clients created without an email have none. */
+    hasLogin?: boolean | number
     /** User status (active or inactive) */
     status?: boolean | number
     /** Whether the user's email address has been verified */
     emailVerified?: boolean | number
     /** Name */
     name?: boolean | number
-    /** Email */
+    /** First name. Empty when unset. */
+    firstName?: boolean | number
+    /** Last name. Empty when unset. */
+    lastName?: boolean | number
+    /** Email. Empty when the client has no email. */
     email?: boolean | number
     /**
      * Free-form user role (e.g. "admin" or "store"). Null when unset. Mirrored from the
@@ -13816,12 +22888,29 @@ export interface UserInfoGenqlSelection{
     role?: boolean | number
     /** Whether this client is flagged as a VIP. */
     vip?: boolean | number
+    /**
+     * Number identifying the client within the account, assigned automatically when the client
+     * is created. Null while the client has not been numbered.
+     */
+    clientNumber?: boolean | number
     /** Attribution channel id the client came in through. Null when unset. */
     attributionChannelId?: boolean | number
     /** Attribution source id the client came in through. Null when unset. */
     attributionSourceId?: boolean | number
     /** Free-text note about how the client was attributed. Null when unset. */
     attributionSourceNote?: boolean | number
+    /**
+     * Dashboard identity id (Ory Kratos) of the staff member assigned as this client's
+     * lead. Null when unset.
+     */
+    clientLeadId?: boolean | number
+    /**
+     * The staff member assigned as this client's lead, resolved from the dashboard
+     * identity. Null when unset.
+     */
+    clientLead?: DashboardMemberGenqlSelection
+    /** The client's answer on marketing communications. Null when the client has not been asked. */
+    marketingConsent?: MarketingConsentGenqlSelection
     /**
      * @deprecated Use addressesV2 instead, this will be removed in the next version of the schema
      * Addresses
@@ -13847,6 +22936,12 @@ export interface UserInfoGenqlSelection{
     phones?: PhoneAddressGenqlSelection
     /** Company name */
     companyName?: boolean | number
+    /** VAT number (free-form, no validation). Null when unset. */
+    vatNumber?: boolean | number
+    /** EORI number (free-form, no validation). Null when unset. */
+    eoriNumber?: boolean | number
+    /** Gun licence number (free-form, no validation). Null when unset. */
+    gunLicenceNumber?: boolean | number
     /** Salutation */
     salutation?: boolean | number
     /** Timezone */
@@ -13865,6 +22960,8 @@ export interface UserInfoGenqlSelection{
     username?: boolean | number
     /** Notification settings for the user on this account. */
     notificationSettings?: UserNotificationSettingsGenqlSelection
+    /** Consignor payout bank details. Null when none are on file. */
+    bankDetails?: BankDetailsGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -13883,7 +22980,13 @@ timezone?: (Scalars['String'] | null),
 /** Company name */
 companyName?: (Scalars['String'] | null),
 /** Salutation */
-salutation?: (Scalars['String'] | null)}
+salutation?: (Scalars['String'] | null),
+/** VAT number (free-form, no validation) */
+vatNumber?: (Scalars['String'] | null),
+/** EORI number (free-form, no validation) */
+eoriNumber?: (Scalars['String'] | null),
+/** Gun licence number (free-form, no validation) */
+gunLicenceNumber?: (Scalars['String'] | null)}
 
 
 /** Whether the user has opted in to one notification on one delivery channel. */
@@ -13947,9 +23050,9 @@ phoneType: PhoneType,
 /** Is this the primary phone for this type */
 isPrimary: Scalars['Boolean'],
 /**
- * Full phone number in E.164 format (e.g., +15551234567)
+ * Full phone number in E.164 format (e.g., +12015550123)
  * Includes country code, number, and optional extension using RFC 3966 format
- * Example: +1-555-123-4567;ext=1234
+ * Example: +1-201-555-0123;ext=1234
  * The system will parse and validate this using libphonenumber
  */
 phoneNumber: Scalars['String'],
@@ -14015,6 +23118,107 @@ ttlMinutes: Scalars['Int']}
 export interface UsersConnectionGenqlSelection{
     /** User edges */
     edges?: UserEdgeGenqlSelection
+    /** Current page information */
+    pageInfo?: PageInfoGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** A request for a valuation, submitted through the account's public form. */
+export interface ValuationRequestGenqlSelection{
+    /** Id of the valuation request. */
+    id?: boolean | number
+    /** Cursor is used in pagination. */
+    cursor?: boolean | number
+    /** Account ID */
+    accountId?: boolean | number
+    /** Short reference for the request, the first 8 characters of its id in upper case. */
+    reference?: boolean | number
+    status?: boolean | number
+    contactName?: boolean | number
+    contactEmail?: boolean | number
+    contactPhone?: boolean | number
+    /** The items to value, 1 to 10, in the order the submitter gave them. */
+    items?: ValuationRequestItemGenqlSelection
+    /** The staff member handling the request. Null when unassigned. */
+    assignee?: ValuationRequestAssigneeGenqlSelection
+    /** When the request was submitted (RFC3339). */
+    createdAt?: boolean | number
+    /** When the request was last modified (RFC3339). */
+    modifiedAt?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** The staff member a valuation request is assigned to. */
+export interface ValuationRequestAssigneeGenqlSelection{
+    /** The staff member's identity id, the same id space as DashboardMember.userId. */
+    userId?: boolean | number
+    /**
+     * The staff member's display name, from the identity provider.
+     * Null if the identity could not be resolved.
+     */
+    name?: boolean | number
+    /**
+     * The staff member's email address, from the identity provider.
+     * Null if the identity could not be resolved.
+     */
+    email?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface ValuationRequestEdgeGenqlSelection{
+    /** Current valuation request cursor */
+    cursor?: boolean | number
+    /** Valuation request node */
+    node?: ValuationRequestGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface ValuationRequestFilter {
+/** Empty or omitted: every status. */
+statuses?: (ValuationRequestStatus[] | null),
+/** Only requests assigned to this staff member. */
+assigneeUserId?: (Scalars['String'] | null),
+/** Only requests with no assignee. Ignored when assigneeUserId is set. */
+unassigned?: (Scalars['Boolean'] | null)}
+
+
+/** One item in a valuation request. */
+export interface ValuationRequestItemGenqlSelection{
+    /** The item type chosen for this item. Null when none was chosen or it was deleted since. */
+    itemType?: ItemTypeGenqlSelection
+    /** Name of the item type when the request was submitted. */
+    itemTypeName?: boolean | number
+    /** Field values as submitted. */
+    schemaData?: boolean | number
+    description?: boolean | number
+    /** Submitted photos, in the display order the submitter gave them. */
+    photos?: AssetGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** Settings for the public valuation request form. */
+export interface ValuationRequestSettingsGenqlSelection{
+    /** Whether the public form accepts submissions. */
+    enabled?: boolean | number
+    /** Number of photos each item in a submission must include. */
+    requiredPhotoCount?: boolean | number
+    /** Addresses emailed when a request is submitted. */
+    recipientEmails?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface ValuationRequestsConnectionGenqlSelection{
+    /** Valuation request edges */
+    edges?: ValuationRequestEdgeGenqlSelection
     /** Current page information */
     pageInfo?: PageInfoGenqlSelection
     __typename?: boolean | number
@@ -14089,10 +23293,33 @@ export interface WorkflowScheduleRowGenqlSelection{
 export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: Scalars['Boolean'],sortOrder: Scalars['Int'],offsets: WorkflowDimensionOffsetInput[]}
 
 
+/** The account's workflow settings: per-account toggles for optional workflows. */
+export interface WorkflowSettingsGenqlSelection{
+    /** Whether the cataloguing workflow (awaiting cataloguing, catalogued, proofed) is enabled for this account. */
+    cataloguingWorkflowEnabled?: boolean | number
+    /** Whether the AMS should warn before publishing a sale that has items without a display (lot) number. Defaults to false. */
+    requireDisplayNumbersToPublish?: boolean | number
+    /** Whether the photography workflow (to photograph, photographed, uploaded) is enabled for this account. Defaults to false. */
+    photographyWorkflowEnabled?: boolean | number
+    /** Whether clients must be logged in to view and request condition reports on the house's website. Defaults to false. */
+    conditionReportsRequireLogin?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
     const Account_possibleTypes: string[] = ['Account']
     export const isAccount = (obj?: { __typename?: any } | null): obj is Account => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isAccount"')
       return Account_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AccountCode_possibleTypes: string[] = ['AccountCode']
+    export const isAccountCode = (obj?: { __typename?: any } | null): obj is AccountCode => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAccountCode"')
+      return AccountCode_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -14177,6 +23404,30 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     
 
 
+    const AffiliateEventType_possibleTypes: string[] = ['AffiliateEventType']
+    export const isAffiliateEventType = (obj?: { __typename?: any } | null): obj is AffiliateEventType => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAffiliateEventType"')
+      return AffiliateEventType_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AffiliateReport_possibleTypes: string[] = ['AffiliateReport']
+    export const isAffiliateReport = (obj?: { __typename?: any } | null): obj is AffiliateReport => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAffiliateReport"')
+      return AffiliateReport_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AffiliateReportDataPoint_possibleTypes: string[] = ['AffiliateReportDataPoint']
+    export const isAffiliateReportDataPoint = (obj?: { __typename?: any } | null): obj is AffiliateReportDataPoint => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAffiliateReportDataPoint"')
+      return AffiliateReportDataPoint_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const Aggregator_possibleTypes: string[] = ['Aggregator']
     export const isAggregator = (obj?: { __typename?: any } | null): obj is Aggregator => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isAggregator"')
@@ -14249,6 +23500,174 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     
 
 
+    const AppliedTax_possibleTypes: string[] = ['AppliedTax']
+    export const isAppliedTax = (obj?: { __typename?: any } | null): obj is AppliedTax => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAppliedTax"')
+      return AppliedTax_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const Appointment_possibleTypes: string[] = ['Appointment']
+    export const isAppointment = (obj?: { __typename?: any } | null): obj is Appointment => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAppointment"')
+      return Appointment_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AppointmentDocument_possibleTypes: string[] = ['AppointmentDocument']
+    export const isAppointmentDocument = (obj?: { __typename?: any } | null): obj is AppointmentDocument => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAppointmentDocument"')
+      return AppointmentDocument_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AppointmentEdge_possibleTypes: string[] = ['AppointmentEdge']
+    export const isAppointmentEdge = (obj?: { __typename?: any } | null): obj is AppointmentEdge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAppointmentEdge"')
+      return AppointmentEdge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AppointmentSettings_possibleTypes: string[] = ['AppointmentSettings']
+    export const isAppointmentSettings = (obj?: { __typename?: any } | null): obj is AppointmentSettings => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAppointmentSettings"')
+      return AppointmentSettings_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AppointmentsConnection_possibleTypes: string[] = ['AppointmentsConnection']
+    export const isAppointmentsConnection = (obj?: { __typename?: any } | null): obj is AppointmentsConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAppointmentsConnection"')
+      return AppointmentsConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const Appraisal_possibleTypes: string[] = ['Appraisal']
+    export const isAppraisal = (obj?: { __typename?: any } | null): obj is Appraisal => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAppraisal"')
+      return Appraisal_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AppraisalBanner_possibleTypes: string[] = ['AppraisalBanner']
+    export const isAppraisalBanner = (obj?: { __typename?: any } | null): obj is AppraisalBanner => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAppraisalBanner"')
+      return AppraisalBanner_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AppraisalClient_possibleTypes: string[] = ['AppraisalClient']
+    export const isAppraisalClient = (obj?: { __typename?: any } | null): obj is AppraisalClient => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAppraisalClient"')
+      return AppraisalClient_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AppraisalDocument_possibleTypes: string[] = ['AppraisalDocument']
+    export const isAppraisalDocument = (obj?: { __typename?: any } | null): obj is AppraisalDocument => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAppraisalDocument"')
+      return AppraisalDocument_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AppraisalDocumentSettings_possibleTypes: string[] = ['AppraisalDocumentSettings']
+    export const isAppraisalDocumentSettings = (obj?: { __typename?: any } | null): obj is AppraisalDocumentSettings => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAppraisalDocumentSettings"')
+      return AppraisalDocumentSettings_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AppraisalDocumentTemplate_possibleTypes: string[] = ['AppraisalDocumentTemplate']
+    export const isAppraisalDocumentTemplate = (obj?: { __typename?: any } | null): obj is AppraisalDocumentTemplate => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAppraisalDocumentTemplate"')
+      return AppraisalDocumentTemplate_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AppraisalInstructedBy_possibleTypes: string[] = ['AppraisalInstructedBy']
+    export const isAppraisalInstructedBy = (obj?: { __typename?: any } | null): obj is AppraisalInstructedBy => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAppraisalInstructedBy"')
+      return AppraisalInstructedBy_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AppraisalItem_possibleTypes: string[] = ['AppraisalItem']
+    export const isAppraisalItem = (obj?: { __typename?: any } | null): obj is AppraisalItem => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAppraisalItem"')
+      return AppraisalItem_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AppraisalItemValuation_possibleTypes: string[] = ['AppraisalItemValuation']
+    export const isAppraisalItemValuation = (obj?: { __typename?: any } | null): obj is AppraisalItemValuation => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAppraisalItemValuation"')
+      return AppraisalItemValuation_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AppraisalItemsConnection_possibleTypes: string[] = ['AppraisalItemsConnection']
+    export const isAppraisalItemsConnection = (obj?: { __typename?: any } | null): obj is AppraisalItemsConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAppraisalItemsConnection"')
+      return AppraisalItemsConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AppraisalItemsEdge_possibleTypes: string[] = ['AppraisalItemsEdge']
+    export const isAppraisalItemsEdge = (obj?: { __typename?: any } | null): obj is AppraisalItemsEdge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAppraisalItemsEdge"')
+      return AppraisalItemsEdge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AppraisalLine_possibleTypes: string[] = ['AppraisalLine']
+    export const isAppraisalLine = (obj?: { __typename?: any } | null): obj is AppraisalLine => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAppraisalLine"')
+      return AppraisalLine_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AppraisalStaff_possibleTypes: string[] = ['AppraisalStaff']
+    export const isAppraisalStaff = (obj?: { __typename?: any } | null): obj is AppraisalStaff => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAppraisalStaff"')
+      return AppraisalStaff_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AppraisalsConnection_possibleTypes: string[] = ['AppraisalsConnection']
+    export const isAppraisalsConnection = (obj?: { __typename?: any } | null): obj is AppraisalsConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAppraisalsConnection"')
+      return AppraisalsConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AppraisalsEdge_possibleTypes: string[] = ['AppraisalsEdge']
+    export const isAppraisalsEdge = (obj?: { __typename?: any } | null): obj is AppraisalsEdge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAppraisalsEdge"')
+      return AppraisalsEdge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const ArrBand_possibleTypes: string[] = ['ArrBand']
     export const isArrBand = (obj?: { __typename?: any } | null): obj is ArrBand => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isArrBand"')
@@ -14273,10 +23692,42 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     
 
 
+    const AssetConnection_possibleTypes: string[] = ['AssetConnection']
+    export const isAssetConnection = (obj?: { __typename?: any } | null): obj is AssetConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAssetConnection"')
+      return AssetConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AssetEdge_possibleTypes: string[] = ['AssetEdge']
+    export const isAssetEdge = (obj?: { __typename?: any } | null): obj is AssetEdge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAssetEdge"')
+      return AssetEdge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const AssetUploadUrl_possibleTypes: string[] = ['AssetUploadUrl']
     export const isAssetUploadUrl = (obj?: { __typename?: any } | null): obj is AssetUploadUrl => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isAssetUploadUrl"')
       return AssetUploadUrl_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AttributeSuggestion_possibleTypes: string[] = ['AttributeSuggestion']
+    export const isAttributeSuggestion = (obj?: { __typename?: any } | null): obj is AttributeSuggestion => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAttributeSuggestion"')
+      return AttributeSuggestion_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AttributesSuggestion_possibleTypes: string[] = ['AttributesSuggestion']
+    export const isAttributesSuggestion = (obj?: { __typename?: any } | null): obj is AttributesSuggestion => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAttributesSuggestion"')
+      return AttributesSuggestion_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -14301,6 +23752,22 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     export const isAuctionSymbol = (obj?: { __typename?: any } | null): obj is AuctionSymbol => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isAuctionSymbol"')
       return AuctionSymbol_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const Author_possibleTypes: string[] = ['Author']
+    export const isAuthor = (obj?: { __typename?: any } | null): obj is Author => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAuthor"')
+      return Author_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const BankDetails_possibleTypes: string[] = ['BankDetails']
+    export const isBankDetails = (obj?: { __typename?: any } | null): obj is BankDetails => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isBankDetails"')
+      return BankDetails_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -14393,6 +23860,46 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     
 
 
+    const BuyerPremium_possibleTypes: string[] = ['BuyerPremium']
+    export const isBuyerPremium = (obj?: { __typename?: any } | null): obj is BuyerPremium => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isBuyerPremium"')
+      return BuyerPremium_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const BuyerPremiumBand_possibleTypes: string[] = ['BuyerPremiumBand']
+    export const isBuyerPremiumBand = (obj?: { __typename?: any } | null): obj is BuyerPremiumBand => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isBuyerPremiumBand"')
+      return BuyerPremiumBand_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const BuyerPremiumConnection_possibleTypes: string[] = ['BuyerPremiumConnection']
+    export const isBuyerPremiumConnection = (obj?: { __typename?: any } | null): obj is BuyerPremiumConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isBuyerPremiumConnection"')
+      return BuyerPremiumConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const BuyerPremiumEdge_possibleTypes: string[] = ['BuyerPremiumEdge']
+    export const isBuyerPremiumEdge = (obj?: { __typename?: any } | null): obj is BuyerPremiumEdge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isBuyerPremiumEdge"')
+      return BuyerPremiumEdge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const CampaignReportDataPoint_possibleTypes: string[] = ['CampaignReportDataPoint']
+    export const isCampaignReportDataPoint = (obj?: { __typename?: any } | null): obj is CampaignReportDataPoint => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isCampaignReportDataPoint"')
+      return CampaignReportDataPoint_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const CanceledLatestBidOnItem_possibleTypes: string[] = ['CanceledLatestBidOnItem']
     export const isCanceledLatestBidOnItem = (obj?: { __typename?: any } | null): obj is CanceledLatestBidOnItem => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isCanceledLatestBidOnItem"')
@@ -14405,6 +23912,14 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     export const isCard = (obj?: { __typename?: any } | null): obj is Card => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isCard"')
       return Card_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const CataloguingWorkflowSummary_possibleTypes: string[] = ['CataloguingWorkflowSummary']
+    export const isCataloguingWorkflowSummary = (obj?: { __typename?: any } | null): obj is CataloguingWorkflowSummary => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isCataloguingWorkflowSummary"')
+      return CataloguingWorkflowSummary_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -14441,6 +23956,70 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     
 
 
+    const CelEnum_possibleTypes: string[] = ['CelEnum']
+    export const isCelEnum = (obj?: { __typename?: any } | null): obj is CelEnum => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isCelEnum"')
+      return CelEnum_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const CelEnumValue_possibleTypes: string[] = ['CelEnumValue']
+    export const isCelEnumValue = (obj?: { __typename?: any } | null): obj is CelEnumValue => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isCelEnumValue"')
+      return CelEnumValue_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const CelEnvironment_possibleTypes: string[] = ['CelEnvironment']
+    export const isCelEnvironment = (obj?: { __typename?: any } | null): obj is CelEnvironment => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isCelEnvironment"')
+      return CelEnvironment_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const CelField_possibleTypes: string[] = ['CelField']
+    export const isCelField = (obj?: { __typename?: any } | null): obj is CelField => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isCelField"')
+      return CelField_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const CelIssue_possibleTypes: string[] = ['CelIssue']
+    export const isCelIssue = (obj?: { __typename?: any } | null): obj is CelIssue => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isCelIssue"')
+      return CelIssue_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const CelType_possibleTypes: string[] = ['CelType']
+    export const isCelType = (obj?: { __typename?: any } | null): obj is CelType => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isCelType"')
+      return CelType_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const CelValidationResult_possibleTypes: string[] = ['CelValidationResult']
+    export const isCelValidationResult = (obj?: { __typename?: any } | null): obj is CelValidationResult => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isCelValidationResult"')
+      return CelValidationResult_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const CelVariable_possibleTypes: string[] = ['CelVariable']
+    export const isCelVariable = (obj?: { __typename?: any } | null): obj is CelVariable => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isCelVariable"')
+      return CelVariable_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const Charge_possibleTypes: string[] = ['Charge']
     export const isCharge = (obj?: { __typename?: any } | null): obj is Charge => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isCharge"')
@@ -14473,10 +24052,122 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     
 
 
+    const ClearItemsAppraisalPayload_possibleTypes: string[] = ['ClearItemsAppraisalPayload']
+    export const isClearItemsAppraisalPayload = (obj?: { __typename?: any } | null): obj is ClearItemsAppraisalPayload => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isClearItemsAppraisalPayload"')
+      return ClearItemsAppraisalPayload_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const ClientNumberSettings_possibleTypes: string[] = ['ClientNumberSettings']
+    export const isClientNumberSettings = (obj?: { __typename?: any } | null): obj is ClientNumberSettings => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isClientNumberSettings"')
+      return ClientNumberSettings_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const ClientRelationship_possibleTypes: string[] = ['ClientRelationship']
+    export const isClientRelationship = (obj?: { __typename?: any } | null): obj is ClientRelationship => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isClientRelationship"')
+      return ClientRelationship_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const ConditionReport_possibleTypes: string[] = ['ConditionReport']
+    export const isConditionReport = (obj?: { __typename?: any } | null): obj is ConditionReport => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isConditionReport"')
+      return ConditionReport_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const ConditionReportRequest_possibleTypes: string[] = ['ConditionReportRequest']
+    export const isConditionReportRequest = (obj?: { __typename?: any } | null): obj is ConditionReportRequest => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isConditionReportRequest"')
+      return ConditionReportRequest_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const ConditionReportRequestAssignee_possibleTypes: string[] = ['ConditionReportRequestAssignee']
+    export const isConditionReportRequestAssignee = (obj?: { __typename?: any } | null): obj is ConditionReportRequestAssignee => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isConditionReportRequestAssignee"')
+      return ConditionReportRequestAssignee_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const ConditionReportRequestContact_possibleTypes: string[] = ['ConditionReportRequestContact']
+    export const isConditionReportRequestContact = (obj?: { __typename?: any } | null): obj is ConditionReportRequestContact => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isConditionReportRequestContact"')
+      return ConditionReportRequestContact_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const ConditionReportRequestEdge_possibleTypes: string[] = ['ConditionReportRequestEdge']
+    export const isConditionReportRequestEdge = (obj?: { __typename?: any } | null): obj is ConditionReportRequestEdge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isConditionReportRequestEdge"')
+      return ConditionReportRequestEdge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const ConditionReportRequestMessage_possibleTypes: string[] = ['ConditionReportRequestMessage']
+    export const isConditionReportRequestMessage = (obj?: { __typename?: any } | null): obj is ConditionReportRequestMessage => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isConditionReportRequestMessage"')
+      return ConditionReportRequestMessage_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const ConditionReportRequestsConnection_possibleTypes: string[] = ['ConditionReportRequestsConnection']
+    export const isConditionReportRequestsConnection = (obj?: { __typename?: any } | null): obj is ConditionReportRequestsConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isConditionReportRequestsConnection"')
+      return ConditionReportRequestsConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const Consignment_possibleTypes: string[] = ['Consignment']
     export const isConsignment = (obj?: { __typename?: any } | null): obj is Consignment => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isConsignment"')
       return Consignment_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const ConsignmentBanner_possibleTypes: string[] = ['ConsignmentBanner']
+    export const isConsignmentBanner = (obj?: { __typename?: any } | null): obj is ConsignmentBanner => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isConsignmentBanner"')
+      return ConsignmentBanner_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const ConsignmentContract_possibleTypes: string[] = ['ConsignmentContract']
+    export const isConsignmentContract = (obj?: { __typename?: any } | null): obj is ConsignmentContract => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isConsignmentContract"')
+      return ConsignmentContract_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const ConsignmentContractSigningRequest_possibleTypes: string[] = ['ConsignmentContractSigningRequest']
+    export const isConsignmentContractSigningRequest = (obj?: { __typename?: any } | null): obj is ConsignmentContractSigningRequest => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isConsignmentContractSigningRequest"')
+      return ConsignmentContractSigningRequest_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const ConsignmentContractTemplate_possibleTypes: string[] = ['ConsignmentContractTemplate']
+    export const isConsignmentContractTemplate = (obj?: { __typename?: any } | null): obj is ConsignmentContractTemplate => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isConsignmentContractTemplate"')
+      return ConsignmentContractTemplate_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -14489,10 +24180,26 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     
 
 
+    const ConsignmentLine_possibleTypes: string[] = ['ConsignmentLine']
+    export const isConsignmentLine = (obj?: { __typename?: any } | null): obj is ConsignmentLine => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isConsignmentLine"')
+      return ConsignmentLine_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const ConsignmentStaff_possibleTypes: string[] = ['ConsignmentStaff']
     export const isConsignmentStaff = (obj?: { __typename?: any } | null): obj is ConsignmentStaff => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isConsignmentStaff"')
       return ConsignmentStaff_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const ConsignmentTransport_possibleTypes: string[] = ['ConsignmentTransport']
+    export const isConsignmentTransport = (obj?: { __typename?: any } | null): obj is ConsignmentTransport => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isConsignmentTransport"')
+      return ConsignmentTransport_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -14537,6 +24244,38 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     
 
 
+    const ContentIssue_possibleTypes: string[] = ['ContentIssue']
+    export const isContentIssue = (obj?: { __typename?: any } | null): obj is ContentIssue => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isContentIssue"')
+      return ContentIssue_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const ContentSuggestion_possibleTypes: string[] = ['ContentSuggestion']
+    export const isContentSuggestion = (obj?: { __typename?: any } | null): obj is ContentSuggestion => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isContentSuggestion"')
+      return ContentSuggestion_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const ContentSuggestions_possibleTypes: string[] = ['ContentSuggestions']
+    export const isContentSuggestions = (obj?: { __typename?: any } | null): obj is ContentSuggestions => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isContentSuggestions"')
+      return ContentSuggestions_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const ContractPlaceholder_possibleTypes: string[] = ['ContractPlaceholder']
+    export const isContractPlaceholder = (obj?: { __typename?: any } | null): obj is ContractPlaceholder => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isContractPlaceholder"')
+      return ContractPlaceholder_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const CountryInfo_possibleTypes: string[] = ['CountryInfo']
     export const isCountryInfo = (obj?: { __typename?: any } | null): obj is CountryInfo => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isCountryInfo"')
@@ -14561,6 +24300,14 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     
 
 
+    const Courier_possibleTypes: string[] = ['Courier']
+    export const isCourier = (obj?: { __typename?: any } | null): obj is Courier => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isCourier"')
+      return Courier_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const Creator_possibleTypes: string[] = ['Creator']
     export const isCreator = (obj?: { __typename?: any } | null): obj is Creator => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isCreator"')
@@ -14581,6 +24328,14 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     export const isCreatorList = (obj?: { __typename?: any } | null): obj is CreatorList => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isCreatorList"')
       return CreatorList_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const CreatorSettings_possibleTypes: string[] = ['CreatorSettings']
+    export const isCreatorSettings = (obj?: { __typename?: any } | null): obj is CreatorSettings => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isCreatorSettings"')
+      return CreatorSettings_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -14653,6 +24408,30 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     export const isDocument = (obj?: { __typename?: any } | null): obj is Document => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isDocument"')
       return Document_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const DocumentBranding_possibleTypes: string[] = ['DocumentBranding']
+    export const isDocumentBranding = (obj?: { __typename?: any } | null): obj is DocumentBranding => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isDocumentBranding"')
+      return DocumentBranding_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const DocumentBrandingCompany_possibleTypes: string[] = ['DocumentBrandingCompany']
+    export const isDocumentBrandingCompany = (obj?: { __typename?: any } | null): obj is DocumentBrandingCompany => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isDocumentBrandingCompany"')
+      return DocumentBrandingCompany_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const DocumentDownload_possibleTypes: string[] = ['DocumentDownload']
+    export const isDocumentDownload = (obj?: { __typename?: any } | null): obj is DocumentDownload => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isDocumentDownload"')
+      return DocumentDownload_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -14737,6 +24516,14 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     
 
 
+    const EntityNumberSettings_possibleTypes: string[] = ['EntityNumberSettings']
+    export const isEntityNumberSettings = (obj?: { __typename?: any } | null): obj is EntityNumberSettings => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isEntityNumberSettings"')
+      return EntityNumberSettings_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const Estimate_possibleTypes: string[] = ['Estimate']
     export const isEstimate = (obj?: { __typename?: any } | null): obj is Estimate => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isEstimate"')
@@ -14793,6 +24580,14 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     
 
 
+    const GeneratePresaleAdvicesResult_possibleTypes: string[] = ['GeneratePresaleAdvicesResult']
+    export const isGeneratePresaleAdvicesResult = (obj?: { __typename?: any } | null): obj is GeneratePresaleAdvicesResult => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isGeneratePresaleAdvicesResult"')
+      return GeneratePresaleAdvicesResult_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const GeoLocation_possibleTypes: string[] = ['GeoLocation']
     export const isGeoLocation = (obj?: { __typename?: any } | null): obj is GeoLocation => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isGeoLocation"')
@@ -14805,6 +24600,14 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     export const isGetItemInput = (obj?: { __typename?: any } | null): obj is GetItemInput => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isGetItemInput"')
       return GetItemInput_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const GroupSyncDiff_possibleTypes: string[] = ['GroupSyncDiff']
+    export const isGroupSyncDiff = (obj?: { __typename?: any } | null): obj is GroupSyncDiff => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isGroupSyncDiff"')
+      return GroupSyncDiff_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -14841,6 +24644,14 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     
 
 
+    const IdentityVerificationProvider_possibleTypes: string[] = ['StripeIdentityProviderSettings']
+    export const isIdentityVerificationProvider = (obj?: { __typename?: any } | null): obj is IdentityVerificationProvider => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isIdentityVerificationProvider"')
+      return IdentityVerificationProvider_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const Image_possibleTypes: string[] = ['Image']
     export const isImage = (obj?: { __typename?: any } | null): obj is Image => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isImage"')
@@ -14873,10 +24684,34 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     
 
 
+    const InventoryNumberSettings_possibleTypes: string[] = ['InventoryNumberSettings']
+    export const isInventoryNumberSettings = (obj?: { __typename?: any } | null): obj is InventoryNumberSettings => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isInventoryNumberSettings"')
+      return InventoryNumberSettings_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const Invoice_possibleTypes: string[] = ['Invoice']
     export const isInvoice = (obj?: { __typename?: any } | null): obj is Invoice => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isInvoice"')
       return Invoice_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const InvoiceSettings_possibleTypes: string[] = ['InvoiceSettings']
+    export const isInvoiceSettings = (obj?: { __typename?: any } | null): obj is InvoiceSettings => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isInvoiceSettings"')
+      return InvoiceSettings_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const IssuesSuggestion_possibleTypes: string[] = ['IssuesSuggestion']
+    export const isIssuesSuggestion = (obj?: { __typename?: any } | null): obj is IssuesSuggestion => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isIssuesSuggestion"')
+      return IssuesSuggestion_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -14901,6 +24736,14 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     export const isItemBuyNowConfig = (obj?: { __typename?: any } | null): obj is ItemBuyNowConfig => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isItemBuyNowConfig"')
       return ItemBuyNowConfig_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const ItemCataloguingReadiness_possibleTypes: string[] = ['ItemCataloguingReadiness']
+    export const isItemCataloguingReadiness = (obj?: { __typename?: any } | null): obj is ItemCataloguingReadiness => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isItemCataloguingReadiness"')
+      return ItemCataloguingReadiness_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -15081,6 +24924,14 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     
 
 
+    const ItemTypeTaxDefault_possibleTypes: string[] = ['ItemTypeTaxDefault']
+    export const isItemTypeTaxDefault = (obj?: { __typename?: any } | null): obj is ItemTypeTaxDefault => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isItemTypeTaxDefault"')
+      return ItemTypeTaxDefault_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const ItemTypesConnection_possibleTypes: string[] = ['ItemTypesConnection']
     export const isItemTypesConnection = (obj?: { __typename?: any } | null): obj is ItemTypesConnection => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isItemTypesConnection"')
@@ -15161,10 +25012,26 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     
 
 
+    const MarketingConsent_possibleTypes: string[] = ['MarketingConsent']
+    export const isMarketingConsent = (obj?: { __typename?: any } | null): obj is MarketingConsent => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isMarketingConsent"')
+      return MarketingConsent_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const Metafield_possibleTypes: string[] = ['Metafield']
     export const isMetafield = (obj?: { __typename?: any } | null): obj is Metafield => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isMetafield"')
       return Metafield_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const MissingRequiredField_possibleTypes: string[] = ['MissingRequiredField']
+    export const isMissingRequiredField = (obj?: { __typename?: any } | null): obj is MissingRequiredField => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isMissingRequiredField"')
+      return MissingRequiredField_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -15177,10 +25044,42 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     
 
 
-    const Node_possibleTypes: string[] = ['AccountFee','ActionHookLog','ApiKey','ApiToken','Category','Consignment','Department','DutchSale','FeeRule','Item','Location','Offer','PaymentOrder','Sale','SaleGenre','SaleItemRegistration','SaleItemWatchlistEntry','SaleRegistration','SaleRegistrationPolicy','SaleWatchlistEntry','SectionMarker','Site','User']
+    const Node_possibleTypes: string[] = ['AccountFee','ActionHookLog','ApiKey','ApiToken','Appointment','Appraisal','Category','ConditionReportRequest','Consignment','Department','DutchSale','FeeRule','Item','Location','Offer','PaymentOrder','Sale','SaleGenre','SaleItemRegistration','SaleItemWatchlistEntry','SaleRegistration','SaleRegistrationPolicy','SaleWatchlistEntry','SectionMarker','Site','StaffProfile','User','ValuationRequest']
     export const isNode = (obj?: { __typename?: any } | null): obj is Node => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isNode"')
       return Node_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const Note_possibleTypes: string[] = ['Note']
+    export const isNote = (obj?: { __typename?: any } | null): obj is Note => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isNote"')
+      return Note_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const NoteConnection_possibleTypes: string[] = ['NoteConnection']
+    export const isNoteConnection = (obj?: { __typename?: any } | null): obj is NoteConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isNoteConnection"')
+      return NoteConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const NoteEdge_possibleTypes: string[] = ['NoteEdge']
+    export const isNoteEdge = (obj?: { __typename?: any } | null): obj is NoteEdge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isNoteEdge"')
+      return NoteEdge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const NoteType_possibleTypes: string[] = ['NoteType']
+    export const isNoteType = (obj?: { __typename?: any } | null): obj is NoteType => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isNoteType"')
+      return NoteType_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -15321,6 +25220,22 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     
 
 
+    const OrderLinePlatformFee_possibleTypes: string[] = ['OrderLinePlatformFee']
+    export const isOrderLinePlatformFee = (obj?: { __typename?: any } | null): obj is OrderLinePlatformFee => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isOrderLinePlatformFee"')
+      return OrderLinePlatformFee_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const OrderPayment_possibleTypes: string[] = ['OrderPayment']
+    export const isOrderPayment = (obj?: { __typename?: any } | null): obj is OrderPayment => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isOrderPayment"')
+      return OrderPayment_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const OrganisationDetails_possibleTypes: string[] = ['OrganisationDetails']
     export const isOrganisationDetails = (obj?: { __typename?: any } | null): obj is OrganisationDetails => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isOrganisationDetails"')
@@ -15433,6 +25348,150 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     
 
 
+    const PhoneClerkAssignment_possibleTypes: string[] = ['PhoneClerkAssignment']
+    export const isPhoneClerkAssignment = (obj?: { __typename?: any } | null): obj is PhoneClerkAssignment => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isPhoneClerkAssignment"')
+      return PhoneClerkAssignment_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const PhoneClerkHistoryEntry_possibleTypes: string[] = ['PhoneClerkHistoryEntry']
+    export const isPhoneClerkHistoryEntry = (obj?: { __typename?: any } | null): obj is PhoneClerkHistoryEntry => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isPhoneClerkHistoryEntry"')
+      return PhoneClerkHistoryEntry_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const PhoneClerkItemAssignments_possibleTypes: string[] = ['PhoneClerkItemAssignments']
+    export const isPhoneClerkItemAssignments = (obj?: { __typename?: any } | null): obj is PhoneClerkItemAssignments => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isPhoneClerkItemAssignments"')
+      return PhoneClerkItemAssignments_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const PhoneClerkOverride_possibleTypes: string[] = ['PhoneClerkOverride']
+    export const isPhoneClerkOverride = (obj?: { __typename?: any } | null): obj is PhoneClerkOverride => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isPhoneClerkOverride"')
+      return PhoneClerkOverride_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const PhoneClerkPlan_possibleTypes: string[] = ['PhoneClerkPlan']
+    export const isPhoneClerkPlan = (obj?: { __typename?: any } | null): obj is PhoneClerkPlan => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isPhoneClerkPlan"')
+      return PhoneClerkPlan_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const PhoneClerkPlanIssue_possibleTypes: string[] = ['PhoneClerkPlanIssue']
+    export const isPhoneClerkPlanIssue = (obj?: { __typename?: any } | null): obj is PhoneClerkPlanIssue => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isPhoneClerkPlanIssue"')
+      return PhoneClerkPlanIssue_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const PhoneClerkPlanStaleness_possibleTypes: string[] = ['PhoneClerkPlanStaleness']
+    export const isPhoneClerkPlanStaleness = (obj?: { __typename?: any } | null): obj is PhoneClerkPlanStaleness => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isPhoneClerkPlanStaleness"')
+      return PhoneClerkPlanStaleness_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const PhoneClerkReason_possibleTypes: string[] = ['PhoneClerkReason']
+    export const isPhoneClerkReason = (obj?: { __typename?: any } | null): obj is PhoneClerkReason => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isPhoneClerkReason"')
+      return PhoneClerkReason_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const PhoneClerkSuggestion_possibleTypes: string[] = ['PhoneClerkSuggestion']
+    export const isPhoneClerkSuggestion = (obj?: { __typename?: any } | null): obj is PhoneClerkSuggestion => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isPhoneClerkSuggestion"')
+      return PhoneClerkSuggestion_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const PhoneLine_possibleTypes: string[] = ['PhoneLine']
+    export const isPhoneLine = (obj?: { __typename?: any } | null): obj is PhoneLine => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isPhoneLine"')
+      return PhoneLine_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const PhoneLineAssignments_possibleTypes: string[] = ['PhoneLineAssignments']
+    export const isPhoneLineAssignments = (obj?: { __typename?: any } | null): obj is PhoneLineAssignments => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isPhoneLineAssignments"')
+      return PhoneLineAssignments_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const PhotographyWorkflowSummary_possibleTypes: string[] = ['PhotographyWorkflowSummary']
+    export const isPhotographyWorkflowSummary = (obj?: { __typename?: any } | null): obj is PhotographyWorkflowSummary => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isPhotographyWorkflowSummary"')
+      return PhotographyWorkflowSummary_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const PresaleAdvice_possibleTypes: string[] = ['PresaleAdvice']
+    export const isPresaleAdvice = (obj?: { __typename?: any } | null): obj is PresaleAdvice => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isPresaleAdvice"')
+      return PresaleAdvice_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const PresaleAdviceList_possibleTypes: string[] = ['PresaleAdviceList']
+    export const isPresaleAdviceList = (obj?: { __typename?: any } | null): obj is PresaleAdviceList => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isPresaleAdviceList"')
+      return PresaleAdviceList_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const PresaleAdviceSendResult_possibleTypes: string[] = ['PresaleAdviceSendResult']
+    export const isPresaleAdviceSendResult = (obj?: { __typename?: any } | null): obj is PresaleAdviceSendResult => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isPresaleAdviceSendResult"')
+      return PresaleAdviceSendResult_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const PresaleAdviceSkippedItem_possibleTypes: string[] = ['PresaleAdviceSkippedItem']
+    export const isPresaleAdviceSkippedItem = (obj?: { __typename?: any } | null): obj is PresaleAdviceSkippedItem => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isPresaleAdviceSkippedItem"')
+      return PresaleAdviceSkippedItem_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const PresaleAdvicesConnection_possibleTypes: string[] = ['PresaleAdvicesConnection']
+    export const isPresaleAdvicesConnection = (obj?: { __typename?: any } | null): obj is PresaleAdvicesConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isPresaleAdvicesConnection"')
+      return PresaleAdvicesConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const PresaleAdvicesEdge_possibleTypes: string[] = ['PresaleAdvicesEdge']
+    export const isPresaleAdvicesEdge = (obj?: { __typename?: any } | null): obj is PresaleAdvicesEdge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isPresaleAdvicesEdge"')
+      return PresaleAdvicesEdge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const Principal_possibleTypes: string[] = ['Principal']
     export const isPrincipal = (obj?: { __typename?: any } | null): obj is Principal => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isPrincipal"')
@@ -15473,6 +25532,38 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     
 
 
+    const PropertyReceipt_possibleTypes: string[] = ['PropertyReceipt']
+    export const isPropertyReceipt = (obj?: { __typename?: any } | null): obj is PropertyReceipt => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isPropertyReceipt"')
+      return PropertyReceipt_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const PropertyReceiptItem_possibleTypes: string[] = ['PropertyReceiptItem']
+    export const isPropertyReceiptItem = (obj?: { __typename?: any } | null): obj is PropertyReceiptItem => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isPropertyReceiptItem"')
+      return PropertyReceiptItem_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const PropertyReceiptRef_possibleTypes: string[] = ['PropertyReceiptRef']
+    export const isPropertyReceiptRef = (obj?: { __typename?: any } | null): obj is PropertyReceiptRef => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isPropertyReceiptRef"')
+      return PropertyReceiptRef_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const PropertyReceiptTemplate_possibleTypes: string[] = ['PropertyReceiptTemplate']
+    export const isPropertyReceiptTemplate = (obj?: { __typename?: any } | null): obj is PropertyReceiptTemplate => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isPropertyReceiptTemplate"')
+      return PropertyReceiptTemplate_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const Query_possibleTypes: string[] = ['Query']
     export const isQuery = (obj?: { __typename?: any } | null): obj is Query => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isQuery"')
@@ -15485,6 +25576,14 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     export const isRangeRule = (obj?: { __typename?: any } | null): obj is RangeRule => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isRangeRule"')
       return RangeRule_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const RelatedParty_possibleTypes: string[] = ['RelatedParty']
+    export const isRelatedParty = (obj?: { __typename?: any } | null): obj is RelatedParty => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isRelatedParty"')
+      return RelatedParty_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -15625,6 +25724,14 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     
 
 
+    const SaleItemRequiredFieldStatus_possibleTypes: string[] = ['SaleItemRequiredFieldStatus']
+    export const isSaleItemRequiredFieldStatus = (obj?: { __typename?: any } | null): obj is SaleItemRequiredFieldStatus => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isSaleItemRequiredFieldStatus"')
+      return SaleItemRequiredFieldStatus_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const SaleItemSlug_possibleTypes: string[] = ['SaleItemSlug']
     export const isSaleItemSlug = (obj?: { __typename?: any } | null): obj is SaleItemSlug => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isSaleItemSlug"')
@@ -15685,6 +25792,22 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     export const isSaleMetrics = (obj?: { __typename?: any } | null): obj is SaleMetrics => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isSaleMetrics"')
       return SaleMetrics_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const SaleNumberSettings_possibleTypes: string[] = ['SaleNumberSettings']
+    export const isSaleNumberSettings = (obj?: { __typename?: any } | null): obj is SaleNumberSettings => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isSaleNumberSettings"')
+      return SaleNumberSettings_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const SalePhoneClerkConfig_possibleTypes: string[] = ['SalePhoneClerkConfig']
+    export const isSalePhoneClerkConfig = (obj?: { __typename?: any } | null): obj is SalePhoneClerkConfig => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isSalePhoneClerkConfig"')
+      return SalePhoneClerkConfig_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -16017,7 +26140,7 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     
 
 
-    const SearchResultItem_possibleTypes: string[] = ['User','SaleRegistration','SaleItem','SaleBanner','Item','Offer','Image','Video','Document','Activity']
+    const SearchResultItem_possibleTypes: string[] = ['User','SaleRegistration','SaleItem','SaleBanner','Item','Offer','Image','Video','Document','Activity','ConsignmentBanner','AppraisalBanner']
     export const isSearchResultItem = (obj?: { __typename?: any } | null): obj is SearchResultItem => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isSearchResultItem"')
       return SearchResultItem_possibleTypes.includes(obj.__typename)
@@ -16073,6 +26196,46 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     
 
 
+    const SendPresaleAdvicesResult_possibleTypes: string[] = ['SendPresaleAdvicesResult']
+    export const isSendPresaleAdvicesResult = (obj?: { __typename?: any } | null): obj is SendPresaleAdvicesResult => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isSendPresaleAdvicesResult"')
+      return SendPresaleAdvicesResult_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const SetCataloguingWorkflowStatusPayload_possibleTypes: string[] = ['SetCataloguingWorkflowStatusPayload']
+    export const isSetCataloguingWorkflowStatusPayload = (obj?: { __typename?: any } | null): obj is SetCataloguingWorkflowStatusPayload => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isSetCataloguingWorkflowStatusPayload"')
+      return SetCataloguingWorkflowStatusPayload_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const SetItemsAppraisalPayload_possibleTypes: string[] = ['SetItemsAppraisalPayload']
+    export const isSetItemsAppraisalPayload = (obj?: { __typename?: any } | null): obj is SetItemsAppraisalPayload => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isSetItemsAppraisalPayload"')
+      return SetItemsAppraisalPayload_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const SetPhotographyWorkflowStatusPayload_possibleTypes: string[] = ['SetPhotographyWorkflowStatusPayload']
+    export const isSetPhotographyWorkflowStatusPayload = (obj?: { __typename?: any } | null): obj is SetPhotographyWorkflowStatusPayload => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isSetPhotographyWorkflowStatusPayload"')
+      return SetPhotographyWorkflowStatusPayload_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const SetPhotographyWorkflowStatusesPayload_possibleTypes: string[] = ['SetPhotographyWorkflowStatusesPayload']
+    export const isSetPhotographyWorkflowStatusesPayload = (obj?: { __typename?: any } | null): obj is SetPhotographyWorkflowStatusesPayload => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isSetPhotographyWorkflowStatusesPayload"')
+      return SetPhotographyWorkflowStatusesPayload_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const ShopifyConfiguration_possibleTypes: string[] = ['ShopifyConfiguration']
     export const isShopifyConfiguration = (obj?: { __typename?: any } | null): obj is ShopifyConfiguration => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isShopifyConfiguration"')
@@ -16097,6 +26260,14 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     
 
 
+    const SiteBookingHours_possibleTypes: string[] = ['SiteBookingHours']
+    export const isSiteBookingHours = (obj?: { __typename?: any } | null): obj is SiteBookingHours => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isSiteBookingHours"')
+      return SiteBookingHours_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const SiteConnection_possibleTypes: string[] = ['SiteConnection']
     export const isSiteConnection = (obj?: { __typename?: any } | null): obj is SiteConnection => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isSiteConnection"')
@@ -16113,10 +26284,98 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     
 
 
+    const StaffProfile_possibleTypes: string[] = ['StaffProfile']
+    export const isStaffProfile = (obj?: { __typename?: any } | null): obj is StaffProfile => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isStaffProfile"')
+      return StaffProfile_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const StaffProfileConnection_possibleTypes: string[] = ['StaffProfileConnection']
+    export const isStaffProfileConnection = (obj?: { __typename?: any } | null): obj is StaffProfileConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isStaffProfileConnection"')
+      return StaffProfileConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const StaffProfileEdge_possibleTypes: string[] = ['StaffProfileEdge']
+    export const isStaffProfileEdge = (obj?: { __typename?: any } | null): obj is StaffProfileEdge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isStaffProfileEdge"')
+      return StaffProfileEdge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const StaggeredSaleItemScheduleConfiguration_possibleTypes: string[] = ['StaggeredSaleItemScheduleConfiguration']
     export const isStaggeredSaleItemScheduleConfiguration = (obj?: { __typename?: any } | null): obj is StaggeredSaleItemScheduleConfiguration => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isStaggeredSaleItemScheduleConfiguration"')
       return StaggeredSaleItemScheduleConfiguration_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const Statement_possibleTypes: string[] = ['Statement']
+    export const isStatement = (obj?: { __typename?: any } | null): obj is Statement => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isStatement"')
+      return Statement_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const StatementConnection_possibleTypes: string[] = ['StatementConnection']
+    export const isStatementConnection = (obj?: { __typename?: any } | null): obj is StatementConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isStatementConnection"')
+      return StatementConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const StatementConsignor_possibleTypes: string[] = ['StatementConsignor']
+    export const isStatementConsignor = (obj?: { __typename?: any } | null): obj is StatementConsignor => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isStatementConsignor"')
+      return StatementConsignor_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const StatementEdge_possibleTypes: string[] = ['StatementEdge']
+    export const isStatementEdge = (obj?: { __typename?: any } | null): obj is StatementEdge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isStatementEdge"')
+      return StatementEdge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const StatementLine_possibleTypes: string[] = ['StatementLine']
+    export const isStatementLine = (obj?: { __typename?: any } | null): obj is StatementLine => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isStatementLine"')
+      return StatementLine_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const StatementLineCharge_possibleTypes: string[] = ['StatementLineCharge']
+    export const isStatementLineCharge = (obj?: { __typename?: any } | null): obj is StatementLineCharge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isStatementLineCharge"')
+      return StatementLineCharge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const StreamChannel_possibleTypes: string[] = ['StreamChannel']
+    export const isStreamChannel = (obj?: { __typename?: any } | null): obj is StreamChannel => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isStreamChannel"')
+      return StreamChannel_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const StripeIdentityProviderSettings_possibleTypes: string[] = ['StripeIdentityProviderSettings']
+    export const isStripeIdentityProviderSettings = (obj?: { __typename?: any } | null): obj is StripeIdentityProviderSettings => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isStripeIdentityProviderSettings"')
+      return StripeIdentityProviderSettings_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -16137,6 +26396,22 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     
 
 
+    const SuggestedTag_possibleTypes: string[] = ['SuggestedTag']
+    export const isSuggestedTag = (obj?: { __typename?: any } | null): obj is SuggestedTag => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isSuggestedTag"')
+      return SuggestedTag_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const SuggestionValue_possibleTypes: string[] = ['TextSuggestion','TagsSuggestion','AttributesSuggestion','IssuesSuggestion']
+    export const isSuggestionValue = (obj?: { __typename?: any } | null): obj is SuggestionValue => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isSuggestionValue"')
+      return SuggestionValue_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const Tag_possibleTypes: string[] = ['Tag']
     export const isTag = (obj?: { __typename?: any } | null): obj is Tag => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isTag"')
@@ -16145,10 +26420,82 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     
 
 
+    const TagsSuggestion_possibleTypes: string[] = ['TagsSuggestion']
+    export const isTagsSuggestion = (obj?: { __typename?: any } | null): obj is TagsSuggestion => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isTagsSuggestion"')
+      return TagsSuggestion_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const TaxBand_possibleTypes: string[] = ['TaxBand']
+    export const isTaxBand = (obj?: { __typename?: any } | null): obj is TaxBand => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isTaxBand"')
+      return TaxBand_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const TaxCode_possibleTypes: string[] = ['TaxCode']
+    export const isTaxCode = (obj?: { __typename?: any } | null): obj is TaxCode => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isTaxCode"')
+      return TaxCode_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const TaxSettings_possibleTypes: string[] = ['TaxSettings']
+    export const isTaxSettings = (obj?: { __typename?: any } | null): obj is TaxSettings => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isTaxSettings"')
+      return TaxSettings_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const TemplateFieldChange_possibleTypes: string[] = ['TemplateFieldChange']
+    export const isTemplateFieldChange = (obj?: { __typename?: any } | null): obj is TemplateFieldChange => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isTemplateFieldChange"')
+      return TemplateFieldChange_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const TemplateSyncDiff_possibleTypes: string[] = ['TemplateSyncDiff']
+    export const isTemplateSyncDiff = (obj?: { __typename?: any } | null): obj is TemplateSyncDiff => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isTemplateSyncDiff"')
+      return TemplateSyncDiff_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const TestActionHookResponse_possibleTypes: string[] = ['TestActionHookResponse']
     export const isTestActionHookResponse = (obj?: { __typename?: any } | null): obj is TestActionHookResponse => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isTestActionHookResponse"')
       return TestActionHookResponse_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const TextSuggestion_possibleTypes: string[] = ['TextSuggestion']
+    export const isTextSuggestion = (obj?: { __typename?: any } | null): obj is TextSuggestion => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isTextSuggestion"')
+      return TextSuggestion_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const TransferAppraisalItemsToConsignmentPayload_possibleTypes: string[] = ['TransferAppraisalItemsToConsignmentPayload']
+    export const isTransferAppraisalItemsToConsignmentPayload = (obj?: { __typename?: any } | null): obj is TransferAppraisalItemsToConsignmentPayload => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isTransferAppraisalItemsToConsignmentPayload"')
+      return TransferAppraisalItemsToConsignmentPayload_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const TransportCoordinator_possibleTypes: string[] = ['TransportCoordinator']
+    export const isTransportCoordinator = (obj?: { __typename?: any } | null): obj is TransportCoordinator => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isTransportCoordinator"')
+      return TransportCoordinator_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -16169,10 +26516,26 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     
 
 
+    const UpdateWorkflowSettingsPayload_possibleTypes: string[] = ['UpdateWorkflowSettingsPayload']
+    export const isUpdateWorkflowSettingsPayload = (obj?: { __typename?: any } | null): obj is UpdateWorkflowSettingsPayload => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isUpdateWorkflowSettingsPayload"')
+      return UpdateWorkflowSettingsPayload_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const UploadUrl_possibleTypes: string[] = ['UploadUrl']
     export const isUploadUrl = (obj?: { __typename?: any } | null): obj is UploadUrl => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isUploadUrl"')
       return UploadUrl_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const UpsertTaxSettingsPayload_possibleTypes: string[] = ['UpsertTaxSettingsPayload']
+    export const isUpsertTaxSettingsPayload = (obj?: { __typename?: any } | null): obj is UpsertTaxSettingsPayload => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isUpsertTaxSettingsPayload"')
+      return UpsertTaxSettingsPayload_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -16305,6 +26668,54 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     
 
 
+    const ValuationRequest_possibleTypes: string[] = ['ValuationRequest']
+    export const isValuationRequest = (obj?: { __typename?: any } | null): obj is ValuationRequest => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isValuationRequest"')
+      return ValuationRequest_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const ValuationRequestAssignee_possibleTypes: string[] = ['ValuationRequestAssignee']
+    export const isValuationRequestAssignee = (obj?: { __typename?: any } | null): obj is ValuationRequestAssignee => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isValuationRequestAssignee"')
+      return ValuationRequestAssignee_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const ValuationRequestEdge_possibleTypes: string[] = ['ValuationRequestEdge']
+    export const isValuationRequestEdge = (obj?: { __typename?: any } | null): obj is ValuationRequestEdge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isValuationRequestEdge"')
+      return ValuationRequestEdge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const ValuationRequestItem_possibleTypes: string[] = ['ValuationRequestItem']
+    export const isValuationRequestItem = (obj?: { __typename?: any } | null): obj is ValuationRequestItem => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isValuationRequestItem"')
+      return ValuationRequestItem_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const ValuationRequestSettings_possibleTypes: string[] = ['ValuationRequestSettings']
+    export const isValuationRequestSettings = (obj?: { __typename?: any } | null): obj is ValuationRequestSettings => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isValuationRequestSettings"')
+      return ValuationRequestSettings_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const ValuationRequestsConnection_possibleTypes: string[] = ['ValuationRequestsConnection']
+    export const isValuationRequestsConnection = (obj?: { __typename?: any } | null): obj is ValuationRequestsConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isValuationRequestsConnection"')
+      return ValuationRequestsConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const Video_possibleTypes: string[] = ['Video']
     export const isVideo = (obj?: { __typename?: any } | null): obj is Video => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isVideo"')
@@ -16341,6 +26752,14 @@ export interface WorkflowScheduleRowInput {dateType: WorkflowDateType,enabled: S
     export const isWorkflowScheduleRow = (obj?: { __typename?: any } | null): obj is WorkflowScheduleRow => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isWorkflowScheduleRow"')
       return WorkflowScheduleRow_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const WorkflowSettings_possibleTypes: string[] = ['WorkflowSettings']
+    export const isWorkflowSettings = (obj?: { __typename?: any } | null): obj is WorkflowSettings => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isWorkflowSettings"')
+      return WorkflowSettings_possibleTypes.includes(obj.__typename)
     }
     
 
@@ -16404,6 +26823,11 @@ export const enumAddressType = {
    OTHER: 'OTHER' as const
 }
 
+export const enumAffiliateReportResolution = {
+   DAILY: 'DAILY' as const,
+   MONTHLY: 'MONTHLY' as const
+}
+
 export const enumAmlRiskClass = {
    LOW: 'LOW' as const,
    HIGH: 'HIGH' as const
@@ -16417,6 +26841,61 @@ export const enumApiKeyRole = {
 export const enumApiTokenRole = {
    ADMIN: 'ADMIN' as const,
    READ: 'READ' as const
+}
+
+export const enumAppointmentActor = {
+   CLIENT: 'CLIENT' as const,
+   HOUSE: 'HOUSE' as const
+}
+
+export const enumAppointmentDocumentType = {
+   INVOICE: 'INVOICE' as const,
+   STATEMENT: 'STATEMENT' as const
+}
+
+export const enumAppointmentOrder = {
+   START_ASC: 'START_ASC' as const,
+   CREATED_DESC: 'CREATED_DESC' as const
+}
+
+export const enumAppointmentStatus = {
+   REQUESTED: 'REQUESTED' as const,
+   CONFIRMED: 'CONFIRMED' as const,
+   CANCELLED: 'CANCELLED' as const,
+   COMPLETED: 'COMPLETED' as const
+}
+
+export const enumAppointmentType = {
+   COLLECTION: 'COLLECTION' as const,
+   VALUATION: 'VALUATION' as const
+}
+
+export const enumAppraisalDocumentGroupBy = {
+   ROOM: 'ROOM' as const,
+   ITEM_TYPE: 'ITEM_TYPE' as const,
+   NONE: 'NONE' as const
+}
+
+export const enumAppraisalDocumentSortBy = {
+   MANUAL: 'MANUAL' as const,
+   VALUE_DESC: 'VALUE_DESC' as const,
+   ITEM_TYPE_THEN_VALUE: 'ITEM_TYPE_THEN_VALUE' as const
+}
+
+export const enumAppraisalType = {
+   AUCTION: 'AUCTION' as const,
+   INSURANCE: 'INSURANCE' as const,
+   PROBATE: 'PROBATE' as const,
+   OTHER: 'OTHER' as const
+}
+
+export const enumAppraisalValueBasis = {
+   NRV: 'NRV' as const,
+   NFOV: 'NFOV' as const,
+   SHRV: 'SHRV' as const,
+   ARV: 'ARV' as const,
+   FV: 'FV' as const,
+   AGREED: 'AGREED' as const
 }
 
 export const enumAuctionSymbolType = {
@@ -16466,6 +26945,54 @@ export const enumBidType = {
    OFFER: 'OFFER' as const
 }
 
+export const enumBuyerPremiumBandType = {
+   PERCENTAGE: 'PERCENTAGE' as const,
+   AMOUNT: 'AMOUNT' as const
+}
+
+export const enumBuyerPremiumCalculationType = {
+   FLAT: 'FLAT' as const,
+   PROGRESSIVE: 'PROGRESSIVE' as const
+}
+
+export const enumBuyerPremiumScopeType = {
+   SALE_ITEM: 'SALE_ITEM' as const,
+   ITEM_TYPE: 'ITEM_TYPE' as const,
+   SALE: 'SALE' as const,
+   SALE_GENRE: 'SALE_GENRE' as const,
+   ACCOUNT: 'ACCOUNT' as const
+}
+
+export const enumBuyerPremiumStatus = {
+   ENABLED: 'ENABLED' as const,
+   DISABLED: 'DISABLED' as const
+}
+
+export const enumBuyerPremiumWriteScopeType = {
+   SALE_ITEM: 'SALE_ITEM' as const,
+   ITEM_TYPE: 'ITEM_TYPE' as const,
+   SALE_GENRE: 'SALE_GENRE' as const
+}
+
+export const enumCataloguingWorkflowStatus = {
+   AWAITING_CATALOGUING: 'AWAITING_CATALOGUING' as const,
+   CATALOGUED: 'CATALOGUED' as const,
+   PROOFED: 'PROOFED' as const
+}
+
+export const enumCelKind = {
+   BOOL: 'BOOL' as const,
+   INT: 'INT' as const,
+   UINT: 'UINT' as const,
+   DOUBLE: 'DOUBLE' as const,
+   STRING: 'STRING' as const,
+   BYTES: 'BYTES' as const,
+   TIMESTAMP: 'TIMESTAMP' as const,
+   DURATION: 'DURATION' as const,
+   OBJECT: 'OBJECT' as const,
+   ENUM: 'ENUM' as const
+}
+
 export const enumChargeBandType = {
    PERCENTAGE: 'PERCENTAGE' as const,
    AMOUNT: 'AMOUNT' as const
@@ -16473,7 +27000,8 @@ export const enumChargeBandType = {
 
 export const enumChargeBasedOn = {
    HAMMER: 'HAMMER' as const,
-   LOW_ESTIMATE: 'LOW_ESTIMATE' as const
+   LOW_ESTIMATE: 'LOW_ESTIMATE' as const,
+   RESERVE: 'RESERVE' as const
 }
 
 export const enumChargeCalculationType = {
@@ -16489,7 +27017,7 @@ export const enumChargeFrequency = {
 export const enumChargeOutcome = {
    ITEM_WON: 'ITEM_WON' as const,
    ITEM_LOST: 'ITEM_LOST' as const,
-   ANY: 'ANY' as const
+   ITEM_WITHDRAWN: 'ITEM_WITHDRAWN' as const
 }
 
 export const enumChargeScopeType = {
@@ -16511,10 +27039,53 @@ export const enumClientPermission = {
    ACCESS_PRIVATE: 'ACCESS_PRIVATE' as const
 }
 
+export const enumClientRelationshipType = {
+   AGENT: 'AGENT' as const,
+   INTRODUCER: 'INTRODUCER' as const,
+   EXECUTOR: 'EXECUTOR' as const,
+   LEGAL_REPRESENTATIVE: 'LEGAL_REPRESENTATIVE' as const,
+   FAMILY_MEMBER: 'FAMILY_MEMBER' as const,
+   OTHER: 'OTHER' as const
+}
+
 export const enumClosingMethod = {
    ONE_BY_ONE: 'ONE_BY_ONE' as const,
    OVERLAPPING: 'OVERLAPPING' as const,
    NONE: 'NONE' as const
+}
+
+export const enumConditionReportRequestChannel = {
+   WEBSITE: 'WEBSITE' as const,
+   PHONE: 'PHONE' as const,
+   EMAIL: 'EMAIL' as const,
+   THIRD_PARTY: 'THIRD_PARTY' as const
+}
+
+export const enumConditionReportRequestStatus = {
+   OPEN: 'OPEN' as const,
+   REPLIED: 'REPLIED' as const
+}
+
+export const enumConsignmentContractSigningRequestStatus = {
+   OPEN: 'OPEN' as const,
+   COMPLETED: 'COMPLETED' as const,
+   CANCELLED: 'CANCELLED' as const,
+   EXPIRED: 'EXPIRED' as const
+}
+
+export const enumConsignmentContractState = {
+   NONE: 'NONE' as const,
+   GENERATED: 'GENERATED' as const,
+   SENT: 'SENT' as const,
+   SIGNED: 'SIGNED' as const
+}
+
+export const enumConsignmentContractStatus = {
+   GENERATED: 'GENERATED' as const,
+   SENT: 'SENT' as const,
+   SIGNED_OFFLINE: 'SIGNED_OFFLINE' as const,
+   SUPERSEDED: 'SUPERSEDED' as const,
+   SIGNED_ELECTRONIC: 'SIGNED_ELECTRONIC' as const
 }
 
 export const enumConsignmentFeeCalculationType = {
@@ -16527,6 +27098,13 @@ export const enumConsignmentFeeType = {
    NOT_SET: 'NOT_SET' as const,
    PERCENTAGE: 'PERCENTAGE' as const,
    AMOUNT: 'AMOUNT' as const
+}
+
+export const enumConsignmentSignatureStatus = {
+   NONE: 'NONE' as const,
+   GENERATED: 'GENERATED' as const,
+   SENT: 'SENT' as const,
+   SIGNED: 'SIGNED' as const
 }
 
 export const enumContentDiffStatus = {
@@ -16866,9 +27444,23 @@ export const enumFeeRuleType = {
    AMOUNT: 'AMOUNT' as const
 }
 
+export const enumIdVerificationState = {
+   NONE: 'NONE' as const,
+   REQUESTED: 'REQUESTED' as const,
+   PROCESSING: 'PROCESSING' as const,
+   VERIFIED: 'VERIFIED' as const,
+   FAILED: 'FAILED' as const,
+   CANCELED: 'CANCELED' as const
+}
+
 export const enumImageIdType = {
    ID: 'ID' as const,
    EXTERNAL_ID: 'EXTERNAL_ID' as const
+}
+
+export const enumImageKind = {
+   LOT: 'LOT' as const,
+   CONDITION: 'CONDITION' as const
 }
 
 export const enumImageType = {
@@ -16878,7 +27470,27 @@ export const enumImageType = {
    SALE_ITEM: 'SALE_ITEM' as const,
    PRODUCT: 'PRODUCT' as const,
    PRODUCT_VARIANT: 'PRODUCT_VARIANT' as const,
-   COLLECTION: 'COLLECTION' as const
+   COLLECTION: 'COLLECTION' as const,
+   STAFF_PROFILE: 'STAFF_PROFILE' as const
+}
+
+export const enumIssueSeverity = {
+   INFO: 'INFO' as const,
+   WARNING: 'WARNING' as const
+}
+
+export const enumItemLifecycleStatus = {
+   APPRAISAL: 'APPRAISAL' as const,
+   AVAILABLE: 'AVAILABLE' as const,
+   ALLOCATED: 'ALLOCATED' as const,
+   SOLD: 'SOLD' as const,
+   RETURN_TO_VENDOR: 'RETURN_TO_VENDOR' as const
+}
+
+export const enumItemLocationStatus = {
+   WITH_CLIENT: 'WITH_CLIENT' as const,
+   IN_TRANSIT: 'IN_TRANSIT' as const,
+   AT_LOCATION: 'AT_LOCATION' as const
 }
 
 export const enumItemOrderField = {
@@ -16901,7 +27513,8 @@ export const enumItemStatus = {
    ITEM_PROCESSING: 'ITEM_PROCESSING' as const,
    ITEM_CLOSED: 'ITEM_CLOSED' as const,
    ITEM_PAUSED: 'ITEM_PAUSED' as const,
-   ITEM_LIVE: 'ITEM_LIVE' as const
+   ITEM_LIVE: 'ITEM_LIVE' as const,
+   ITEM_WITHDRAWN: 'ITEM_WITHDRAWN' as const
 }
 
 export const enumLinkType = {
@@ -17098,10 +27711,17 @@ export const enumMetafieldValueType = {
    METAFIELD_VALUE_TYPE_RICH_TEXT: 'METAFIELD_VALUE_TYPE_RICH_TEXT' as const
 }
 
+export const enumNoteTypeScope = {
+   ITEM: 'ITEM' as const,
+   USER: 'USER' as const,
+   BOTH: 'BOTH' as const
+}
+
 export const enumNotificationAudience = {
    BIDDER: 'BIDDER' as const,
    CONSIGNOR: 'CONSIGNOR' as const,
-   IDENTITY: 'IDENTITY' as const
+   IDENTITY: 'IDENTITY' as const,
+   ACCOUNT_INBOX: 'ACCOUNT_INBOX' as const
 }
 
 export const enumNotificationAudienceGroup = {
@@ -17146,6 +27766,11 @@ export const enumNotificationEvent = {
    OFFER_WITHDRAWN: 'OFFER_WITHDRAWN' as const,
    DIRECT_SELL_WON: 'DIRECT_SELL_WON' as const,
    DIRECT_SELL_SOLD: 'DIRECT_SELL_SOLD' as const,
+   CONSIGNOR_CONTRACT_SIGNING_REQUEST: 'CONSIGNOR_CONTRACT_SIGNING_REQUEST' as const,
+   CONSIGNOR_PRESALE_ADVICE: 'CONSIGNOR_PRESALE_ADVICE' as const,
+   CONSIGNOR_PROPERTY_RECEIPT: 'CONSIGNOR_PROPERTY_RECEIPT' as const,
+   VALUATION_REQUEST_RECEIVED: 'VALUATION_REQUEST_RECEIVED' as const,
+   APPOINTMENT_REQUESTED: 'APPOINTMENT_REQUESTED' as const,
    IDENTITY_EMAIL_VERIFICATION: 'IDENTITY_EMAIL_VERIFICATION' as const,
    IDENTITY_PASSWORD_RECOVERY: 'IDENTITY_PASSWORD_RECOVERY' as const,
    IDENTITY_LOGIN_CODE: 'IDENTITY_LOGIN_CODE' as const,
@@ -17222,6 +27847,14 @@ export const enumPermission = {
    WRITE_PRODUCT: 'WRITE_PRODUCT' as const,
    READ_CONSIGNMENT: 'READ_CONSIGNMENT' as const,
    WRITE_CONSIGNMENT: 'WRITE_CONSIGNMENT' as const,
+   READ_APPRAISAL: 'READ_APPRAISAL' as const,
+   WRITE_APPRAISAL: 'WRITE_APPRAISAL' as const,
+   READ_VALUATION_REQUEST: 'READ_VALUATION_REQUEST' as const,
+   WRITE_VALUATION_REQUEST: 'WRITE_VALUATION_REQUEST' as const,
+   READ_CONDITION_REPORT_REQUEST: 'READ_CONDITION_REPORT_REQUEST' as const,
+   WRITE_CONDITION_REPORT_REQUEST: 'WRITE_CONDITION_REPORT_REQUEST' as const,
+   READ_APPOINTMENT: 'READ_APPOINTMENT' as const,
+   WRITE_APPOINTMENT: 'WRITE_APPOINTMENT' as const,
    READ_SITE: 'READ_SITE' as const,
    WRITE_SITE: 'WRITE_SITE' as const,
    READ_ACCOUNT: 'READ_ACCOUNT' as const,
@@ -17241,7 +27874,44 @@ export const enumPermission = {
    READ_METAFIELDS: 'READ_METAFIELDS' as const,
    WRITE_METAFIELDS: 'WRITE_METAFIELDS' as const,
    READ_AFFILIATE: 'READ_AFFILIATE' as const,
-   WRITE_AFFILIATE: 'WRITE_AFFILIATE' as const
+   WRITE_AFFILIATE: 'WRITE_AFFILIATE' as const,
+   READ_STATEMENT: 'READ_STATEMENT' as const,
+   WRITE_STATEMENT: 'WRITE_STATEMENT' as const,
+   WRITE_BUYERS_PREMIUM: 'WRITE_BUYERS_PREMIUM' as const,
+   WRITE_ACCOUNT_CODES: 'WRITE_ACCOUNT_CODES' as const,
+   WRITE_INVOICE: 'WRITE_INVOICE' as const,
+   WRITE_TAX: 'WRITE_TAX' as const
+}
+
+export const enumPhoneClerkAssignmentSource = {
+   AI: 'AI' as const,
+   FALLBACK: 'FALLBACK' as const,
+   MANUAL: 'MANUAL' as const
+}
+
+export const enumPhoneClerkPlanGenerator = {
+   AI: 'AI' as const,
+   AI_WITH_FALLBACK: 'AI_WITH_FALLBACK' as const,
+   FALLBACK: 'FALLBACK' as const
+}
+
+export const enumPhoneClerkPlanStatus = {
+   GENERATING: 'GENERATING' as const,
+   DRAFT: 'DRAFT' as const,
+   LOCKED: 'LOCKED' as const,
+   SUPERSEDED: 'SUPERSEDED' as const,
+   FAILED: 'FAILED' as const
+}
+
+export const enumPhoneClerkReasonCode = {
+   MANUAL_OVERRIDE: 'MANUAL_OVERRIDE' as const,
+   SAME_BIDDER_IN_SALE: 'SAME_BIDDER_IN_SALE' as const,
+   PREVIOUS_SALE_RELATIONSHIP: 'PREVIOUS_SALE_RELATIONSHIP' as const,
+   STAFF_NOTE_PREFERENCE: 'STAFF_NOTE_PREFERENCE' as const,
+   LOAD_BALANCING: 'LOAD_BALANCING' as const,
+   ONLY_AVAILABLE_CLERK: 'ONLY_AVAILABLE_CLERK' as const,
+   FALLBACK_ALGORITHM: 'FALLBACK_ALGORITHM' as const,
+   NO_CLERK_AVAILABLE: 'NO_CLERK_AVAILABLE' as const
 }
 
 export const enumPhoneType = {
@@ -17252,11 +27922,40 @@ export const enumPhoneType = {
    FAX: 'FAX' as const
 }
 
+export const enumPhotographyWorkflowStatus = {
+   TO_PHOTOGRAPH: 'TO_PHOTOGRAPH' as const,
+   PHOTOGRAPHED: 'PHOTOGRAPHED' as const,
+   UPLOADED: 'UPLOADED' as const
+}
+
+export const enumPlatformFeeChargedTo = {
+   BUYER: 'BUYER' as const,
+   SELLER: 'SELLER' as const
+}
+
+export const enumPresaleAdviceSkipReason = {
+   NO_CONSIGNMENT: 'NO_CONSIGNMENT' as const,
+   NO_MAIN_CONSIGNOR: 'NO_MAIN_CONSIGNOR' as const,
+   NO_CONSIGNOR_RECORD: 'NO_CONSIGNOR_RECORD' as const
+}
+
+export const enumPresaleAdviceStatus = {
+   GENERATED: 'GENERATED' as const,
+   SENT: 'SENT' as const,
+   SUPERSEDED: 'SUPERSEDED' as const
+}
+
 export const enumPrincipalType = {
    PERSON: 'PERSON' as const,
    API_CLIENT: 'API_CLIENT' as const,
    SYSTEM: 'SYSTEM' as const,
    UNKNOWN: 'UNKNOWN' as const
+}
+
+export const enumPropertyReceiptCustody = {
+   UNCHANGED: 'UNCHANGED' as const,
+   IN_TRANSIT: 'IN_TRANSIT' as const,
+   AT_LOCATION: 'AT_LOCATION' as const
 }
 
 export const enumReserveAutoBidMethod = {
@@ -17310,6 +28009,7 @@ export const enumSaleRegistrationType = {
 
 export const enumSaleStatus = {
    UNPUBLISHED: 'UNPUBLISHED' as const,
+   PREVIEW: 'PREVIEW' as const,
    PUBLISHED: 'PUBLISHED' as const,
    OPENED: 'OPENED' as const,
    CLOSED: 'CLOSED' as const,
@@ -17332,7 +28032,9 @@ export const enumSearchType = {
    ITEM: 'ITEM' as const,
    OFFER: 'OFFER' as const,
    ASSET: 'ASSET' as const,
-   ACTIVITY: 'ACTIVITY' as const
+   ACTIVITY: 'ACTIVITY' as const,
+   CONSIGNMENT: 'CONSIGNMENT' as const,
+   APPRAISAL: 'APPRAISAL' as const
 }
 
 export const enumSellLiveItemToBidErrorCode = {
@@ -17513,6 +28215,40 @@ export const enumSpecificationType = {
    CLIENT_PACKAGE: 'CLIENT_PACKAGE' as const
 }
 
+export const enumStatementStatus = {
+   DRAFT: 'DRAFT' as const,
+   ISSUED: 'ISSUED' as const
+}
+
+export const enumSuggestionField = {
+   TITLE: 'TITLE' as const,
+   SUB_TITLE: 'SUB_TITLE' as const,
+   DESCRIPTION: 'DESCRIPTION' as const,
+   TAGS: 'TAGS' as const,
+   ATTRIBUTES: 'ATTRIBUTES' as const,
+   ISSUES: 'ISSUES' as const
+}
+
+export const enumTaxApplication = {
+   STANDARD: 'STANDARD' as const,
+   MARGIN: 'MARGIN' as const,
+   IMPORT: 'IMPORT' as const,
+   EXEMPT: 'EXEMPT' as const,
+   OUTSIDE_SCOPE: 'OUTSIDE_SCOPE' as const
+}
+
+export const enumTaxCodeStatus = {
+   SCHEDULED: 'SCHEDULED' as const,
+   ACTIVE: 'ACTIVE' as const,
+   EXPIRED: 'EXPIRED' as const
+}
+
+export const enumTaxRegime = {
+   NONE: 'NONE' as const,
+   UK_VAT: 'UK_VAT' as const,
+   OTHER: 'OTHER' as const
+}
+
 export const enumTrustLevel = {
    TRUST_LEVEL_NONE: 'TRUST_LEVEL_NONE' as const,
    TRUST_LEVEL_LOW: 'TRUST_LEVEL_LOW' as const,
@@ -17524,12 +28260,29 @@ export const enumTrustLevel = {
 export const enumUserIdType = {
    USER_ID: 'USER_ID' as const,
    IDENTITY_PROVIDER_ID: 'IDENTITY_PROVIDER_ID' as const,
-   BASTA_USER_ID: 'BASTA_USER_ID' as const
+   BASTA_USER_ID: 'BASTA_USER_ID' as const,
+   CLIENT_NUMBER: 'CLIENT_NUMBER' as const
 }
 
 export const enumUserStatus = {
    ACTIVE: 'ACTIVE' as const,
    INACTIVE: 'INACTIVE' as const
+}
+
+export const enumValuationRequestStatus = {
+   NEW: 'NEW' as const,
+   IN_PROGRESS: 'IN_PROGRESS' as const,
+   CLOSED: 'CLOSED' as const
+}
+
+export const enumWeekday = {
+   MONDAY: 'MONDAY' as const,
+   TUESDAY: 'TUESDAY' as const,
+   WEDNESDAY: 'WEDNESDAY' as const,
+   THURSDAY: 'THURSDAY' as const,
+   FRIDAY: 'FRIDAY' as const,
+   SATURDAY: 'SATURDAY' as const,
+   SUNDAY: 'SUNDAY' as const
 }
 
 export const enumWeightUnit = {
