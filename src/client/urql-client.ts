@@ -8,6 +8,9 @@ import {
 } from "urql";
 import type { ApiConfig } from "../types";
 
+export const WS_KEEP_ALIVE_MS = 10_000;
+export const WS_PONG_TIMEOUT_MS = 5_000;
+
 /**
  * Creates a urql client with optional websocket support for subscriptions
  * @param config - API configuration including url, headers, and optional wsUrl
@@ -21,8 +24,25 @@ export function createUrqlClientWithConfig(
 
   // Only add subscription exchange if wsUrl is provided
   if (config.wsUrl) {
+    // A ping with no pong in time means the socket died without a close; terminate forces a retry.
+    let pongTimer: ReturnType<typeof setTimeout> | undefined;
     const wsClient = createWSClient({
       url: config.wsUrl,
+      keepAlive: WS_KEEP_ALIVE_MS,
+      on: {
+        ping: (received) => {
+          if (received) return;
+          clearTimeout(pongTimer);
+          pongTimer = setTimeout(
+            () => wsClient.terminate(),
+            WS_PONG_TIMEOUT_MS,
+          );
+        },
+        pong: (received) => {
+          if (received) clearTimeout(pongTimer);
+        },
+        closed: () => clearTimeout(pongTimer),
+      },
       retryAttempts: Infinity,
       shouldRetry: () => true, // auto-reconnect on disconnect
       connectionParams:
